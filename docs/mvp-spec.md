@@ -1,0 +1,67 @@
+# Spec do MVP: demonstração principal
+
+## Objetivo
+
+Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual, expressar uma intenção por voz, confirmar por áudio e enviar um comando estruturado a um robô simulado.
+
+## Jornada crítica
+
+1. O operador centraliza o QR do talhão `plot-03`, previamente mapeado.
+2. O sistema captura um frame sob demanda.
+3. O operador diz: “pulverizar esta área”.
+4. O app identifica `plot-03` e classifica a intenção como `SPRAY`.
+5. O sistema diz: “Pulverizar talhão três. Confirmar?”.
+6. O operador responde “confirmar”.
+7. O app envia o comando via WebSocket.
+8. O bridge ROS 2 publica o destino e o robô simulado inicia o deslocamento.
+9. O sistema informa por áudio: “Comando enviado”.
+
+## Critérios de aceite em EARS
+
+1. **Quando** o operador iniciar um comando, **o sistema deve** capturar apenas o frame necessário para resolver o alvo.
+2. **Quando** houver um alvo reconhecido e uma intenção válida, **o sistema deve** pedir confirmação por áudio antes de enviar o comando.
+3. **Se** o alvo ou a intenção forem ambíguos, **então o sistema deve** pedir repetição e não enviar movimento.
+4. **Se** a confirmação não chegar dentro do timeout, **então o sistema deve** cancelar a operação e informar o cancelamento.
+5. **Quando** o bridge ROS 2 aceitar o comando, **o sistema deve** emitir confirmação por áudio e registrar apenas telemetria técnica sem mídia bruta.
+
+## Contrato mínimo de sucesso
+
+- Câmera do DAT ou Mock Device Kit entrega o frame.
+- Voz é capturada e transcrita no companion app.
+- Classificador local retorna `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN` com confiança.
+- Intenção e alvo viram JSON válido.
+- WebSocket entrega o comando ao bridge.
+- ROS 2/Gazebo reage ao destino.
+- Toda execução exige confirmação.
+- Nenhuma foto permanece salva após o processamento.
+
+## Fora de escopo
+
+- Navegação, desvio de obstáculos e segurança funcional do robô.
+- Precisão centimétrica ou RTK-GPS.
+- Operação real de pulverização.
+- Múltiplos robôs simultâneos.
+- Linguagem natural aberta para qualquer tarefa.
+- Estimativa de waypoint baseada em IMU dos óculos.
+- Operação sem smartphone companion.
+- Reconhecimento de alvo sem QR no MVP da semana.
+- React Native ou uma camada multiplataforma.
+
+## Plataformas do MVP
+
+- Android/Kotlin: `mockDebug` em API 26+; `datDebug` em API 31+ por exigência do DAT 0.9.0.
+- iOS/Swift: iOS 17.2+; alvo principal de teste é o iPhone 13.
+- Os dois apps consomem o mesmo `intent_model.json` e o contrato JSON 1.0.
+- Basta um app executar a demo ao vivo, mas os dois builds nativos devem passar antes da entrega.
+- A fonte simulada é obrigatória para desenvolvimento. A captura DAT real é a troca isolada do hackathon.
+
+## Casos que não podem quebrar
+
+- Recusa explícita cancela o comando.
+- Perda de conexão não pode resultar em execução tardia.
+- Repetição da mesma mensagem não pode gerar movimento duplicado.
+- Alvo desconhecido nunca vira coordenada padrão.
+
+## Definição de pronto
+
+A jornada roda cinco vezes seguidas em ambiente limpo, incluindo pelo menos uma recusa e uma ambiguidade, com evidência em logs estruturados e sem mídia persistida.

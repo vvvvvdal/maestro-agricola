@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<sdf version="1.8">
+  <model name="plot_marker">
+    <static>true</static>
+    <link name="marker">
+      <pose>0 0 0.6 0 0 0</pose>
+      <collision name="board_collision">
+        <geometry>
+          <box><size>0.05 0.8 1.2</size></box>
+        </geometry>
+      </collision>
+      <visual name="board_visual">
+        <geometry>
+          <box><size>0.05 0.8 1.2</size></box>
+        </geometry>
+        <material>
+          <ambient>0.12 0.18 0.12 1</ambient>
+          <diffuse>0.12 0.18 0.12 1</diffuse>
+        </material>
+      </visual>
+      <visual name="qr_visual">
+        <pose>-0.026 0 0 0 0 1.570796</pose>
+        <geometry>
+          <plane><normal>0 0 1</normal><size>0.65 0.65</size></plane>
+        </geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+          <pbr>
+            <metal>
+              <albedo_map>model://plot_marker/materials/textures/plot-03.png</albedo_map>
+            </metal>
+          </pbr>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

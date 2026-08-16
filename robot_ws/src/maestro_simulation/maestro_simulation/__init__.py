@@ -1,0 +1,1 @@
+"""Maestro Agricola simulation assets."""

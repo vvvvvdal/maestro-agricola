@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+outputs
+**/__pycache__
+**/*.pyc
+**/.gradle
+**/build
+**/.build
+robot_ws/build
+robot_ws/install
+robot_ws/log
+mobile
+docs/proposta/*.pdf
+docs/pitch/*.pptx

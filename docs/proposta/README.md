@@ -1,0 +1,19 @@
+# Proposta do projeto
+
+Estas são as versões revisadas da proposta Maestro Agrícola.
+
+- [`versao-resumida.md`](versao-resumida.md): fonte editável da versão curta.
+- [`versao-tecnica.md`](versao-tecnica.md): fonte editável da versão detalhada.
+- `Maestro-Agricola-Versao-Resumida-Revisada.pdf`: exportação para compartilhamento.
+- `Maestro-Agricola-Versao-Tecnica-Revisada.pdf`: exportação para compartilhamento.
+
+## Decisões incorporadas
+
+- O MVP não depende de IMU, pose de cabeça ou profundidade dos óculos.
+- O alvo é um marcador ou talhão previamente mapeado.
+- A câmera passa pelo DAT; o áudio usa as APIs nativas de Android e iOS e deve ser validado em cada aparelho real.
+- A IA comprovável é o classificador linear softmax local já exportado para Kotlin e Swift; a próxima medição é o benchmark nos dois smartphones.
+- A confirmação por áudio é obrigatória antes de qualquer comando de movimento.
+- O app não persiste mídia bruta e declara separadamente os fluxos de dados de Android, iOS, Meta AI e DAT.
+
+Atualize primeiro os arquivos Markdown e depois regenere os PDFs.

@@ -1,0 +1,30 @@
+# Documentação
+
+Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o arquivo correspondente quando uma decisão mudar; não deixe decisões importantes apenas no chat.
+
+## Índice
+
+- [`product-brief.md`](product-brief.md): problema, proposta de valor, público e limites.
+- [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
+- [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
+- [`team.md`](team.md): papéis, responsabilidades e acordos de integração.
+- [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
+- [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.
+- [`tasks/hackathon-day.md`](tasks/hackathon-day.md): plano de integração com os óculos no evento.
+- [`references.md`](references.md): fontes oficiais e materiais de apoio.
+- [`proposta/versao-resumida.md`](proposta/versao-resumida.md): versão curta revisada e canônica.
+- [`proposta/versao-tecnica.md`](proposta/versao-tecnica.md): versão técnica revisada e canônica.
+- [`pitch/roteiro-3-minutos.md`](pitch/roteiro-3-minutos.md): fala cronometrada.
+- [`pitch/storyboard.md`](pitch/storyboard.md): conteúdo dos slides e sugestões de edição.
+- `pitch/Maestro-Agricola-Pitch.pptx`: apresentação editável.
+
+## Fonte de verdade
+
+Em caso de divergência:
+
+1. A spec do MVP define o comportamento esperado.
+2. A arquitetura define contratos e decisões técnicas.
+3. O código e os testes devem implementar esses documentos.
+4. O pitch simplifica a história, mas não pode contradizer a solução real.
+
+Os arquivos Markdown em `proposta/` são as fontes editáveis. Os PDFs da mesma pasta são exportações para compartilhamento.

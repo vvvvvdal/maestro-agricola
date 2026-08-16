@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://maestro-agricola.local/contracts/response.schema.json",
+  "title": "MaestroResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "command_id", "status", "reason"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "command_id": { "type": "string" },
+    "status": { "enum": ["ACCEPTED", "REJECTED", "FAILED"] },
+    "reason": { "type": "string" }
+  }
+}

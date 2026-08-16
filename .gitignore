@@ -1,0 +1,58 @@
+# Secrets and local configuration
+.env
+*.local
+local.properties
+secrets.properties
+GoogleService-Info.plist
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# ROS 2 / colcon
+build/
+install/
+log/
+.colcon/
+
+# Android / Gradle
+.gradle/
+**/.gradle/
+**/build/
+*.apk
+*.aab
+.idea/
+*.iml
+captures/
+
+# iOS / Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+.swiftpm/
+.build/
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+
+# Runtime artifacts
+*.log
+*.bag
+*.db3
+recordings/
+captures/

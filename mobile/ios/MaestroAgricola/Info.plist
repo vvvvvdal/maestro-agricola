@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>Maestro Agrícola</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array><string>maestroagricola</string></array>
+        </dict>
+    </array>
+    <key>MWDAT</key>
+    <dict>
+        <key>AppLinkURLScheme</key>
+        <string>maestroagricola://</string>
+        <key>MetaAppID</key>
+        <string>$(META_APP_ID)</string>
+        <key>ClientToken</key>
+        <string>$(CLIENT_TOKEN)</string>
+        <key>TeamID</key>
+        <string>$(DEVELOPMENT_TEAM)</string>
+        <key>Analytics</key>
+        <dict>
+            <key>OptOut</key>
+            <true/>
+        </dict>
+        <key>CrashReporting</key>
+        <dict>
+            <key>OptOut</key>
+            <true/>
+        </dict>
+    </dict>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Usado para conectar aos óculos Meta AI.</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>Usado para conectar aos óculos Meta AI.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Usado para enviar o comando ao bridge ROS 2 na rede local.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Usado somente durante o comando de voz.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Usado para transformar o comando de voz em texto no aparelho.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>bluetooth-central</string>
+        <string>bluetooth-peripheral</string>
+        <string>audio</string>
+    </array>
+    <key>UILaunchScreen</key>
+    <dict/>
+    <key>UISupportedInterfaceOrientations</key>
+    <array><string>UIInterfaceOrientationPortrait</string></array>
+</dict>
+</plist>

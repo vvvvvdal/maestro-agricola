@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <application
+        android:allowBackup="false"
+        android:label="Maestro Agrícola"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaestroAgricola"
+        android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.meta.wearable.mwdat.APPLICATION_ID"
+            android:value="${mwdat_application_id}" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CLIENT_TOKEN"
+            android:value="${mwdat_client_token}" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.ANALYTICS_OPT_OUT"
+            android:value="true" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CRASH_REPORTING_OPT_OUT"
+            android:value="true" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
