@@ -17,4 +17,4 @@ Antes do build `datDebug`, defina `GITHUB_TOKEN` com permissão `read:packages` 
 
 O modelo local é lido diretamente de `../../shared/ai/intent_model.json` como asset, sem cópia manual.
 
-No emulador, o endpoint padrão é `ws://10.0.2.2:8765`. No Motorola físico, edite o campo do app para `ws://IP_DO_COMPUTADOR:8765`.
+No emulador, o endpoint padrão é `ws://10.0.2.2:18765`. No Motorola físico, edite o campo do app para `ws://IP_DO_COMPUTADOR:18765`.

@@ -6,7 +6,7 @@ import Observation
 final class MaestroViewModel {
     var interaction: InteractionResult
     var transcript = ""
-    var endpoint = "ws://127.0.0.1:8765"
+    var endpoint = "ws://127.0.0.1:18765"
 
     private let engine: InteractionEngine
     private let frameSource: FrameSource
@@ -95,4 +95,3 @@ final class MaestroViewModel {
         }
     }
 }
-

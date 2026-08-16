@@ -69,7 +69,7 @@ make demo
 
 `make demo` constrói e inicia o simulador em segundo plano, aguarda o bridge e envia um comando mock. A primeira inicialização pode levar cerca de um minuto. Para acompanhar a inicialização, use `make simulation-logs`; para encerrar, use `make simulation-down`.
 
-Como alternativa, execute `make simulation-up` e depois `make demo-client`. Não interrompa o simulador com `Ctrl+C` antes de executar o cliente. Em celular físico, configure no app `ws://IP_DO_COMPUTADOR:8765`.
+Como alternativa, execute `make simulation-up` e depois `make demo-client`. Não interrompa o simulador com `Ctrl+C` antes de executar o cliente. Em celular físico, configure no app `ws://IP_DO_COMPUTADOR:18765`. A porta `18765` evita o conflito observado entre a `8765` e serviços do simulador.
 
 O Compose executa Gazebo e sensores em uma tela virtual interna, portanto não exige liberar o monitor do computador para o contêiner. Em máquinas sem GPU, comandos recebidos enquanto o Nav2 termina de iniciar ficam na fila até ele estar realmente ativo.
 

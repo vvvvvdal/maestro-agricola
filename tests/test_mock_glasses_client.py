@@ -31,7 +31,7 @@ class MockGlassesClientTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ConnectionError, "make demo"):
             connect_to_bridge(
-                "ws://127.0.0.1:8765",
+                "ws://127.0.0.1:18765",
                 wait_seconds=0,
                 connector=unavailable_connector,
             )

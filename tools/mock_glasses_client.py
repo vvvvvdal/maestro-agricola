@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Simula a jornada dos óculos no terminal.")
-    parser.add_argument("--endpoint", default="ws://127.0.0.1:8765")
+    parser.add_argument("--endpoint", default="ws://127.0.0.1:18765")
     parser.add_argument("--target", default="plot-03")
     parser.add_argument("--command", default="pulverizar esta área")
     parser.add_argument("--confirmation", default="confirmar")
@@ -88,13 +88,18 @@ def main() -> None:
 
     args = parse_args()
     model = IntentModel(json.loads((ROOT / "shared/ai/intent_model.json").read_text()))
-    command = build_command(model, args.target, args.command, args.confirmation)
     try:
         with connect_to_bridge(args.endpoint, args.wait_seconds) as socket:
+            # Build the expiring payload only after the potentially long startup wait.
+            command = build_command(model, args.target, args.command, args.confirmation)
             socket.send(json.dumps(command, ensure_ascii=False))
             response = json.loads(socket.recv(timeout=6))
     except (ConnectionError, TimeoutError) as error:
         raise SystemExit(f"Erro: {error}") from None
+
+    if response.get("status") != "ACCEPTED":
+        reason = response.get("reason", "motivo não informado")
+        raise SystemExit(f"Erro: bridge recusou o comando: {reason}")
     print(json.dumps(response, ensure_ascii=False, indent=2))
 
 

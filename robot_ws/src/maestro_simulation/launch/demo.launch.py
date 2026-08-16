@@ -106,7 +106,7 @@ def generate_launch_description() -> LaunchDescription:
             "gz_args",
             default_value=[world, ".sdf -s -r --headless-rendering -v 4"],
         ),
-        DeclareLaunchArgument("websocket_port", default_value="8765"),
+        DeclareLaunchArgument("websocket_port", default_value="18765"),
         gazebo,
         spawn_marker,
         slam,

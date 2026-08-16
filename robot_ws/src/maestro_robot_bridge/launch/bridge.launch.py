@@ -7,7 +7,7 @@ from launch_ros.actions import Node
 def generate_launch_description() -> LaunchDescription:
     return LaunchDescription([
         DeclareLaunchArgument("host", default_value="0.0.0.0"),
-        DeclareLaunchArgument("port", default_value="8765"),
+        DeclareLaunchArgument("port", default_value="18765"),
         DeclareLaunchArgument("robot_namespace", default_value="/turtlebot1"),
         DeclareLaunchArgument("map_frame", default_value="map"),
         Node(

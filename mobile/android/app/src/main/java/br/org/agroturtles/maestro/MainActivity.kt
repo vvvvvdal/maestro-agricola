@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var result by remember { mutableStateOf(engine.reset()) }
             var transcript by remember { mutableStateOf("") }
-            var endpoint by remember { mutableStateOf("ws://10.0.2.2:8765") }
+            var endpoint by remember { mutableStateOf("ws://10.0.2.2:18765") }
 
             fun apply(next: InteractionResult) {
                 result = next

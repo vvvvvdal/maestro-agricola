@@ -21,7 +21,7 @@ class MaestroBridgeNode(Node):
         super().__init__("maestro_robot_bridge")
         share = get_package_share_directory("maestro_robot_bridge")
         self.declare_parameter("host", "0.0.0.0")
-        self.declare_parameter("port", 8765)
+        self.declare_parameter("port", 18765)
         self.declare_parameter("robot_namespace", "/turtlebot1")
         self.declare_parameter("map_frame", "map")
         self.declare_parameter("targets_path", f"{share}/config/targets.json")
