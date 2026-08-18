@@ -12,6 +12,7 @@
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`testing-ux.md`](testing-ux.md): caminho de teste local sem ambiguidade e desligamento limpo do bridge.
 - [`visual-smoke.md`](visual-smoke.md): inspeção das telas mobile e visualização do Gazebo/RViz2.
+- [`plots-dock.md`](plots-dock.md): correção das placas, três plots próximos e ciclo automático dock → missão → dock.
 
 ## Convenção
 
