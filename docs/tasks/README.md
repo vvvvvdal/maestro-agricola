@@ -10,6 +10,7 @@
 - [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin/Swift e handoff dos benchmarks nos celulares.
 - [`ios-mock-smoke.md`](ios-mock-smoke.md): preflight e handoff verificável do app Swift no iPhone 13.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
+- [`testing-ux.md`](testing-ux.md): caminho de teste local sem ambiguidade e desligamento limpo do bridge.
 
 ## Convenção
 
