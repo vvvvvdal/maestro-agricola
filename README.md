@@ -140,13 +140,13 @@ O teste passou quando termina com uma resposta semelhante a:
 
 `ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2, deslocamento real depois do aceite e o ciclo `undock → meta → dock`. A prova completa termina com `DEMO APROVADA`.
 
-Para testar todos os pontos em uma única rota limpa e headless:
+Para testar todos os pontos em uma única rota limpa, headless e acelerada pela NVIDIA:
 
 ```bash
 make demo-route
 ```
 
-Esse comando encerra uma instância visual anterior, visita `plot-01`, `plot-02` e `plot-03` nessa ordem e só aprova quando o retorno à doca for confirmado.
+Esse comando exige o mesmo driver/runtime NVIDIA do modo visual, encerra uma instância anterior, visita `plot-01`, `plot-02` e `plot-03` nessa ordem e só aprova quando o retorno à doca for confirmado. `make demo` permanece como teste portátil por software de um único plot.
 
 > A execução padrão é **headless**: nenhuma janela do Gazebo será aberta. O resultado aparece no terminal e nos logs. Isso é esperado.
 

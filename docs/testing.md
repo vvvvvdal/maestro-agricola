@@ -30,7 +30,7 @@ Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as 
 | Portátil | `make test` | modelo, cliente e núcleo seguro do bridge | Não |
 | Configuração | `make test-quick` | testes portáteis + Compose válido | CLI apenas |
 | Integração | `make demo` | undock → mock/IA local → WebSocket → Nav2 → dock | Sim |
-| Rota completa | `make demo-route` | visita os três plots em ordem e retorna à doca | Sim |
+| Rota completa | `make demo-route` | visita os três plots em ordem e retorna à doca | Sim + NVIDIA |
 | Visual NVIDIA | `make gazebo` + `make demo-visual` | mesma integração com a janela 3D na GPU | Sim + NVIDIA/X11 |
 | Mobile mock | Gradle/Xcode | comportamento nativo no aparelho | Não para o build |
 
@@ -71,7 +71,7 @@ Para reconstruir um contêiner headless limpo, visitar os três pontos e voltar 
 make demo-route
 ```
 
-O comando fecha uma instância visual anterior para evitar disputa pela porta e pelos recursos. Ele enfileira `plot-01`, `plot-02` e `plot-03`, exige a conclusão nessa ordem e termina com `ROTA APROVADA` somente após `Dock completed`. Use o modo headless para essa prova; a GUI pode reduzir bastante o fator de tempo real do Gazebo.
+O comando fecha uma instância anterior para evitar disputa pela porta e pelos recursos. Ele usa a NVIDIA sem abrir a GUI, enfileira `plot-01`, `plot-02` e `plot-03`, exige a conclusão nessa ordem e termina com `ROTA APROVADA` somente após `Dock completed`. O teste portátil por software continua disponível em `make demo` para um único plot.
 
 Não espere uma janela: o Gazebo usa tela virtual e renderização por software. Consulte o processo com:
 

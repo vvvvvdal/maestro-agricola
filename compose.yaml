@@ -62,5 +62,28 @@ services:
       - websocket_port:=${MAESTRO_WS_PORT:-18765}
       - headless:=false
 
+  simulation-gpu:
+    <<: *simulation-base
+    profiles: [gpu]
+    gpus: all
+    environment:
+      <<: *simulation-environment
+      MAESTRO_HEADLESS: "1"
+      LIBGL_ALWAYS_SOFTWARE: "0"
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    volumes:
+      - gazebo-fuel-cache:/root/.ignition/fuel
+    command:
+      - ros2
+      - launch
+      - maestro_simulation
+      - demo.launch.py
+      - namespace:=turtlebot1
+      - world:=warehouse
+      - model:=${TURTLEBOT4_MODEL:-standard}
+      - websocket_port:=${MAESTRO_WS_PORT:-18765}
+      - headless:=true
+
 volumes:
   gazebo-fuel-cache:

@@ -202,6 +202,7 @@ def wait_for_motion(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Verifica Gazebo, Nav2, meta e odometria.")
     parser.add_argument("--nav-timeout", type=float, default=150)
+    parser.add_argument("--goal-timeout", type=float, default=120)
     parser.add_argument("--motion-timeout", type=float, default=60)
     parser.add_argument("--cycle-timeout", type=float, default=0)
     parser.add_argument(
@@ -220,7 +221,7 @@ def main() -> None:
         require_no_fatal_render_error()
         print("[OK] Gazebo e bridge ativos")
         wait_for_nav2(args.nav_timeout)
-        wait_for_goal(30)
+        wait_for_goal(args.goal_timeout)
         initial_position = read_odom()
         if initial_position is None:
             raise RuntimeError("não foi possível obter a odometria inicial")

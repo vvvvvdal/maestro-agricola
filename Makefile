@@ -11,7 +11,7 @@ help:
 		'  make test-quick  executa testes e valida a configuração Compose' \
 		'  make vision-smoke  verifica o QR plot-03 em imagem estática' \
 		'  make demo        TESTE PRINCIPAL: verifica protocolo, Nav2 e movimento' \
-		'  make demo-route  testa plot-01 → plot-02 → plot-03 e retorno à doca' \
+		'  make demo-route  testa três plots + dock em modo headless NVIDIA' \
 		'  make gazebo      abre uma simulação limpa no Gazebo usando a NVIDIA' \
 		'  make demo-visual envia e verifica o comando com o Gazebo já aberto' \
 		'  make rviz        abre mapa, robô, LiDAR e trajetórias no mesmo contêiner' \
@@ -57,7 +57,7 @@ simulation-up:
 	docker compose up --build -d simulation
 
 simulation-down:
-	docker compose --profile visual down
+	docker compose --profile visual --profile gpu down
 	@command -v xhost >/dev/null && xhost -SI:localuser:root >/dev/null 2>&1 || true
 	@printf '%s\n' 'SIMULAÇÃO ENCERRADA: o contêiner foi removido.'
 
@@ -73,11 +73,14 @@ demo: doctor simulation-up
 		'Para encerrar, execute: make simulation-down'
 
 demo-route: doctor
-	docker compose --profile visual down
-	docker compose up --build -d simulation
+	@command -v nvidia-smi >/dev/null || { echo 'Erro: driver NVIDIA não encontrado no host.'; exit 1; }
+	@docker info --format '{{json .Runtimes}}' | grep -q 'nvidia' || { echo 'Erro: runtime NVIDIA não configurado no Docker.'; exit 1; }
+	docker compose --profile visual --profile gpu down
+	docker compose --profile gpu up --build -d simulation-gpu
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 120 \
 		--target plot-01 --target plot-02 --target plot-03
-	$(PYTHON) -u tools/check_simulation.py --motion-timeout 90 --cycle-timeout 600 \
+	MAESTRO_SIMULATION_SERVICE=simulation-gpu $(PYTHON) -u tools/check_simulation.py \
+		--goal-timeout 180 --motion-timeout 120 --cycle-timeout 600 \
 		--expected-target plot-01 --expected-target plot-02 --expected-target plot-03
 	@printf '\n%s\n%s\n%s\n' \
 		'============================================================' \
@@ -94,7 +97,7 @@ gazebo-up:
 	@command -v xhost >/dev/null || { echo 'Erro: xhost não está instalado no host.'; exit 1; }
 	@test -n "$$DISPLAY" || { echo 'Erro: nenhuma sessão gráfica X11 foi encontrada.'; exit 1; }
 	@docker info --format '{{json .Runtimes}}' | grep -q 'nvidia' || { echo 'Erro: runtime NVIDIA não configurado no Docker.'; exit 1; }
-	@docker compose --profile visual down --remove-orphans
+	@docker compose --profile visual --profile gpu down --remove-orphans
 	@xhost +SI:localuser:root >/dev/null
 	@docker compose --profile visual up --build -d simulation-gui
 	@printf '%s\n' \
