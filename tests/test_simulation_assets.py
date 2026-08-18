@@ -47,8 +47,12 @@ class SimulationAssetsTest(unittest.TestCase):
         self.model = ET.parse(MODEL_PATH).getroot().find("model")
         self.targets = json.loads(TARGETS_PATH.read_text(encoding="utf-8"))["targets"]
 
-    def test_three_nearby_plots_have_matching_textures_and_targets(self):
-        expected = {"plot-01": -1.0, "plot-02": 0.0, "plot-03": 1.0}
+    def test_distributed_plots_have_matching_textures_and_safe_targets(self):
+        expected = {
+            "plot-01": ((0.5, -1.8, math.pi / 2), (0.5, -2.3, math.pi / 2)),
+            "plot-02": ((0.5, 1.8, -math.pi / 2), (0.5, 2.3, -math.pi / 2)),
+            "plot-03": ((2.0, 1.0, 0.0), (1.5, 1.0, 0.0)),
+        }
         self.assertEqual(set(expected), set(self.targets))
         links = {link.attrib["name"]: link for link in self.model.findall("link")}
         expected_links = {
@@ -56,26 +60,31 @@ class SimulationAssetsTest(unittest.TestCase):
         }
         self.assertEqual(expected_links, set(links))
 
-        for plot_id, marker_y in expected.items():
+        for plot_id, (marker, target) in expected.items():
             with self.subTest(plot_id=plot_id):
                 link = links[plot_id.replace("-", "_") + "_marker"]
-                self.assertEqual(
-                    [0.0, marker_y, 0.6, 0.0, 0.0, 0.0],
-                    numbers(link.find("pose")),
-                )
+                pose = numbers(link.find("pose"))
+                self.assertEqual([marker[0], marker[1], 0.6, 0.0, 0.0], pose[:5])
+                self.assertAlmostEqual(marker[2], pose[5], places=5)
                 texture = link.find(
                     "visual[@name='qr_visual']/material/pbr/metal/albedo_map"
                 )
                 self.assertTrue(texture.text.endswith(f"/{plot_id}.png"))
                 self.assertTrue((TEXTURE_DIR / f"{plot_id}.png").is_file())
-                self.assertEqual(1.5, self.targets[plot_id]["x"])
-                self.assertEqual(marker_y, self.targets[plot_id]["y"])
-
-        ordered_y = [self.targets[plot_id]["y"] for plot_id in sorted(expected)]
-        self.assertEqual(
-            [1.0, 1.0],
-            [b - a for a, b in zip(ordered_y, ordered_y[1:])],
-        )
+                actual_target = self.targets[plot_id]
+                self.assertEqual(target[0], actual_target["x"])
+                self.assertEqual(target[1], actual_target["y"])
+                self.assertAlmostEqual(target[2], actual_target["yaw"], places=5)
+                distance = math.hypot(
+                    marker[0] - actual_target["x"],
+                    marker[1] - actual_target["y"],
+                )
+                self.assertAlmostEqual(0.5, distance, places=5)
+                heading_to_marker = math.atan2(
+                    marker[1] - actual_target["y"],
+                    marker[0] - actual_target["x"],
+                )
+                self.assertAlmostEqual(heading_to_marker, actual_target["yaw"], places=5)
 
     def test_qr_plane_is_vertical_and_outside_front_face(self):
         for link in self.model.findall("link"):

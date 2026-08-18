@@ -68,7 +68,7 @@ def generate_launch_description() -> LaunchDescription:
             "-world", world,
             "-name", "plot_markers",
             "-file", str(marker_model),
-            "-x", "2.0",
+            "-x", "0.0",
             "-y", "0.0",
             "-z", "0.0",
         ],
