@@ -1,0 +1,53 @@
+flowchart LR
+    subgraph G["AI Glasses"]
+        CAM["Câmera"]
+        AUD["Microfone + open-ear audio\nrota do sistema a validar\ntelefone = fallback"]
+    end
+
+    subgraph M["Companion nativo — Android/Kotlin ou iOS/Swift"]
+        DAT["Meta Wearables DAT\nsessão + câmera"]
+        FRAME["Captura sob demanda\n1 frame por ação"]
+        QR["Detector QR local\nplot-03"]
+        VOICE["STT + TTS nativos\npt-BR"]
+        AI["IA local\nSPRAY / CONFIRM / CANCEL / UNKNOWN"]
+        FSM["Política de segurança\nalvo + intenção + confirmação"]
+        PRIV["Telemetria sem mídia bruta\nframe e áudio efêmeros"]
+    end
+
+    subgraph N["Rede local"]
+        WS["WebSocket + JSON v1\nUUID + expiração"]
+    end
+
+    subgraph R["Robô / simulação"]
+        BRIDGE["Bridge ROS 2\nvalidação + deduplicação"]
+        NAV["Nav2\nmeta mapeada"]
+        TB4["TurtleBot 4\nGazebo"]
+    end
+
+    CAM -. "mídia efêmera" .-> DAT
+    DAT --> FRAME --> QR --> FSM
+    AUD -. "áudio efêmero" .-> VOICE
+    VOICE --> AI --> FSM
+    FSM -->|"pergunta / resultado"| VOICE
+    VOICE -. "áudio" .-> AUD
+    FSM -->|"somente após confirmar"| WS --> BRIDGE --> NAV --> TB4
+    FRAME -. "descarta" .-> PRIV
+    VOICE -. "não persiste" .-> PRIV
+    BRIDGE -->|"ACCEPTED / erro"| WS
+
+    classDef hardware fill:#E9F5EC,stroke:#237A3B,color:#102418;
+    classDef local fill:#F5F7F5,stroke:#43634D,color:#102418;
+    classDef safety fill:#FFF2CC,stroke:#9A6A00,color:#241A00;
+    classDef network fill:#EAF1FF,stroke:#315FA8,color:#10203B;
+    classDef robot fill:#F2ECFF,stroke:#6644A6,color:#21163A;
+    classDef privacy fill:#FCECEC,stroke:#A33C3C,color:#321414;
+
+    class CAM,AUD hardware;
+    class DAT,FRAME,QR,VOICE,AI local;
+    class FSM safety;
+    class WS network;
+    class BRIDGE,NAV,TB4 robot;
+    class PRIV privacy;
+
+    %% O DAT integra a câmera. O sistema mobile fornece STT/TTS e tenta usar a
+    %% rota Bluetooth disponível; o telefone permanece como fallback.

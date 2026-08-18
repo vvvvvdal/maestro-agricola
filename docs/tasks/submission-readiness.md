@@ -93,3 +93,12 @@ Não fazer push nesta rodada.
 - `make test-quick`: 10 testes passaram e o Compose foi validado.
 
 Evidência de sucesso final: `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados`.
+
+### 18 de agosto - SUB-01 redigida
+
+- As três palestras do CEIA foram resumidas em `docs/references/ceia-materials.md`, separando orientação de processo de afirmações que exigem fonte oficial atualizada.
+- As respostas-base das Seções A–D estão em `docs/submission/final-form.md`, com revisão humana atribuída e pendências físicas explícitas.
+- O áudio foi corrigido em todos os textos novos: câmera via DAT; STT/TTS pelo sistema mobile; rota Bluetooth dos óculos a validar; telefone como fallback.
+- As metas de feedback abaixo de 1 segundo e resposta em até 3 segundos foram registradas como orçamento a medir, não como desempenho já comprovado.
+- A mudança de pose/IMU para QR previamente mapeado foi explicada como redução consciente de escopo, preservando a jornada.
+- A arquitetura Mermaid separa mídia efêmera, processamento local, comando confirmado e execução no ROS 2/Nav2/Gazebo.

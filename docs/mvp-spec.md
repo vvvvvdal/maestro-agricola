@@ -8,7 +8,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 1. O operador centraliza o QR do talhão `plot-03`, previamente mapeado.
 2. O sistema captura um frame sob demanda.
-3. O operador diz: “pulverizar esta área”.
+3. O operador diz: “pulverizar esta área” pela entrada de áudio disponível no sistema mobile.
 4. O app identifica `plot-03` e classifica a intenção como `SPRAY`.
 5. O sistema diz: “Pulverizar talhão três. Confirmar?”.
 6. O operador responde “confirmar”.
@@ -27,7 +27,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 ## Contrato mínimo de sucesso
 
 - Câmera do DAT ou Mock Device Kit entrega o frame.
-- Voz é capturada e transcrita no companion app.
+- Voz é capturada e transcrita pelas APIs nativas do companion app; nos óculos reais, a rota Bluetooth deve ser validada e o telefone permanece como fallback.
 - Classificador local retorna `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN` com confiança.
 - Intenção e alvo viram JSON válido.
 - WebSocket entrega o comando ao bridge.
@@ -49,7 +49,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 ## Plataformas do MVP
 
-- Android/Kotlin: `mockDebug` em API 26+; `datDebug` em API 31+ por exigência do DAT 0.9.0.
+- Android/Kotlin: `mockDebug` em API 26+; o flavor `datDebug` depende dos requisitos da versão do DAT fixada e deve ser confirmado contra o sample oficial antes do build físico.
 - iOS/Swift: iOS 17.2+; alvo principal de teste é o iPhone 13.
 - Os dois apps consomem o mesmo `intent_model.json` e o contrato JSON 1.0.
 - Basta um app executar a demo ao vivo, mas os dois builds nativos devem passar antes da entrega.

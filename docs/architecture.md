@@ -4,7 +4,7 @@
 
 ```text
 AI Glasses
-  câmera + microfone + alto-falantes
+  câmera via DAT + rota de áudio do sistema
           |
           v
 App companion Android/Kotlin ou iOS/Swift
@@ -22,8 +22,10 @@ Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
 ### AI Glasses
 
 - Entrada visual por stream ou captura do DAT.
-- Entrada e saída de voz pela rota Bluetooth disponível no sistema mobile.
+- Entrada e saída de voz pela rota Bluetooth disponível no sistema mobile, com microfone e alto-falante do telefone como fallback.
 - Sem display e sem lógica pesada embarcada.
+
+O DAT é usado para sessão e câmera. O reconhecimento de fala e o TTS pertencem às APIs nativas do Android/iOS; a rota de microfone e áudio dos óculos deve ser validada no hardware e não é tratada como uma API de áudio do DAT.
 
 ### Companion app
 
@@ -133,7 +135,8 @@ O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando
 | Mock Android e iOS | Implementado |
 | Modelo local Android e iOS | Implementado; build nativo pendente |
 | WebSocket Android e iOS | Implementado; teste em aparelho pendente |
-| DAT Android e iOS | Interface e dependência fixadas; ciclo real pendente |
+| DAT Android e iOS | Dependência e fronteira de integração presentes; adaptador real e ciclo no hardware pendentes |
+| Voz e TTS Android/iOS | Implementados com APIs nativas; builds físicos e rota Bluetooth pendentes |
 | ROS 2/Nav2 | Jornada headless validada no Gazebo; Nav2 aceitou a meta e o robô iniciou movimento |
 
 ## Principais riscos
@@ -142,6 +145,7 @@ O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando
 |---|---|
 | DAT em developer preview | Encapsular SDK e fixar versão validada |
 | Sem pose/IMU dos óculos | Alvo visual previamente mapeado |
+| DAT não fornece a interface de áudio do Maestro | STT/TTS nativos e fallback no telefone; validar rota Bluetooth no hardware |
 | Voz e câmera concorrendo por banda | Captura coordenada e qualidade reduzida |
 | Diferenças entre smartphones | Testar no aparelho do evento e manter perfis LOW/MEDIUM |
 | Latência de IA | Modelo local pequeno, feedback sonoro e timeout |

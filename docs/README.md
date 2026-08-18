@@ -13,6 +13,9 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.
 - [`tasks/hackathon-day.md`](tasks/hackathon-day.md): plano de integração com os óculos no evento.
 - [`references.md`](references.md): fontes oficiais e materiais de apoio.
+- [`references/ceia-materials.md`](references/ceia-materials.md): aprendizados aplicados das três palestras do programa.
+- [`submission/final-form.md`](submission/final-form.md): respostas A–D, pendências e checklist de envio.
+- [`submission/architecture.mmd`](submission/architecture.mmd): código-fonte do diagrama exigido na Seção B.
 - [`proposta/versao-resumida.md`](proposta/versao-resumida.md): versão curta revisada e canônica.
 - [`proposta/versao-tecnica.md`](proposta/versao-tecnica.md): versão técnica revisada e canônica.
 - [`pitch/roteiro-3-minutos.md`](pitch/roteiro-3-minutos.md): fala cronometrada.
