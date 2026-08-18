@@ -58,7 +58,7 @@ class SimulationAssetsTest(unittest.TestCase):
 
     def test_distributed_plots_have_matching_textures_and_safe_targets(self):
         expected = {
-            "plot-01": ((0.5, -1.8, math.pi / 2), (0.5, -2.3, math.pi / 2)),
+            "plot-01": ((2.2, -1.8, math.pi / 2), (2.2, -2.3, math.pi / 2)),
             "plot-02": ((0.5, 1.8, -math.pi / 2), (0.5, 2.3, -math.pi / 2)),
             "plot-03": ((2.0, 1.0, 0.0), (1.5, 1.0, 0.0)),
         }
