@@ -6,6 +6,7 @@
 - [`submission-readiness.md`](submission-readiness.md): testes, formulário final, diagrama e pitch para a entrega de 22 de agosto.
 - [`team-branch-acceleration.md`](team-branch-acceleration.md): ordem, critérios e limites para avançar as branches de mobile, visão e IA.
 - [`android-mock-smoke.md`](android-mock-smoke.md): preflight e handoff verificável do build Kotlin no Motorola.
+- [`vision-qr.md`](vision-qr.md): plano e evidências da detecção segura do QR em imagem estática.
 
 ## Convenção
 
