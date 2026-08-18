@@ -1,7 +1,7 @@
 PYTHON ?= python3
 .DEFAULT_GOAL := help
 
-.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-client
+.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-client gazebo-gui rviz
 
 help:
 	@printf '%s\n' \
@@ -11,6 +11,8 @@ help:
 		'  make test-quick  executa testes e valida a configuração Compose' \
 		'  make vision-smoke  verifica o QR plot-03 em imagem estática' \
 		'  make demo        TESTE PRINCIPAL: verifica protocolo, Nav2 e movimento' \
+		'  make gazebo-gui  abre o mundo 3D de uma simulação já ativa' \
+		'  make rviz        abre mapa, robô, LiDAR e trajetórias no RViz2' \
 		'  make status      mostra se o contêiner está ativo' \
 		'  make logs        diagnóstico: mostra apenas os logs recentes' \
 		'  make simulation-down  encerra e remove o contêiner'
@@ -66,3 +68,26 @@ demo: doctor simulation-up
 
 demo-client:
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 10
+
+gazebo-gui:
+	@command -v ign >/dev/null || { echo 'Erro: Gazebo Ignition não está instalado no host.'; exit 1; }
+	@test -n "$$DISPLAY" || { echo 'Erro: nenhuma sessão gráfica X11 foi encontrada.'; exit 1; }
+	@docker compose ps --status running --services | grep -qx simulation || { echo 'Erro: execute make demo antes de abrir o Gazebo.'; exit 1; }
+	env LIBGL_ALWAYS_SOFTWARE=1 QT_X11_NO_MITSHM=1 ign gazebo -g --force-version 6 --render-engine-gui ogre
+
+rviz:
+	@command -v xhost >/dev/null || { echo 'Erro: xhost não está instalado no host.'; exit 1; }
+	@test -n "$$DISPLAY" || { echo 'Erro: nenhuma sessão gráfica X11 foi encontrada.'; exit 1; }
+	@docker compose ps --status running --services | grep -qx simulation || { echo 'Erro: execute make demo antes de abrir o RViz2.'; exit 1; }
+	@set -e; \
+		xhost +SI:localuser:root >/dev/null; \
+		trap 'xhost -SI:localuser:root >/dev/null' EXIT INT TERM; \
+		docker compose run --rm --no-deps --no-TTY \
+			-e MAESTRO_HEADLESS=0 \
+			-e DISPLAY="$$DISPLAY" \
+			-e QT_X11_NO_MITSHM=1 \
+			-e LIBGL_ALWAYS_SOFTWARE=1 \
+			-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+			-v "$(CURDIR)/robot_ws/src/maestro_simulation/config/maestro.rviz:/tmp/maestro.rviz:ro" \
+			simulation rviz2 -d /tmp/maestro.rviz \
+			--ros-args -r /tf:=/turtlebot1/tf -r /tf_static:=/turtlebot1/tf_static
