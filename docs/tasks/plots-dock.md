@@ -9,8 +9,8 @@
 ## Decisões e ambiguidades resolvidas
 
 - O namespace canônico permanece `/turtlebot1`, igual ao usado no laboratório e no `pluginbot-turtlebot4` (PB).
-- Revisão visual solicitada em 18/08: `plot-03` permanece em `(2, 1)`. `plot-01` vai para `(0.5, -1.8)`, no lado direito da área central, e `plot-02` para `(0.5, 1.8)`, no lado esquerdo. Assim os marcadores ocupam os dois pontos indicados na captura, em vez de parecerem uma única fileira.
-- `plot-01` e `plot-02` são girados para olhar para o centro. As metas seguras ficam 0,5 m diante das placas: `(0.5, -2.3, +π/2)`, `(0.5, 2.3, -π/2)` e `(1.5, 1, 0)` para `plot-01`, `plot-02` e `plot-03`, respectivamente. A rota continua curta para a demonstração.
+- Revisão visual solicitada em 18/08: `plot-03` permanece em `(2, 1)`. `plot-01` vai para `(2.2, -1.8)`, no lado direito da área central, e `plot-02` para `(0.5, 1.8)`, no lado esquerdo. Assim os marcadores ocupam os dois pontos indicados na captura, em vez de parecerem uma única fileira.
+- `plot-01` e `plot-02` são girados para olhar para o centro. As metas seguras ficam 0,5 m diante das placas: `(2.2, -2.3, +π/2)`, `(0.5, 2.3, -π/2)` e `(1.5, 1, 0)` para `plot-01`, `plot-02` e `plot-03`, respectivamente. A rota continua curta para a demonstração.
 - Cada textura fica sobre a face frontal local da placa. A transformação mantém a imagem vertical e 1 mm para fora da superfície; as placas laterais giram o conjunto inteiro para olhar para o centro.
 - O bridge solicita `Undock` automaticamente ao iniciar. Comandos ficam na fila até a saída ser confirmada.
 - O bridge executa todas as metas já enfileiradas e solicita `Dock` quando a fila termina. Se a navegação falhar, ainda tenta voltar à doca.
@@ -24,6 +24,7 @@
 - O launch do Maestro passa a iniciar servidor e spawn diretamente, preservando os caminhos oficiais de recursos e o bridge de `/clock`. Todos os modos continuam usando TurtleBot 4 Standard por padrão; agora `TURTLEBOT4_MODEL=lite` também é respeitado se a equipe optar explicitamente pela variante Lite.
 - O primeiro servidor direto mostrou outra restrição do pacote: os sensores do TurtleBot 4 carregam `ignition-rendering-ogre` (OGRE 1), que não completa a inicialização no caminho EGL `--headless-rendering`. O modo automático deve usar somente `-s`: não cria GUI; o fallback portátil conserva o Xvfb interno como display compatível para LiDAR/câmera.
 - O Xvfb permite inicializar OGRE 1, porém renderiza os sensores por software e continua lento. O serviço `simulation-gpu` usa o X11 do host apenas como contexto gráfico para a NVIDIA, igual ao PB, enquanto `-s` garante que nenhuma janela do Gazebo seja criada. `make demo-route` concede o acesso local restrito e `make simulation-down` o revoga.
+- A primeira rota rápida chegou a `(2.15, -2.14)` e oscilou ao tentar alcançar a meta antiga de `plot-01`. A checagem no mapa oficial `warehouse.pgm` confirmou 56 pixels ocupados em um raio de 0,4 m ao redor de `(0.5, -2.3)`; `(2.2, -2.3)` não possui pixel ocupado nesse mesmo raio. A placa e a meta foram deslocadas juntas para a área livre à direita.
 - “Saia da doca” e “volte para a doca” por voz serão intenções futuras. Elas exigirão confirmação, estado do robô, idempotência e feedback por áudio; não entram no contrato `SPRAY` desta tarefa.
 
 ## Critérios de aceite
