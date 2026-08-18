@@ -1,36 +1,48 @@
-import subprocess
 import sys
-import unittest
 from pathlib import Path
-from unittest.mock import patch
+import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-import check_simulation  # noqa: E402
+from check_simulation import evaluate_mission_logs  # noqa: E402
 
 
-class SimulationCheckTest(unittest.TestCase):
-    def test_default_service_can_be_selected_from_environment(self):
-        self.assertEqual("simulation", check_simulation.DEFAULT_SERVICE)
+class MissionLogStatusTest(unittest.TestCase):
+    def test_requires_ordered_targets_and_dock(self):
+        logs = "\n".join([
+            "Undock completed: robot is clear of dock",
+            "Nav2 completed command a for target plot-01",
+            "Nav2 completed command b for target plot-02",
+            "Nav2 completed command c for target plot-03",
+            "Dock completed: robot is docked",
+        ])
+        status = evaluate_mission_logs(logs, ["plot-01", "plot-02", "plot-03"])
+        self.assertTrue(status.undocked)
+        self.assertEqual(("plot-01", "plot-02", "plot-03"), status.completed_targets)
+        self.assertTrue(status.docked)
+        self.assertIsNone(status.failure)
 
-    def test_odom_timeout_is_retryable(self):
-        timeout = subprocess.TimeoutExpired(["docker", "compose", "exec"], 12)
-        with patch.object(check_simulation, "container_shell", side_effect=timeout):
-            self.assertIsNone(check_simulation.read_odom())
+    def test_does_not_accept_dock_before_last_target(self):
+        logs = "\n".join([
+            "Undock completed: robot is clear of dock",
+            "Nav2 completed command a for target plot-01",
+            "Dock completed: robot is docked",
+            "Nav2 completed command b for target plot-02",
+        ])
+        status = evaluate_mission_logs(logs, ["plot-01", "plot-02"])
+        self.assertFalse(status.docked)
 
-    def test_odom_position_is_parsed(self):
-        output = """pose:
-  pose:
-    position:
-      x: 0.022
-      y: 0.001
-      z: 0.0
-"""
-        completed = subprocess.CompletedProcess([], 0, output, "")
-        with patch.object(check_simulation, "container_shell", return_value=completed):
-            self.assertEqual((0.022, 0.001), check_simulation.read_odom())
+    def test_reports_navigation_timeout_after_latest_undock(self):
+        logs = "\n".join([
+            "navigation timed out",
+            "Undock completed: robot is clear of dock",
+            "Nav2 accepted command a for target plot-01",
+            "navigation timed out",
+        ])
+        status = evaluate_mission_logs(logs, ["plot-01"])
+        self.assertEqual("navigation timed out", status.failure)
 
 
 if __name__ == "__main__":

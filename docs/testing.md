@@ -17,7 +17,7 @@ O resultado é aprovado quando a última parte da saída contém:
 
 ```text
 SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados
-DEMO APROVADA: WebSocket, Nav2 e movimento foram verificados.
+DEMO APROVADA: undock, WebSocket, Nav2, movimento e dock verificados.
 ```
 
 Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as duas linhas aparecem e o comando retorna ao terminal sem `make: ***`, o teste passou. Encerre depois com `make simulation-down`.
@@ -29,7 +29,8 @@ Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as 
 | Ambiente | `make doctor` | ferramentas, daemon, arquivos e porta | Sim, apenas diagnóstico |
 | Portátil | `make test` | modelo, cliente e núcleo seguro do bridge | Não |
 | Configuração | `make test-quick` | testes portáteis + Compose válido | CLI apenas |
-| Integração | `make demo` | mock → IA local → WebSocket → ROS 2/Nav2 | Sim |
+| Integração | `make demo` | undock → mock/IA local → WebSocket → Nav2 → dock | Sim |
+| Rota completa | `make demo-route` | visita os três plots em ordem e retorna à doca | Sim |
 | Visual NVIDIA | `make gazebo` + `make demo-visual` | mesma integração com a janela 3D na GPU | Sim + NVIDIA/X11 |
 | Mobile mock | Gradle/Xcode | comportamento nativo no aparelho | Não para o build |
 
@@ -54,13 +55,23 @@ O último JSON deve ter:
 - `status: "ACCEPTED"`;
 - `reason: "navigation goal queued"`.
 
-Depois do JSON, o verificador aguarda o Nav2, confirma que o processo do Gazebo continua vivo, encontra o aceite da meta e mede alteração da odometria. O sucesso completo termina com:
+Depois do JSON, o verificador aguarda o Nav2, confirma que o processo do Gazebo continua vivo, encontra o aceite da meta, mede alteração da odometria a partir daquele momento e espera a confirmação do dock. O sucesso completo termina com:
 
 ```text
 SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados
 ```
 
-Um JSON `ACCEPTED` sem essa linha prova o contrato e a fila, mas não é evidência suficiente de movimento.
+Um JSON `ACCEPTED` sem `DEMO APROVADA` prova apenas o contrato e a fila; não é evidência suficiente de navegação ou retorno seguro.
+
+### Rota com os três plots
+
+Para reconstruir um contêiner headless limpo, visitar os três pontos e voltar à doca:
+
+```bash
+make demo-route
+```
+
+O comando fecha uma instância visual anterior para evitar disputa pela porta e pelos recursos. Ele enfileira `plot-01`, `plot-02` e `plot-03`, exige a conclusão nessa ordem e termina com `ROTA APROVADA` somente após `Dock completed`. Use o modo headless para essa prova; a GUI pode reduzir bastante o fator de tempo real do Gazebo.
 
 Não espere uma janela: o Gazebo usa tela virtual e renderização por software. Consulte o processo com:
 
@@ -101,7 +112,7 @@ make rviz
 
 `make rviz` carrega `config/maestro.rviz` e usa o mesmo runtime NVIDIA e os mesmos pacotes de descrição do simulador.
 
-No Gazebo, procure o mundo `warehouse`, o TurtleBot 4 e a placa vertical `PLOT-03`. No RViz, confirme:
+No Gazebo, procure o mundo `warehouse`, o TurtleBot 4 e as placas verticais `PLOT-01`, `PLOT-02` e `PLOT-03`, agora separadas em três pontos. No RViz, confirme:
 
 - `SLAM Map` em `/turtlebot1/map`;
 - `TurtleBot 4` usando `/turtlebot1/robot_description`;
@@ -134,6 +145,13 @@ python3 tools/mock_glasses_client.py \
   --target plot-03 \
   --command "pulverizar esta área" \
   --confirmation "confirmar"
+```
+
+Para somente enfileirar os três IDs no contêiner já ativo, repita `--target`:
+
+```bash
+python3 tools/mock_glasses_client.py \
+  --target plot-01 --target plot-02 --target plot-03
 ```
 
 ## Reinício limpo

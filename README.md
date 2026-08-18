@@ -76,12 +76,12 @@ make test-quick
 make demo
 ```
 
-O segundo comando já inicia o contêiner, envia o comando simulado e verifica Gazebo, Nav2 e movimento. **Não abra `127.0.0.1:18765` no navegador**: essa é uma porta WebSocket, não uma página. Também não é necessário executar `make simulation-logs` quando a demo passa.
+O segundo comando já inicia o contêiner, tira o robô da doca, envia o comando simulado, verifica Gazebo/Nav2 e espera o retorno à doca. **Não abra `127.0.0.1:18765` no navegador**: essa é uma porta WebSocket, não uma página. Também não é necessário executar `make simulation-logs` quando a demo passa.
 
 A execução completa passou somente quando o final do terminal mostrar:
 
 ```text
-DEMO APROVADA: WebSocket, Nav2 e movimento foram verificados.
+DEMO APROVADA: undock, WebSocket, Nav2, movimento e dock verificados.
 ```
 
 Depois, encerre com `make simulation-down`.
@@ -109,7 +109,7 @@ Todos os itens obrigatórios devem aparecer como `[OK]`. É normal o bridge apar
 make test-quick
 ```
 
-Esse comando verifica o modelo sem regravá-lo, executa 26 testes portáteis, 4 testes do bridge e valida o Compose. Ele não inicia o Gazebo.
+Esse comando verifica o modelo sem regravá-lo, executa as suítes portáteis e do bridge e valida o Compose. Ele não inicia o Gazebo.
 
 Confira também a placa completa sem abrir o Gazebo:
 
@@ -117,7 +117,7 @@ Confira também a placa completa sem abrir o Gazebo:
 make vision-smoke
 ```
 
-A saída esperada contém `"status": "DETECTED"` e `"target_id": "plot-03"`.
+A saída esperada contém três resultados `"status": "DETECTED"`, um para cada ID de `plot-01` a `plot-03`.
 
 ### 3. Execute a jornada completa
 
@@ -138,7 +138,15 @@ O teste passou quando termina com uma resposta semelhante a:
 }
 ```
 
-`ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2 e odometria. A prova completa termina com `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados` e com o resumo `DEMO APROVADA`.
+`ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2, deslocamento real depois do aceite e o ciclo `undock → meta → dock`. A prova completa termina com `DEMO APROVADA`.
+
+Para testar todos os pontos em uma única rota limpa e headless:
+
+```bash
+make demo-route
+```
+
+Esse comando encerra uma instância visual anterior, visita `plot-01`, `plot-02` e `plot-03` nessa ordem e só aprova quando o retorno à doca for confirmado.
 
 > A execução padrão é **headless**: nenhuma janela do Gazebo será aberta. O resultado aparece no terminal e nos logs. Isso é esperado.
 
@@ -177,7 +185,7 @@ Primeiro abra uma simulação visual limpa:
 make gazebo
 ```
 
-Na primeira execução, aguarde o mundo terminar de baixar e carregar. O cache do Gazebo Fuel é preservado nas próximas aberturas. Quando o cenário aparecer, valide a jornada completa em outro terminal:
+Na primeira execução, aguarde o mundo terminar de baixar e carregar. O cache do Gazebo Fuel é preservado nas próximas aberturas. Quando o cenário aparecer, acompanhe uma jornada em outro terminal:
 
 ```bash
 make demo-visual
@@ -191,9 +199,9 @@ make rviz
 
 `make gazebo` encerra uma instância anterior do projeto antes de iniciar a visual; não execute `make demo` enquanto ela estiver aberta, porque o teste padrão troca para o serviço headless. `make rviz` permanece no terminal até a janela ser fechada. Ao terminar, execute `make simulation-down`; além de remover o contêiner, o comando revoga a permissão X11 concedida ao usuário `root` do contêiner.
 
-O Gazebo mostra o mundo 3D `warehouse`, o TurtleBot 4 e a placa `PLOT-03`. O RViz mostra o mapa produzido pelo SLAM, modelo do robô, LiDAR, costmap e planos global/local. Com as janelas abertas, `make demo-visual` envia e verifica o comando para acompanhar o movimento.
+O Gazebo mostra o mundo 3D `warehouse`, o TurtleBot 4 e três placas distribuídas: `PLOT-01` e `PLOT-02` em lados opostos da área central e `PLOT-03` no ponto original. O RViz mostra o mapa produzido pelo SLAM, modelo do robô, LiDAR, costmap e planos global/local. Com as janelas abertas, `make demo-visual` envia e verifica o comando para acompanhar o movimento.
 
-O cenário atual não é uma fazenda própria. `warehouse` vem do simulador oficial do TurtleBot 4; o Maestro acrescenta a placa. O mapa de ocupação é construído ao vivo pelo `slam_toolbox`, enquanto `plot-03 → (1.5, 1.0)` fica no catálogo versionado do bridge. Esses são três artefatos diferentes: mundo 3D, mapa SLAM e mapa lógico de alvos.
+O cenário atual não é uma fazenda própria. `warehouse` vem do simulador oficial do TurtleBot 4; o Maestro acrescenta as placas. O mapa de ocupação é construído ao vivo pelo `slam_toolbox`, enquanto as três poses seguras ficam no catálogo versionado do bridge. Esses são três artefatos diferentes: mundo 3D, mapa SLAM e mapa lógico de alvos.
 
 ## Estado visual dos apps
 

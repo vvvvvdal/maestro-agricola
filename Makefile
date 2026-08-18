@@ -1,7 +1,7 @@
 PYTHON ?= python3
 .DEFAULT_GOAL := help
 
-.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-client gazebo gazebo-up demo-visual rviz
+.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-route demo-client gazebo gazebo-up demo-visual rviz
 
 help:
 	@printf '%s\n' \
@@ -11,6 +11,7 @@ help:
 		'  make test-quick  executa testes e valida a configuração Compose' \
 		'  make vision-smoke  verifica o QR plot-03 em imagem estática' \
 		'  make demo        TESTE PRINCIPAL: verifica protocolo, Nav2 e movimento' \
+		'  make demo-route  testa plot-01 → plot-02 → plot-03 e retorno à doca' \
 		'  make gazebo      abre uma simulação limpa no Gazebo usando a NVIDIA' \
 		'  make demo-visual envia e verifica o comando com o Gazebo já aberto' \
 		'  make rviz        abre mapa, robô, LiDAR e trajetórias no mesmo contêiner' \
@@ -65,10 +66,22 @@ simulation-logs:
 
 demo: doctor simulation-up
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 120
-	$(PYTHON) -u tools/check_simulation.py
+	$(PYTHON) -u tools/check_simulation.py --cycle-timeout 360 --expected-target plot-03
 	@printf '\n%s\n%s\n%s\n' \
 		'============================================================' \
-		'DEMO APROVADA: WebSocket, Nav2 e movimento foram verificados.' \
+		'DEMO APROVADA: undock, WebSocket, Nav2, movimento e dock verificados.' \
+		'Para encerrar, execute: make simulation-down'
+
+demo-route: doctor
+	docker compose --profile visual down
+	docker compose up --build -d simulation
+	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 120 \
+		--target plot-01 --target plot-02 --target plot-03
+	$(PYTHON) -u tools/check_simulation.py --motion-timeout 90 --cycle-timeout 600 \
+		--expected-target plot-01 --expected-target plot-02 --expected-target plot-03
+	@printf '\n%s\n%s\n%s\n' \
+		'============================================================' \
+		'ROTA APROVADA: três plots visitados e retorno à doca confirmado.' \
 		'Para encerrar, execute: make simulation-down'
 
 demo-client:
