@@ -94,7 +94,12 @@ def read_odom() -> tuple[float, float] | None:
         "source /opt/maestro_ws/install/setup.bash && "
         "timeout 8 ros2 topic echo --once /turtlebot1/odom"
     )
-    result = container_shell(command, timeout=12)
+    try:
+        result = container_shell(command, timeout=12)
+    except subprocess.TimeoutExpired:
+        # A máquina pode estar ocupada renderizando Gazebo/RViz. Uma leitura
+        # perdida não prova que o robô parou; wait_for_motion tentará de novo.
+        return None
     if result.returncode:
         return None
     match_x = re.search(r"position:\s*\n\s*x:\s*([-+0-9.eE]+)", result.stdout)
