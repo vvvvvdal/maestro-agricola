@@ -112,3 +112,12 @@ Evidência de sucesso final: `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e moviment
 - O roteiro final tem aproximadamente 370 palavras e janela de ensaio de 2min40s a 2min55s.
 - Os seis slides foram inspecionados individualmente; o teste automático não encontrou overflow e a fidelidade ao template passou sem desvios.
 - Notas do apresentador incluem roteiro e blocos `[Sources]`; nenhum placeholder vazio permaneceu no PPTX.
+
+### 18 de agosto - auditoria final
+
+- `make doctor`: Python, Docker CLI, Compose, arquivos e daemon validados; bridge corretamente identificado como ainda não iniciado.
+- `make test-quick`: modelo em modo somente leitura, 10 testes aprovados e configuração do Compose válida.
+- O PPTX abriu como pacote íntegro, não apresentou overflow, preservou o template e não contém placeholder vazio.
+- O Mermaid foi renderizado como SVG válido e inspecionado visualmente sem texto cortado.
+- A branch local permaneceu `feat/submission-readiness`; nenhum push foi feito.
+- A demo completa não foi repetida nesta última checagem: a execução limpa com `ACCEPTED`, Nav2 e movimento já está registrada na seção TST-01.
