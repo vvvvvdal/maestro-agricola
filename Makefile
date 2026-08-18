@@ -10,9 +10,9 @@ help:
 		'  make test        executa testes portáteis, sem Docker/ROS no host' \
 		'  make test-quick  executa testes e valida a configuração Compose' \
 		'  make vision-smoke  verifica o QR plot-03 em imagem estática' \
-		'  make demo        inicia a simulação headless e envia um comando' \
+		'  make demo        TESTE PRINCIPAL: verifica protocolo, Nav2 e movimento' \
 		'  make status      mostra se o contêiner está ativo' \
-		'  make logs        mostra os logs recentes' \
+		'  make logs        diagnóstico: mostra apenas os logs recentes' \
 		'  make simulation-down  encerra e remove o contêiner'
 
 doctor:
@@ -51,6 +51,7 @@ simulation-up:
 
 simulation-down:
 	docker compose down
+	@printf '%s\n' 'SIMULAÇÃO ENCERRADA: o contêiner foi removido.'
 
 simulation-logs:
 	docker compose logs -f simulation
@@ -58,6 +59,10 @@ simulation-logs:
 demo: doctor simulation-up
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 120
 	$(PYTHON) -u tools/check_simulation.py
+	@printf '\n%s\n%s\n%s\n' \
+		'============================================================' \
+		'DEMO APROVADA: WebSocket, Nav2 e movimento foram verificados.' \
+		'Para encerrar, execute: make simulation-down'
 
 demo-client:
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 10

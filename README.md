@@ -67,6 +67,25 @@ O adaptador do DAT real está isolado e ainda precisa receber o ciclo oficial de
 
 ## Teste em 5 minutos
 
+### Resposta curta: como saber se funciona
+
+Na branch integrada, execute somente:
+
+```bash
+make test-quick
+make demo
+```
+
+O segundo comando já inicia o contêiner, envia o comando simulado e verifica Gazebo, Nav2 e movimento. **Não abra `127.0.0.1:18765` no navegador**: essa é uma porta WebSocket, não uma página. Também não é necessário executar `make simulation-logs` quando a demo passa.
+
+A execução completa passou somente quando o final do terminal mostrar:
+
+```text
+DEMO APROVADA: WebSocket, Nav2 e movimento foram verificados.
+```
+
+Depois, encerre com `make simulation-down`.
+
 ### Pré-requisitos
 
 - Linux com Python 3.10 ou superior;
@@ -119,7 +138,7 @@ O teste passou quando termina com uma resposta semelhante a:
 }
 ```
 
-`ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2 e odometria. A prova completa termina com `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados`.
+`ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2 e odometria. A prova completa termina com `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados` e com o resumo `DEMO APROVADA`.
 
 > A execução padrão é **headless**: nenhuma janela do Gazebo será aberta. O resultado aparece no terminal e nos logs. Isso é esperado.
 
@@ -130,13 +149,15 @@ make status
 make logs
 ```
 
-Para acompanhar continuamente, use `make simulation-logs`. Pressionar `Ctrl+C` nesse comando interrompe apenas a visualização dos logs; o contêiner continua rodando.
+Os logs não fazem parte do teste normal. Consulte-os somente se `make demo` terminar sem `DEMO APROVADA`. Para acompanhar continuamente, use `make simulation-logs`. Pressionar `Ctrl+C` nesse comando interrompe apenas a visualização dos logs; o contêiner continua rodando.
 
 ### 5. Encerre
 
 ```bash
 make simulation-down
 ```
+
+Durante o encerramento, ROS e Gazebo podem registrar `SIGINT`, `SIGTERM`, `process has died` ou código `-15`. Depois que você pediu `simulation-down`, essas mensagens descrevem a finalização dos processos e não invalidam uma demo anteriormente aprovada.
 
 O guia completo, incluindo reinício limpo, erros conhecidos e testes mobile, está em [`docs/testing.md`](docs/testing.md).
 

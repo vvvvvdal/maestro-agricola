@@ -2,6 +2,26 @@
 
 Este guia separa os testes por nível para que um erro possa ser localizado antes de iniciar o simulador pesado.
 
+## Caminho simples: passou ou não passou
+
+Para a validação local normal, execute na raiz:
+
+```bash
+make test-quick
+make demo
+```
+
+Não abra `127.0.0.1:18765` no navegador. A porta recebe conexões WebSocket dos apps e do cliente mock, não páginas HTTP. Não execute `make simulation-logs` a menos que `make demo` falhe.
+
+O resultado é aprovado quando a última parte da saída contém:
+
+```text
+SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados
+DEMO APROVADA: WebSocket, Nav2 e movimento foram verificados.
+```
+
+Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as duas linhas aparecem e o comando retorna ao terminal sem `make: ***`, o teste passou. Encerre depois com `make simulation-down`.
+
 ## Visão geral
 
 | Nível | Comando | O que prova | Precisa de Docker |
@@ -97,6 +117,8 @@ Confirme que o Docker está iniciado e que seu usuário tem permissão para aces
 
 O Maestro usa a porta `18765`. A porta `8765` foi abandonada porque entrou em conflito com serviços do simulador. Execute `make doctor`: se a `18765` estiver ocupada por outro protocolo, ele indicará o conflito antes da demo.
 
+Se o navegador mostrar `invalid Connection header: keep-alive`, feche a aba. Isso apenas indica que uma requisição HTTP comum foi enviada ao servidor WebSocket; use `make demo` ou `make demo-client` para conectar corretamente.
+
 ### Cliente aguardando por muito tempo
 
 Na primeira inicialização, ROS 2, Gazebo, SLAM e Nav2 sobem em etapas. Abra outro terminal e execute:
@@ -122,6 +144,8 @@ make simulation-down
 ```
 
 Use `make status` para confirmar que não há serviço ativo.
+
+Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da demo. Avalie a execução pela mensagem `DEMO APROVADA` emitida antes de encerrar.
 
 ## Android mock
 
