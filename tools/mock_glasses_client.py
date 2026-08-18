@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Callable
 from uuid import uuid4
 
-from websockets.exceptions import InvalidHandshake
+from websockets.exceptions import InvalidHandshake, WebSocketException
 from websockets.sync.client import ClientConnection, connect
 
 from intent_model import IntentModel
@@ -94,7 +94,7 @@ def main() -> None:
             command = build_command(model, args.target, args.command, args.confirmation)
             socket.send(json.dumps(command, ensure_ascii=False))
             response = json.loads(socket.recv(timeout=6))
-    except (ConnectionError, TimeoutError) as error:
+    except (ConnectionError, TimeoutError, ValueError, WebSocketException, json.JSONDecodeError) as error:
         raise SystemExit(f"Erro: {error}") from None
 
     if response.get("status") != "ACCEPTED":

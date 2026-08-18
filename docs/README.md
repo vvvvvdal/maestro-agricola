@@ -7,6 +7,7 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`product-brief.md`](product-brief.md): problema, proposta de valor, público e limites.
 - [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
 - [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
+- [`testing.md`](testing.md): teste guiado, saída esperada, diagnóstico e mobile.
 - [`team.md`](team.md): papéis, responsabilidades e acordos de integração.
 - [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
 - [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.

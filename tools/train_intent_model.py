@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import random
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -131,16 +133,48 @@ def evaluate(model: IntentModel, examples: list[tuple[str, str]]) -> dict:
     }
 
 
-def main() -> None:
+def build_artifacts() -> tuple[dict, dict]:
     examples = load_examples()
     train_examples, test_examples = split(examples)
     payload = train(train_examples)
-    MODEL.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     report = evaluate(IntentModel(payload), test_examples)
     report["train_examples"] = len(train_examples)
     report["test_examples"] = len(test_examples)
-    REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"model: {MODEL}")
+    return payload, report
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Treina ou verifica o classificador local.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="compara os artefatos versionados sem escrever no repositório",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    payload, report = build_artifacts()
+
+    if args.check:
+        current_model = json.loads(MODEL.read_text(encoding="utf-8"))
+        current_report = json.loads(REPORT.read_text(encoding="utf-8"))
+        stale = []
+        if current_model != payload:
+            stale.append(str(MODEL.relative_to(ROOT)))
+        if current_report != report:
+            stale.append(str(REPORT.relative_to(ROOT)))
+        if stale:
+            print("artefatos desatualizados: " + ", ".join(stale), file=sys.stderr)
+            print("execute `make model` e revise o diff", file=sys.stderr)
+            raise SystemExit(1)
+        print("model artifacts: up to date (read-only check)")
+    else:
+        MODEL.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"model: {MODEL}")
+
     print(f"raw accuracy: {report['accuracy']:.3f} ({report['correct']}/{report['examples']})")
     print(
         "operational accuracy: "

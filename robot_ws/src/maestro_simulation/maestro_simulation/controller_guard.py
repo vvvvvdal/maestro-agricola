@@ -20,7 +20,7 @@ class ControllerGuard(Node):
         manager = str(self.get_parameter("controller_manager").value).rstrip("/")
         name = str(self.get_parameter("controller_name").value)
         client = self.create_client(ListControllers, f"{manager}/list_controllers")
-        if not client.wait_for_service(timeout_sec=60.0):
+        if not client.wait_for_service(timeout_sec=180.0):
             self.get_logger().error(f"Controller manager unavailable: {manager}")
             return 1
 

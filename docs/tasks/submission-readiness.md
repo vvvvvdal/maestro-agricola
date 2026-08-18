@@ -78,3 +78,18 @@ Critérios:
 - `docs: revise three-minute pitch`
 
 Não fazer push nesta rodada.
+
+## Registro de execução
+
+### 18 de agosto - TST-01 concluída
+
+- `make test` deixou de treinar e sobrescrever o modelo; agora compara os artefatos em modo somente leitura.
+- `make doctor` validou Python, Docker, Compose, arquivos, daemon e bridge, com mensagens acionáveis.
+- A porta canônica permaneceu `18765`; o diagnóstico diferencia bridge ausente de porta ocupada por outro protocolo.
+- O entrypoint remove locks antigos e espera o Xvfb ficar pronto antes de iniciar o Gazebo.
+- O launch passou de temporizadores fixos para um gate: marcador, SLAM e Nav2 só iniciam após o controlador do TurtleBot ficar ativo.
+- `make demo` retornou `ACCEPTED`, ativou o Nav2 e mediu odometria em `x=0,017`, `y=0,001`.
+- A confirmação “cancelar” foi recusada localmente como `CANCEL` com 98,4% de confiança, sem traceback e sem comando de movimento.
+- `make test-quick`: 10 testes passaram e o Compose foi validado.
+
+Evidência de sucesso final: `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados`.
