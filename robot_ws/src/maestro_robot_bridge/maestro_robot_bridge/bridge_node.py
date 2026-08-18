@@ -48,7 +48,7 @@ class MaestroBridgeNode(Node):
         self._pending: Queue[tuple[PoseTarget, str]] = Queue(maxsize=16)
         self._mission = MissionCycle()
         self._mission_lock = Lock()
-        self._phase_started_at = monotonic()
+        self._phase_started_at = self._clock_seconds()
         self._active_navigation: tuple[PoseTarget, str] | None = None
         self._undock_goal_handle = None
         self._nav_goal_handle = None
@@ -432,7 +432,7 @@ class MaestroBridgeNode(Node):
 
     def _phase_elapsed(self) -> float:
         with self._mission_lock:
-            return monotonic() - self._phase_started_at
+            return self._clock_seconds() - self._phase_started_at
 
     def _transition(self, operation, *args, **kwargs):
         with self._mission_lock:
@@ -443,7 +443,10 @@ class MaestroBridgeNode(Node):
 
     def _record_phase_change(self, previous: MissionPhase) -> None:
         if self._mission.phase != previous:
-            self._phase_started_at = monotonic()
+            self._phase_started_at = self._clock_seconds()
+
+    def _clock_seconds(self) -> float:
+        return self.get_clock().now().nanoseconds / 1_000_000_000.0
 
 
 def main(args=None) -> None:

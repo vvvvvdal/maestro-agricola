@@ -112,6 +112,7 @@ def generate_launch_description() -> LaunchDescription:
                 "port": websocket_port,
                 "robot_namespace": robot_namespace,
                 "map_frame": "map",
+                "use_sim_time": True,
             }],
         )],
     )

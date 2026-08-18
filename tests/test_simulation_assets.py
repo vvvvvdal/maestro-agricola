@@ -24,6 +24,14 @@ TARGETS_PATH = (
     / "config"
     / "targets.json"
 )
+LAUNCH_PATH = (
+    ROOT
+    / "robot_ws"
+    / "src"
+    / "maestro_simulation"
+    / "launch"
+    / "demo.launch.py"
+)
 
 
 def numbers(element):
@@ -104,6 +112,10 @@ class SimulationAssetsTest(unittest.TestCase):
                     self.assertAlmostEqual(expected, actual, places=5)
                 for actual, expected in zip(normal, (-1.0, 0.0, 0.0)):
                     self.assertAlmostEqual(expected, actual, places=5)
+
+    def test_bridge_safety_limits_use_simulation_clock(self):
+        launch = LAUNCH_PATH.read_text(encoding="utf-8")
+        self.assertIn('"use_sim_time": True', launch)
 
 
 if __name__ == "__main__":
