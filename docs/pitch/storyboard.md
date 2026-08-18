@@ -31,7 +31,9 @@
 
 **Apresentador:** Felipe.
 
-**Texto:** Olhar → Falar → Confirmar; falha segura: “cancelar” = nenhum comando.
+**Texto:** Olhar → Falar → Confirmar.
+
+**Apoio:** Softmax local · 65 KB · 4 intenções · limiar 0,40. Voz ≠ câmera → nenhum comando.
 
 **Edição:** destacar um passo por vez, sincronizado com a fala.
 
@@ -39,7 +41,7 @@
 
 **Apresentador:** Rafael.
 
-**Texto:** câmera via DAT → app Kotlin/Swift + IA local → WebSocket → ROS 2/Nav2/Gazebo.
+**Texto:** câmera via DAT → app Kotlin/Swift + softmax local → WebSocket → ROS 2/Nav2/Gazebo.
 
 **Edição:** animar o fluxo da esquerda para a direita. A fala explica que voz/TTS usam o sistema mobile, a rota Bluetooth será validada e o telefone é fallback. Inserir 3 a 5 segundos da simulação recebendo o comando.
 
@@ -47,7 +49,7 @@
 
 **Apresentador:** Rafael.
 
-**Texto:** 5/5 checkpoints; 1 captura por ação; 0 mídia salva; `ACCEPTED` + Nav2 ativo + odometria mudou.
+**Texto:** QR detectado · IA 15/16 operacional · `ACCEPTED` + Nav2 ativo + odometria mudou.
 
 **Edição:** mostrar cada compromisso no momento em que for citado. Sobrepor primeiro o comando aceito e o movimento; depois mostrar “cancelar” sem comando. “0 mídia salva” significa comportamento do MVP, não auditoria externa.
 
@@ -63,7 +65,7 @@
 
 ## Capturas que a equipe deve gravar
 
-1. Centralização do marcador ou talhão no feed do Mock Device Kit.
+1. Centralização da placa `PLOT-03` no feed do Mock Device Kit.
 2. Transcrição e intenção reconhecida no app.
 3. Pergunta de confirmação pelo TTS do celular; registrar a rota usada na gravação.
 4. JSON aceito pelo bridge.

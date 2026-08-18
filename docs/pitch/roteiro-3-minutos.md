@@ -1,6 +1,6 @@
 # Roteiro final do pitch — 2min50s
 
-Duração-alvo: **2min40s a 2min55s**. O texto falado tem aproximadamente 370 palavras, deixando margem para pausas e a troca de apresentador. Não ultrapassar 3 minutos.
+Duração-alvo: **2min40s a 2min55s**. O texto falado tem 376 palavras, deixando margem para pausas e a troca de apresentador. Não ultrapassar 3 minutos.
 
 ## Slide 1 — Maestro Agrícola (0:00–0:20) — Felipe
 
@@ -10,27 +10,27 @@ Imagine um operador no meio da lavoura, com as mãos ocupadas, acompanhando um r
 
 No sol, na poeira e com luvas, um notebook ou tablet adiciona atrito justamente onde a interface deveria desaparecer. Nosso usuário inicial é o operador que acompanha uma máquina conectada e precisa indicar rapidamente uma área de trabalho. O problema não é a autonomia do robô. É a forma como o humano conversa com ela.
 
-## Slide 3 — Olhar, falar e confirmar (0:42–1:18) — Felipe
+## Slide 3 — Olhar, falar e confirmar (0:42–1:22) — Felipe
 
-A jornada tem três ações. Olhar: um QR identifica o talhão três, associado a uma posição segura no mapa. Falar: o reconhecimento nativo transcreve “pulverizar esta área”, e uma IA pequena, local e restrita classifica a intenção. Confirmar: o sistema pergunta “pulverizar talhão três?”. Só o sim libera o JSON. Se houver ambiguidade ou o usuário disser “cancelar”, nenhum comando chega ao robô.
+A jornada tem três ações. Olhar: uma placa legível e seu QR identificam o plot três, associado a uma pose segura. Falar: o reconhecimento nativo transcreve a voz; depois, um classificador softmax de 65 kilobytes, treinado com 96 frases, roda no celular e retorna pulverizar, confirmar, cancelar ou desconhecido. Se o operador disser “no plot três”, o ID falado também é validado. Confirmar: o Maestro repete o alvo. Abaixo de 40% de confiança, ou se voz e câmera discordarem, nada é enviado.
 
-## Slide 4 — Arquitetura (1:18–1:58) — Rafael
+## Slide 4 — Arquitetura (1:22–1:59) — Rafael
 
-Por dentro, a câmera entra pelo DAT. Voz e TTS usam recursos nativos do celular e tentam a rota Bluetooth, com o telefone como fallback. Kotlin e Swift consomem a mesma IA local e o mesmo contrato. Após a confirmação, um JSON com validade curta chega ao bridge, que valida e entrega uma meta ao Nav2 no Gazebo. Como o DAT público não documenta pose ou IMU, o MVP usa QR mapeado e isola a integração real no adaptador de câmera.
+Por dentro, a câmera entra pelo DAT. Voz e TTS usam recursos nativos do celular, com o telefone como fallback. Kotlin e Swift consomem a mesma IA, o mesmo catálogo de plots e o mesmo contrato. Após a confirmação, um JSON com validade curta chega ao bridge, que valida e entrega uma meta ao Nav2 no Gazebo. Como o DAT público não documenta pose ou IMU, o MVP usa um alvo mapeado; GPS do operador não vira destino do robô.
 
-## Slide 5 — Evidência e próximo teste (1:58–2:32) — Rafael
+## Slide 5 — Evidência e próximo teste (1:59–2:34) — Rafael
 
-Hoje já provamos o ciclo na simulação. O cliente enviou “pulverizar esta área”, recebeu ACCEPTED, o Nav2 ficou ativo e a odometria do TurtleBot mudou. “Cancelar” foi recusado localmente, sem movimento. O desenho cobre os cinco pilares: IA, câmera e voz, saída por áudio, privacidade e eficiência por captura sob demanda. O próximo passo é compilar nos dois aparelhos e validar DAT, latência, bateria e rota Bluetooth com os óculos reais.
+Hoje já provamos três sinais: a placa completa foi decodificada como plot três; a política local obteve 15 de 16 acertos operacionais; e o cliente recebeu ACCEPTED, ativou o Nav2 e mudou a odometria do TurtleBot. “Cancelar” foi recusado sem movimento. O desenho cobre IA, câmera e voz, áudio, privacidade e captura sob demanda. O próximo gate é compilar nos dois aparelhos e validar DAT, latência, bateria e rota Bluetooth com os óculos reais.
 
-## Slide 6 — Fechamento (2:32–2:50) — Rafael
+## Slide 6 — Fechamento (2:34–2:52) — Rafael
 
-A John Deere mostra o valor de acompanhar máquinas pelo celular; a Meta mostra os óculos como interface multimodal. O Maestro conecta esses mundos com protocolo aberto, confirmação obrigatória e ROS 2, sem se prender a um fabricante. O futuro do campo não precisa de mais uma tela. Precisa entender alvo, intenção e segurança. Maestro Agrícola: olhe, fale, confirme.
+O Maestro conecta interface multimodal e robótica com protocolo aberto, confirmação obrigatória e ROS 2, sem se prender a um fabricante. O futuro do campo não precisa de mais uma tela. Precisa entender alvo, intenção e segurança. Maestro Agrícola: olhe, fale, confirme.
 
 ## Direção do ensaio
 
 - Fazer uma única troca: Felipe encerra o slide 3; Rafael entra diretamente em “Por dentro...”.
 - Falar como conversa, não como leitura. Pausar após “É a forma como o humano conversa com ela”.
-- No slide 5, a tela deve mostrar brevemente `ACCEPTED`, o TurtleBot em movimento e a recusa de `cancelar`.
+- No slide 5, mostrar brevemente a placa detectada, `ACCEPTED`, o TurtleBot em movimento e a recusa de `cancelar`.
 - Cronometrar três vezes. Se passar de 2min55s, cortar exemplos da fala; não acelerar o fechamento.
 - Não dizer que DAT, iPhone, Motorola ou áudio Bluetooth já foram validados fisicamente.
 
