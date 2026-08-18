@@ -2,6 +2,7 @@
 
 - [`mvp-week.md`](mvp-week.md): execução do MVP antes do envio da proposta e do pitch.
 - [`hackathon-day.md`](hackathon-day.md): integração final com os óculos no evento presencial.
+- [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin/Swift e handoff dos benchmarks nos celulares.
 
 ## Convenção
 
