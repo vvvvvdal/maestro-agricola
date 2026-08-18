@@ -3,6 +3,8 @@
 - [`mvp-week.md`](mvp-week.md): execução do MVP antes do envio da proposta e do pitch.
 - [`hackathon-day.md`](hackathon-day.md): integração final com os óculos no evento presencial.
 - [`e2e-demo.md`](e2e-demo.md): integração do alvo visual ou falado até ROS 2/Nav2/Gazebo.
+- [`submission-readiness.md`](submission-readiness.md): testes, formulário final, diagrama e pitch para a entrega de 22 de agosto.
+- [`team-branch-acceleration.md`](team-branch-acceleration.md): ordem, critérios e limites para avançar as branches de mobile, visão e IA.
 
 ## Convenção
 

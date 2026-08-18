@@ -25,6 +25,11 @@ Princípios adotados: especificação clara, tarefas pequenas, revisão humana, 
 - Unidade XIII — DAT, arquitetura, câmera, áudio e Mock Device Kit.
 - Unidade XIV — encerramento e próximos passos.
 - Versão resumida e versão técnica do Maestro Agrícola, equipe AgroTurtles.
+- Palestra — Agentes de IA para AI Glasses.
+- Meta AI Glasses — agente mínimo viável, latência, bateria e privacidade.
+- Meta AI Glasses 2 — entrega final, arquitetura, cinco pilares e pitch.
+
+O resumo dos princípios efetivamente aplicados ao projeto está em [`references/ceia-materials.md`](references/ceia-materials.md).
 
 ## Observações de versão
 

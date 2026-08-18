@@ -7,11 +7,15 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`product-brief.md`](product-brief.md): problema, proposta de valor, público e limites.
 - [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
 - [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
+- [`testing.md`](testing.md): teste guiado, saída esperada, diagnóstico e mobile.
 - [`team.md`](team.md): papéis, responsabilidades e acordos de integração.
 - [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
 - [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.
 - [`tasks/hackathon-day.md`](tasks/hackathon-day.md): plano de integração com os óculos no evento.
 - [`references.md`](references.md): fontes oficiais e materiais de apoio.
+- [`references/ceia-materials.md`](references/ceia-materials.md): aprendizados aplicados das três palestras do programa.
+- [`submission/final-form.md`](submission/final-form.md): respostas A–D, pendências e checklist de envio.
+- [`submission/architecture.mmd`](submission/architecture.mmd): código-fonte do diagrama exigido na Seção B.
 - [`proposta/versao-resumida.md`](proposta/versao-resumida.md): versão curta revisada e canônica.
 - [`proposta/versao-tecnica.md`](proposta/versao-tecnica.md): versão técnica revisada e canônica.
 - [`pitch/roteiro-3-minutos.md`](pitch/roteiro-3-minutos.md): fala cronometrada.

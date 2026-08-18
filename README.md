@@ -60,14 +60,74 @@ O adaptador do DAT real está isolado e ainda precisa receber o ciclo oficial de
 └── docs/                # spec, arquitetura, tarefas, proposta e pitch
 ```
 
-## Começo rápido
+## Teste em 5 minutos
+
+### Pré-requisitos
+
+- Linux com Python 3.10 ou superior;
+- Docker Engine ativo e acessível pelo usuário;
+- Docker Compose v2 ou superior;
+- GNU Make.
+
+Não é necessário instalar ROS 2 ou Gazebo no computador: ambos ficam dentro do contêiner.
+
+### 1. Verifique o ambiente
 
 ```bash
-make test
+make doctor
+```
+
+Todos os itens obrigatórios devem aparecer como `[OK]`. É normal o bridge aparecer como `[INFO]` antes da primeira demo.
+
+### 2. Execute os testes rápidos
+
+```bash
+make test-quick
+```
+
+Esse comando verifica o modelo sem regravá-lo, executa os 10 testes portáteis e valida o Compose. Ele não inicia o Gazebo.
+
+### 3. Execute a jornada completa
+
+```bash
 make demo
 ```
 
-`make demo` constrói e inicia o simulador em segundo plano, aguarda o bridge e envia um comando mock. A primeira inicialização pode levar cerca de um minuto. Para acompanhar a inicialização, use `make simulation-logs`; para encerrar, use `make simulation-down`.
+Na primeira execução, o download e a construção da imagem podem levar vários minutos. Depois disso, o Gazebo costuma precisar de 1 a 2 minutos para inicializar em máquinas sem GPU. O cliente espera o bridge automaticamente.
+
+O teste passou quando termina com uma resposta semelhante a:
+
+```json
+{
+  "schema_version": "1.0",
+  "command_id": "...",
+  "status": "ACCEPTED",
+  "reason": "navigation goal queued"
+}
+```
+
+`ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2 e odometria. A prova completa termina com `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados`.
+
+> A execução padrão é **headless**: nenhuma janela do Gazebo será aberta. O resultado aparece no terminal e nos logs. Isso é esperado.
+
+### 4. Consulte estado e logs
+
+```bash
+make status
+make logs
+```
+
+Para acompanhar continuamente, use `make simulation-logs`. Pressionar `Ctrl+C` nesse comando interrompe apenas a visualização dos logs; o contêiner continua rodando.
+
+### 5. Encerre
+
+```bash
+make simulation-down
+```
+
+O guia completo, incluindo reinício limpo, erros conhecidos e testes mobile, está em [`docs/testing.md`](docs/testing.md).
+
+## Comandos separados
 
 Como alternativa, execute `make simulation-up` e depois `make demo-client`. Não interrompa o simulador com `Ctrl+C` antes de executar o cliente. Em celular físico, configure no app `ws://IP_DO_COMPUTADOR:18765`. A porta `18765` evita o conflito observado entre a `8765` e serviços do simulador.
 
