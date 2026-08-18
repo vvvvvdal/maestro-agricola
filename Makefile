@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: model test test-ai test-robot compose-config simulation-up simulation-down simulation-logs demo demo-client
+.PHONY: model test test-ai test-robot vision-smoke compose-config simulation-up simulation-down simulation-logs demo demo-client
 
 model:
 	$(PYTHON) tools/train_intent_model.py
@@ -12,6 +12,9 @@ test-ai:
 
 test-robot:
 	PYTHONPATH=robot_ws/src/maestro_robot_bridge $(PYTHON) -m unittest discover -s robot_ws/src/maestro_robot_bridge/test -p 'test_*.py'
+
+vision-smoke:
+	$(PYTHON) tools/qr_target_detector.py robot_ws/src/maestro_simulation/models/plot_marker/materials/textures/plot-03.png
 
 compose-config:
 	docker compose config --quiet

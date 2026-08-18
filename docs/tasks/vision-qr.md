@@ -28,3 +28,15 @@ Concluir a prova isolada VIS-02 antes de acoplar visão aos apps: transformar um
 - Integrar o detector ao Kotlin, Swift ou DAT.
 - Estimar pose ou coordenada a partir da câmera.
 - Instalar OpenCV automaticamente ou persistir frames de câmera.
+
+## Resultado em 18 de agosto de 2026
+
+- O comando `make vision-smoke` decodificou a textura versionada como `plot-03` e retornou `DETECTED`.
+- Oito testes passaram cobrindo imagem versionada, imagem vazia, QR desconhecido, dois QRs, alvo periférico, timestamp e regras puras de seleção.
+- `confidence = 1.0` significa somente "texto do QR decodificado e ID presente na allowlist"; não é uma probabilidade produzida pelo OpenCV.
+- OpenCV já estava disponível na máquina usada para a prova. Nenhuma dependência foi adicionada ao projeto.
+- O detector lê a imagem em memória e só emite metadados JSON; ele não salva nem copia o frame.
+
+## Handoff para VIS-03
+
+O próximo adaptador deve entregar ao detector um frame recebido do mock ou do DAT e preservar a mesma regra de seleção. VIS-03 permanece aberta até essa execução ocorrer dentro de ao menos um app nativo.

@@ -33,7 +33,7 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 - [ ] **MOB-02 - Rodar CameraAccess e Mock Device Kit** - Átila. Evidência: frame recebido e versão do DAT registrada.
 - [ ] **MOB-03 - Provar voz e TTS no Android** - Átila. Evidência: transcrição curta entra no app e resposta falada é reproduzida.
 - [x] **AI-02 - Treinar ou adaptar classificador local leve** - Rafael. Evidência: JSON de aproximadamente 65 KB, relatório e limiar 0,40.
-- [ ] **VIS-02 - Detectar o QR em imagem estática** - Felipe. Evidência: `plot-03` correto e `UNKNOWN` para imagem sem alvo.
+- [x] **VIS-02 - Detectar o QR em imagem estática** - Felipe. Evidência: textura `plot-03` detectada; imagem vazia e QR fora do mapa retornam `UNKNOWN`; dois QRs retornam `AMBIGUOUS` em oito testes automatizados.
 - [x] **ROS-02 - Mover o TurtleBot 4 simulado** - Felipe. Evidência: `plot-03` virou pose, Nav2 aceitou a meta e a odometria saiu de zero no Gazebo.
 
 ## Dia 3 - adaptadores e primeiro gate
