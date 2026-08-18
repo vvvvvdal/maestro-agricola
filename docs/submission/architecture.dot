@@ -1,0 +1,48 @@
+digraph MaestroAgricola {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.55", fontname="DejaVu Sans", labelloc="t", label="Maestro Agrícola — arquitetura do MVP", fontsize=24, fontcolor="#173F2A"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11, margin="0.16,0.10", color="#5D6A63", fontcolor="#17211B"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#536159", fontcolor="#465149", arrowsize=0.75];
+
+  subgraph cluster_glasses {
+    label="AI Glasses"; color="#6F7FA6"; fontcolor="#263354"; style="rounded";
+    CAM [label="Câmera", fillcolor="#E8ECF7"];
+    AUD [label="Microfone + áudio", fillcolor="#E8ECF7"];
+  }
+
+  subgraph cluster_mobile {
+    label="Companion nativo — Kotlin ou Swift"; color="#4F8A68"; fontcolor="#174A2B"; style="rounded";
+    DAT [label="Meta Wearables DAT\nsessão + câmera", fillcolor="#E7F2EA"];
+    FRAME [label="Captura sob demanda\n1 frame por ação", fillcolor="#E7F2EA"];
+    QR [label="Placa PLOT-03\n+ detector QR local", fillcolor="#E7F2EA"];
+    VOICE [label="STT + TTS nativos\npt-BR", fillcolor="#E7F2EA"];
+    AI [label="Softmax local · 65 KB\n4 intenções · limiar 0,40", fillcolor="#E7F2EA"];
+    TARGET [label="Resolvedor de alvo\nvisual + ID falado", fillcolor="#E7F2EA"];
+    FSM [label="Política de segurança\nalvo + intenção + confirmação", fillcolor="#FFF0D5", color="#B77816"];
+    PRIV [label="Telemetria sem mídia bruta\nframe e áudio efêmeros", fillcolor="#FCECEC", color="#A33C3C"];
+  }
+
+  subgraph cluster_network {
+    label="Rede local"; color="#96752A"; fontcolor="#644B13"; style="rounded";
+    WS [label="JSON/WebSocket\nID único + expiração", fillcolor="#FFF6D9"];
+  }
+
+  subgraph cluster_robot {
+    label="Robô / simulação"; color="#4F7E92"; fontcolor="#274A59"; style="rounded";
+    BRIDGE [label="Bridge ROS 2\nvalidação + deduplicação", fillcolor="#E5F2F6"];
+    NAV [label="Nav2 + mapa\ntarget_id → pose", fillcolor="#E5F2F6"];
+    TB4 [label="TurtleBot 4\nGazebo", fillcolor="#E5F2F6"];
+  }
+
+  CAM -> DAT [style=dashed, label="mídia efêmera"];
+  DAT -> FRAME -> QR -> TARGET;
+  AUD -> VOICE [style=dashed, label="áudio efêmero"];
+  VOICE -> AI -> FSM;
+  VOICE -> TARGET [label="ID falado opcional"];
+  TARGET -> FSM [label="concordância\nou conflito"];
+  FSM -> VOICE [label="pergunta / resultado", constraint=false];
+  VOICE -> AUD [style=dashed, label="áudio", constraint=false];
+  FSM -> WS [label="somente após confirmar"];
+  WS -> BRIDGE -> NAV -> TB4;
+  FRAME -> PRIV [style=dotted, arrowhead=none];
+  VOICE -> PRIV [style=dotted, arrowhead=none];
+}

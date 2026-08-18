@@ -5,7 +5,7 @@
 **Equipe:** AgroTurtles  
 **Trilha temática:** Produtividade  
 **Área de aplicação:** Agronegócio  
-**Revisão:** 16 de agosto de 2026
+**Revisão:** 18 de agosto de 2026
 
 ### Equipe
 
@@ -29,8 +29,8 @@ O Maestro Agrícola reduz essa fricção e pode se integrar a diferentes platafo
 
 O Maestro Agrícola transforma AI Glasses em uma interface operacional para maquinário autônomo.
 
-1. **Olhar:** o operador centraliza o QR do talhão `plot-03`.
-2. **Falar:** diz uma ação, como “pulverizar esta área”.
+1. **Olhar:** o operador centraliza a placa `PLOT-03`, legível por pessoas e pelo QR.
+2. **Falar:** diz “pulverizar esta área” ou explicita “pulverizar no plot-03”.
 3. **Confirmar:** ouve “pulverizar talhão três, confirmar?” e responde por voz.
 
 Somente após a confirmação o app envia um comando estruturado ao robô. O Maestro não substitui a autonomia da máquina: ele simplifica a forma de comandá-la.
@@ -52,11 +52,13 @@ AI Glasses -> app Kotlin/Swift -> alvo + intenção local -> JSON/WebSocket -> R
 
 O DAT atual oferece sessão, streaming e captura de foto, mas não expõe pose de cabeça, IMU ou profundidade para o app. Portanto, o MVP não promete transformar diretamente a direção da cabeça em coordenadas métricas.
 
-Na demonstração, a câmera identifica o QR `plot-03`, previamente mapeado. Essa escolha mantém a experiência “olhar, falar e confirmar” e torna o protótipo testável antes do hardware real. Em uma evolução de produto, o QR pode ser substituído por localização visual contra o mapa da fazenda, marcos semânticos, RTK ou dados fornecidos pelo próprio robô.
+Na demonstração, a câmera identifica o QR `plot-03`, previamente mapeado. O ID também pode ser dito por voz como fallback. Quando voz e câmera fornecem IDs diferentes, o app cancela a operação; quando nenhuma das duas identifica um alvo, pede reposicionamento.
+
+A placa do MVP combina texto grande e QR. Em campo, poeira ou obstrução continuam sendo riscos e exigiriam placa selada, redundância e manutenção. GPS do celular pode futuramente ajudar a limitar candidatos por geofencing, mas não informa sozinho para onde a pessoa está olhando. Em uma evolução de produto, o QR pode ser substituído por localização visual contra o mapa da fazenda, RTK ou telemetria fornecida pelo robô.
 
 ### Inteligência artificial
 
-Um classificador linear softmax local, exportado em JSON com cerca de 65 KB, transforma a transcrição em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. Kotlin e Swift usam os mesmos pesos. Com limiar de 0,40, a avaliação atual acertou 15 de 16 frases de teste; o benchmark nos dois smartphones ainda será executado. Regras determinísticas validam a segurança, mas não substituem a IA.
+O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, um classificador linear softmax local, treinado com 96 frases curtas em português e exportado em JSON com cerca de 65 KB, transforma o texto em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O modelo usa palavras, pares de palavras e afixos; Kotlin e Swift interpretam os mesmos pesos sem servidor. Com limiar de 0,40, a avaliação separada acertou 15 de 16 frases, e a restante foi recusada como `UNKNOWN`. O benchmark nos dois smartphones ainda será executado.
 
 ## 4. Checkpoints obrigatórios
 
@@ -70,6 +72,7 @@ Um classificador linear softmax local, exportado em JSON com cerca de 65 KB, tra
 
 - Nenhum comando de movimento é enviado sem confirmação explícita.
 - Alvo ou intenção ambíguos geram pedido de repetição.
+- Divergência entre alvo falado e alvo visual cancela a operação.
 - Timeout, recusa ou perda de conexão cancelam a operação.
 - IDs únicos, validade curta e deduplicação evitam execução repetida.
 - Navegação, obstáculos e proteções funcionais continuam sob responsabilidade do robô.
@@ -82,6 +85,4 @@ O critério principal é executar cinco vezes a jornada completa, incluindo uma 
 
 ## 7. Diferencial e impacto
 
-Enquanto muitas soluções de AI Glasses atuam como assistentes informacionais, o Maestro Agrícola usa visão e voz para iniciar uma ação física confirmada. O operador deixa de navegar por telas e passa a comandar a autonomia do robô de forma natural.
-
-O valor será validado comparando tempo, erros e carga de interação entre o fluxo com tela e o hands-free. A equipe não apresenta ganhos ainda não medidos.
+Enquanto muitas soluções de AI Glasses atuam como assistentes informacionais, o Maestro usa visão e voz para iniciar uma ação física confirmada. O valor será validado comparando tempo, erros e carga de interação entre o fluxo com tela e o hands-free, sem antecipar ganhos ainda não medidos.

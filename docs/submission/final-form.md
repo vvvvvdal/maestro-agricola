@@ -16,11 +16,11 @@ O usuário inicial é o operador de campo que acompanha robôs ou máquinas agr�
 
 ### A3. Walkthrough — fluxo principal
 
-1. Durante uma sessão curta do companion app, o operador centraliza o marcador visual `plot-03` e diz “pulverizar esta área”.
+1. Durante uma sessão curta do companion app, o operador centraliza a placa legível `PLOT-03` e diz “pulverizar esta área” ou “pulverizar no plot-03”.
 2. A câmera dos óculos entrega ao app nativo um frame sob demanda pelo Meta Wearables DAT. No desenvolvimento sem hardware, a mesma interface recebe um frame simulado.
-3. O app identifica localmente o QR `plot-03`, já associado a uma pose segura no mapa da demonstração.
+3. O app identifica localmente o QR `plot-03`, extrai um ID explicitamente falado quando presente e exige concordância entre as duas fontes.
 4. O reconhecimento de fala nativo do celular produz a transcrição. O app pede processamento offline quando o sistema operacional oferece essa opção.
-5. Um classificador pequeno, executado localmente no app, converte a frase na intenção restrita `SPRAY`.
+5. Um classificador softmax de cerca de 65 KB, treinado com 96 frases e executado localmente no app, converte a frase na intenção restrita `SPRAY`.
 6. O app emite feedback sonoro inicial e fala: “Pulverizar talhão três. Confirmar?”. A meta é iniciar o feedback em menos de 1 segundo e concluir a resposta em até 3 segundos; esses tempos ainda precisam ser medidos nos aparelhos físicos.
 7. O operador diz “confirmar”. Uma resposta negativa ou o fim do tempo cancela a interação.
 8. Somente após a confirmação, o app envia um JSON versionado e com validade curta pela rede local.
@@ -31,13 +31,13 @@ O MVP comprova a sequência completa com mock dos óculos, IA local, WebSocket, 
 
 ### A4. Walkthrough — fluxo de exceção principal
 
-Se nenhum QR conhecido for encontrado, se houver mais de um alvo, se a intenção ficar abaixo do limiar, se o usuário não confirmar ou se a conexão cair, o app informa o motivo em uma frase curta, não envia comando e volta ao estado inicial. Mensagens repetidas usam `command_id`, prazo de validade e deduplicação para não causar movimento duplo. Na demonstração de falha segura, a equipe dirá “cancelar” e mostrará que nenhum comando chega ao robô.
+Se nenhum QR conhecido nem ID falado for encontrado, se houver mais de um alvo, se voz e câmera divergirem, se a intenção ficar abaixo do limiar, se o usuário não confirmar ou se a conexão cair, o app informa o motivo em uma frase curta, não envia comando e volta ao estado inicial. Mensagens repetidas usam `command_id`, prazo de validade e deduplicação para não causar movimento duplo. Na demonstração de falha segura, a equipe dirá “cancelar” e mostrará que nenhum comando chega ao robô.
 
 ### A5. Decisões técnicas, justificativas e alternativas descartadas
 
 | Decisão do MVP | Por que foi escolhida | Alternativa descartada nesta etapa |
 |---|---|---|
-| Alvo visual previamente mapeado por QR | O DAT público oferece câmera, mas não uma pose/IMU dos óculos que permita converter a direção da cabeça diretamente em coordenadas. O QR torna a prova determinística. | Raycasting por pose dos óculos, GPS/RTK e localização visual completa. |
+| Placa legível + QR, com fallback por ID falado | O DAT público oferece câmera, mas não uma pose/IMU que converta direção da cabeça em coordenadas. A placa torna a prova determinística; voz e câmera precisam concordar quando ambas fornecem ID. | Raycasting, GPS do operador como destino, RTK e localização visual completa. |
 | Agente estreito com quatro classes (`SPRAY`, `CONFIRM`, `CANCEL`, `UNKNOWN`) | Cabe no celular, é rápido, testável e transforma ambiguidades em `UNKNOWN` em vez de inventar ações. | LLM em nuvem e linguagem aberta para qualquer tarefa. |
 | Captura sob demanda, um frame por interação | Reduz uso de bateria, aquecimento, banda e exposição de terceiros. | Streaming contínuo durante toda a operação. |
 | Kotlin e Swift nativos com contrato compartilhado | Os samples e o ciclo de vida do DAT são nativos; Android e iOS consomem o mesmo modelo e JSON sem depender de uma camada que esconda o SDK. | React Native no MVP. |
@@ -55,7 +55,7 @@ Fontes oficiais: [Meta AI](https://ai.meta.com/meta-ai/), [John Deere Operations
 
 | Pilar | Implementação e evidência do MVP |
 |---|---|
-| Uso de IA | Classificador softmax local e compartilhado entre Kotlin e Swift. No conjunto de avaliação versionado, a política com limiar 0,40 acertou 15 de 16 frases; a restante virou `UNKNOWN` e não gerou comando. |
+| Uso de IA | Classificador softmax local de cerca de 65 KB, treinado com 96 frases em português e compartilhado entre Kotlin e Swift. Ele retorna quatro intenções; no conjunto separado, a política com limiar 0,40 acertou 15 de 16 frases e recusou a restante como `UNKNOWN`. STT é uma etapa nativa separada. |
 | Câmera/microfone | A câmera entra pelo DAT e é consumida sob demanda. A voz usa o reconhecimento nativo do celular; nos óculos reais, o roteamento do microfone por Bluetooth precisa ser validado. O telefone é o fallback explícito. |
 | Saída por áudio | TTS nativo do Android/iOS informa pergunta de confirmação, sucesso ou falha. O áudio pode sair pelos open-ear speakers quando a rota Bluetooth do sistema estiver disponível; o alto-falante do telefone é o fallback. |
 | Privacidade | Frame e áudio são efêmeros e não são gravados pelo Maestro. Logs guardam apenas IDs, estados, latências e erros. Há confirmação explícita, validade curta e nenhuma execução diante de ambiguidade. |
@@ -63,7 +63,8 @@ Fontes oficiais: [Meta AI](https://ai.meta.com/meta-ai/), [John Deere Operations
 
 ### Evidências que podem ser demonstradas agora
 
-- `make test-quick`: 10 testes automatizados e validação do Compose.
+- `make test-quick`: 23 testes automatizados, 4 testes do bridge e validação do Compose.
+- `make vision-smoke`: placa completa decodificada como `plot-03`.
 - `make demo`: bridge aceita o comando, Nav2 fica ativo e a odometria muda no Gazebo.
 - Comando positivo: resposta `ACCEPTED`.
 - Confirmação “cancelar”: rejeição local, sem envio de movimento.
@@ -96,7 +97,7 @@ Checklist antes de colar o link:
 
 ### D1. Manutenção ou alteração de escopo
 
-O propósito foi mantido: permitir que um operador indique uma área, dê um comando por voz e confirme antes de acionar um robô. O mecanismo de localização foi refinado. A ideia inicial considerava transformar a direção do olhar em uma coordenada, mas o DAT público não expõe pose/IMU dos óculos. Por isso, o MVP passou a reconhecer um alvo visual previamente mapeado por QR. Essa alteração reduz risco, preserva a jornada “olhar, falar e confirmar” e permite demonstrar de ponta a ponta em uma semana. Operação real de pulverização continua fora de escopo.
+O propósito foi mantido: permitir que um operador indique uma área, dê um comando por voz e confirme antes de acionar um robô. O mecanismo de localização foi refinado. Como o DAT público não expõe pose/IMU dos óculos, o MVP usa uma placa legível com QR previamente mapeado. O operador também pode dizer `plot-03`; se voz e câmera discordarem, nada é enviado. GPS do usuário não vira destino do robô. Essa alteração reduz risco e preserva a jornada “olhar, falar e confirmar”. Operação real de pulverização continua fora de escopo.
 
 ### D2. Coerência entre os artefatos
 

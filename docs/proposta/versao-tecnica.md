@@ -5,7 +5,7 @@
 **Equipe:** AgroTurtles  
 **Trilha temática:** Produtividade  
 **Área de aplicação:** Agronegócio  
-**Revisão:** 16 de agosto de 2026
+**Revisão:** 18 de agosto de 2026
 
 ### Equipe
 
@@ -44,7 +44,7 @@ Uma interface “olhar, falar e confirmar” pode reduzir a fricção e manter a
 
 ### 3.1 Objetivo
 
-Demonstrar de ponta a ponta que um operador consegue selecionar um alvo visual mapeado, declarar uma intenção por voz, confirmar por áudio e produzir movimento em um robô simulado.
+Demonstrar de ponta a ponta que um operador consegue selecionar um alvo mapeado por visão ou ID falado, declarar uma intenção por voz, confirmar por áudio e produzir movimento em um robô simulado.
 
 ### 3.2 Não objetivos
 
@@ -58,11 +58,11 @@ Demonstrar de ponta a ponta que um operador consegue selecionar um alvo visual m
 
 ## 4. Jornada crítica
 
-1. O operador centraliza o QR do talhão `plot-03`.
+1. O operador centraliza a placa legível `PLOT-03`, que também contém o QR do talhão.
 2. O app mantém ou inicia a sessão DAT e obtém o frame necessário.
-3. O operador diz: “pulverizar esta área”.
+3. O operador diz “pulverizar esta área” ou explicita “pulverizar no plot-03”.
 4. O app transcreve a fala e classifica a intenção como `SPRAY`.
-5. O detector visual resolve o alvo como `plot-03`.
+5. O resolvedor combina o ID visual e o ID falado: concordância seleciona `plot-03`; divergência cancela.
 6. O sistema diz: “pulverizar talhão três, confirmar?”.
 7. O operador responde “confirmar”.
 8. O app envia o comando por WebSocket.
@@ -103,6 +103,7 @@ Responsabilidades:
 - rotear e capturar voz;
 - obter frame ou foto do alvo;
 - rodar STT, classificador de intenção e detector de alvo;
+- extrair um ID de plot falado e compará-lo com o alvo visual;
 - controlar confirmação, recusa, timeout e erros;
 - emitir TTS e sinais sonoros;
 - enviar comandos idempotentes;
@@ -127,16 +128,26 @@ Além disso, a orientação do smartphone não substitui a orientação dos ócu
 
 ### 6.2 Implementação do MVP
 
-O cenário contém o QR `plot-03`, previamente mapeado. O frame retorna `target_id`; o bridge ROS conhece a pose correspondente.
+O cenário contém uma placa vertical com o texto `PLOT-03` e um QR previamente mapeado. O frame retorna `target_id`; o bridge ROS conhece a pose correspondente. O texto humano permite que o operador diga o mesmo ID caso o marcador esteja parcialmente obstruído.
 
 Regras:
 
 - considerar apenas alvo dentro de uma região central da imagem;
 - exigir exatamente um candidato com confiança acima do limiar;
+- aceitar `plot-03`, `plot três`, `plot zero três` ou `talhão três` como o mesmo ID falado;
+- exigir concordância quando voz e câmera identificarem alvos simultaneamente;
 - pedir reposicionamento quando houver zero ou múltiplos candidatos;
 - nunca transformar alvo desconhecido em coordenada padrão.
 
-### 6.3 Evolução de produto
+O caminho principal continua visual: “pulverize aqui” exige QR. O ID falado é um fallback e ainda passa por repetição em áudio e confirmação explícita. Um conflito entra em `AMBIGUOUS`, limpa o alvo resolvido e não cria comando.
+
+### 6.3 Poeira, localização do operador e robustez
+
+O QR do MVP prova identificação, não robustez industrial. Uma implantação rural exigiria placa maior, selada e lavável, correção de erro, cópias redundantes, posicionamento que reduza acúmulo de poeira e rotina de inspeção.
+
+GPS do celular informa aproximadamente onde o operador está, não para onde olha nem qual destino deseja. Ele pode futuramente limitar candidatos quando os talhões tiverem polígonos georreferenciados, mas não substitui pose da câmera ou telemetria do robô. O Maestro nunca converte a posição do usuário em destino padrão.
+
+### 6.4 Evolução de produto
 
 Possíveis substitutos futuros para o QR:
 
@@ -158,7 +169,7 @@ O STT fica atrás de uma interface e o MVP exige execução on-device quando o p
 
 ### 7.2 Classificador de intenção
 
-O componente de IA comprovável do MVP é um classificador linear softmax local e compacto, exportado em JSON com cerca de 65 KB. Entrada: transcrição curta. Saída:
+O componente de IA comprovável do MVP é um classificador linear softmax multiclasse, local e compacto. Ele foi treinado com 96 frases curtas em português: 80 para treino e 16 reservadas para avaliação. O artefato JSON tem cerca de 65 KB. Entrada: transcrição curta. Saída:
 
 ```json
 {
@@ -174,7 +185,9 @@ Rótulos iniciais:
 - `CANCEL`
 - `UNKNOWN`
 
-A mesma implementação e os mesmos pesos são usados em Kotlin e Swift. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no Motorola e no iPhone 13.
+O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e prefixos/sufixos de seis caracteres. A mesma política e os mesmos pesos são interpretados em Kotlin e Swift. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no Motorola e no iPhone 13.
+
+O STT não é esse modelo: Android e iOS tentam transcrição on-device por suas APIs nativas. O classificador do Maestro recebe somente o texto e não envia áudio ou transcrição para um servidor de inferência.
 
 ### 7.3 Regras de segurança sobre a IA
 
@@ -239,7 +252,7 @@ O desenvolvimento sem hardware usa Mock Device Kit para câmera e um fone Blueto
 
 ```text
 IDLE
-  -> CAPTURING
+  -> CAPTURING ou ID_FALADO
   -> INTERPRETING
   -> AWAITING_CONFIRMATION
   -> SENDING
@@ -247,7 +260,7 @@ IDLE
   -> IDLE
 
 Qualquer etapa pode terminar em:
-AMBIGUOUS | CANCELLED | TIMEOUT | CONNECTION_ERROR
+AMBIGUOUS | TARGET_CONFLICT | CANCELLED | TIMEOUT | CONNECTION_ERROR
 ```
 
 Somente `AWAITING_CONFIRMATION -> SENDING` aceita uma confirmação válida. Frases ou eventos recebidos fora desse estado são ignorados ou tratados como nova interação.
@@ -308,6 +321,9 @@ Android, iOS, Meta AI e DAT podem processar informações necessárias para pare
 - intenção ambígua;
 - alvo ausente;
 - múltiplos alvos;
+- ID falado sem QR;
+- concordância e divergência entre ID falado e QR;
+- alvo falado fora do mapa;
 - timeout de confirmação;
 - conexão perdida;
 - comando duplicado;
@@ -331,6 +347,7 @@ A jornada crítica precisa rodar cinco vezes seguidas no cenário limpo, incluin
 |---|---|---|
 | Mudança no DAT | Fixar versão validada e encapsular SDK | Voltar ao último build aprovado |
 | Sem pose/IMU | Alvo visual mapeado | Seleção manual no app apenas para diagnóstico |
+| Poeira ou QR obstruído | Placa legível, grande e redundante | ID falado validado e confirmação reforçada |
 | Voz + câmera instáveis | Roteamento antes do stream e qualidade reduzida | Captura sequencial, mantendo câmera como checkpoint |
 | Modelo lento | Reduzir atributos ou vocabulário | Usar regras apenas como validação de segurança |
 | Hardware apenas no evento | Mock Device Kit e feeds gravados | Demo reproduzível com mock |

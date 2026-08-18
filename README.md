@@ -37,7 +37,8 @@ Para manter a demonstração verificável, o alvo do MVP será um marcador visua
 - app Android com flavors `mock` (API 26+) e `dat` (API 31+);
 - app iOS para iPhone 13/iOS 17.2+;
 - bridge WebSocket/ROS 2 com rejeição de comando inseguro e deduplicação;
-- cenário do Gazebo com QR `plot-03`, Nav2 e TurtleBot 4;
+- cenário do Gazebo com placa legível + QR `plot-03`, Nav2 e TurtleBot 4;
+- resolvedor compartilhado que aceita alvo visual, ID falado ou concordância entre os dois e recusa conflitos;
 - Dockerfile e Compose para reproduzir o simulador;
 - simulador de óculos por terminal para testar sem hardware.
 
@@ -85,7 +86,15 @@ Todos os itens obrigatórios devem aparecer como `[OK]`. É normal o bridge apar
 make test-quick
 ```
 
-Esse comando verifica o modelo sem regravá-lo, executa os 10 testes portáteis e valida o Compose. Ele não inicia o Gazebo.
+Esse comando verifica o modelo sem regravá-lo, executa 23 testes portáteis, 4 testes do bridge e valida o Compose. Ele não inicia o Gazebo.
+
+Confira também a placa completa sem abrir o Gazebo:
+
+```bash
+make vision-smoke
+```
+
+A saída esperada contém `"status": "DETECTED"` e `"target_id": "plot-03"`.
 
 ### 3. Execute a jornada completa
 
@@ -133,6 +142,26 @@ Como alternativa, execute `make simulation-up` e depois `make demo-client`. Não
 
 O Compose executa Gazebo e sensores em uma tela virtual interna, portanto não exige liberar o monitor do computador para o contêiner. Em máquinas sem GPU, comandos recebidos enquanto o Nav2 termina de iniciar ficam na fila até ele estar realmente ativo.
 
+## Testar a escolha do alvo
+
+Com ID visual e fala genérica, a câmera resolve o alvo:
+
+```bash
+python3 tools/target_resolver.py "pulverize aqui" --visual-target plot-03
+```
+
+Sem QR, a fala explícita pode resolver um alvo que exista no catálogo:
+
+```bash
+python3 tools/target_resolver.py "pulverize no plot três"
+```
+
+Se voz e câmera divergirem, a saída é `CONFLICT`, sem `target_id`, e o processo termina com status diferente de zero. Isso é o comportamento seguro esperado:
+
+```bash
+python3 tools/target_resolver.py "pulverize no plot quatro" --visual-target plot-03
+```
+
 ## Compatibilidade mobile
 
 | Aparelho | Execução do mock | DAT real |
@@ -144,7 +173,7 @@ O Compose executa Gazebo e sensores em uma tela virtual interna, portanto não e
 
 1. Consultar o quadro executável em [`docs/tasks/mvp-week.md`](docs/tasks/mvp-week.md).
 2. Compilar e rodar `mockDebug` no Motorola e o projeto Swift no iPhone 13.
-3. Implementar a leitura real do QR a partir do frame.
+3. Conectar a leitura real do QR ao frame mobile; o resolvedor visual/falado e a prova estática já estão implementados.
 4. Validar o sample `CameraAccess` e ligar o adaptador DAT.
 5. Rodar a jornada cinco vezes e registrar latência/falhas.
 6. Ensaiar a demo e o pitch de até 3 minutos.

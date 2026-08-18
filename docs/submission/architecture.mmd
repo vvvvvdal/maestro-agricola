@@ -7,9 +7,10 @@ flowchart LR
     subgraph M["Companion nativo — Android/Kotlin ou iOS/Swift"]
         DAT["Meta Wearables DAT\nsessão + câmera"]
         FRAME["Captura sob demanda\n1 frame por ação"]
-        QR["Detector QR local\nplot-03"]
+        QR["Placa + detector QR\nplot-03"]
         VOICE["STT + TTS nativos\npt-BR"]
-        AI["IA local\nSPRAY / CONFIRM / CANCEL / UNKNOWN"]
+        AI["Softmax local · 65 KB\n4 intenções · limiar 0,40"]
+        TARGET["Resolvedor de alvo\nvisual + ID falado"]
         FSM["Política de segurança\nalvo + intenção + confirmação"]
         PRIV["Telemetria sem mídia bruta\nframe e áudio efêmeros"]
     end
@@ -25,9 +26,11 @@ flowchart LR
     end
 
     CAM -. "mídia efêmera" .-> DAT
-    DAT --> FRAME --> QR --> FSM
+    DAT --> FRAME --> QR --> TARGET
     AUD -. "áudio efêmero" .-> VOICE
     VOICE --> AI --> FSM
+    VOICE -->|"ID falado opcional"| TARGET
+    TARGET -->|"concordância ou conflito"| FSM
     FSM -->|"pergunta / resultado"| VOICE
     VOICE -. "áudio" .-> AUD
     FSM -->|"somente após confirmar"| WS --> BRIDGE --> NAV --> TB4
@@ -43,7 +46,7 @@ flowchart LR
     classDef privacy fill:#FCECEC,stroke:#A33C3C,color:#321414;
 
     class CAM,AUD hardware;
-    class DAT,FRAME,QR,VOICE,AI local;
+    class DAT,FRAME,QR,VOICE,AI,TARGET local;
     class FSM safety;
     class WS network;
     class BRIDGE,NAV,TB4 robot;
