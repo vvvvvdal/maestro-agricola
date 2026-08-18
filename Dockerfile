@@ -35,7 +35,9 @@ COPY --chmod=755 docker/entrypoint.sh /maestro-entrypoint.sh
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
     TURTLEBOT4_MODEL=standard \
     IGN_VERSION=fortress \
-    IGNITION_VERSION=fortress
+    IGNITION_VERSION=fortress \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all
 
 ENTRYPOINT ["/maestro-entrypoint.sh"]
 CMD ["ros2", "launch", "maestro_simulation", "demo.launch.py"]

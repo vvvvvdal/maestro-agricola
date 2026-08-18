@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import time
@@ -8,6 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SERVICE = os.environ.get("MAESTRO_SIMULATION_SERVICE", "simulation")
 
 
 def run(command: list[str], timeout: float = 15) -> subprocess.CompletedProcess[str]:
@@ -27,7 +29,9 @@ def compose(*args: str, timeout: float = 15) -> subprocess.CompletedProcess[str]
 
 
 def container_shell(script: str, timeout: float = 15) -> subprocess.CompletedProcess[str]:
-    return compose("exec", "-T", "simulation", "bash", "-lc", script, timeout=timeout)
+    return compose(
+        "exec", "-T", DEFAULT_SERVICE, "bash", "-lc", script, timeout=timeout
+    )
 
 
 def require_processes() -> None:
@@ -40,7 +44,7 @@ def require_processes() -> None:
 
 
 def recent_logs() -> str:
-    result = compose("logs", "--since", "10m", "simulation", timeout=20)
+    result = compose("logs", "--since", "10m", DEFAULT_SERVICE, timeout=20)
     return result.stdout
 
 

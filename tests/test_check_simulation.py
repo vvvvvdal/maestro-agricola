@@ -12,6 +12,9 @@ import check_simulation  # noqa: E402
 
 
 class SimulationCheckTest(unittest.TestCase):
+    def test_default_service_can_be_selected_from_environment(self):
+        self.assertEqual("simulation", check_simulation.DEFAULT_SERVICE)
+
     def test_odom_timeout_is_retryable(self):
         timeout = subprocess.TimeoutExpired(["docker", "compose", "exec"], 12)
         with patch.object(check_simulation, "container_shell", side_effect=timeout):

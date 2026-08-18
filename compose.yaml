@@ -1,22 +1,30 @@
 name: maestro-agricola
 
+x-simulation-base: &simulation-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  network_mode: host
+  stdin_open: true
+  tty: true
+
+x-simulation-environment: &simulation-environment
+  ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+  RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+  TURTLEBOT4_MODEL: ${TURTLEBOT4_MODEL:-standard}
+  MAESTRO_WS_HOST: ${MAESTRO_WS_HOST:-0.0.0.0}
+  MAESTRO_WS_PORT: ${MAESTRO_WS_PORT:-18765}
+  MAESTRO_ROBOT_NAMESPACE: ${MAESTRO_ROBOT_NAMESPACE:-/turtlebot1}
+
 services:
   simulation:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    network_mode: host
+    <<: *simulation-base
     environment:
-      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
-      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
-      TURTLEBOT4_MODEL: ${TURTLEBOT4_MODEL:-standard}
-      MAESTRO_WS_HOST: ${MAESTRO_WS_HOST:-0.0.0.0}
-      MAESTRO_WS_PORT: ${MAESTRO_WS_PORT:-18765}
-      MAESTRO_ROBOT_NAMESPACE: ${MAESTRO_ROBOT_NAMESPACE:-/turtlebot1}
-      MAESTRO_HEADLESS: ${MAESTRO_HEADLESS:-1}
-      LIBGL_ALWAYS_SOFTWARE: ${LIBGL_ALWAYS_SOFTWARE:-1}
-    stdin_open: true
-    tty: true
+      <<: *simulation-environment
+      MAESTRO_HEADLESS: "1"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    volumes:
+      - gazebo-fuel-cache:/root/.ignition/fuel
     command:
       - ros2
       - launch
@@ -24,4 +32,35 @@ services:
       - demo.launch.py
       - namespace:=turtlebot1
       - world:=warehouse
+      - model:=${TURTLEBOT4_MODEL:-standard}
       - websocket_port:=${MAESTRO_WS_PORT:-18765}
+      - headless:=true
+
+  simulation-gui:
+    <<: *simulation-base
+    profiles: [visual]
+    gpus: all
+    environment:
+      <<: *simulation-environment
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: "1"
+      MAESTRO_HEADLESS: "0"
+      LIBGL_ALWAYS_SOFTWARE: "0"
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - gazebo-fuel-cache:/root/.ignition/fuel
+    command:
+      - ros2
+      - launch
+      - maestro_simulation
+      - demo.launch.py
+      - namespace:=turtlebot1
+      - world:=warehouse
+      - model:=${TURTLEBOT4_MODEL:-standard}
+      - websocket_port:=${MAESTRO_WS_PORT:-18765}
+      - headless:=false
+
+volumes:
+  gazebo-fuel-cache:

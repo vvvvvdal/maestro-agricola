@@ -1,7 +1,7 @@
 PYTHON ?= python3
 .DEFAULT_GOAL := help
 
-.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-client gazebo-gui rviz
+.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-client gazebo gazebo-up demo-visual rviz
 
 help:
 	@printf '%s\n' \
@@ -11,8 +11,9 @@ help:
 		'  make test-quick  executa testes e valida a configuração Compose' \
 		'  make vision-smoke  verifica o QR plot-03 em imagem estática' \
 		'  make demo        TESTE PRINCIPAL: verifica protocolo, Nav2 e movimento' \
-		'  make gazebo-gui  abre o mundo 3D de uma simulação já ativa' \
-		'  make rviz        abre mapa, robô, LiDAR e trajetórias no RViz2' \
+		'  make gazebo      abre uma simulação limpa no Gazebo usando a NVIDIA' \
+		'  make demo-visual envia e verifica o comando com o Gazebo já aberto' \
+		'  make rviz        abre mapa, robô, LiDAR e trajetórias no mesmo contêiner' \
 		'  make status      mostra se o contêiner está ativo' \
 		'  make logs        diagnóstico: mostra apenas os logs recentes' \
 		'  make simulation-down  encerra e remove o contêiner'
@@ -52,7 +53,8 @@ simulation-up:
 	docker compose up --build -d simulation
 
 simulation-down:
-	docker compose down
+	docker compose --profile visual down
+	@command -v xhost >/dev/null && xhost -SI:localuser:root >/dev/null 2>&1 || true
 	@printf '%s\n' 'SIMULAÇÃO ENCERRADA: o contêiner foi removido.'
 
 simulation-logs:
@@ -69,25 +71,34 @@ demo: doctor simulation-up
 demo-client:
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 10
 
-gazebo-gui:
-	@command -v ign >/dev/null || { echo 'Erro: Gazebo Ignition não está instalado no host.'; exit 1; }
-	@test -n "$$DISPLAY" || { echo 'Erro: nenhuma sessão gráfica X11 foi encontrada.'; exit 1; }
-	@docker compose ps --status running --services | grep -qx simulation || { echo 'Erro: execute make demo antes de abrir o Gazebo.'; exit 1; }
-	env LIBGL_ALWAYS_SOFTWARE=1 QT_X11_NO_MITSHM=1 ign gazebo -g --force-version 6 --render-engine-gui ogre
+gazebo: gazebo-up
 
-rviz:
+gazebo-up:
+	@command -v nvidia-smi >/dev/null || { echo 'Erro: driver NVIDIA não encontrado no host.'; exit 1; }
 	@command -v xhost >/dev/null || { echo 'Erro: xhost não está instalado no host.'; exit 1; }
 	@test -n "$$DISPLAY" || { echo 'Erro: nenhuma sessão gráfica X11 foi encontrada.'; exit 1; }
-	@docker compose ps --status running --services | grep -qx simulation || { echo 'Erro: execute make demo antes de abrir o RViz2.'; exit 1; }
-	@set -e; \
-		xhost +SI:localuser:root >/dev/null; \
-		trap 'xhost -SI:localuser:root >/dev/null' EXIT INT TERM; \
-		docker compose run --rm --no-deps --no-TTY \
-			-e MAESTRO_HEADLESS=0 \
-			-e DISPLAY="$$DISPLAY" \
-			-e QT_X11_NO_MITSHM=1 \
-			-e LIBGL_ALWAYS_SOFTWARE=1 \
-			-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
-			-v "$(CURDIR)/robot_ws/src/maestro_simulation/config/maestro.rviz:/tmp/maestro.rviz:ro" \
-			simulation rviz2 -d /tmp/maestro.rviz \
-			--ros-args -r /tf:=/turtlebot1/tf -r /tf_static:=/turtlebot1/tf_static
+	@docker info --format '{{json .Runtimes}}' | grep -q 'nvidia' || { echo 'Erro: runtime NVIDIA não configurado no Docker.'; exit 1; }
+	@docker compose --profile visual down --remove-orphans
+	@xhost +SI:localuser:root >/dev/null
+	@docker compose --profile visual up --build -d simulation-gui
+	@printf '%s\n' \
+		'GAZEBO ABERTO: ele roda dentro do contêiner com a GPU NVIDIA.' \
+		'Quando o cenário carregar, execute: make demo-visual' \
+		'Para encerrar e revogar o acesso X11: make simulation-down'
+
+demo-visual: doctor
+	@docker compose --profile visual ps --status running --services | grep -qx simulation-gui || { echo 'Erro: execute make gazebo primeiro.'; exit 1; }
+	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 120
+	MAESTRO_SIMULATION_SERVICE=simulation-gui $(PYTHON) -u tools/check_simulation.py
+	@printf '\n%s\n%s\n%s\n' \
+		'============================================================' \
+		'DEMO VISUAL APROVADA: NVIDIA, Gazebo, Nav2 e movimento verificados.' \
+		'Para encerrar, execute: make simulation-down'
+
+rviz:
+	@docker compose --profile visual ps --status running --services | grep -qx simulation-gui || { echo 'Erro: execute make gazebo primeiro.'; exit 1; }
+	docker compose --profile visual exec -T simulation-gui \
+		bash -lc 'source /opt/ros/humble/setup.bash && \
+			source /opt/maestro_ws/install/setup.bash && \
+			rviz2 -d /opt/maestro_ws/install/maestro_simulation/share/maestro_simulation/config/maestro.rviz \
+			--ros-args -r /tf:=/turtlebot1/tf -r /tf_static:=/turtlebot1/tf_static'

@@ -7,7 +7,9 @@ from launch.actions import (
     EmitEvent,
     IncludeLaunchDescription,
     LogInfo,
+    OpaqueFunction,
     RegisterEventHandler,
+    SetLaunchConfiguration,
     TimerAction,
 )
 from launch.event_handlers import OnProcessExit
@@ -25,9 +27,26 @@ def include(package: str, launch_file: str, arguments: dict):
     )
 
 
+def configure_gazebo(context):
+    world = LaunchConfiguration("world").perform(context)
+    model = LaunchConfiguration("model").perform(context)
+    headless = LaunchConfiguration("headless").perform(context).lower() == "true"
+    gz_args = f"{world}.sdf -r -v 4"
+    if headless:
+        gz_args += " -s --headless-rendering"
+    else:
+        bringup_share = Path(
+            get_package_share_directory("turtlebot4_ignition_bringup")
+        )
+        gui_config = bringup_share / "gui" / model / "gui.config"
+        gz_args += f" --gui-config {gui_config}"
+    return [SetLaunchConfiguration("gz_args", gz_args)]
+
+
 def generate_launch_description() -> LaunchDescription:
     namespace = LaunchConfiguration("namespace")
     world = LaunchConfiguration("world")
+    model = LaunchConfiguration("model")
     websocket_port = LaunchConfiguration("websocket_port")
     simulation_share = Path(get_package_share_directory("maestro_simulation"))
     marker_model = simulation_share / "models" / "plot_marker" / "model.sdf"
@@ -40,7 +59,7 @@ def generate_launch_description() -> LaunchDescription:
     gazebo = include(
         "turtlebot4_ignition_bringup",
         "turtlebot4_ignition.launch.py",
-        {"namespace": namespace, "world": world},
+        {"namespace": namespace, "world": world, "model": model},
     )
     spawn_marker = Node(
         package="ros_gz_sim",
@@ -120,14 +139,11 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription([
         DeclareLaunchArgument("namespace", default_value="turtlebot1"),
         DeclareLaunchArgument("world", default_value="warehouse"),
-        # ros_gz_sim prefers this global argument over the deprecated ign_args
-        # used by TurtleBot 4's upstream launcher. Keep the world in the value:
-        # passing only "-s -r" silently starts an empty world.
-        DeclareLaunchArgument(
-            "gz_args",
-            default_value=[world, ".sdf -s -r --headless-rendering -v 4"],
-        ),
+        DeclareLaunchArgument("model", default_value="standard"),
+        DeclareLaunchArgument("headless", default_value="true"),
+        DeclareLaunchArgument("gz_args", default_value=""),
         DeclareLaunchArgument("websocket_port", default_value="18765"),
+        OpaqueFunction(function=configure_gazebo),
         gazebo,
         controller_guard,
         navigation_gate,
