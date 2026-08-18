@@ -20,6 +20,8 @@
 - O `warehouse` headless por software avançou apenas cerca de 3 s simulados em mais de 1 minuto real. A prova dos três plots usará um serviço headless separado com `gpus: all` e NVIDIA, sem abrir a GUI; `make demo` e o serviço `simulation` continuam como fallback portátil sem GPU.
 - Mesmo com GPU, o limite de 120 s de relógio real cancelou um undock que ainda avançava no Gazebo. Os limites do bridge passam a usar `/clock` (`use_sim_time`), portanto medem tempo simulado: preservam a falha segura sem punir uma máquina que renderiza abaixo do tempo real.
 - Na prova seguinte, a odometria chegou a `x=-0,353` e `dock_status=false`, mas o action de undock não devolveu o resultado. O estado estável do tópico passa a ser a confirmação autoritativa: o bridge cancela um goal pendurado e avança quando a condição física desejada já foi atingida; o mesmo vale para `dock_status=true` no retorno.
+- A inspeção do pacote instalado revelou que `turtlebot4_ignition.launch.py` não encaminha o argumento `model` ao spawn e que o wrapper oficial sempre acrescenta a GUI. Por isso, o serviço chamado de headless estava executando escondido no Xvfb o modelo Standard completo, inclusive OAK-D, e o relógio simulado avançou menos de 1 s em vários minutos.
+- O launch do Maestro passa a iniciar servidor e spawn diretamente, preservando os caminhos oficiais de recursos e o bridge de `/clock`. O modo visual continua com TurtleBot 4 Standard + NVIDIA; os testes automáticos usam TurtleBot 4 Lite, que mantém Create 3, LiDAR, Nav2 e doca, mas elimina a câmera do robô que não participa do fluxo dos óculos.
 - “Saia da doca” e “volte para a doca” por voz serão intenções futuras. Elas exigirão confirmação, estado do robô, idempotência e feedback por áudio; não entram no contrato `SPRAY` desta tarefa.
 
 ## Critérios de aceite
@@ -39,7 +41,8 @@
 2. Gerar as texturas `plot-01` e `plot-02`, ampliar o catálogo e testar coerência geométrica.
 3. Extrair uma máquina de estados testável para a sequência undock, metas e dock.
 4. Integrar os actions `/turtlebot1/undock`, `/turtlebot1/navigate_to_pose` e `/turtlebot1/dock` no bridge.
-5. Validar testes portáteis; depois abrir Gazebo/RViz com NVIDIA e executar a missão.
+5. Corrigir o launch headless para não abrir uma GUI oculta e usar o modelo Lite no gate automático.
+6. Validar testes portáteis; depois abrir Gazebo/RViz com NVIDIA e executar a missão.
 
 ## Evidências
 
