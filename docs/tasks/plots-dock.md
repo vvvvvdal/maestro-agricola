@@ -9,7 +9,8 @@
 ## Decisões e ambiguidades resolvidas
 
 - O namespace canônico permanece `/turtlebot1`, igual ao usado no laboratório e no `pluginbot-turtlebot4` (PB).
-- As três placas ficam alinhadas e próximas: marcadores em `(2, -1)`, `(2, 0)` e `(2, 1)`; metas em `(1.5, -1)`, `(1.5, 0)` e `(1.5, 1)`. As metas consecutivas ficam a 1 m entre si.
+- Revisão visual solicitada em 18/08: `plot-03` permanece em `(2, 1)`. `plot-01` vai para `(0.5, -1.8)`, no lado direito da área central, e `plot-02` para `(0.5, 1.8)`, no lado esquerdo. Assim os marcadores ocupam os dois pontos indicados na captura, em vez de parecerem uma única fileira.
+- `plot-01` e `plot-02` são girados para olhar para o centro. As metas seguras ficam 0,5 m diante das placas: `(0.5, -2.3, +π/2)`, `(0.5, 2.3, -π/2)` e `(1.5, 1, 0)` para `plot-01`, `plot-02` e `plot-03`, respectivamente. A rota continua curta para a demonstração.
 - Cada textura fica sobre a face da placa voltada para `-X`. A transformação deve mapear os eixos horizontal/vertical da imagem para os eixos Y/Z do mundo, sem atravessar a placa.
 - O bridge solicita `Undock` automaticamente ao iniciar. Comandos ficam na fila até a saída ser confirmada.
 - O bridge executa todas as metas já enfileiradas e solicita `Dock` quando a fila termina. Se a navegação falhar, ainda tenta voltar à doca.
@@ -19,7 +20,7 @@
 ## Critérios de aceite
 
 - [ ] `plot-01`, `plot-02` e `plot-03` possuem QR distintos, legíveis e fixados verticalmente na face das placas.
-- [ ] O catálogo versionado contém os três IDs e mantém as metas próximas.
+- [ ] O catálogo versionado contém os três IDs, com duas placas em lados opostos e metas próximas/seguras.
 - [ ] O detector estático reconhece as três placas.
 - [ ] O launch usa `/turtlebot1` e cria um único conjunto de três placas.
 - [ ] No início, o log confirma `Undock completed` antes de aceitar uma meta Nav2.
@@ -29,7 +30,7 @@
 
 ## Plano de execução
 
-1. Corrigir a transformação da textura e criar as três placas no SDF.
+1. Corrigir a transformação da textura, criar as três placas no SDF e distribuí-las nos três pontos aprovados.
 2. Gerar as texturas `plot-01` e `plot-02`, ampliar o catálogo e testar coerência geométrica.
 3. Extrair uma máquina de estados testável para a sequência undock, metas e dock.
 4. Integrar os actions `/turtlebot1/undock`, `/turtlebot1/navigate_to_pose` e `/turtlebot1/dock` no bridge.
