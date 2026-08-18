@@ -116,4 +116,8 @@ def main(args=None) -> None:
         pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        # ROS may already have shut the context down after SIGINT/SIGTERM.
+        # Calling shutdown twice raises RCLError and makes a normal container
+        # stop look like a bridge failure.
+        if rclpy.ok():
+            rclpy.shutdown()
