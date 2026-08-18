@@ -1,0 +1,80 @@
+# Plano de prontidão para entrega - 18 a 22 de agosto de 2026
+
+## Objetivo
+
+Deixar o MVP reproduzível por uma pessoa que acabou de clonar o repositório e preparar os artefatos exigidos pelo formulário final do Programa AI Glasses Brasil, mantendo o pitch entre 2 e 3 minutos.
+
+## Ambiguidades e premissas
+
+- O texto integral de cada campo do formulário não foi fornecido; as respostas seguem as quatro seções descritas pelo CEIA e devem ser ajustadas apenas se o formulário impor limite de caracteres.
+- O link do vídeo ainda não existe e será mantido como item pendente, nunca como link inventado.
+- Builds físicos de Android, iOS e DAT dependem dos aparelhos e de um Mac com Xcode; nenhuma evidência física será declarada antes da execução pela equipe.
+- A demonstração local obrigatória usa mock de óculos, IA local, WebSocket, ROS 2, Nav2 e Gazebo.
+- As palestras anexadas são material de referência e não substituem a documentação oficial do DAT ou as regras do edital.
+
+## Tarefas e critérios de aceite
+
+### TST-01 - Teste guiado do MVP
+
+Responsável principal: Felipe.
+
+Critérios:
+
+1. Uma seção “teste em 5 minutos” explica pré-requisitos, primeiro comando, saída esperada e encerramento.
+2. Há diagnóstico automático para Docker, Compose, porta, contêiner, bridge e resposta do comando.
+3. O caminho feliz retorna `ACCEPTED`; ausência do Docker ou do bridge gera mensagem acionável, sem traceback.
+4. Os testes portáteis continuam passando sem ROS instalado no host.
+5. O README distingue teste rápido, teste completo, logs e teste mobile.
+
+### SUB-01 - Documento estruturado do formulário
+
+Responsáveis: Felipe e Rafael, com revisão de Átila nas decisões mobile.
+
+Critérios:
+
+1. Seção A contém problema, usuário, fluxo principal e de exceção, decisões com justificativas, alternativas descartadas, concorrentes e cinco pilares.
+2. Seção B aponta para Mermaid versionado e imagem PNG ou SVG legível.
+3. Seção C contém checklist do vídeo e campo explícito para o link futuro.
+4. Seção D explica a mudança de localização por pose/IMU para alvo visual mapeado e confirma coerência e autoria/uso de IA.
+5. Afirmações técnicas permanecem coerentes com código, proposta e pitch.
+
+### ARCH-01 - Diagrama de arquitetura
+
+Responsável: Felipe.
+
+Critérios:
+
+1. O código-fonte Mermaid está em `docs/submission/architecture.mmd`.
+2. A imagem exportada é legível em proporção horizontal e não contém texto cortado.
+3. O diagrama separa óculos, app nativo, processamento local, rede e robô.
+4. Fluxos de mídia efêmera e comando confirmado são distinguíveis.
+
+### PIT-01 - Pitch final
+
+Responsáveis: Felipe e Rafael.
+
+Critérios:
+
+1. Deck e roteiro apresentam problema, solução, demonstração, arquitetura, cinco pilares, diferencial e próximo passo.
+2. O roteiro ensaiado cabe entre 2min40s e 2min55s.
+3. Nenhum slide promete pose/IMU, pulverização real ou build físico ainda não validado.
+4. Texto visível é curto e legível; notas registram fontes quando necessário.
+5. O vídeo mostra pelo menos um comando aceito e uma falha segura.
+
+## Ordem de execução
+
+1. Ler e indexar os materiais CEIA.
+2. Reproduzir o fluxo de teste do zero e corrigir atritos.
+3. Atualizar README e guia de troubleshooting.
+4. Preparar Seções A-D e o diagrama.
+5. Revisar roteiro e apresentação.
+6. Rodar testes, conferir renders e comparar código, docs e spec.
+
+## Estratégia de commits
+
+- `docs: plan submission readiness work`
+- `test: add guided MVP diagnostics`
+- `docs: prepare final submission answers and architecture`
+- `docs: revise three-minute pitch`
+
+Não fazer push nesta rodada.
