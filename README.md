@@ -109,7 +109,7 @@ Todos os itens obrigatórios devem aparecer como `[OK]`. É normal o bridge apar
 make test-quick
 ```
 
-Esse comando verifica o modelo sem regravá-lo, executa 23 testes portáteis, 4 testes do bridge e valida o Compose. Ele não inicia o Gazebo.
+Esse comando verifica o modelo sem regravá-lo, executa 26 testes portáteis, 4 testes do bridge e valida o Compose. Ele não inicia o Gazebo.
 
 Confira também a placa completa sem abrir o Gazebo:
 
@@ -166,6 +166,40 @@ O guia completo, incluindo reinício limpo, erros conhecidos e testes mobile, es
 Como alternativa, execute `make simulation-up` e depois `make demo-client`. Não interrompa o simulador com `Ctrl+C` antes de executar o cliente. Em celular físico, configure no app `ws://IP_DO_COMPUTADOR:18765`. A porta `18765` evita o conflito observado entre a `8765` e serviços do simulador.
 
 O Compose executa Gazebo e sensores em uma tela virtual interna, portanto não exige liberar o monitor do computador para o contêiner. Em máquinas sem GPU, comandos recebidos enquanto o Nav2 termina de iniciar ficam na fila até ele estar realmente ativo.
+
+## Ver o Gazebo e o RViz2 com a NVIDIA
+
+O modo visual segue o fluxo que já funcionava no `pluginbot-turtlebot4`: Gazebo, ROS 2 e RViz rodam dentro do mesmo contêiner, com a sessão X11 do host e `gpus: all`. Ele exige driver NVIDIA, NVIDIA Container Toolkit e uma sessão Linux X11.
+
+Primeiro abra uma simulação visual limpa:
+
+```bash
+make gazebo
+```
+
+Na primeira execução, aguarde o mundo terminar de baixar e carregar. O cache do Gazebo Fuel é preservado nas próximas aberturas. Quando o cenário aparecer, valide a jornada completa em outro terminal:
+
+```bash
+make demo-visual
+```
+
+Para ver mapa, robô, LiDAR, costmap e planos, abra em um terceiro terminal:
+
+```bash
+make rviz
+```
+
+`make gazebo` encerra uma instância anterior do projeto antes de iniciar a visual; não execute `make demo` enquanto ela estiver aberta, porque o teste padrão troca para o serviço headless. `make rviz` permanece no terminal até a janela ser fechada. Ao terminar, execute `make simulation-down`; além de remover o contêiner, o comando revoga a permissão X11 concedida ao usuário `root` do contêiner.
+
+O Gazebo mostra o mundo 3D `warehouse`, o TurtleBot 4 e a placa `PLOT-03`. O RViz mostra o mapa produzido pelo SLAM, modelo do robô, LiDAR, costmap e planos global/local. Com as janelas abertas, `make demo-visual` envia e verifica o comando para acompanhar o movimento.
+
+O cenário atual não é uma fazenda própria. `warehouse` vem do simulador oficial do TurtleBot 4; o Maestro acrescenta a placa. O mapa de ocupação é construído ao vivo pelo `slam_toolbox`, enquanto `plot-03 → (1.5, 1.0)` fica no catálogo versionado do bridge. Esses são três artefatos diferentes: mundo 3D, mapa SLAM e mapa lógico de alvos.
+
+## Estado visual dos apps
+
+Android/Compose e iOS/SwiftUI já possuem telas diagnósticas equivalentes: fonte de frame, estado da jornada, resposta da IA, transcrição, endpoint WebSocket e botões para simular olhar, interpretar, falar e reiniciar. A identidade AgroTurtles também já está aplicada. Ainda são telas de MVP para teste, não uma interface final de produto.
+
+Para abrir o Android, siga [`mobile/android/README.md`](mobile/android/README.md); é necessário JDK 17, Android SDK e Android Studio ou aparelho via `adb`. Para abrir o iOS, siga [`mobile/ios/README.md`](mobile/ios/README.md) em um Mac com Xcode. Um Linux não executa o simulador iOS.
 
 ## Testar a escolha do alvo
 

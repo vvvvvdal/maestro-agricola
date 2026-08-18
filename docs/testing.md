@@ -30,6 +30,7 @@ Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as 
 | Portátil | `make test` | modelo, cliente e núcleo seguro do bridge | Não |
 | Configuração | `make test-quick` | testes portáteis + Compose válido | CLI apenas |
 | Integração | `make demo` | mock → IA local → WebSocket → ROS 2/Nav2 | Sim |
+| Visual NVIDIA | `make gazebo` + `make demo-visual` | mesma integração com a janela 3D na GPU | Sim + NVIDIA/X11 |
 | Mobile mock | Gradle/Xcode | comportamento nativo no aparelho | Não para o build |
 
 ## Teste recomendado do zero
@@ -67,6 +68,48 @@ Não espere uma janela: o Gazebo usa tela virtual e renderização por software.
 make status
 make logs
 ```
+
+## Inspeção visual opcional
+
+O modo visual usa a mesma abordagem comprovada no `pluginbot-turtlebot4`: Gazebo, ROS 2 e RViz ficam no mesmo contêiner e o Docker entrega todas as GPUs NVIDIA. Ele não conecta uma segunda GUI a um servidor headless.
+
+Pré-requisitos adicionais:
+
+- driver NVIDIA funcionando em `nvidia-smi`;
+- NVIDIA Container Toolkit e runtime `nvidia` no Docker;
+- sessão gráfica X11 com a variável `DISPLAY` definida.
+
+Na raiz, abra uma instância limpa:
+
+```bash
+make gazebo
+```
+
+O comando encerra qualquer serviço Maestro anterior, libera X11 apenas para o usuário `root` local do contêiner e inicia `simulation-gui` com `gpus: all`. A primeira abertura pode baixar o `warehouse` e outros modelos do Gazebo Fuel. Aguarde o cenário aparecer; o volume `gazebo-fuel-cache` evita repetir esse download nas próximas aberturas.
+
+Em outro terminal, execute a prova ponta a ponta:
+
+```bash
+make demo-visual
+```
+
+O resultado aprovado termina com `DEMO VISUAL APROVADA`. Para abrir também o RViz no mesmo contêiner:
+
+```bash
+make rviz
+```
+
+`make rviz` carrega `config/maestro.rviz` e usa o mesmo runtime NVIDIA e os mesmos pacotes de descrição do simulador.
+
+No Gazebo, procure o mundo `warehouse`, o TurtleBot 4 e a placa vertical `PLOT-03`. No RViz, confirme:
+
+- `SLAM Map` em `/turtlebot1/map`;
+- `TurtleBot 4` usando `/turtlebot1/robot_description`;
+- `LiDAR` em `/turtlebot1/scan`;
+- `Global Plan` e `Local Plan`;
+- `Global Costmap`.
+
+Feche o RViz com `Ctrl+C` ou pela janela. Encerre tudo com `make simulation-down`; o acesso X11 é revogado nesse momento. Para o caminho sem janela e portátil, continue usando `make demo`.
 
 ## Repetir apenas o comando dos óculos
 
@@ -128,6 +171,21 @@ make logs
 ```
 
 Se a imagem ainda estiver sendo baixada ou construída, aguarde. Se o bridge não surgir após dois minutos do início do contêiner, faça o reinício limpo.
+
+### Gazebo GUI não responde
+
+Na primeira abertura, o Gazebo pode parecer congelado enquanto baixa e descompacta o mundo `warehouse`. Aguarde o carregamento; as próximas execuções reutilizam o volume `gazebo-fuel-cache`. Se continuar sem responder depois que o cenário deveria ter carregado, execute:
+
+```bash
+make simulation-down
+make gazebo
+```
+
+Não abra `ign gazebo -g` separadamente no host. Esse era o caminho instável: ele separava GUI e servidor e ainda forçava renderização por software. O modo atual abre ambos dentro do mesmo contêiner e solicita a GPU NVIDIA, como no `pluginbot-turtlebot4`.
+
+### Leitura de odometria expirou
+
+Sob carga gráfica, uma chamada `ros2 topic echo` pode demorar mais que o limite mesmo com o robô ativo. O verificador trata esse timeout como uma amostra perdida e tenta novamente dentro do tempo total de movimento. A demo só aprova após obter uma posição diferente da origem.
 
 ### `command expired`
 

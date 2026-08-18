@@ -63,9 +63,10 @@ Fontes oficiais: [Meta AI](https://ai.meta.com/meta-ai/), [John Deere Operations
 
 ### Evidências que podem ser demonstradas agora
 
-- `make test-quick`: 23 testes automatizados, 4 testes do bridge e validação do Compose.
+- `make test-quick`: 26 testes automatizados, 4 testes do bridge e validação do Compose.
 - `make vision-smoke`: placa completa decodificada como `plot-03`.
 - `make demo`: bridge aceita o comando, Nav2 fica ativo e a odometria muda no Gazebo.
+- `make demo-visual`: a mesma jornada passa com Gazebo e RViz no contêiner usando a NVIDIA.
 - Comando positivo: resposta `ACCEPTED`.
 - Confirmação “cancelar”: rejeição local, sem envio de movimento.
 - Apps nativos, conexão DAT real e rota de áudio nos aparelhos: **PENDENTES de teste físico**; não declarar como validados antes do ensaio.
