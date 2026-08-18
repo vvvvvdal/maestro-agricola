@@ -8,6 +8,7 @@
 - [`android-mock-smoke.md`](android-mock-smoke.md): preflight e handoff verificável do build Kotlin no Motorola.
 - [`vision-qr.md`](vision-qr.md): plano e evidências da detecção segura do QR em imagem estática.
 - [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin/Swift e handoff dos benchmarks nos celulares.
+- [`ios-mock-smoke.md`](ios-mock-smoke.md): preflight e handoff verificável do app Swift no iPhone 13.
 
 ## Convenção
 
