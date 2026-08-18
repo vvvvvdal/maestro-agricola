@@ -36,7 +36,10 @@ test-robot:
 	PYTHONPATH=robot_ws/src/maestro_robot_bridge $(PYTHON) -m unittest discover -s robot_ws/src/maestro_robot_bridge/test -p 'test_*.py'
 
 vision-smoke:
-	$(PYTHON) tools/qr_target_detector.py robot_ws/src/maestro_simulation/models/plot_marker/materials/textures/plot-03.png
+	@for plot in plot-01 plot-02 plot-03; do \
+		$(PYTHON) tools/qr_target_detector.py \
+			robot_ws/src/maestro_simulation/models/plot_marker/materials/textures/$$plot.png || exit; \
+	done
 
 compose-config:
 	docker compose config --quiet

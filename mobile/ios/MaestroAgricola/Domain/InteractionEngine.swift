@@ -51,7 +51,9 @@ final class InteractionEngine {
 
     init(
         classifier: IntentClassifying,
-        targetResolver: TargetResolver = TargetResolver(allowedTargetIds: ["plot-03"])
+        targetResolver: TargetResolver = TargetResolver(
+            allowedTargetIds: ["plot-01", "plot-02", "plot-03"]
+        )
     ) {
         self.classifier = classifier
         self.targetResolver = targetResolver

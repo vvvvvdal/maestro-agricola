@@ -68,8 +68,8 @@ class StaticImageTest(unittest.TestCase):
         canvas[80:320, 80:320] = qr
         return canvas
 
-    def test_versioned_plot_texture_is_detected(self):
-        image_path = (
+    def test_versioned_plot_textures_are_detected(self):
+        texture_dir = (
             ROOT
             / "robot_ws"
             / "src"
@@ -78,14 +78,22 @@ class StaticImageTest(unittest.TestCase):
             / "plot_marker"
             / "materials"
             / "textures"
-            / "plot-03.png"
         )
-        image = cv2.imread(str(image_path))
-        self.assertGreater(image.shape[0], image.shape[1], "a placa deve ser vertical e conter o ID legível")
-        result = detector.detect_image(image, {"plot-03"}, CAPTURED_AT, cv2_module=cv2)
-        self.assertEqual("DETECTED", result.status)
-        self.assertEqual("plot-03", result.target_id)
-        self.assertEqual(1.0, result.confidence)
+        allowed = {"plot-01", "plot-02", "plot-03"}
+        for plot_id in sorted(allowed):
+            with self.subTest(plot_id=plot_id):
+                image = cv2.imread(str(texture_dir / f"{plot_id}.png"))
+                self.assertIsNotNone(image)
+                self.assertGreater(
+                    image.shape[0], image.shape[1],
+                    "a placa deve ser vertical e conter o ID legível",
+                )
+                result = detector.detect_image(
+                    image, allowed, CAPTURED_AT, cv2_module=cv2
+                )
+                self.assertEqual("DETECTED", result.status)
+                self.assertEqual(plot_id, result.target_id)
+                self.assertEqual(1.0, result.confidence)
 
     def test_blank_image_is_unknown(self):
         image = np.full((320, 320, 3), 255, dtype=np.uint8)

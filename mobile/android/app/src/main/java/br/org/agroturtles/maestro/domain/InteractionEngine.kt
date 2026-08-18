@@ -33,7 +33,10 @@ class InteractionEngine(
     private val classifier: IntentClassifier,
     private val targetResolver: TargetResolver,
 ) {
-    constructor(classifier: IntentClassifier) : this(classifier, TargetResolver(setOf("plot-03")))
+    constructor(classifier: IntentClassifier) : this(
+        classifier,
+        TargetResolver(setOf("plot-01", "plot-02", "plot-03")),
+    )
 
     private var visualTargetId: String? = null
     private var targetId: String? = null
