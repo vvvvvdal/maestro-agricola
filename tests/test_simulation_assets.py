@@ -33,6 +33,14 @@ LAUNCH_PATH = (
     / "demo.launch.py"
 )
 COMPOSE_PATH = ROOT / "compose.yaml"
+LOCALIZATION_PATH = (
+    ROOT
+    / "robot_ws"
+    / "src"
+    / "maestro_simulation"
+    / "config"
+    / "localization.yaml"
+)
 
 
 def numbers(element):
@@ -117,6 +125,17 @@ class SimulationAssetsTest(unittest.TestCase):
     def test_bridge_safety_limits_use_simulation_clock(self):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")
         self.assertIn('"use_sim_time": True', launch)
+
+    def test_saved_map_localization_starts_from_dock_pose(self):
+        launch = LAUNCH_PATH.read_text(encoding="utf-8")
+        localization = LOCALIZATION_PATH.read_text(encoding="utf-8")
+
+        self.assertIn('"localization.launch.py"', launch)
+        self.assertNotIn('"slam.launch.py"', launch)
+        self.assertIn("set_initial_pose: true", localization)
+        self.assertIn("x: 0.0", localization)
+        self.assertIn("y: 0.0", localization)
+        self.assertIn("yaw: 0.0", localization)
 
     def test_headless_launch_avoids_hidden_gui_and_preserves_model_choice(self):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")

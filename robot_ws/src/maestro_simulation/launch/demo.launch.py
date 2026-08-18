@@ -54,6 +54,7 @@ def generate_launch_description() -> LaunchDescription:
     websocket_port = LaunchConfiguration("websocket_port")
     simulation_share = Path(get_package_share_directory("maestro_simulation"))
     marker_model = simulation_share / "models" / "plot_marker" / "model.sdf"
+    localization_params = simulation_share / "config" / "localization.yaml"
     nav2_params = simulation_share / "config" / "nav2.yaml"
     robot_namespace = PythonExpression(["'/' + '", namespace, "'"])
     controller_manager = PythonExpression(
@@ -126,10 +127,14 @@ def generate_launch_description() -> LaunchDescription:
         ],
         output="screen",
     )
-    slam = include(
+    localization = include(
         "turtlebot4_navigation",
-        "slam.launch.py",
-        {"namespace": namespace, "sync": "true"},
+        "localization.launch.py",
+        {
+            "namespace": namespace,
+            "params": str(localization_params),
+            "use_sim_time": "true",
+        },
     )
     nav2 = include(
         "turtlebot4_navigation",
@@ -178,7 +183,7 @@ def generate_launch_description() -> LaunchDescription:
             ]
         return [
             spawn_marker,
-            slam,
+            localization,
             TimerAction(period=5.0, actions=[nav2]),
         ]
 
