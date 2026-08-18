@@ -27,3 +27,38 @@ Evitar divergência silenciosa entre o classificador de referência em Python e 
 - Benchmark de latência, memória, bateria ou qualidade de STT nos aparelhos.
 - Build do APK ou do projeto Xcode.
 - Inferência sobre áudio bruto; o classificador recebe somente texto transcrito.
+
+## Resultado em 18 de agosto de 2026
+
+- `shared/ai/parity_cases.json` fixa 11 casos e o SHA-256 do modelo canônico.
+- `python3 tools/export_intent_parity.py --check` passou, incluindo duas recusas por confiança abaixo de 0,40.
+- Dois testes Python passaram: conteúdo atualizado e IDs únicos.
+- Android e iOS agora possuem testes que leem exatamente o mesmo fixture e comparam rótulo e confiança.
+- Os testes Kotlin e Swift não foram executados nesta máquina: não há JDK/Android SDK nem macOS/Xcode. AI-03 permanece em andamento até essa evidência existir.
+- Nenhuma dependência, credencial ou chamada de rede foi adicionada.
+
+## Handoff para Rafael e Átila
+
+Referência e integridade do fixture:
+
+```bash
+python3 tools/export_intent_parity.py --check
+python3 -m unittest tests/test_intent_parity.py
+```
+
+Android, em uma máquina com a toolchain pronta:
+
+```bash
+cd mobile/android
+./gradlew :app:testMockDebugUnitTest
+```
+
+iOS, no Mac:
+
+```bash
+cd mobile/ios
+xcodegen generate
+xcodebuild test -project MaestroAgricola.xcodeproj -scheme MaestroAgricola -destination 'platform=iOS Simulator,name=iPhone 13'
+```
+
+Depois dos testes, registrar no Motorola e no iPhone 13 pelo menos 30 inferências por aparelho, relatando mediana e p95 de latência, pico aproximado de memória, versão do sistema e qualquer divergência de rótulo. Não usar esse benchmark como afirmação no pitch antes da medição real.

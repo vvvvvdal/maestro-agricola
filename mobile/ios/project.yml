@@ -40,6 +40,10 @@ targets:
     platform: iOS
     sources:
       - path: MaestroAgricolaTests
+      - path: ../../shared/ai/intent_model.json
+        buildPhase: resources
+      - path: ../../shared/ai/parity_cases.json
+        buildPhase: resources
     dependencies:
       - target: MaestroAgricola
     settings:
