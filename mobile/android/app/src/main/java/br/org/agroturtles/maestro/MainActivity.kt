@@ -46,7 +46,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         voice = VoiceIO(this)
         val modelJson = assets.open("intent_model.json").bufferedReader().use { it.readText() }
-        val engine = InteractionEngine(LocalIntentClassifier.fromJson(modelJson))
+        val targetMapJson = assets.open("targets.json").bufferedReader().use { it.readText() }
+        val engine = InteractionEngine(
+            LocalIntentClassifier.fromJson(modelJson),
+            br.org.agroturtles.maestro.domain.TargetResolver.fromJson(targetMapJson),
+        )
         val frameSource = PlatformFrameSource()
         setContent {
             var result by remember { mutableStateOf(engine.reset()) }

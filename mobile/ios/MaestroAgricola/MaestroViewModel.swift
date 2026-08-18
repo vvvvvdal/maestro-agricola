@@ -31,9 +31,15 @@ final class MaestroViewModel {
             guard let url = Bundle.main.url(forResource: "intent_model", withExtension: "json") else {
                 throw ClassifierError.missingModel
             }
+            guard let targetMapURL = Bundle.main.url(forResource: "targets", withExtension: "json") else {
+                throw ClassifierError.missingTargetMap
+            }
             let classifier = try LocalIntentClassifier(data: Data(contentsOf: url))
             return MaestroViewModel(
-                engine: InteractionEngine(classifier: classifier),
+                engine: InteractionEngine(
+                    classifier: classifier,
+                    targetResolver: try TargetResolver(data: Data(contentsOf: targetMapURL))
+                ),
                 frameSource: MockFrameSource(),
                 transport: WebSocketCommandTransport(),
                 voice: VoiceIO()

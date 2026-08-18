@@ -29,21 +29,28 @@ data class InteractionResult(
     val prediction: IntentPrediction? = null,
 )
 
-class InteractionEngine(private val classifier: IntentClassifier) {
+class InteractionEngine(
+    private val classifier: IntentClassifier,
+    private val targetResolver: TargetResolver,
+) {
+    constructor(classifier: IntentClassifier) : this(classifier, TargetResolver(setOf("plot-03")))
+
+    private var visualTargetId: String? = null
     private var targetId: String? = null
     var state: InteractionState = InteractionState.IDLE
         private set
 
     fun observeTarget(id: String): InteractionResult {
-        targetId = id
+        visualTargetId = id
+        targetId = null
         state = InteractionState.TARGET_READY
-        return InteractionResult(state, "Alvo $id identificado", "Alvo identificado")
+        return InteractionResult(state, "Alvo $id identificado", "Alvo $id identificado")
     }
 
     fun handleTranscript(text: String): InteractionResult {
         val prediction = classifier.classify(text)
         return when (state) {
-            InteractionState.TARGET_READY -> handleIntent(prediction)
+            InteractionState.IDLE, InteractionState.TARGET_READY -> handleIntent(text, prediction)
             InteractionState.AWAITING_CONFIRMATION -> handleConfirmation(prediction)
             else -> ambiguous("Inicie uma nova interação", prediction)
         }
@@ -60,24 +67,39 @@ class InteractionEngine(private val classifier: IntentClassifier) {
             return InteractionResult(state, "Nenhuma confirmação pendente")
         }
         targetId = null
+        visualTargetId = null
         state = InteractionState.CANCELLED
         return InteractionResult(state, "Confirmação expirada", "Tempo esgotado. Operação cancelada")
     }
 
     fun reset(): InteractionResult {
         targetId = null
+        visualTargetId = null
         state = InteractionState.IDLE
         return InteractionResult(state, "Pronto para iniciar")
     }
 
-    private fun handleIntent(prediction: IntentPrediction): InteractionResult {
+    private fun handleIntent(text: String, prediction: IntentPrediction): InteractionResult {
         if (prediction.label != "SPRAY") return ambiguous("Intenção não reconhecida", prediction)
-        val target = targetId ?: return ambiguous("Alvo ausente", prediction)
+        val resolution = targetResolver.resolve(visualTargetId, text)
+        if (resolution.status != TargetResolutionStatus.RESOLVED) {
+            targetId = null
+            state = InteractionState.AMBIGUOUS
+            val message = when (resolution.status) {
+                TargetResolutionStatus.CONFLICT -> "Alvo falado e visual não conferem"
+                TargetResolutionStatus.UNKNOWN -> "Alvo não cadastrado"
+                TargetResolutionStatus.NEEDS_VISUAL -> "Olhe para a placa ou diga o ID do plot"
+                TargetResolutionStatus.RESOLVED -> error("estado impossível")
+            }
+            return InteractionResult(state, message, "$message. Operação cancelada", prediction = prediction)
+        }
+        val target = requireNotNull(resolution.targetId)
+        targetId = target
         state = InteractionState.AWAITING_CONFIRMATION
         return InteractionResult(
             state,
             "Pulverizar $target?",
-            "Pulverizar talhão três, confirmar?",
+            "Pulverizar ${target.replace("plot-", "talhão ")}, confirmar?",
             prediction = prediction,
         )
     }

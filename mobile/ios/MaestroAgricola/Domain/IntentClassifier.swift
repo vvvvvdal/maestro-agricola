@@ -74,4 +74,5 @@ struct LocalIntentClassifier: IntentClassifying {
 enum ClassifierError: Error {
     case unsupportedModel
     case missingModel
+    case missingTargetMap
 }

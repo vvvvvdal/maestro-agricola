@@ -40,3 +40,14 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 4. Gerar e testar a placa legível.
 5. Atualizar os materiais de entrega e o pitch.
 6. Rodar a suíte completa e registrar o que ainda depende dos aparelhos.
+
+## Resultado parcial — resolvedor de alvo
+
+- As cinco branches publicadas foram integradas separadamente; os conflitos ficaram restritos ao índice de tarefas e ao `Makefile`.
+- `shared/target/target_resolution_cases.json` congela nove casos de visual, voz, concordância, conflito, ausência e alvo desconhecido.
+- A referência Python passou e os mesmos casos são consumidos por testes Kotlin e Swift.
+- A máquina de estados aceita `plot-03` falado mesmo sem QR, mas continua exigindo confirmação explícita.
+- Divergência entre o ID visual e o ID falado entra em `AMBIGUOUS` e não cria comando.
+- O catálogo `targets.json` do bridge também virou a allowlist dos dois apps; não foi criada uma segunda lista de alvos.
+- O gate da IA agora inclui 13 frases, entre elas `pulverize no plot-03` e `pulverize no plot três`.
+- Nesta máquina, 23 testes Python e 4 testes do bridge passaram. Os novos testes Kotlin/Swift aguardam as toolchains nativas já documentadas.

@@ -17,6 +17,18 @@
       "expected_confidence": 0.9585440034860792
     },
     {
+      "id": "spray_explicit_plot_numeric",
+      "text": "pulverize no plot-03",
+      "expected_label": "SPRAY",
+      "expected_confidence": 0.7742662753183867
+    },
+    {
+      "id": "spray_explicit_plot_words",
+      "text": "pulverize no plot três",
+      "expected_label": "SPRAY",
+      "expected_confidence": 0.7742662753183867
+    },
+    {
       "id": "confirm_phrase",
       "text": "sim, pode continuar",
       "expected_label": "CONFIRM",

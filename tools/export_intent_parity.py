@@ -19,6 +19,8 @@ THRESHOLD = 0.40
 PARITY_INPUTS = (
     ("spray_uppercase_accent", "PULVERIZE ESTE TALHÃO", "SPRAY"),
     ("spray_phrase", "pode aplicar o defensivo aqui", "SPRAY"),
+    ("spray_explicit_plot_numeric", "pulverize no plot-03", "SPRAY"),
+    ("spray_explicit_plot_words", "pulverize no plot três", "SPRAY"),
     ("confirm_phrase", "sim, pode continuar", "CONFIRM"),
     ("confirm_synonym", "confirmo a ordem", "CONFIRM"),
     ("cancel_accent", "não envie esse comando", "CANCEL"),

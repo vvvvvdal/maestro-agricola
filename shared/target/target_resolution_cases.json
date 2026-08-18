@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "allowed_target_ids": [
+    "plot-03"
+  ],
+  "cases": [
+    {
+      "id": "visual_here",
+      "visual_target_id": "plot-03",
+      "transcript": "pulverize aqui",
+      "expected_status": "RESOLVED",
+      "expected_target_id": "plot-03",
+      "expected_source": "VISUAL"
+    },
+    {
+      "id": "voice_numeric",
+      "visual_target_id": null,
+      "transcript": "pulverize no plot-03",
+      "expected_status": "RESOLVED",
+      "expected_target_id": "plot-03",
+      "expected_source": "VOICE"
+    },
+    {
+      "id": "voice_words",
+      "visual_target_id": null,
+      "transcript": "pulverize no plot zero três",
+      "expected_status": "RESOLVED",
+      "expected_target_id": "plot-03",
+      "expected_source": "VOICE"
+    },
+    {
+      "id": "voice_talhao",
+      "visual_target_id": null,
+      "transcript": "aplique no talhão três",
+      "expected_status": "RESOLVED",
+      "expected_target_id": "plot-03",
+      "expected_source": "VOICE"
+    },
+    {
+      "id": "visual_voice_agree",
+      "visual_target_id": "plot-03",
+      "transcript": "pulverize no plot três",
+      "expected_status": "RESOLVED",
+      "expected_target_id": "plot-03",
+      "expected_source": "AGREED"
+    },
+    {
+      "id": "visual_voice_conflict",
+      "visual_target_id": "plot-03",
+      "transcript": "pulverize no plot quatro",
+      "expected_status": "CONFLICT",
+      "expected_target_id": null,
+      "expected_source": null
+    },
+    {
+      "id": "here_without_visual",
+      "visual_target_id": null,
+      "transcript": "pulverize aqui",
+      "expected_status": "NEEDS_VISUAL",
+      "expected_target_id": null,
+      "expected_source": null
+    },
+    {
+      "id": "unknown_visual",
+      "visual_target_id": "plot-99",
+      "transcript": "pulverize aqui",
+      "expected_status": "UNKNOWN",
+      "expected_target_id": null,
+      "expected_source": null
+    },
+    {
+      "id": "unknown_voice",
+      "visual_target_id": null,
+      "transcript": "pulverize no plot-99",
+      "expected_status": "UNKNOWN",
+      "expected_target_id": null,
+      "expected_source": null
+    }
+  ]
+}

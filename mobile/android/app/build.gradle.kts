@@ -50,7 +50,9 @@ android {
 
     sourceSets {
         getByName("main").assets.srcDir("../../../shared/ai")
+        getByName("main").assets.srcDir("../../../robot_ws/src/maestro_robot_bridge/config")
         getByName("test").resources.srcDir("../../../shared/ai")
+        getByName("test").resources.srcDir("../../../shared/target")
     }
 }
 

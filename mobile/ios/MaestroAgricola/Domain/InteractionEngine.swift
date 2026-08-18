@@ -44,30 +44,51 @@ struct InteractionResult {
 
 final class InteractionEngine {
     private let classifier: IntentClassifying
+    private let targetResolver: TargetResolver
+    private var visualTargetId: String?
     private var targetId: String?
     private(set) var state: InteractionState = .idle
 
-    init(classifier: IntentClassifying) {
+    init(
+        classifier: IntentClassifying,
+        targetResolver: TargetResolver = TargetResolver(allowedTargetIds: ["plot-03"])
+    ) {
         self.classifier = classifier
+        self.targetResolver = targetResolver
     }
 
     func observeTarget(_ id: String) -> InteractionResult {
-        targetId = id
+        visualTargetId = id
+        targetId = nil
         state = .targetReady
-        return result("Alvo \(id) identificado", speech: "Alvo identificado")
+        return result("Alvo \(id) identificado", speech: "Alvo \(id) identificado")
     }
 
     func handleTranscript(_ text: String) -> InteractionResult {
         let prediction = classifier.classify(text)
         switch state {
-        case .targetReady:
-            guard prediction.label == "SPRAY", let targetId else {
+        case .idle, .targetReady:
+            guard prediction.label == "SPRAY" else {
                 return ambiguous("Intenção não reconhecida", prediction)
             }
+            let resolution = targetResolver.resolve(visualTargetId: visualTargetId, transcript: text)
+            guard resolution.status == .resolved, let resolvedTargetId = resolution.targetId else {
+                targetId = nil
+                state = .ambiguous
+                let message: String
+                switch resolution.status {
+                case .conflict: message = "Alvo falado e visual não conferem"
+                case .unknown: message = "Alvo não cadastrado"
+                case .needsVisual: message = "Olhe para a placa ou diga o ID do plot"
+                case .resolved: preconditionFailure("estado impossível")
+                }
+                return result(message, speech: "\(message). Operação cancelada", prediction: prediction)
+            }
+            targetId = resolvedTargetId
             state = .awaitingConfirmation
             return result(
-                "Pulverizar \(targetId)?",
-                speech: "Pulverizar talhão três, confirmar?",
+                "Pulverizar \(resolvedTargetId)?",
+                speech: "Pulverizar \(resolvedTargetId.replacingOccurrences(of: "plot-", with: "talhão ")), confirmar?",
                 prediction: prediction
             )
         case .awaitingConfirmation:
@@ -93,6 +114,7 @@ final class InteractionEngine {
     func confirmationTimedOut() -> InteractionResult {
         guard state == .awaitingConfirmation else { return result("Nenhuma confirmação pendente") }
         targetId = nil
+        visualTargetId = nil
         state = .cancelled
         return result("Confirmação expirada", speech: "Tempo esgotado. Operação cancelada")
     }
@@ -104,6 +126,7 @@ final class InteractionEngine {
 
     func reset() -> InteractionResult {
         targetId = nil
+        visualTargetId = nil
         state = .idle
         return result("Pronto para iniciar")
     }

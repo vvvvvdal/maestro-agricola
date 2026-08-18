@@ -38,4 +38,23 @@ class InteractionEngineTest {
         assertEquals(InteractionState.CANCELLED, timedOut.state)
         assertEquals(null, timedOut.command)
     }
+
+    @Test
+    fun explicitSpokenTargetWorksWithoutVisualMarker() {
+        val labels = ArrayDeque(listOf("SPRAY", "CONFIRM"))
+        val engine = InteractionEngine { IntentPrediction(labels.removeFirst(), 0.99) }
+        val requested = engine.handleTranscript("pulverize no plot-03")
+        assertEquals(InteractionState.AWAITING_CONFIRMATION, requested.state)
+        val confirmed = engine.handleTranscript("confirmar")
+        assertEquals("plot-03", confirmed.command?.targetId)
+    }
+
+    @Test
+    fun visualAndSpokenConflictNeverCreatesCommand() {
+        val engine = InteractionEngine { IntentPrediction("SPRAY", 0.99) }
+        engine.observeTarget("plot-03")
+        val conflict = engine.handleTranscript("pulverize no plot quatro")
+        assertEquals(InteractionState.AMBIGUOUS, conflict.state)
+        assertEquals(null, conflict.command)
+    }
 }

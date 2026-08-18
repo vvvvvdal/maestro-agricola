@@ -30,5 +30,18 @@ final class InteractionEngineTests: XCTestCase {
         _ = timeoutEngine.handleTranscript("pulverizar")
         XCTAssertNil(timeoutEngine.confirmationTimedOut().command)
     }
-}
 
+    func testExplicitSpokenTargetWorksWithoutVisualMarker() {
+        let engine = InteractionEngine(classifier: SequenceClassifier(["SPRAY", "CONFIRM"]))
+        XCTAssertNil(engine.handleTranscript("pulverize no plot-03").command)
+        XCTAssertEqual("plot-03", engine.handleTranscript("confirmar").command?.target.id)
+    }
+
+    func testVisualAndSpokenConflictNeverCreatesCommand() {
+        let engine = InteractionEngine(classifier: SequenceClassifier(["SPRAY"]))
+        _ = engine.observeTarget("plot-03")
+        let conflict = engine.handleTranscript("pulverize no plot quatro")
+        XCTAssertEqual(.ambiguous, conflict.state)
+        XCTAssertNil(conflict.command)
+    }
+}
