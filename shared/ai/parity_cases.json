@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960",
+  "confidence_threshold": 0.4,
+  "confidence_tolerance": 1e-09,
+  "cases": [
+    {
+      "id": "spray_uppercase_accent",
+      "text": "PULVERIZE ESTE TALHÃO",
+      "expected_label": "SPRAY",
+      "expected_confidence": 0.972380750003645
+    },
+    {
+      "id": "spray_phrase",
+      "text": "pode aplicar o defensivo aqui",
+      "expected_label": "SPRAY",
+      "expected_confidence": 0.9585440034860792
+    },
+    {
+      "id": "confirm_phrase",
+      "text": "sim, pode continuar",
+      "expected_label": "CONFIRM",
+      "expected_confidence": 0.9994750649545259
+    },
+    {
+      "id": "confirm_synonym",
+      "text": "confirmo a ordem",
+      "expected_label": "CONFIRM",
+      "expected_confidence": 0.9653620674743089
+    },
+    {
+      "id": "cancel_accent",
+      "text": "não envie esse comando",
+      "expected_label": "CANCEL",
+      "expected_confidence": 0.9962234068576779
+    },
+    {
+      "id": "cancel_phrase",
+      "text": "cancele agora",
+      "expected_label": "CANCEL",
+      "expected_confidence": 0.994854763745488
+    },
+    {
+      "id": "unknown_domain",
+      "text": "qual é a cotação do dólar",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 0.9637605017452179
+    },
+    {
+      "id": "unknown_request",
+      "text": "conte uma história",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 0.938218850520975
+    },
+    {
+      "id": "threshold_rejection",
+      "text": "onde está meu celular",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 0.34790812800653015
+    },
+    {
+      "id": "cancel_threshold_rejection",
+      "text": "interrompa o comando",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 0.3865234789262399
+    },
+    {
+      "id": "unknown_vocabulary",
+      "text": "xyzzy quux",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 1.0
+    }
+  ]
+}

@@ -7,6 +7,7 @@
 - [`team-branch-acceleration.md`](team-branch-acceleration.md): ordem, critérios e limites para avançar as branches de mobile, visão e IA.
 - [`android-mock-smoke.md`](android-mock-smoke.md): preflight e handoff verificável do build Kotlin no Motorola.
 - [`vision-qr.md`](vision-qr.md): plano e evidências da detecção segura do QR em imagem estática.
+- [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin/Swift e handoff dos benchmarks nos celulares.
 
 ## Convenção
 
