@@ -25,6 +25,7 @@
 - O primeiro servidor direto mostrou outra restrição do pacote: os sensores do TurtleBot 4 carregam `ignition-rendering-ogre` (OGRE 1), que não completa a inicialização no caminho EGL `--headless-rendering`. O modo automático deve usar somente `-s`: não cria GUI; o fallback portátil conserva o Xvfb interno como display compatível para LiDAR/câmera.
 - O Xvfb permite inicializar OGRE 1, porém renderiza os sensores por software e continua lento. O serviço `simulation-gpu` usa o X11 do host apenas como contexto gráfico para a NVIDIA, igual ao PB, enquanto `-s` garante que nenhuma janela do Gazebo seja criada. `make demo-route` concede o acesso local restrito e `make simulation-down` o revoga.
 - A primeira rota rápida chegou a `(2.15, -2.14)` e oscilou ao tentar alcançar a meta antiga de `plot-01`. A checagem no mapa oficial `warehouse.pgm` confirmou 56 pixels ocupados em um raio de 0,4 m ao redor de `(0.5, -2.3)`; `(2.2, -2.3)` não possui pixel ocupado nesse mesmo raio. A placa e a meta foram deslocadas juntas para a área livre à direita.
+- Com a meta em área livre, a odometria avançou normalmente, mas `/turtlebot1/pose` permaneceu perto da origem. O SLAM síncrono compensou o deslocamento em `map → odom`, fazendo o Nav2 acreditar que o robô não se aproximava da meta. Como o `warehouse` e os plots são previamente mapeados, a demonstração deve usar o `warehouse.yaml` oficial com AMCL e pose inicial `(0, 0, 0)`, não construir outro mapa durante a missão.
 - “Saia da doca” e “volte para a doca” por voz serão intenções futuras. Elas exigirão confirmação, estado do robô, idempotência e feedback por áudio; não entram no contrato `SPRAY` desta tarefa.
 
 ## Critérios de aceite
@@ -44,8 +45,9 @@
 2. Gerar as texturas `plot-01` e `plot-02`, ampliar o catálogo e testar coerência geométrica.
 3. Extrair uma máquina de estados testável para a sequência undock, metas e dock.
 4. Integrar os actions `/turtlebot1/undock`, `/turtlebot1/navigate_to_pose` e `/turtlebot1/dock` no bridge.
-5. Corrigir o launch headless para não abrir uma GUI oculta e usar o modelo Lite no gate automático.
-6. Validar testes portáteis; depois abrir Gazebo/RViz com NVIDIA e executar a missão.
+5. Corrigir o launch headless para não abrir uma GUI oculta e renderizar os sensores com NVIDIA.
+6. Trocar o SLAM ao vivo por localização AMCL no mapa oficial do warehouse.
+7. Validar testes portáteis; depois abrir Gazebo/RViz com NVIDIA e executar a missão.
 
 ## Evidências
 
