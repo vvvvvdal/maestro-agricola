@@ -1,5 +1,9 @@
 # Maestro Agrícola
 
+<p align="center">
+  <img src="assets/brand/logo-horizontal-slogan-trim.png" alt="Maestro Agrícola por AgroTurtles — seu melhor amigo do campo" width="760">
+</p>
+
 Interface hands-free para comandar maquinário agrícola autônomo com visão, voz e confirmação por áudio.
 
 O Maestro Agrícola permite que o operador olhe para um alvo no campo, diga a ação desejada e confirme o comando sem interromper o trabalho para usar notebook ou tablet. O aplicativo companion interpreta a intenção, associa o alvo visual a uma posição conhecida e envia um comando estruturado ao robô.
