@@ -14,6 +14,7 @@ from lifecycle_msgs.srv import GetState
 from nav2_msgs.action import NavigateToPose
 from rclpy.action import ActionClient
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 from .bridge_core import BridgeCore
 from .mission_cycle import MissionCycle, MissionPhase
@@ -66,7 +67,7 @@ class MaestroBridgeNode(Node):
             DockStatus,
             f"{namespace}/dock_status",
             self._dock_status_received,
-            10,
+            QoSProfile(depth=5, reliability=ReliabilityPolicy.BEST_EFFORT),
         )
         self._nav_state_client = self.create_client(
             GetState, f"{namespace}/bt_navigator/get_state"
