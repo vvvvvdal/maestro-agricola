@@ -4,6 +4,7 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 
 ## Índice
 
+- [`brand/README.md`](brand/README.md): identidade visual, paleta, logos e tipografia.
 - [`product-brief.md`](product-brief.md): problema, proposta de valor, público e limites.
 - [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
 - [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
