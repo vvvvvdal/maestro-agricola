@@ -5,7 +5,9 @@
 - Proporção: 16:9.
 - Duração: até 3 minutos.
 - Seis slides, com baixa densidade de texto.
-- Paleta: branco, preto e verde agrícola como único destaque.
+- Paleta oficial: amarelo `#FCC931`, verde `#3C4C1E`, azul `#0F3C65` e branco.
+- Tipografia: League Spartan em toda a apresentação.
+- Marca completa na abertura e no fechamento; tartaruga verde sobre amarelo como assinatura nos slides 2 a 5.
 
 ## Slide 1 — Capa
 

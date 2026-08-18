@@ -31,6 +31,10 @@ Os valores foram extraídos dos pixels dominantes dos PNGs entregues pela equipe
 | `assets/brand/logo-lockup-square.png` | composição centralizada ou peças quadradas |
 | `assets/brand/wordmark.png` | cabeçalho e materiais com pouco espaço vertical |
 | `assets/brand/logo-horizontal-slogan.png` | capa, fechamento e materiais institucionais largos |
+| `assets/brand/wordmark-trim.png` | wordmark sem margem branca excedente, para slides |
+| `assets/brand/logo-horizontal-slogan-trim.png` | marca horizontal sem margem branca excedente, para slides |
+
+Os arquivos `*-trim.png` apenas removem espaço branco externo. Cor, proporção e desenho da marca permanecem iguais aos originais.
 
 ## Regras mínimas
 
