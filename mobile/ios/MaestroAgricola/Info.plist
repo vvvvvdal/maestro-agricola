@@ -71,6 +71,13 @@
         <string>bluetooth-peripheral</string>
         <string>audio</string>
     </array>
+    <key>UIAppFonts</key>
+    <array>
+        <string>LeagueSpartan-Regular.ttf</string>
+        <string>LeagueSpartan-Medium.ttf</string>
+        <string>LeagueSpartan-SemiBold.ttf</string>
+        <string>LeagueSpartan-Bold.ttf</string>
+    </array>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UISupportedInterfaceOrientations</key>

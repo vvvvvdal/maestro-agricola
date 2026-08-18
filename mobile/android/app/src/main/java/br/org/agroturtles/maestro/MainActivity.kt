@@ -30,6 +30,9 @@ import br.org.agroturtles.maestro.domain.LocalIntentClassifier
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
 import br.org.agroturtles.maestro.platform.VoiceIO
 import br.org.agroturtles.maestro.platform.WebSocketCommandTransport
+import br.org.agroturtles.maestro.ui.MaestroBlue
+import br.org.agroturtles.maestro.ui.MaestroGreen
+import br.org.agroturtles.maestro.ui.MaestroTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -74,13 +77,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+            MaestroTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        Text("Maestro Agrícola", style = MaterialTheme.typography.headlineMedium)
+                        Text(
+                            "MAESTRO AGRÍCOLA",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaestroGreen,
+                        )
+                        Text(
+                            "POR AGROTURTLES",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaestroBlue,
+                        )
                         Text("Fonte: ${BuildConfig.FRAME_SOURCE}")
                         Text("Estado: ${result.state}")
                         Text(result.message)

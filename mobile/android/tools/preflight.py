@@ -112,6 +112,17 @@ def collect_checks(project_dir: Path, require_device: bool = False) -> list[Chec
     wrapper_jar = project_dir / "gradle" / "wrapper" / "gradle-wrapper.jar"
     checks.append(Check("Gradle wrapper", gradlew.is_file() and wrapper_jar.is_file(), str(gradlew)))
 
+    resources = project_dir / "app" / "src" / "main" / "res"
+    icons = [resources / density / "ic_launcher.png" for density in (
+        "mipmap-mdpi", "mipmap-hdpi", "mipmap-xhdpi", "mipmap-xxhdpi", "mipmap-xxxhdpi"
+    )]
+    fonts = [resources / "font" / filename for filename in (
+        "league_spartan_regular.ttf", "league_spartan_medium.ttf",
+        "league_spartan_semibold.ttf", "league_spartan_bold.ttf",
+    )]
+    checks.append(Check("Ícones da marca", all(path.is_file() for path in icons), str(icons[0].parent)))
+    checks.append(Check("League Spartan", all(path.is_file() for path in fonts), str(fonts[0].parent)))
+
     if require_device:
         if adb is None:
             checks.append(Check("Dispositivo Android", False, "adb não encontrado"))

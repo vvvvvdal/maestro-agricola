@@ -30,11 +30,21 @@ class IosPreflightTest(unittest.TestCase):
             root = Path(directory)
             ios = root / "mobile" / "ios"
             (ios / "MaestroAgricola").mkdir(parents=True)
+            (ios / "MaestroAgricola" / "Assets.xcassets" / "AppIcon.appiconset").mkdir(parents=True)
+            (ios / "MaestroAgricola" / "Resources" / "Fonts").mkdir(parents=True)
             (root / "shared" / "ai").mkdir(parents=True)
             (ios / "MaestroAgricola" / "Info.plist").write_text("<plist/>", encoding="utf-8")
             (root / "shared" / "ai" / "intent_model.json").write_text("{}", encoding="utf-8")
+            (ios / "MaestroAgricola" / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon-1024.png").write_bytes(b"png")
+            for filename in (
+                "LeagueSpartan-Regular.ttf", "LeagueSpartan-Medium.ttf",
+                "LeagueSpartan-SemiBold.ttf", "LeagueSpartan-Bold.ttf",
+            ):
+                (ios / "MaestroAgricola" / "Resources" / "Fonts" / filename).write_bytes(b"font")
             (ios / "project.yml").write_text(
-                "- path: ../../shared/ai/intent_model.json\n", encoding="utf-8"
+                "- path: ../../shared/ai/intent_model.json\n"
+                "ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon\n",
+                encoding="utf-8",
             )
 
             checks = preflight.project_checks(ios)

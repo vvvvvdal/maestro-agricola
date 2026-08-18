@@ -31,7 +31,23 @@ struct ContentView: View {
                     Button("Reiniciar", role: .cancel) { viewModel.reset() }
                 }
             }
-            .navigationTitle("Maestro Agrícola")
+            .scrollContentBackground(.hidden)
+            .background(Color.white)
+            .tint(MaestroBrand.green)
+            .environment(\.font, MaestroBrand.font(.body, size: 17))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    VStack(spacing: 0) {
+                        Text("MAESTRO AGRÍCOLA")
+                            .font(MaestroBrand.font(.headline, size: 23, weight: .bold))
+                            .foregroundStyle(MaestroBrand.green)
+                        Text("POR AGROTURTLES")
+                            .font(MaestroBrand.font(.caption2, size: 10, weight: .semibold))
+                            .foregroundStyle(MaestroBrand.blue)
+                    }
+                }
+            }
             .task(id: viewModel.interaction.state) {
                 guard viewModel.interaction.state == .awaitingConfirmation else { return }
                 try? await Task.sleep(for: .seconds(10))

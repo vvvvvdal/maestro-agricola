@@ -71,15 +71,28 @@ def project_checks(project_dir: Path) -> list[Check]:
     project_yml = project_dir / "project.yml"
     info_plist = project_dir / "MaestroAgricola" / "Info.plist"
     model = project_dir.parents[1] / "shared" / "ai" / "intent_model.json"
+    app_icon = project_dir / "MaestroAgricola" / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon-1024.png"
+    font_dir = project_dir / "MaestroAgricola" / "Resources" / "Fonts"
+    fonts = [font_dir / filename for filename in (
+        "LeagueSpartan-Regular.ttf", "LeagueSpartan-Medium.ttf",
+        "LeagueSpartan-SemiBold.ttf", "LeagueSpartan-Bold.ttf",
+    )]
     checks = [
         Check("project.yml", project_yml.is_file(), str(project_yml)),
         Check("Info.plist", info_plist.is_file(), str(info_plist)),
         Check("Modelo local", model.is_file(), str(model)),
+        Check("Ícone da marca", app_icon.is_file(), str(app_icon)),
+        Check("League Spartan", all(path.is_file() for path in fonts), str(font_dir)),
     ]
     if project_yml.is_file():
         content = project_yml.read_text(encoding="utf-8")
         reference = "../../shared/ai/intent_model.json"
         checks.append(Check("Modelo no projeto", reference in content, reference))
+        checks.append(Check(
+            "AppIcon no projeto",
+            "ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon" in content,
+            "ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon",
+        ))
     return checks
 
 
