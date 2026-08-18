@@ -59,3 +59,23 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 - O plano da textura no SDF passou de quadrado para vertical, acompanhando a placa.
 - O smoke test decodificou a placa completa como `plot-03`; oito testes de visão passaram.
 - A documentação de produto continuará tratando poeira, obstrução e manutenção como risco. A placa não substitui geofencing, RTK ou telemetria do robô em produção.
+
+## Resultado final — materiais de entrega
+
+- README, spec, arquitetura, formulário final e versões técnica/resumida descrevem o mesmo fluxo visual/falado.
+- Os PDFs revisados foram regerados e inspecionados visualmente: 3 páginas na versão resumida e 10 na técnica, sem página órfã ou conteúdo cortado.
+- O diagrama inclui placa/QR, ID falado, resolvedor de alvo, classificador local, política de confirmação e bridge ROS 2.
+- O roteiro tem 376 palavras e duração-alvo de 2min40s a 2min55s.
+- Os slides 3 a 5 foram atualizados para mostrar o softmax local de 65 KB, a regra de conflito e três evidências reproduzíveis. A apresentação passou na verificação de overflow e fidelidade ao deck-base; não há placeholder estrutural vazio.
+
+## Validação final — 18 de agosto de 2026
+
+- `make test-quick`: aprovado — 23 testes portáteis, 4 testes do bridge e Compose válido.
+- `make vision-smoke`: aprovado — placa completa detectada como `plot-03` com confiança 1,0.
+- Resolvedor: voz explícita → `RESOLVED/VOICE`; “aqui” + câmera → `RESOLVED/VISUAL`; voz `plot-04` + câmera `plot-03` → `CONFLICT`, sem alvo.
+- `make demo`: aprovado — resposta `ACCEPTED`, Nav2 ativo, meta aceita e odometria alterada (`x=0.022`, `y=0.001`). A execução terminou com `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados`.
+- O contêiner da demonstração foi encerrado após o teste.
+- Preflight Android: bloqueado neste computador por ausência de JDK 17 e Android SDK; o Gradle wrapper está presente.
+- Preflight iOS: bloqueado porque o host é Linux e não possui Xcode, Swift ou XcodeGen; arquivos do projeto e modelo local estão presentes.
+
+Nenhum build ou teste físico foi declarado como aprovado. Permanecem como gates humanos: compilar no Motorola, compilar no iPhone 13, conectar o detector ao frame mobile, validar o DAT e medir áudio, latência e bateria no hardware real.
