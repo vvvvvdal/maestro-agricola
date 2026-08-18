@@ -102,3 +102,13 @@ Evidência de sucesso final: `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e moviment
 - As metas de feedback abaixo de 1 segundo e resposta em até 3 segundos foram registradas como orçamento a medir, não como desempenho já comprovado.
 - A mudança de pose/IMU para QR previamente mapeado foi explicada como redução consciente de escopo, preservando a jornada.
 - A arquitetura Mermaid separa mídia efêmera, processamento local, comando confirmado e execução no ROS 2/Nav2/Gazebo.
+
+### 18 de agosto - PIT-01 concluída
+
+- O deck de seis slides foi preservado como template e revisado sem reconstruir seu sistema visual.
+- A assinatura mudou para “Olhe. Fale. Confirme.”, alinhada ao gate obrigatório.
+- A arquitetura visível agora separa câmera via DAT de áudio do sistema mobile e inclui Kotlin, Swift, Nav2, Gazebo e TurtleBot 4.
+- A evidência real substituiu promessas: `ACCEPTED`, Nav2 ativo, odometria alterada e `cancelar` sem comando.
+- O roteiro final tem aproximadamente 370 palavras e janela de ensaio de 2min40s a 2min55s.
+- Os seis slides foram inspecionados individualmente; o teste automático não encontrou overflow e a fidelidade ao template passou sem desvios.
+- Notas do apresentador incluem roteiro e blocos `[Sources]`; nenhum placeholder vazio permaneceu no PPTX.

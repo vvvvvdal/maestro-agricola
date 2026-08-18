@@ -11,7 +11,7 @@
 
 **Apresentador:** Felipe.
 
-**Texto:** Maestro Agrícola / Olhe. Fale. Comande.
+**Texto:** Maestro Agrícola / Olhe. Fale. Confirme.
 
 **Visual:** operador usando óculos inteligentes diante de um robô agrícola em uma linha de cultivo.
 
@@ -31,7 +31,7 @@
 
 **Apresentador:** Felipe.
 
-**Texto:** Olhar → Falar → Confirmar.
+**Texto:** Olhar → Falar → Confirmar; falha segura: “cancelar” = nenhum comando.
 
 **Edição:** destacar um passo por vez, sincronizado com a fala.
 
@@ -39,17 +39,17 @@
 
 **Apresentador:** Rafael.
 
-**Texto:** Óculos → app nativo + IA local → WebSocket → ROS 2/Gazebo.
+**Texto:** câmera via DAT → app Kotlin/Swift + IA local → WebSocket → ROS 2/Nav2/Gazebo.
 
-**Edição:** animar o fluxo da esquerda para a direita. Inserir, se disponível, 3 a 5 segundos da simulação recebendo o comando.
+**Edição:** animar o fluxo da esquerda para a direita. A fala explica que voz/TTS usam o sistema mobile, a rota Bluetooth será validada e o telefone é fallback. Inserir 3 a 5 segundos da simulação recebendo o comando.
 
 ## Slide 5 — Evidência para a banca
 
 **Apresentador:** Rafael.
 
-**Texto:** 5/5 checkpoints; 1 captura por ação; 0 mídia salva.
+**Texto:** 5/5 checkpoints; 1 captura por ação; 0 mídia salva; `ACCEPTED` + Nav2 ativo + odometria mudou.
 
-**Edição:** mostrar cada compromisso no momento em que for citado. “0 mídia salva” significa comportamento do MVP, não auditoria externa.
+**Edição:** mostrar cada compromisso no momento em que for citado. Sobrepor primeiro o comando aceito e o movimento; depois mostrar “cancelar” sem comando. “0 mídia salva” significa comportamento do MVP, não auditoria externa.
 
 ## Slide 6 — Fechamento
 
@@ -65,7 +65,15 @@
 
 1. Centralização do marcador ou talhão no feed do Mock Device Kit.
 2. Transcrição e intenção reconhecida no app.
-3. Confirmação por áudio.
+3. Pergunta de confirmação pelo TTS do celular; registrar a rota usada na gravação.
 4. JSON aceito pelo bridge.
 5. Robô iniciando o deslocamento no Gazebo.
 6. Recusa ou ambiguidade sem movimento.
+
+## Ordem sugerida na edição do vídeo
+
+1. Slides 1 e 2 em tela cheia com Felipe em picture-in-picture opcional.
+2. Slide 3 com realce sequencial dos três pontos.
+3. Slide 4 com 3 a 5 segundos do terminal/bridge e corte para o Gazebo.
+4. Slide 5 com duas evidências: `ACCEPTED` + movimento e `cancelar` + ausência de envio.
+5. Slide 6 limpo; manter um segundo depois da última palavra para facilitar o corte.
