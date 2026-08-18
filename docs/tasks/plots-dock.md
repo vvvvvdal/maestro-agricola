@@ -16,6 +16,7 @@
 - O bridge executa todas as metas já enfileiradas e solicita `Dock` quando a fila termina. Se a navegação falhar, ainda tenta voltar à doca.
 - Falha ou recusa do undock bloqueia navegação; falha do dock fica explícita no log e bloqueia uma nova missão até reinício limpo. O comportamento do PB de continuar após falha de undock não é seguro para este MVP.
 - A primeira prova headless expôs uma corrida de inicialização: o action recusou com “Robot already undocked” enquanto o tópico `dock_status` ainda convergia para `is_docked: true`. O bridge deve aguardar uma leitura do tópico, aceitar “estado final já atingido” como operação idempotente e repetir uma recusa transitória de forma limitada; estado desconhecido continua bloqueando navegação.
+- A segunda prova mostrou que `/turtlebot1/dock_status` é publicado como `BEST_EFFORT`. Uma assinatura ROS 2 `RELIABLE` aparece no grafo, mas é incompatível e não recebe mensagens; o bridge deve usar o mesmo QoS do Create 3.
 - “Saia da doca” e “volte para a doca” por voz serão intenções futuras. Elas exigirão confirmação, estado do robô, idempotência e feedback por áudio; não entram no contrato `SPRAY` desta tarefa.
 
 ## Critérios de aceite
