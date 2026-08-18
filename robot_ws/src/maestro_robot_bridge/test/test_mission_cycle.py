@@ -45,6 +45,14 @@ class MissionCycleTest(unittest.TestCase):
         self.assertEqual(MissionPhase.FAILED, cycle.phase)
         self.assertFalse(cycle.command_queued())
 
+    def test_transient_undock_rejection_can_be_retried(self):
+        cycle = MissionCycle()
+        cycle.begin_undock()
+        self.assertTrue(cycle.retry_undock())
+        self.assertEqual(MissionPhase.NEEDS_UNDOCK, cycle.phase)
+        cycle.begin_undock()
+        self.assertTrue(cycle.undock_completed(succeeded=True, is_docked=False))
+
     def test_navigation_failure_can_still_proceed_to_dock(self):
         cycle = self.ready_cycle()
         cycle.begin_navigation()
@@ -61,6 +69,14 @@ class MissionCycleTest(unittest.TestCase):
         )
         self.assertEqual(MissionPhase.FAILED, cycle.phase)
         self.assertFalse(cycle.command_queued())
+
+    def test_transient_dock_rejection_can_be_retried(self):
+        cycle = self.ready_cycle()
+        cycle.begin_navigation()
+        cycle.navigation_completed(has_pending=False)
+        cycle.begin_docking()
+        self.assertTrue(cycle.retry_docking())
+        self.assertEqual(MissionPhase.READY_TO_DOCK, cycle.phase)
 
 
 if __name__ == "__main__":

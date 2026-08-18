@@ -9,6 +9,7 @@ import rclpy
 from action_msgs.msg import GoalStatus
 from ament_index_python.packages import get_package_share_directory
 from irobot_create_msgs.action import Dock, Undock
+from irobot_create_msgs.msg import DockStatus
 from lifecycle_msgs.srv import GetState
 from nav2_msgs.action import NavigateToPose
 from rclpy.action import ActionClient
@@ -32,6 +33,7 @@ class MaestroBridgeNode(Node):
         self.declare_parameter("targets_path", f"{share}/config/targets.json")
         self.declare_parameter("dock_action_timeout_s", 120.0)
         self.declare_parameter("navigation_timeout_s", 180.0)
+        self.declare_parameter("action_retry_limit", 5)
 
         namespace = str(self.get_parameter("robot_namespace").value).rstrip("/")
         self._map_frame = str(self.get_parameter("map_frame").value)
@@ -41,6 +43,7 @@ class MaestroBridgeNode(Node):
         self._navigation_timeout_s = float(
             self.get_parameter("navigation_timeout_s").value
         )
+        self._action_retry_limit = int(self.get_parameter("action_retry_limit").value)
         self._pending: Queue[tuple[PoseTarget, str]] = Queue(maxsize=16)
         self._mission = MissionCycle()
         self._mission_lock = Lock()
@@ -49,10 +52,22 @@ class MaestroBridgeNode(Node):
         self._undock_goal_handle = None
         self._nav_goal_handle = None
         self._dock_goal_handle = None
+        self._latest_is_docked: bool | None = None
+        self._dock_status_changed_at = monotonic()
+        self._undock_attempts = 0
+        self._dock_attempts = 0
+        self._next_undock_attempt_at = 0.0
+        self._next_dock_attempt_at = 0.0
 
         self._undock_client = ActionClient(self, Undock, f"{namespace}/undock")
         self._nav_client = ActionClient(self, NavigateToPose, f"{namespace}/navigate_to_pose")
         self._dock_client = ActionClient(self, Dock, f"{namespace}/dock")
+        self._dock_status_subscription = self.create_subscription(
+            DockStatus,
+            f"{namespace}/dock_status",
+            self._dock_status_received,
+            10,
+        )
         self._nav_state_client = self.create_client(
             GetState, f"{namespace}/bt_navigator/get_state"
         )
@@ -105,11 +120,21 @@ class MaestroBridgeNode(Node):
             self._check_action_timeout("dock", self._dock_goal_handle)
 
     def _start_undock(self) -> None:
+        if monotonic() < self._next_undock_attempt_at:
+            return
+        if not self._dock_status_is_stable():
+            self._fail_if_phase_expired("dock status")
+            return
+        if self._latest_is_docked is False:
+            if self._transition(self._mission.begin_undock):
+                self._complete_undock_from_state("robot already clear of dock")
+            return
         if not self._undock_client.server_is_ready():
             self._fail_if_phase_expired("undock action server")
             return
         if not self._transition(self._mission.begin_undock):
             return
+        self._undock_attempts += 1
         self.get_logger().info("Requesting undock before navigation")
         try:
             future = self._undock_client.send_goal_async(Undock.Goal())
@@ -127,7 +152,7 @@ class MaestroBridgeNode(Node):
             self._fail_mission(f"undock goal failed: {exc}")
             return
         if not goal_handle.accepted:
-            self._fail_mission("undock goal was rejected")
+            self._retry_undock_or_accept_state()
             return
         self._undock_goal_handle = goal_handle
         self.get_logger().info("Undock goal accepted")
@@ -138,8 +163,8 @@ class MaestroBridgeNode(Node):
             return
         try:
             wrapped = future.result()
-            succeeded = wrapped.status == GoalStatus.STATUS_SUCCEEDED
             is_docked = bool(wrapped.result.is_docked)
+            succeeded = wrapped.status == GoalStatus.STATUS_SUCCEEDED or not is_docked
         except Exception as exc:
             self._fail_mission(f"undock result failed: {exc}")
             return
@@ -149,6 +174,7 @@ class MaestroBridgeNode(Node):
             is_docked=is_docked,
         ):
             self._undock_goal_handle = None
+            self._undock_attempts = 0
             self.get_logger().info("Undock completed: robot is clear of dock")
         else:
             self._fail_mission(
@@ -229,11 +255,18 @@ class MaestroBridgeNode(Node):
         )
 
     def _start_dock(self) -> None:
+        if monotonic() < self._next_dock_attempt_at:
+            return
+        if self._latest_is_docked is True and self._dock_status_is_stable():
+            if self._transition(self._mission.begin_docking):
+                self._complete_dock_from_state("robot already docked")
+            return
         if not self._dock_client.server_is_ready():
             self._fail_if_phase_expired("dock action server")
             return
         if not self._transition(self._mission.begin_docking):
             return
+        self._dock_attempts += 1
         self.get_logger().info("Requesting dock after navigation queue completed")
         try:
             future = self._dock_client.send_goal_async(Dock.Goal())
@@ -251,7 +284,7 @@ class MaestroBridgeNode(Node):
             self._fail_mission(f"dock goal failed: {exc}")
             return
         if not goal_handle.accepted:
-            self._fail_mission("dock goal was rejected")
+            self._retry_dock_or_accept_state()
             return
         self._dock_goal_handle = goal_handle
         self.get_logger().info("Dock goal accepted")
@@ -262,8 +295,8 @@ class MaestroBridgeNode(Node):
             return
         try:
             wrapped = future.result()
-            succeeded = wrapped.status == GoalStatus.STATUS_SUCCEEDED
             is_docked = bool(wrapped.result.is_docked)
+            succeeded = wrapped.status == GoalStatus.STATUS_SUCCEEDED or is_docked
         except Exception as exc:
             self._fail_mission(f"dock result failed: {exc}")
             return
@@ -274,11 +307,77 @@ class MaestroBridgeNode(Node):
             has_pending=not self._pending.empty(),
         ):
             self._dock_goal_handle = None
+            self._dock_attempts = 0
             self.get_logger().info("Dock completed: robot is docked")
         else:
             self._fail_mission(
                 f"dock ended with status={wrapped.status}, is_docked={is_docked}"
             )
+
+    def _dock_status_received(self, message: DockStatus) -> None:
+        value = bool(message.is_docked)
+        if value != self._latest_is_docked:
+            self._latest_is_docked = value
+            self._dock_status_changed_at = monotonic()
+
+    def _dock_status_is_stable(self) -> bool:
+        return (
+            self._latest_is_docked is not None
+            and monotonic() - self._dock_status_changed_at >= 1.0
+        )
+
+    def _retry_undock_or_accept_state(self) -> None:
+        if self._latest_is_docked is False:
+            self._complete_undock_from_state("action rejected after robot became clear")
+            return
+        if self._undock_attempts < self._action_retry_limit:
+            if self._transition(self._mission.retry_undock):
+                self._next_undock_attempt_at = monotonic() + 2.0
+                self.get_logger().warning(
+                    "Undock goal rejected during startup; retrying after dock status settles"
+                )
+                return
+        self._fail_mission("undock goal was rejected after bounded retries")
+
+    def _complete_undock_from_state(self, reason: str) -> None:
+        if self._transition(
+            self._mission.undock_completed,
+            succeeded=True,
+            is_docked=False,
+        ):
+            self._undock_goal_handle = None
+            self._undock_attempts = 0
+            self.get_logger().info(
+                f"Undock completed: robot is clear of dock ({reason})"
+            )
+            return
+        self._fail_mission("could not record confirmed undocked state")
+
+    def _retry_dock_or_accept_state(self) -> None:
+        if self._latest_is_docked is True:
+            self._complete_dock_from_state("action rejected after robot became docked")
+            return
+        if self._dock_attempts < self._action_retry_limit:
+            if self._transition(self._mission.retry_docking):
+                self._next_dock_attempt_at = monotonic() + 2.0
+                self.get_logger().warning(
+                    "Dock goal rejected while robot was not docked; retrying"
+                )
+                return
+        self._fail_mission("dock goal was rejected after bounded retries")
+
+    def _complete_dock_from_state(self, reason: str) -> None:
+        if self._transition(
+            self._mission.docking_completed,
+            succeeded=True,
+            is_docked=True,
+            has_pending=not self._pending.empty(),
+        ):
+            self._dock_goal_handle = None
+            self._dock_attempts = 0
+            self.get_logger().info(f"Dock completed: robot is docked ({reason})")
+            return
+        self._fail_mission("could not record confirmed docked state")
 
     def _nav_is_active(self) -> bool:
         if self._nav_active:

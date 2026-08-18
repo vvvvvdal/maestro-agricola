@@ -46,6 +46,12 @@ class MissionCycle:
         self.phase = MissionPhase.READY
         return True
 
+    def retry_undock(self) -> bool:
+        if self.phase != MissionPhase.UNDOCKING:
+            return False
+        self.phase = MissionPhase.NEEDS_UNDOCK
+        return True
+
     def begin_navigation(self) -> bool:
         if self.phase != MissionPhase.READY:
             return False
@@ -77,6 +83,12 @@ class MissionCycle:
             self.fail("dock did not confirm that the robot is docked")
             return False
         self.phase = MissionPhase.NEEDS_UNDOCK if has_pending else MissionPhase.DOCKED
+        return True
+
+    def retry_docking(self) -> bool:
+        if self.phase != MissionPhase.DOCKING:
+            return False
+        self.phase = MissionPhase.READY_TO_DOCK
         return True
 
     def fail(self, reason: str) -> None:
