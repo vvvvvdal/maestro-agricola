@@ -19,6 +19,7 @@
 - A segunda prova mostrou que `/turtlebot1/dock_status` é publicado como `BEST_EFFORT`. Uma assinatura ROS 2 `RELIABLE` aparece no grafo, mas é incompatível e não recebe mensagens; o bridge deve usar o mesmo QoS do Create 3.
 - O `warehouse` headless por software avançou apenas cerca de 3 s simulados em mais de 1 minuto real. A prova dos três plots usará um serviço headless separado com `gpus: all` e NVIDIA, sem abrir a GUI; `make demo` e o serviço `simulation` continuam como fallback portátil sem GPU.
 - Mesmo com GPU, o limite de 120 s de relógio real cancelou um undock que ainda avançava no Gazebo. Os limites do bridge passam a usar `/clock` (`use_sim_time`), portanto medem tempo simulado: preservam a falha segura sem punir uma máquina que renderiza abaixo do tempo real.
+- Na prova seguinte, a odometria chegou a `x=-0,353` e `dock_status=false`, mas o action de undock não devolveu o resultado. O estado estável do tópico passa a ser a confirmação autoritativa: o bridge cancela um goal pendurado e avança quando a condição física desejada já foi atingida; o mesmo vale para `dock_status=true` no retorno.
 - “Saia da doca” e “volte para a doca” por voz serão intenções futuras. Elas exigirão confirmação, estado do robô, idempotência e feedback por áudio; não entram no contrato `SPRAY` desta tarefa.
 
 ## Critérios de aceite
