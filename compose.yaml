@@ -32,7 +32,7 @@ services:
       - demo.launch.py
       - namespace:=turtlebot1
       - world:=warehouse
-      - model:=${TURTLEBOT4_MODEL:-standard}
+      - model:=${MAESTRO_HEADLESS_MODEL:-lite}
       - websocket_port:=${MAESTRO_WS_PORT:-18765}
       - headless:=true
 
@@ -81,7 +81,7 @@ services:
       - demo.launch.py
       - namespace:=turtlebot1
       - world:=warehouse
-      - model:=${TURTLEBOT4_MODEL:-standard}
+      - model:=${MAESTRO_HEADLESS_MODEL:-lite}
       - websocket_port:=${MAESTRO_WS_PORT:-18765}
       - headless:=true
 

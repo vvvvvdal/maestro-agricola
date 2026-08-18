@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
@@ -9,6 +10,7 @@ from launch.actions import (
     LogInfo,
     OpaqueFunction,
     RegisterEventHandler,
+    SetEnvironmentVariable,
     SetLaunchConfiguration,
     TimerAction,
 )
@@ -56,10 +58,58 @@ def generate_launch_description() -> LaunchDescription:
         ["'/' + '", namespace, "' + '/controller_manager'"]
     )
 
+    turtlebot_bringup = Path(
+        get_package_share_directory("turtlebot4_ignition_bringup")
+    )
+    turtlebot_description = Path(
+        get_package_share_directory("turtlebot4_description")
+    )
+    create_bringup = Path(
+        get_package_share_directory("irobot_create_ignition_bringup")
+    )
+    create_description = Path(
+        get_package_share_directory("irobot_create_description")
+    )
+    resource_path = os.pathsep.join([
+        str(turtlebot_bringup / "worlds"),
+        str(create_bringup / "worlds"),
+        str(turtlebot_description.parent),
+        str(create_description.parent),
+    ])
+    plugin_path = os.pathsep.join([
+        str(
+            Path(get_package_share_directory("turtlebot4_ignition_gui_plugins"))
+            / "lib"
+        ),
+        str(
+            Path(get_package_share_directory("irobot_create_ignition_plugins"))
+            / "lib"
+        ),
+    ])
     gazebo = include(
+        "ros_gz_sim",
+        "gz_sim.launch.py",
+        {
+            "gz_args": LaunchConfiguration("gz_args"),
+            "on_exit_shutdown": "true",
+        },
+    )
+    robot_spawn = include(
         "turtlebot4_ignition_bringup",
-        "turtlebot4_ignition.launch.py",
-        {"namespace": namespace, "world": world, "model": model},
+        "turtlebot4_spawn.launch.py",
+        {
+            "namespace": namespace,
+            "model": model,
+            "rviz": "false",
+            "use_sim_time": "true",
+        },
+    )
+    clock_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="clock_bridge",
+        output="screen",
+        arguments=["/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"],
     )
     spawn_marker = Node(
         package="ros_gz_sim",
@@ -144,8 +194,13 @@ def generate_launch_description() -> LaunchDescription:
         DeclareLaunchArgument("headless", default_value="true"),
         DeclareLaunchArgument("gz_args", default_value=""),
         DeclareLaunchArgument("websocket_port", default_value="18765"),
+        SetEnvironmentVariable("IGN_GAZEBO_RESOURCE_PATH", resource_path),
+        SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", resource_path),
+        SetEnvironmentVariable("IGN_GUI_PLUGIN_PATH", plugin_path),
         OpaqueFunction(function=configure_gazebo),
         gazebo,
+        clock_bridge,
+        robot_spawn,
         controller_guard,
         navigation_gate,
         bridge,

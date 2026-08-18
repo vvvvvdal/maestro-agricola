@@ -32,6 +32,7 @@ LAUNCH_PATH = (
     / "launch"
     / "demo.launch.py"
 )
+COMPOSE_PATH = ROOT / "compose.yaml"
 
 
 def numbers(element):
@@ -116,6 +117,21 @@ class SimulationAssetsTest(unittest.TestCase):
     def test_bridge_safety_limits_use_simulation_clock(self):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")
         self.assertIn('"use_sim_time": True', launch)
+
+    def test_headless_launch_avoids_hidden_gui_and_heavy_camera_model(self):
+        launch = LAUNCH_PATH.read_text(encoding="utf-8")
+        compose = COMPOSE_PATH.read_text(encoding="utf-8")
+
+        self.assertIn('"ros_gz_sim"', launch)
+        self.assertIn('"gz_sim.launch.py"', launch)
+        self.assertIn('"turtlebot4_spawn.launch.py"', launch)
+        self.assertNotIn('"turtlebot4_ignition.launch.py"', launch)
+        self.assertIn('gz_args += " -s --headless-rendering"', launch)
+        self.assertEqual(
+            2,
+            compose.count("model:=${MAESTRO_HEADLESS_MODEL:-lite}"),
+        )
+        self.assertEqual(1, compose.count("model:=${TURTLEBOT4_MODEL:-standard}"))
 
 
 if __name__ == "__main__":
