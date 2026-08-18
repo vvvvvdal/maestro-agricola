@@ -118,7 +118,7 @@ class SimulationAssetsTest(unittest.TestCase):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")
         self.assertIn('"use_sim_time": True', launch)
 
-    def test_headless_launch_avoids_hidden_gui_and_heavy_camera_model(self):
+    def test_headless_launch_avoids_hidden_gui_and_preserves_model_choice(self):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")
         compose = COMPOSE_PATH.read_text(encoding="utf-8")
 
@@ -129,10 +129,13 @@ class SimulationAssetsTest(unittest.TestCase):
         self.assertIn('gz_args += " -s"', launch)
         self.assertNotIn("--headless-rendering", launch)
         self.assertEqual(
-            2,
-            compose.count("model:=${MAESTRO_HEADLESS_MODEL:-lite}"),
+            3,
+            compose.count("model:=${TURTLEBOT4_MODEL:-standard}"),
         )
-        self.assertEqual(1, compose.count("model:=${TURTLEBOT4_MODEL:-standard}"))
+        self.assertNotIn("MAESTRO_HEADLESS_MODEL", compose)
+        gpu_service = compose.split("  simulation-gpu:", 1)[1]
+        self.assertIn('MAESTRO_HEADLESS: "0"', gpu_service)
+        self.assertIn("/tmp/.X11-unix:/tmp/.X11-unix:rw", gpu_service)
 
 
 if __name__ == "__main__":

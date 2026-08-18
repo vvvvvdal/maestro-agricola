@@ -74,8 +74,11 @@ demo: doctor simulation-up
 
 demo-route: doctor
 	@command -v nvidia-smi >/dev/null || { echo 'Erro: driver NVIDIA não encontrado no host.'; exit 1; }
+	@command -v xhost >/dev/null || { echo 'Erro: xhost não está instalado no host.'; exit 1; }
+	@test -n "$$DISPLAY" || { echo 'Erro: nenhuma sessão gráfica X11 foi encontrada.'; exit 1; }
 	@docker info --format '{{json .Runtimes}}' | grep -q 'nvidia' || { echo 'Erro: runtime NVIDIA não configurado no Docker.'; exit 1; }
 	docker compose --profile visual --profile gpu down
+	@xhost +SI:localuser:root >/dev/null
 	docker compose --profile gpu up --build -d simulation-gpu
 	$(PYTHON) tools/mock_glasses_client.py --wait-seconds 120 \
 		--target plot-01 --target plot-02 --target plot-03
