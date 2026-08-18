@@ -126,7 +126,8 @@ class SimulationAssetsTest(unittest.TestCase):
         self.assertIn('"gz_sim.launch.py"', launch)
         self.assertIn('"turtlebot4_spawn.launch.py"', launch)
         self.assertNotIn('"turtlebot4_ignition.launch.py"', launch)
-        self.assertIn('gz_args += " -s --headless-rendering"', launch)
+        self.assertIn('gz_args += " -s"', launch)
+        self.assertNotIn("--headless-rendering", launch)
         self.assertEqual(
             2,
             compose.count("model:=${MAESTRO_HEADLESS_MODEL:-lite}"),

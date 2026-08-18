@@ -35,7 +35,9 @@ def configure_gazebo(context):
     headless = LaunchConfiguration("headless").perform(context).lower() == "true"
     gz_args = f"{world}.sdf -r -v 4"
     if headless:
-        gz_args += " -s --headless-rendering"
+        # TurtleBot 4 Fortress sensors use OGRE 1. Keep Xvfb as their display,
+        # but omit the Gazebo GUI process itself.
+        gz_args += " -s"
     else:
         bringup_share = Path(
             get_package_share_directory("turtlebot4_ignition_bringup")
