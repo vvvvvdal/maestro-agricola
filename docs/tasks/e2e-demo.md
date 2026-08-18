@@ -51,3 +51,11 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 - O catálogo `targets.json` do bridge também virou a allowlist dos dois apps; não foi criada uma segunda lista de alvos.
 - O gate da IA agora inclui 13 frases, entre elas `pulverize no plot-03` e `pulverize no plot três`.
 - Nesta máquina, 23 testes Python e 4 testes do bridge passaram. Os novos testes Kotlin/Swift aguardam as toolchains nativas já documentadas.
+
+## Resultado parcial — placa legível
+
+- A textura do Gazebo agora é uma placa vertical com `PLOT-03`, QR e indicação de alvo mapeado.
+- O QR puro foi preservado em `plot-03-qr.png`, e `tools/generate_qr.py` reproduz os dois arquivos sem a antiga dependência `qrcode`.
+- O plano da textura no SDF passou de quadrado para vertical, acompanhando a placa.
+- O smoke test decodificou a placa completa como `plot-03`; oito testes de visão passaram.
+- A documentação de produto continuará tratando poeira, obstrução e manutenção como risco. A placa não substitui geofencing, RTK ou telemetria do robô em produção.

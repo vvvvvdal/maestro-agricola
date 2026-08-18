@@ -21,7 +21,7 @@
       <visual name="qr_visual">
         <pose>-0.026 0 0 0 0 1.570796</pose>
         <geometry>
-          <plane><normal>0 0 1</normal><size>0.65 0.65</size></plane>
+          <plane><normal>0 0 1</normal><size>0.68 0.95</size></plane>
         </geometry>
         <material>
           <ambient>1 1 1 1</ambient>

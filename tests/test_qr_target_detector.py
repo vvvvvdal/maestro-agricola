@@ -81,6 +81,7 @@ class StaticImageTest(unittest.TestCase):
             / "plot-03.png"
         )
         image = cv2.imread(str(image_path))
+        self.assertGreater(image.shape[0], image.shape[1], "a placa deve ser vertical e conter o ID legível")
         result = detector.detect_image(image, {"plot-03"}, CAPTURED_AT, cv2_module=cv2)
         self.assertEqual("DETECTED", result.status)
         self.assertEqual("plot-03", result.target_id)
