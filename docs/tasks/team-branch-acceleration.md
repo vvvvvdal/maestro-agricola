@@ -62,3 +62,33 @@ Critérios:
 ## Regra de integração
 
 Não fazer merge automático entre as branches. Ao final, entregar a Átila e Rafael a lista de commits locais para revisão ou cherry-pick. Mudanças em contrato, dependência, privacidade ou DAT exigem decisão conjunta antes de integrar.
+
+## Resultado da execução
+
+Todas as branches terminaram com árvore limpa e continuam somente locais, sem push:
+
+| Branch | Commits | Evidência produzida | Limite preservado |
+|---|---|---|---|
+| `feat/android-mock-smoke` | `9487a84` | preflight e 3 testes | build, voz e TTS aguardam JDK/SDK e Motorola |
+| `feat/vision-qr` | `17ec003`, `be94068` | textura `plot-03`, vazio, desconhecido e ambiguidade; 8 testes | VIS-03 aguarda frame dentro do app |
+| `feat/ai-device-eval` | `ae36a5e`, `d97c31b` | fixture de 11 casos e 2 testes da referência | testes Kotlin/Swift e benchmark aguardam aparelhos |
+| `feat/ios-mock-smoke` | `1cf8b6e`, `21811dd` | preflight e 3 testes | build, voz e TTS aguardam Mac e iPhone 13 |
+
+Verificações adicionais executadas nas branches de implementação:
+
+- visão: 14 testes Python do diretório raiz e 4 do bridge passaram;
+- IA: 8 testes Python do diretório raiz e 4 do bridge passaram; JSON e YAML foram validados;
+- iOS: 9 testes Python do diretório raiz e 4 do bridge passaram;
+- nenhum pacote, token ou credencial foi adicionado.
+
+## Ordem recomendada de revisão e integração
+
+1. Felipe revisa `be94068`, pois é a nova evidência visual que mais fortalece o MVP e o pitch.
+2. Rafael revisa `d97c31b` e confirma se os 11 rótulos representam a política operacional desejada.
+3. Átila executa `9487a84` no ambiente Android e `21811dd` no Mac; só depois registra build e aparelho como aprovados.
+4. A equipe escolhe uma branch de integração e incorpora os pares completos de commits. Se houver conflito apenas em `docs/tasks/README.md`, preservar todas as entradas do índice.
+5. Rodar novamente testes, demo no Gazebo e ambos os mocks antes de congelar features.
+
+## Decisão de escopo para o restante da semana
+
+Não adicionar uma segunda ação agrícola, localização sem QR, robô físico ou um modelo maior. A prioridade é fechar uma única jornada demonstrável: QR `plot-03` → intenção local `SPRAY` → confirmação explícita → WebSocket → Nav2/Gazebo. Para o pitch, usar como prova já executada a visão estática, a IA local e o movimento simulado; chamar builds e uso dos óculos de próximos gates até a evidência física existir.
