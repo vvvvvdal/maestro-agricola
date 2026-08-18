@@ -110,7 +110,7 @@ class MaestroBridgeNode(Node):
         if phase == MissionPhase.NEEDS_UNDOCK:
             self._start_undock()
         elif phase == MissionPhase.UNDOCKING:
-            self._check_action_timeout("undock", self._undock_goal_handle)
+            self._monitor_undock()
         elif phase == MissionPhase.READY:
             self._start_navigation()
         elif phase == MissionPhase.NAVIGATING:
@@ -118,7 +118,7 @@ class MaestroBridgeNode(Node):
         elif phase == MissionPhase.READY_TO_DOCK:
             self._start_dock()
         elif phase == MissionPhase.DOCKING:
-            self._check_action_timeout("dock", self._dock_goal_handle)
+            self._monitor_dock()
 
     def _start_undock(self) -> None:
         if monotonic() < self._next_undock_attempt_at:
@@ -404,6 +404,22 @@ class MaestroBridgeNode(Node):
         if goal_handle is not None:
             goal_handle.cancel_goal_async()
         self._fail_mission(f"{label} timed out")
+
+    def _monitor_undock(self) -> None:
+        if self._latest_is_docked is False and self._dock_status_is_stable():
+            if self._undock_goal_handle is not None:
+                self._undock_goal_handle.cancel_goal_async()
+            self._complete_undock_from_state("dock status confirmed clear")
+            return
+        self._check_action_timeout("undock", self._undock_goal_handle)
+
+    def _monitor_dock(self) -> None:
+        if self._latest_is_docked is True and self._dock_status_is_stable():
+            if self._dock_goal_handle is not None:
+                self._dock_goal_handle.cancel_goal_async()
+            self._complete_dock_from_state("dock status confirmed docked")
+            return
+        self._check_action_timeout("dock", self._dock_goal_handle)
 
     def _check_navigation_timeout(self) -> None:
         if self._phase_elapsed() <= self._navigation_timeout_s:
