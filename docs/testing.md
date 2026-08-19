@@ -245,6 +245,17 @@ Para repetir somente os cenários de recusa, ambiguidade e timeout:
 
 Os nove testes da máquina de estados exigem `command == null` para intenção desconhecida, alvo ausente ou desconhecido, conflito visual/falado, recusa, timeout e confirmação tardia. Uma confirmação ambígua pode ser repetida dentro do timeout, mas também não cria comando. Somente alvo resolvido, intenção `SPRAY` e confirmação `CONFIRM` entram em `SENDING`.
 
+### QA-04 — integridade da matriz de checkpoints
+
+Na raiz do projeto:
+
+```bash
+python3 tools/check_qa04_evidence.py
+python3 -m unittest tests/test_qa04_evidence.py
+```
+
+O primeiro comando valida estados, IDs, arquivos referenciados e a regra de que a QA-04 só pode ser `PASS` quando os cinco checkpoints também forem `PASS`. O segundo comprova que inconsistências são rejeitadas.
+
 ## Evidência mínima para a entrega
 
 Registre, sem mídia bruta:

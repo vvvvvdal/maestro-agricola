@@ -13,6 +13,7 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
 - [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.
 - [`tasks/qa-01-safety.md`](tasks/qa-01-safety.md): critérios de recusa, ambiguidade e timeout sem emissão de comando.
+- [`tasks/qa-04-checkpoints.md`](tasks/qa-04-checkpoints.md): spec e protocolo da matriz dos cinco checkpoints obrigatórios.
 - [`tasks/hackathon-day.md`](tasks/hackathon-day.md): plano de integração com os óculos no evento.
 - [`relatorio-evolucao-2026-08-19.md`](relatorio-evolucao-2026-08-19.md): histórico consolidado das mudanças, evidências, pendências e próximos passos.
 - [`references.md`](references.md): fontes oficiais e materiais de apoio.
