@@ -38,6 +38,7 @@ class MissionLogStatusTest(unittest.TestCase):
             "Nav2 completed command a for target plot-01",
             "Nav2 completed command b for target plot-02",
             "Nav2 completed command c for target plot-03",
+            "Nav2 completed return-to-dock approach",
             "Dock completed: robot is docked",
         ])
         status = evaluate_mission_logs(logs, ["plot-01", "plot-02", "plot-03"])
@@ -52,8 +53,18 @@ class MissionLogStatusTest(unittest.TestCase):
             "Nav2 completed command a for target plot-01",
             "Dock completed: robot is docked",
             "Nav2 completed command b for target plot-02",
+            "Nav2 completed return-to-dock approach",
         ])
         status = evaluate_mission_logs(logs, ["plot-01", "plot-02"])
+        self.assertFalse(status.docked)
+
+    def test_does_not_accept_servo_dock_without_global_return(self):
+        logs = "\n".join([
+            "Undock completed: robot is clear of dock",
+            "Nav2 completed command a for target plot-03",
+            "Dock completed: robot is docked",
+        ])
+        status = evaluate_mission_logs(logs, ["plot-03"])
         self.assertFalse(status.docked)
 
     def test_reports_navigation_timeout_after_latest_undock(self):

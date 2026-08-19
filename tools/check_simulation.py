@@ -137,7 +137,13 @@ def evaluate_mission_logs(logs: str, expected_targets: list[str]) -> MissionLogS
         completed.append(target)
         cursor = match.end()
 
-    docked = mission_logs.find("Dock completed: robot is docked", cursor) >= 0
+    approach_index = mission_logs.find(
+        "Nav2 completed return-to-dock approach", cursor
+    )
+    docked = (
+        approach_index >= 0
+        and mission_logs.find("Dock completed: robot is docked", approach_index) >= 0
+    )
     return MissionLogStatus(True, tuple(completed), docked)
 
 
