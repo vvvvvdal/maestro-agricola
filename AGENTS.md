@@ -72,14 +72,46 @@ Quando disponível, prefira limites explícitos, por exemplo:
 
 ```bash
 timeout 20s git status --porcelain
-timeout 5m make test-robot
+timeout 2m python3 -m pytest \
+  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
 ```
+
+### Regra específica para wrappers `make` no Antigravity/Gemini
+
+O runner do Antigravity já apresentou hangs em comandos `make` mesmo quando o
+comando subjacente funciona normalmente no terminal do usuário.
+
+Portanto:
+
+- não use `make` como primeira opção quando o comando direto equivalente for conhecido;
+- para a Task 1 de lifecycle do bridge, use obrigatoriamente primeiro:
+
+```bash
+python3 -m pytest \
+  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
+```
+
+- se um wrapper `make` ficar sem progresso, interrompa e não repita;
+- execute diretamente `python3 -m pytest <arquivo> -q` para os testes focados;
+- um hang do wrapper `make` é uma limitação do runner, não motivo para alterar
+  código do produto;
+- não rode `make test-ai`, `make model` ou suites de outros domínios para validar
+  uma task exclusiva do bridge ROS.
 
 Ajuste o timeout quando a própria documentação do projeto justificar uma duração maior.
 
 ### 3. Estratégia de testes
 
 - Rode primeiro o menor teste capaz de validar a mudança.
+- Prefira invocar `pytest` diretamente em arquivos específicos em vez de passar
+  por `make`, especialmente dentro do Antigravity.
+- Na Task 1, o gate inicial canônico é:
+
+```bash
+python3 -m pytest \
+  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
+```
+
 - Não rode `make test` ou outra suíte global por padrão se a task possui um gate mais focado.
 - Só rode uma suíte global quando:
   - a task exigir;
@@ -91,14 +123,16 @@ Exemplo:
 
 ```text
 Task atual: lifecycle ROS
-make test-robot: PASS
-make test: FAIL porque shared/ai/intent_model.json já está desatualizado
+python3 -m pytest robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q: PASS
+make test: FAIL ou trava por motivo fora do escopo/runner
 
 Ação correta:
-- registrar a falha global como fora do escopo/preexistente;
+- considerar o pytest focado como evidência primária da Task 1;
+- registrar a falha/hang global como fora do escopo ou limitação do ambiente;
 - NÃO executar `make model`;
 - NÃO alterar dataset/modelo;
-- continuar a validação da task com os testes relevantes.
+- NÃO insistir em wrappers `make`;
+- continuar/finalizar a validação com os testes focados relevantes.
 ```
 
 ### 4. Falhas preexistentes ou fora do escopo
