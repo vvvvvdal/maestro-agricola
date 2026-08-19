@@ -27,7 +27,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 ## Contrato mínimo de sucesso
 
-- Câmera do DAT ou Mock Device Kit entrega o frame.
+- Câmera dos Meta Wearables entrega o frame ao Android pelo DAT. O Mock Device Kit testa a mesma interface antes da gravação, mas não satisfaz sozinho este critério.
 - Voz é capturada e transcrita pelas APIs nativas do companion app; nos óculos reais, a rota Bluetooth deve ser validada e o telefone permanece como fallback.
 - Classificador local retorna `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN` com confiança.
 - Intenção e alvo viram JSON válido.
@@ -51,10 +51,10 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 ## Plataformas do MVP
 
-- Android/Kotlin: `mockDebug` em API 26+; o flavor `datDebug` depende dos requisitos da versão do DAT fixada e deve ser confirmado contra o sample oficial antes do build físico.
+- Android/Kotlin: `datDebug` em um aparelho físico que cumpra os requisitos da versão fixada do DAT; `mockDebug` existe somente para desenvolvimento e testes automatizados.
 - O app Android consome o `intent_model.json` canônico e o contrato JSON 1.0.
-- Basta um app executar a demo ao vivo, mas os dois builds nativos devem passar antes da entrega.
-- A fonte simulada é obrigatória para desenvolvimento. A captura DAT real é a troca isolada do hackathon.
+- A demo ao vivo usa o build `datDebug` conectado aos Meta Wearables; `mockDebug` deve continuar saudável como contingência e teste da lógica compartilhada.
+- A fonte simulada antecipa o desenvolvimento. A captura DAT real é parte obrigatória da definição do MVP demonstrado.
 
 ## Casos que não podem quebrar
 
@@ -66,4 +66,4 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 ## Definição de pronto
 
-A jornada roda cinco vezes seguidas em ambiente limpo, incluindo pelo menos uma recusa e uma ambiguidade, com evidência em logs estruturados e sem mídia persistida.
+A jornada roda cinco vezes seguidas com `datDebug`, Android físico e Meta Wearables, incluindo pelo menos uma recusa e uma ambiguidade, com evidência em logs estruturados e sem mídia persistida.

@@ -58,7 +58,7 @@ A placa do MVP combina texto grande e QR. Em campo, poeira ou obstrução contin
 
 ### Inteligência artificial
 
-O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, um classificador linear softmax local, treinado com 96 frases curtas em português e exportado em JSON com cerca de 65 KB, transforma o texto em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O modelo usa palavras, pares de palavras e afixos, e o app Kotlin interpreta seus pesos sem servidor. Com limiar de 0,40, a avaliação separada acertou 15 de 16 frases, e a restante foi recusada como `UNKNOWN`. O benchmark no emulador Android e no Motorola ainda será executado.
+O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, um classificador linear softmax local, treinado com 96 frases curtas em português e exportado em JSON com cerca de 65 KB, transforma o texto em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O modelo usa palavras, pares de palavras e afixos, e o app Kotlin interpreta seus pesos sem servidor. Com limiar de 0,40, a avaliação separada acertou 15 de 16 frases, e a restante foi recusada como `UNKNOWN`. O benchmark ainda será executado no Android físico da demonstração com `datDebug` e os Meta Wearables.
 
 ## 4. Checkpoints obrigatórios
 

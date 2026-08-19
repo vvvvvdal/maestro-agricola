@@ -21,7 +21,7 @@ Critérios:
 1. Confirmar a presença de JDK 17, Android SDK 36 e `adb` antes de tentar o build.
 2. Quando a toolchain existir, executar `testMockDebugUnitTest` e `assembleMockDebug`.
 3. Não tocar no adaptador DAT nem alterar dependências durante o smoke mock.
-4. Instalação no Motorola e voz/TTS continuam sendo evidência manual de Átila.
+4. Instalação de `datDebug` no Android compatível, pareamento dos Meta Wearables e voz/TTS continuam sendo evidência manual de Átila.
 
 Estado inicial: bloqueado neste host por ausência de JDK e Android SDK. O bloqueio é ambiental, não uma falha de código já comprovada.
 
@@ -61,7 +61,7 @@ Todas as branches terminaram com árvore limpa e continuam somente locais, sem p
 
 | Branch | Commits | Evidência produzida | Limite preservado |
 |---|---|---|---|
-| `feat/android-mock-smoke` | `9487a84` | preflight e 3 testes | build, voz e TTS aguardam JDK/SDK e Motorola |
+| `feat/android-mock-smoke` | `9487a84` | preflight e 3 testes | `datDebug`, frame dos óculos, voz e TTS aguardam JDK/SDK e hardware compatível |
 | `feat/vision-qr` | `17ec003`, `be94068` | textura `plot-03`, vazio, desconhecido e ambiguidade; 8 testes | VIS-03 aguarda frame dentro do app |
 | `feat/ai-device-eval` | `ae36a5e`, `d97c31b` | fixture de 11 casos e 2 testes da referência | testes Kotlin e benchmark aguardam aparelhos |
 

@@ -185,7 +185,7 @@ Rótulos iniciais:
 - `CANCEL`
 - `UNKNOWN`
 
-O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e prefixos/sufixos de seis caracteres. A mesma política e os mesmos pesos são interpretados em Kotlin. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no emulador Android e no Motorola.
+O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e prefixos/sufixos de seis caracteres. A mesma política e os mesmos pesos são interpretados em Kotlin. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no Android físico que executará `datDebug` com os Meta Wearables.
 
 O STT não é esse modelo: o Android tenta a transcrição on-device por sua API nativa. O classificador do Maestro recebe somente o texto e não envia áudio ou transcrição para um servidor de inferência.
 
@@ -357,7 +357,7 @@ A jornada crítica precisa rodar cinco vezes seguidas no cenário limpo, incluin
 
 ### Antes do hackathon
 
-- compilar o flavor mock no emulador e no Motorola e validar IA e áudio on-device;
+- compilar `datDebug` no Android compatível, parear os Meta Wearables e validar frame, IA e áudio on-device;
 - integrar o detector de QR ao frame simulado;
 - rodar CameraAccess e Mock Device Kit e substituir os adaptadores DAT provisórios;
 - manter os testes automatizados do contrato, da IA, do bridge e dos estados;

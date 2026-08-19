@@ -223,7 +223,7 @@ Use `make status` para confirmar que não há serviço ativo.
 
 Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da demo. Avalie a execução pela mensagem `DEMO APROVADA` emitida antes de encerrar.
 
-## Android mock
+## Android: desenvolvimento e demonstração com DAT
 
 Na pasta `mobile/android`:
 
@@ -232,7 +232,7 @@ Na pasta `mobile/android`:
 ./gradlew :app:assembleMockDebug
 ```
 
-No emulador, use `ws://10.0.2.2:18765`. No Motorola físico, use `ws://IP_DO_COMPUTADOR:18765`; celular e computador precisam alcançar a mesma rede local. O flavor mock aceita API 26+, enquanto o DAT real exige o nível definido pelo sample oficial.
+No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da demonstração, use `ws://IP_DO_COMPUTADOR:18765`; aparelho e computador precisam alcançar a mesma rede local. O `mockDebug` serve para desenvolvimento. A evidência principal do MVP usa `datDebug`, um Android compatível e os Meta Wearables pareados.
 
 ## Evidência mínima para a entrega
 
@@ -242,4 +242,4 @@ Registre, sem mídia bruta:
 2. JSON `ACCEPTED` do `make demo`;
 3. trecho de log mostrando a meta de navegação;
 4. uma recusa local por intenção ou confirmação inválida;
-5. versão do build mock executado no emulador ou aparelho Android.
+5. versão do build `datDebug`, modelo do Android e Meta Wearables usados na jornada real.

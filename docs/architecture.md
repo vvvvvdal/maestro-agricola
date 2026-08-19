@@ -8,7 +8,7 @@ AI Glasses
           |
           v
 App companion Android/Kotlin
-  fonte mock/DAT + voz local + IA local + confirmação
+  DAT + voz local + IA local + confirmação
           |
           v
 WebSocket / JSON versionado
@@ -37,7 +37,7 @@ O DAT é usado para sessão e câmera. O reconhecimento de fala e o TTS pertence
 - Executa a máquina de estados de confirmação.
 - Envia comandos idempotentes ao bridge.
 
-Existe uma única implementação nativa Android/Kotlin. Os flavors `mock` e `dat` isolam, respectivamente, a simulação e o hardware real sem duplicar regra de negócio. Não há React Native.
+Existe uma única implementação nativa Android/Kotlin. `datDebug` é o caminho do MVP demonstrado; `mockDebug` isola a fonte simulada usada no desenvolvimento sem duplicar regra de negócio. Não há React Native.
 
 ### Bridge ROS 2
 
@@ -61,7 +61,7 @@ Poeira e obstrução continuam sendo riscos do marcador. Uma evolução posterio
 
 ## Interfaces para integração antecipada
 
-- `FrameSource`: `MockFrameSource` durante a semana e `DatFrameSource` no hardware real. A API é assíncrona para acomodar sessão e captura.
+- `FrameSource`: `DatFrameSource` na demonstração e `MockFrameSource` nos testes de desenvolvimento. A API é assíncrona para acomodar sessão e captura.
 - `TargetDetector`: recebe um frame e retorna `target_id`, confiança e timestamp.
 - `TargetResolver`: combina alvo visual e ID falado com estados `RESOLVED`, `NEEDS_VISUAL`, `CONFLICT` ou `UNKNOWN`.
 - `IntentClassifier`: recebe a transcrição e retorna rótulo e confiança.

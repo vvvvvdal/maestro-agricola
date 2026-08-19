@@ -4,7 +4,7 @@ Branch: `feat/ai-device-eval`
 
 ## Objetivo
 
-Evitar divergência silenciosa entre o classificador de referência em Python e o adaptador local Kotlin. A medição física de latência e memória permanece separada porque depende do emulador ou Motorola.
+Evitar divergência silenciosa entre o classificador de referência em Python e o adaptador local Kotlin. A medição física de latência e memória permanece separada porque depende do Android que executará `datDebug` com os Meta Wearables.
 
 ## Critérios de aceite desta etapa
 
@@ -53,4 +53,4 @@ cd mobile/android
 ./gradlew :app:testMockDebugUnitTest
 ```
 
-Depois dos testes, registrar no emulador e no Motorola pelo menos 30 inferências por ambiente, relatando mediana e p95 de latência, pico aproximado de memória, versão do sistema e qualquer divergência de rótulo. Não usar esse benchmark como afirmação no pitch antes da medição real.
+Depois dos testes, registrar no Android físico da demonstração pelo menos 30 inferências, relatando mediana e p95 de latência, pico aproximado de memória, versão do sistema e qualquer divergência de rótulo. Não usar esse benchmark como afirmação no pitch antes da medição real com `datDebug` e os Meta Wearables.

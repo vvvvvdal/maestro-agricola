@@ -166,7 +166,7 @@ def main() -> int:
     print("  cd mobile/android")
     print("  ./gradlew testMockDebugUnitTest assembleMockDebug")
     if not args.require_device:
-        print("  python3 tools/preflight.py --require-device  # antes de instalar no Motorola")
+        print("  python3 tools/preflight.py --require-device  # antes de instalar no Android físico")
     return 0
 
 

@@ -227,18 +227,19 @@ Se voz e câmera divergirem, a saída é `CONFLICT`, sem `target_id`, e o proces
 python3 tools/target_resolver.py "pulverize no plot quatro" --visual-target plot-03
 ```
 
-## Compatibilidade mobile
+## Ambiente mobile da demonstração
 
-| Aparelho | Execução do mock | DAT real |
-|---|---:|---:|
-| Motorola com Android 8+ | Sim, flavor `mockDebug` | Somente se tiver Android 12+ |
+| Ambiente | Papel | Evidência do MVP/pitch |
+|---|---|---:|
+| Android físico compatível com o DAT + Meta Wearables | `datDebug`, câmera dos óculos, áudio Android e IA local | Sim |
+| Emulador ou `mockDebug` | desenvolvimento, testes automatizados e contingência | Não substitui a demo com os óculos |
 
 ## Próximas tarefas críticas
 
 1. Consultar o quadro executável em [`docs/tasks/mvp-week.md`](docs/tasks/mvp-week.md).
-2. Compilar e rodar `mockDebug` no emulador Android e no Motorola.
-3. Conectar a leitura real do QR ao frame mobile; o resolvedor visual/falado e a prova estática já estão implementados.
-4. Validar o sample `CameraAccess` e ligar o adaptador DAT.
+2. Compilar e rodar `datDebug` em um Android físico compatível com o DAT.
+3. Parear os Meta Wearables e validar o sample `CameraAccess` no mesmo aparelho.
+4. Conectar a leitura real do QR ao frame recebido pelo DAT; o resolvedor visual/falado e a prova estática já estão implementados.
 5. Rodar a jornada cinco vezes e registrar latência/falhas.
 6. Ensaiar a demo e o pitch de até 3 minutos.
 

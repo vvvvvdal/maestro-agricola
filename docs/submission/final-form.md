@@ -27,7 +27,7 @@ O usuário inicial é o operador de campo que acompanha robôs ou máquinas agr�
 9. O bridge valida schema, validade e duplicidade, traduz `plot-03` para uma meta do ROS 2/Nav2 e responde `ACCEPTED`.
 10. O TurtleBot 4 inicia o deslocamento no Gazebo e o app informa “Comando enviado”.
 
-O MVP comprova a sequência completa com mock dos óculos, IA local, WebSocket, ROS 2, Nav2 e Gazebo. A troca do mock pela câmera real fica isolada no adaptador DAT.
+O MVP comprova a sequência completa com os Meta Wearables enviando o frame pelo DAT ao app Android, IA local, WebSocket, ROS 2, Nav2 e Gazebo. O mock permanece apenas como ferramenta de desenvolvimento e contingência técnica; não substitui a evidência principal com os óculos.
 
 ### A4. Walkthrough — fluxo de exceção principal
 

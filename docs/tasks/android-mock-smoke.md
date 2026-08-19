@@ -4,7 +4,7 @@ Branch: `feat/android-mock-smoke`
 
 ## Objetivo
 
-Reduzir o tempo perdido antes do primeiro build Kotlin, sem declarar como testado o que depende do Motorola, do Android SDK ou do DAT real.
+Reduzir o tempo perdido antes do primeiro build Kotlin, sem declarar como testado o que depende do Android físico, do Android SDK, dos Meta Wearables ou do DAT real.
 
 ## Plano executado
 
@@ -31,4 +31,4 @@ cd mobile/android
 ./gradlew testMockDebugUnitTest assembleMockDebug
 ```
 
-Depois, instalar `app/build/outputs/apk/mock/debug/app-mock-debug.apk` no Motorola e registrar separadamente: voz, TTS e conexão WebSocket com o bridge. O build do APK sozinho não comprova esses três critérios.
+O `mockDebug` valida a base compartilhada. Para a evidência do MVP, instalar `app/build/outputs/apk/dat/debug/app-dat-debug.apk` em um Android compatível, parear os Meta Wearables e registrar separadamente: frame do DAT, voz, TTS e conexão WebSocket com o bridge. O build do APK sozinho não comprova esses critérios.

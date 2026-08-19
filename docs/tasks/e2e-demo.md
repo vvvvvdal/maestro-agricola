@@ -77,4 +77,4 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 - O contêiner da demonstração foi encerrado após o teste.
 - Preflight Android: bloqueado neste computador por ausência de JDK 17 e Android SDK; o Gradle wrapper está presente.
 
-Nenhum build ou teste físico foi declarado como aprovado. Permanecem como gates humanos: compilar no Motorola, conectar o detector ao frame mobile, validar o DAT e medir áudio, latência e bateria no hardware real.
+Nenhum build ou teste físico foi declarado como aprovado. Permanecem como gates humanos: compilar `datDebug` no Android compatível, parear os Meta Wearables, conectar o detector ao frame do DAT e medir áudio, latência e bateria no hardware real.

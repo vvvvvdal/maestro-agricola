@@ -32,7 +32,7 @@ O Maestro conecta interface multimodal e robótica com protocolo aberto, confirm
 - Falar como conversa, não como leitura. Pausar após “É a forma como o humano conversa com ela”.
 - No slide 5, mostrar brevemente a placa detectada, `ACCEPTED`, o TurtleBot em movimento e a recusa de `cancelar`.
 - Cronometrar três vezes. Se passar de 2min55s, cortar exemplos da fala; não acelerar o fechamento.
-- Não dizer que DAT, Motorola ou áudio Bluetooth já foram validados fisicamente.
+- Não dizer que DAT, Meta Wearables ou áudio Bluetooth já foram validados fisicamente antes do teste real.
 
 ## Plano B sem captura de tela
 

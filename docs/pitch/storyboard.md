@@ -67,7 +67,7 @@
 
 ## Capturas que a equipe deve gravar
 
-1. Centralização da placa `PLOT-03` no feed do Mock Device Kit.
+1. Centralização da placa `PLOT-03` no feed recebido dos Meta Wearables pelo DAT.
 2. Transcrição e intenção reconhecida no app.
 3. Pergunta de confirmação pelo TTS do celular; registrar a rota usada na gravação.
 4. JSON aceito pelo bridge.
