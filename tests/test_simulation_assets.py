@@ -165,6 +165,7 @@ class SimulationAssetsTest(unittest.TestCase):
 
         self.assertIn("required_movement_radius: 0.1", nav2)
         self.assertIn("movement_time_allowance: 30.0", nav2)
+        self.assertIn("xy_goal_tolerance: 0.30", nav2)
 
     def test_headless_launch_avoids_hidden_gui_and_preserves_model_choice(self):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")
