@@ -36,14 +36,14 @@
 
 ## Critérios de aceite
 
-- [ ] `plot-01`, `plot-02` e `plot-03` possuem QR distintos, legíveis e fixados verticalmente nas duas faces das placas.
-- [ ] O catálogo versionado contém os três IDs, com duas placas em lados opostos e metas próximas/seguras.
-- [ ] O detector estático reconhece as três placas.
-- [ ] O launch usa `/turtlebot1` e cria um único conjunto de três placas.
-- [ ] No início, o log confirma `Undock completed` antes de aceitar uma meta Nav2.
-- [ ] Ao concluir a última meta enfileirada, o log confirma `Dock completed`.
-- [ ] Recusa/falha/timeout de dock, undock ou navegação tem tratamento explícito e teste proporcional.
-- [ ] README e guia de testes explicam o ciclo e deixam as futuras intenções de voz fora do escopo atual.
+- [x] `plot-01`, `plot-02` e `plot-03` possuem QR distintos, legíveis e fixados verticalmente nas duas faces das placas.
+- [x] O catálogo versionado contém os três IDs, com duas placas em lados opostos e metas próximas/seguras.
+- [x] O detector estático reconhece as três placas.
+- [x] O launch usa `/turtlebot1` e cria um único conjunto de três placas.
+- [x] No início, o log confirma `Undock completed` antes de aceitar uma meta Nav2.
+- [x] Ao concluir a última meta enfileirada, o log confirma `Dock completed`.
+- [x] Recusa/falha/timeout de dock, undock ou navegação tem tratamento explícito e teste proporcional.
+- [x] README e guia de testes explicam o ciclo e deixam as futuras intenções de voz fora do escopo atual.
 
 ## Plano de execução
 
@@ -57,4 +57,8 @@
 
 ## Evidências
 
-A preencher após os testes.
+- `make test-quick`: 34 testes gerais + 14 testes do bridge aprovados; artefato do classificador atualizado e Compose válido.
+- `make vision-smoke`: `plot-01`, `plot-02` e `plot-03` detectados com confiança `1.0`.
+- O teste geométrico confirma dois planos verticais por placa, fora das faces opostas, com textura idêntica e orientação não espelhada.
+- Gate visual NVIDIA em 18/08/2026: `Undock completed` ocorreu antes do aceite do `plot-03`; a meta foi concluída; o bridge registrou `Nav2 completed return-to-dock approach`; o action curto foi aceito e terminou com `Dock completed: robot is docked (dock status confirmed docked)`.
+- O gate do MVP cobre um plot completo. A rota de três plots permanece opcional para ensaio estendido, não condição para o pitch.

@@ -41,7 +41,7 @@ Para manter a demonstração verificável, o alvo do MVP será um marcador visua
 - app Android com flavors `mock` (API 26+) e `dat` (API 31+);
 - app iOS para iPhone 13/iOS 17.2+;
 - bridge WebSocket/ROS 2 com rejeição de comando inseguro e deduplicação;
-- cenário do Gazebo com placa legível + QR `plot-03`, Nav2 e TurtleBot 4;
+- cenário do Gazebo com três placas bifaciais (`plot-01` a `plot-03`), Nav2 e TurtleBot 4;
 - resolvedor compartilhado que aceita alvo visual, ID falado ou concordância entre os dois e recusa conflitos;
 - Dockerfile e Compose para reproduzir o simulador;
 - simulador de óculos por terminal para testar sem hardware.
@@ -199,9 +199,9 @@ make rviz
 
 `make gazebo` encerra uma instância anterior do projeto antes de iniciar a visual; não execute `make demo` enquanto ela estiver aberta, porque o teste padrão troca para o serviço headless. `make rviz` permanece no terminal até a janela ser fechada. Ao terminar, execute `make simulation-down`; além de remover o contêiner, o comando revoga a permissão X11 concedida ao usuário `root` do contêiner.
 
-O Gazebo mostra o mundo 3D `warehouse`, o TurtleBot 4 e três placas distribuídas: `PLOT-01` e `PLOT-02` em lados opostos da área central e `PLOT-03` no ponto original. O RViz mostra o mapa produzido pelo SLAM, modelo do robô, LiDAR, costmap e planos global/local. Com as janelas abertas, `make demo-visual` envia e verifica o comando para acompanhar o movimento.
+O Gazebo mostra o mundo 3D `warehouse`, o TurtleBot 4 e três placas bifaciais distribuídas: `PLOT-01` e `PLOT-02` em lados opostos da área central e `PLOT-03` no ponto original. O RViz mostra o mapa salvo, a pose estimada pelo AMCL, modelo do robô, LiDAR, costmap e planos global/local. Com as janelas abertas, `make demo-visual` envia e verifica o comando para acompanhar o movimento.
 
-O cenário atual não é uma fazenda própria. `warehouse` vem do simulador oficial do TurtleBot 4; o Maestro acrescenta as placas. O mapa de ocupação é construído ao vivo pelo `slam_toolbox`, enquanto as três poses seguras ficam no catálogo versionado do bridge. Esses são três artefatos diferentes: mundo 3D, mapa SLAM e mapa lógico de alvos.
+O cenário atual não é uma fazenda própria. `warehouse` e seu mapa de ocupação salvo vêm do simulador oficial do TurtleBot 4; o Maestro acrescenta as placas e usa AMCL com pose inicial na doca. As três poses seguras ficam no catálogo versionado do bridge. Esses são três artefatos diferentes: mundo 3D, mapa de ocupação e mapa lógico de alvos.
 
 ## Estado visual dos apps
 

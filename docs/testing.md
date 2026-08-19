@@ -114,7 +114,7 @@ make rviz
 
 No Gazebo, procure o mundo `warehouse`, o TurtleBot 4 e as placas verticais `PLOT-01`, `PLOT-02` e `PLOT-03`, agora separadas em três pontos. No RViz, confirme:
 
-- `SLAM Map` em `/turtlebot1/map`;
+- mapa salvo localizado por AMCL em `/turtlebot1/map`;
 - `TurtleBot 4` usando `/turtlebot1/robot_description`;
 - `LiDAR` em `/turtlebot1/scan`;
 - `Global Plan` e `Local Plan`;
@@ -182,7 +182,7 @@ Se o navegador mostrar `invalid Connection header: keep-alive`, feche a aba. Iss
 
 ### Cliente aguardando por muito tempo
 
-Na primeira inicialização, ROS 2, Gazebo, SLAM e Nav2 sobem em etapas. Abra outro terminal e execute:
+Na primeira inicialização, ROS 2, Gazebo, AMCL e Nav2 sobem em etapas. Abra outro terminal e execute:
 
 ```bash
 make logs
