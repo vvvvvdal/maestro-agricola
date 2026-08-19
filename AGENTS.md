@@ -6,9 +6,9 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 
 ## Regras permanentes
 
-- Aplicativos do MVP: Android nativo em Kotlin e iOS nativo em Swift.
+- Aplicativo do MVP: Android nativo em Kotlin.
 - Não introduzir React Native.
-- Android e iOS devem consumir o mesmo contrato versionado e o mesmo artefato de IA local.
+- O Android deve consumir o contrato versionado e o artefato canônico de IA local.
 - Integração dos óculos: Meta Wearables Device Access Toolkit (DAT).
 - Confirmar a versão atual do DAT antes de alterar dependências ou APIs.
 - Nunca assumir que o DAT fornece IMU, pose de cabeça, GPS ou profundidade.
@@ -33,7 +33,7 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 
 ## Responsáveis por domínio
 
-- Átila: apps Android/Kotlin e iOS/Swift, DAT, áudio, máquina de estados e integração mobile.
+- Átila: app Android/Kotlin, DAT, áudio, máquina de estados e integração mobile.
 - Felipe: visão computacional, ROS 2, Gazebo, TurtleBot 4 e integração com o simulador.
 - Rafael: IA local, classificador de intenção, conjunto de testes e métricas do modelo.
 - Felipe e Rafael: apresentação e gravação do pitch.

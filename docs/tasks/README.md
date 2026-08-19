@@ -6,9 +6,9 @@
 - [`submission-readiness.md`](submission-readiness.md): testes, formulário final, diagrama e pitch para a entrega de 22 de agosto.
 - [`team-branch-acceleration.md`](team-branch-acceleration.md): ordem, critérios e limites para avançar as branches de mobile, visão e IA.
 - [`android-mock-smoke.md`](android-mock-smoke.md): preflight e handoff verificável do build Kotlin no Motorola.
+- [`android-only.md`](android-only.md): decisão de plataforma única e remoção dos artefatos da plataforma descartada.
 - [`vision-qr.md`](vision-qr.md): plano e evidências da detecção segura do QR em imagem estática.
-- [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin/Swift e handoff dos benchmarks nos celulares.
-- [`ios-mock-smoke.md`](ios-mock-smoke.md): preflight e handoff verificável do app Swift no iPhone 13.
+- [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin e handoff do benchmark no Android.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`testing-ux.md`](testing-ux.md): caminho de teste local sem ambiguidade e desligamento limpo do bridge.
 - [`visual-smoke.md`](visual-smoke.md): inspeção das telas mobile e visualização do Gazebo/RViz2.
