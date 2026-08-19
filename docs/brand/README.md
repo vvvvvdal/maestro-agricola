@@ -11,7 +11,7 @@ Esta pasta documenta como aplicar a marca **Maestro Agrícola por AgroTurtles** 
 | azul de apoio | assinatura, detalhes e informação técnica | `#0F3C65` | `15, 60, 101` |
 | branco | fundo e respiro | `#FFFFFF` | `255, 255, 255` |
 
-Os valores foram extraídos dos pixels dominantes dos PNGs entregues pela equipe em 18 de agosto de 2026. Pequenas variações nas bordas são antialiasing e não devem virar novas cores.
+Os valores foram extraídos dos pixels dominantes dos PNGs entregues pela equipe. A revisão de 19 de agosto de 2026 preservou a paleta. Pequenas variações nas bordas são antialiasing e não devem virar novas cores.
 
 ## Tipografia
 
@@ -28,19 +28,18 @@ Os valores foram extraídos dos pixels dominantes dos PNGs entregues pela equipe
 | --- | --- |
 | `assets/brand/logo-icon-yellow.png` | ícone Android, avatar e aplicações pequenas |
 | `assets/brand/logo-icon-white.png` | símbolo isolado sobre fundo branco |
-| `assets/brand/logo-lockup-square.png` | composição centralizada ou peças quadradas |
-| `assets/brand/wordmark.png` | cabeçalho e materiais com pouco espaço vertical |
-| `assets/brand/logo-horizontal-slogan.png` | capa, fechamento e materiais institucionais largos |
-| `assets/brand/wordmark-trim.png` | wordmark sem margem branca excedente, para slides |
-| `assets/brand/logo-horizontal-slogan-trim.png` | marca horizontal sem margem branca excedente, para slides |
+| `assets/brand/logo-lockup-square.png` | composição vertical com símbolo, nome e assinatura |
+| `assets/brand/wordmark.png` | wordmark quadrado, sem a tartaruga, para pouco espaço horizontal |
+| `assets/brand/logo-horizontal.png` | composição horizontal para README, app, capas e slides largos |
 
-Os arquivos `*-trim.png` apenas removem espaço branco externo. Cor, proporção e desenho da marca permanecem iguais aos originais.
+Os três lockups são os PNGs aprovados em 19 de agosto de 2026, preservados byte a byte. O espaço branco faz parte dos arquivos recebidos; a aplicação pode enquadrá-los, mas não deve distorcer ou redesenhar a arte.
 
 ## Regras mínimas
 
 - Não redesenhar, rotacionar, esticar ou recolorir a tartaruga.
 - Para ícone de app, usar sempre a tartaruga verde sobre amarelo, sem texto.
 - Manter proporção original dos PNGs.
+- Não voltar a usar o slogan `SEU MELHOR AMIGO DO CAMPO`; a assinatura oficial agora é `POR AGROTURTLES` entre linhas azuis.
 - Preferir fundo branco no conteúdo e amarelo em áreas de impacto; verde é a cor principal de texto.
 - Azul serve como apoio e nunca substitui o verde no símbolo.
 - Em slides, usar a marca completa na abertura e no fechamento; nas páginas de conteúdo, o ícone pode funcionar como assinatura discreta.
@@ -48,5 +47,6 @@ Os arquivos `*-trim.png` apenas removem espaço branco externo. Cor, proporção
 ## Proveniência
 
 - Design Canva de referência: `DAHSfjjymqI`.
-- Logos: arquivos enviados pela equipe, preservados sem alteração visual.
+- Lockups v2: arquivos `3.png`, `4.png` e `5.png` enviados pela equipe em 19 de agosto de 2026 e preservados sem alteração visual.
+- Símbolos isolados: arquivos da entrega de 18 de agosto de 2026; a tartaruga e a paleta não mudaram.
 - Fonte: [League Spartan 2.220](https://github.com/theleagueof/league-spartan/releases/tag/2.220), sob SIL Open Font License 1.1.

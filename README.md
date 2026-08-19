@@ -1,7 +1,7 @@
 # Maestro Agrícola
 
 <p align="center">
-  <img src="assets/brand/logo-horizontal-slogan-trim.png" alt="Maestro Agrícola por AgroTurtles — seu melhor amigo do campo" width="760">
+  <img src="assets/brand/logo-horizontal.png" alt="Maestro Agrícola por AgroTurtles" width="760">
 </p>
 
 Interface hands-free para comandar maquinário agrícola autônomo com visão, voz e confirmação por áudio.

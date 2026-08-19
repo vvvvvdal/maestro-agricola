@@ -1,6 +1,6 @@
 # Identidade visual AgroTurtles
 
-Status: concluída em 18 de agosto de 2026
+Status: concluída em 18 de agosto de 2026; substituída por [`visual-identity-v2.md`](visual-identity-v2.md) em 19 de agosto
 
 Responsáveis: Felipe e Rafael (pitch), Átila (validação mobile)
 
