@@ -1,15 +1,20 @@
 package br.org.agroturtles.maestro.domain
 
+import java.security.MessageDigest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.json.JSONObject
 
 
 class LocalIntentClassifierTest {
+    private val modelBytes by lazy {
+        checkNotNull(javaClass.classLoader?.getResource("intent_model.json"))
+            .openStream()
+            .use { it.readBytes() }
+    }
+
     private val classifier by lazy {
-        val json = checkNotNull(javaClass.classLoader?.getResource("intent_model.json"))
-            .readText()
-        LocalIntentClassifier.fromJson(json)
+        LocalIntentClassifier.fromJson(modelBytes.toString(Charsets.UTF_8))
     }
 
     @Test
@@ -25,12 +30,20 @@ class LocalIntentClassifierTest {
         val json = checkNotNull(javaClass.classLoader?.getResource("parity_cases.json"))
             .readText()
         val payload = JSONObject(json)
+        assertEquals("1.0", payload.getString("schema_version"))
+        assertEquals(payload.getString("model_sha256"), sha256(modelBytes))
+
+        val threshold = payload.getDouble("confidence_threshold")
         val tolerance = payload.getDouble("confidence_tolerance")
         val cases = payload.getJSONArray("cases")
+        val parityClassifier = LocalIntentClassifier.fromJson(
+            modelBytes.toString(Charsets.UTF_8),
+            threshold,
+        )
 
         repeat(cases.length()) { index ->
             val case = cases.getJSONObject(index)
-            val prediction = classifier.classify(case.getString("text"))
+            val prediction = parityClassifier.classify(case.getString("text"))
             val id = case.getString("id")
             assertEquals(id, case.getString("expected_label"), prediction.label)
             assertEquals(
@@ -41,4 +54,9 @@ class LocalIntentClassifierTest {
             )
         }
     }
+
+    private fun sha256(bytes: ByteArray): String = MessageDigest
+        .getInstance("SHA-256")
+        .digest(bytes)
+        .joinToString("") { "%02x".format(it) }
 }

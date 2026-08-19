@@ -37,7 +37,7 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 ## Dia 3 - adaptadores e primeiro gate
 
 - [ ] **MOB-04 - Implementar máquina de estados** - Átila. Evidência: caminho feliz, recusa e timeout testados sem SDK real.
-- [-] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Paridade de 11 casos compartilhados preparada para Kotlin; falta executar os testes na toolchain Android e medir no aparelho.
+- [x] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Oito testes Kotlin e o APK `mockDebug` passaram; no Edge 40 Neo, 390 inferências dos 13 casos tiveram zero divergências, mediana de 446 µs e p95 de 675 µs.
 - [ ] **VIS-03 - Entregar adaptador de visão** - Felipe + Átila. Evidência: frame retorna `target_id`, confiança e timestamp no app.
 - [x] **ROS-03 - Validar segurança do bridge** - Felipe. Evidência: testes rejeitam comando vencido/não confirmado e deduplicam UUID.
 

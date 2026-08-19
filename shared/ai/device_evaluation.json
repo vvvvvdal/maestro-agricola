@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-08-19T17:56:04-03:00",
+  "status": "PASS",
+  "build_variant": "mockDebug",
+  "application_id": "br.org.agroturtles.maestro.mock",
+  "apk_sha256": "9746ed29133a424d96850fe7e8d961b573ceeb7a992f7f2a1216db2da36788ee",
+  "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960",
+  "device": {
+    "manufacturer": "motorola",
+    "model": "motorola edge 40 neo",
+    "android_release": "15",
+    "android_api": 35,
+    "abi": "arm64-v8a"
+  },
+  "benchmark": {
+    "cases": 13,
+    "warmup_iterations_per_case": 5,
+    "measured_iterations_per_case": 30,
+    "total_measured_inferences": 390,
+    "median_us": 446,
+    "p95_us": 675,
+    "max_us": 883
+  },
+  "memory": {
+    "heap_before_bytes": 11486704,
+    "heap_after_bytes": 13256176,
+    "heap_peak_observed_bytes": 13256176
+  },
+  "privacy": {
+    "uses_fixed_fixture": true,
+    "persists_audio": false,
+    "persists_user_transcripts": false,
+    "uses_network": false
+  }
+}

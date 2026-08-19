@@ -14,7 +14,7 @@
       "id": "spray_phrase",
       "text": "pode aplicar o defensivo aqui",
       "expected_label": "SPRAY",
-      "expected_confidence": 0.9585440034860792
+      "expected_confidence": 0.9585440034860789
     },
     {
       "id": "spray_explicit_plot_numeric",
@@ -32,7 +32,7 @@
       "id": "confirm_phrase",
       "text": "sim, pode continuar",
       "expected_label": "CONFIRM",
-      "expected_confidence": 0.9994750649545259
+      "expected_confidence": 0.9994750649545261
     },
     {
       "id": "confirm_synonym",
@@ -50,7 +50,7 @@
       "id": "cancel_phrase",
       "text": "cancele agora",
       "expected_label": "CANCEL",
-      "expected_confidence": 0.994854763745488
+      "expected_confidence": 0.9948547637454879
     },
     {
       "id": "unknown_domain",
@@ -68,7 +68,7 @@
       "id": "threshold_rejection",
       "text": "onde está meu celular",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.34790812800653015
+      "expected_confidence": 0.3479081280065302
     },
     {
       "id": "cancel_threshold_rejection",

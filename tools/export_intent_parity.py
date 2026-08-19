@@ -62,6 +62,45 @@ def render_fixture(payload: dict) -> str:
     return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
 
+def validate_fixture(current: dict, expected: dict) -> None:
+    for field in (
+        "schema_version",
+        "model_sha256",
+        "confidence_threshold",
+        "confidence_tolerance",
+    ):
+        if current.get(field) != expected[field]:
+            raise RuntimeError(
+                f"fixture de paridade diverge em {field}: "
+                f"esperado {expected[field]!r}, obtido {current.get(field)!r}"
+            )
+
+    current_cases = current.get("cases")
+    expected_cases = expected["cases"]
+    if not isinstance(current_cases, list) or len(current_cases) != len(expected_cases):
+        raise RuntimeError(
+            f"fixture de paridade deve conter {len(expected_cases)} casos"
+        )
+
+    tolerance = expected["confidence_tolerance"]
+    for current_case, expected_case in zip(current_cases, expected_cases):
+        case_id = expected_case["id"]
+        for field in ("id", "text", "expected_label"):
+            if current_case.get(field) != expected_case[field]:
+                raise RuntimeError(
+                    f"caso {case_id} diverge em {field}: "
+                    f"esperado {expected_case[field]!r}, obtido {current_case.get(field)!r}"
+                )
+        confidence = current_case.get("expected_confidence")
+        if not isinstance(confidence, (int, float)):
+            raise RuntimeError(f"caso {case_id} não possui confiança numérica")
+        if abs(confidence - expected_case["expected_confidence"]) > tolerance:
+            raise RuntimeError(
+                f"caso {case_id} diverge na confiança: "
+                f"esperado {expected_case['expected_confidence']!r}, obtido {confidence!r}"
+            )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -80,9 +119,15 @@ def main() -> int:
         print(FIXTURE_PATH)
         return 0
 
-    current = FIXTURE_PATH.read_text(encoding="utf-8") if FIXTURE_PATH.is_file() else ""
-    if current != expected:
-        print("fixture de paridade desatualizado; revise o modelo e execute --write", file=sys.stderr)
+    try:
+        current = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
+        validate_fixture(current, build_fixture())
+    except (OSError, RuntimeError, json.JSONDecodeError) as exc:
+        print(
+            f"fixture de paridade desatualizado: {exc}; "
+            "revise o modelo e execute --write",
+            file=sys.stderr,
+        )
         return 1
     print(f"paridade atual: {len(PARITY_INPUTS)} casos, modelo {build_fixture()['model_sha256'][:12]}")
     return 0
