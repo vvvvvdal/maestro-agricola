@@ -234,6 +234,17 @@ Na pasta `mobile/android`:
 
 No emulador, use `ws://10.0.2.2:18765`. No Motorola físico, use `ws://IP_DO_COMPUTADOR:18765`; celular e computador precisam alcançar a mesma rede local. O flavor mock aceita API 26+, enquanto o DAT real exige o nível definido pelo sample oficial.
 
+### QA-01 — falha segura antes do transporte
+
+Para repetir somente os cenários de recusa, ambiguidade e timeout:
+
+```bash
+./gradlew :app:testMockDebugUnitTest \
+  --tests br.org.agroturtles.maestro.domain.InteractionEngineTest
+```
+
+Os nove testes da máquina de estados exigem `command == null` para intenção desconhecida, alvo ausente ou desconhecido, conflito visual/falado, recusa, timeout e confirmação tardia. Uma confirmação ambígua pode ser repetida dentro do timeout, mas também não cria comando. Somente alvo resolvido, intenção `SPRAY` e confirmação `CONFIRM` entram em `SENDING`.
+
 ## Evidência mínima para a entrega
 
 Registre, sem mídia bruta:

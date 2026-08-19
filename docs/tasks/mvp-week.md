@@ -60,7 +60,7 @@ Se algum sinal estiver vermelho, cortar complexidade e preservar a jornada verti
 
 ## Dia 5 - checkpoints e falhas
 
-- [ ] **QA-01 - Testar recusa, ambiguidade e timeout** - Rafael + Átila. Evidência: nenhum dos casos envia movimento.
+- [x] **QA-01 - Testar recusa, ambiguidade e timeout** - Rafael + Átila. Nove testes da máquina de estados comprovam comando nulo em recusa, ambiguidade, alvo inválido, conflito, timeout e confirmação tardia; 12 testes Kotlin e o APK `mockDebug` passaram.
 - [ ] **QA-02 - Testar desconexão, expiração e duplicata** - Felipe. Evidência: nenhum comando tardio ou repetido move o robô.
 - [ ] **QA-03 - Revisar privacidade e bateria** - equipe. Evidência: mídia não persistida, sessão encerrada e captura sob demanda.
 - [ ] **QA-04 - Montar evidência 5/5 checkpoints** - Rafael. Evidência: IA, câmera ou microfone, áudio, privacidade e eficiência demonstráveis.

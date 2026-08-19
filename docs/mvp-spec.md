@@ -53,7 +53,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 - Android/Kotlin: `mockDebug` em API 26+; o flavor `datDebug` depende dos requisitos da versão do DAT fixada e deve ser confirmado contra o sample oficial antes do build físico.
 - O app Android consome o `intent_model.json` canônico e o contrato JSON 1.0.
-- Basta um app executar a demo ao vivo, mas os dois builds nativos devem passar antes da entrega.
+- O `mockDebug` deve passar antes da entrega; o `datDebug` só vira gate após confirmar a versão atual do DAT e validar o sample oficial no aparelho.
 - A fonte simulada é obrigatória para desenvolvimento. A captura DAT real é a troca isolada do hackathon.
 
 ## Casos que não podem quebrar
@@ -63,6 +63,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 - Repetição da mesma mensagem não pode gerar movimento duplicado.
 - Alvo desconhecido nunca vira coordenada padrão.
 - Alvo falado e visual divergentes nunca produzem comando.
+- Confirmação recebida após recusa, conflito ou timeout nunca produz comando.
 
 ## Definição de pronto
 
