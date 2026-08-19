@@ -126,7 +126,7 @@ IDLE -> CAPTURING -> INTERPRETING -> AWAITING_CONFIRMATION
 
 ## IA local compartilhada
 
-O repositório treina um classificador linear softmax pequeno para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`. São 96 frases em português, com 80 para treino e 16 para avaliação; as features são palavras, bigramas e afixos. O artefato JSON tem aproximadamente 65 KB e é interpretado diretamente em Kotlin, sem servidor e sem dependência de inferência externa. No conjunto separado de 16 frases, a política operacional com limiar 0,40 obteve 15/16 acertos; o erro restante virou `UNKNOWN`, portanto não enviou comando.
+O repositório treina um classificador softmax pequeno para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`, precedido por regras de alta precisão em ordem segura. São 144 frases balanceadas para treino e 64 para avaliação independente; as features são palavras, bigramas e n-gramas de caracteres. O artefato JSON tem aproximadamente 367 KiB e é interpretado diretamente em Kotlin, sem servidor ou runtime externo. A suíte versionada obteve 64/64, macro-F1 1,00 e zero aceite perigoso; esses números validam somente os casos controlados e ainda exigem teste físico.
 
 O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando disponíveis. Ele é uma etapa diferente do classificador de intenção do Maestro.
 

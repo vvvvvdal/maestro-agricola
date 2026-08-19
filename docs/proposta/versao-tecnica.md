@@ -169,12 +169,13 @@ O STT fica atrás de uma interface e o MVP exige execução on-device quando o p
 
 ### 7.2 Classificador de intenção
 
-O componente de IA comprovável do MVP é um classificador linear softmax multiclasse, local e compacto. Ele foi treinado com 96 frases curtas em português: 80 para treino e 16 reservadas para avaliação. O artefato JSON tem cerca de 65 KB. Entrada: transcrição curta. Saída:
+O componente de IA comprovável do MVP é uma cascata híbrida local e compacta: regras de alta precisão tratam negação, hesitação e comandos inequívocos; um classificador linear softmax multiclasse resolve as demais frases; baixa confiança resulta em `UNKNOWN`. O treino versionado contém 144 frases, balanceadas entre quatro classes, e a avaliação independente contém 64 frases sem sobreposição normalizada. O artefato JSON tem cerca de 367 KiB. Entrada: transcrição curta. Saída:
 
 ```json
 {
   "intent": "SPRAY",
-  "confidence": 0.93
+  "confidence": 0.93,
+  "source": "MODEL"
 }
 ```
 
@@ -185,7 +186,7 @@ Rótulos iniciais:
 - `CANCEL`
 - `UNKNOWN`
 
-O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e prefixos/sufixos de seis caracteres. A mesma política e os mesmos pesos são interpretados em Kotlin. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no Android físico que executará `datDebug` com os Meta Wearables.
+O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e n-gramas de caracteres de três a cinco posições. A mesma política e os mesmos pesos são interpretados em Kotlin, e a saída informa origem `RULE` ou `MODEL`. Com limiar operacional de 0,40, os 64 casos da avaliação versionada foram classificados corretamente, com macro-F1 1,00 e zero aceite perigoso. Esse resultado descreve somente a suíte controlada do MVP, não desempenho no campo. O próximo benchmark mede latência, memória e acurácia no Android físico que executará `datDebug` com os Meta Wearables.
 
 O STT não é esse modelo: o Android tenta a transcrição on-device por sua API nativa. O classificador do Maestro recebe somente o texto e não envia áudio ou transcrição para um servidor de inferência.
 
@@ -193,7 +194,7 @@ O STT não é esse modelo: o Android tenta a transcrição on-device por sua API
 
 - confiança abaixo do limiar resulta em `UNKNOWN`;
 - intenção desconhecida nunca produz movimento;
-- regras determinísticas validam schema e vocabulário;
+- regras determinísticas priorizam cancelamento e bloqueiam ambiguidades antes de aceitar ordens positivas;
 - o usuário sempre ouve a interpretação antes de confirmar.
 
 ## 8. Câmera e áudio simultâneos

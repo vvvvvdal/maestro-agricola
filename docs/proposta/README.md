@@ -14,7 +14,7 @@ As duas exportações usam na capa o lockup horizontal aprovado em 19 de agosto 
 - O MVP não depende de IMU, pose de cabeça ou profundidade dos óculos.
 - O alvo é um marcador ou talhão previamente mapeado.
 - A câmera passa pelo DAT; o áudio usa as APIs nativas do Android e deve ser validado no aparelho real.
-- A IA comprovável é o classificador linear softmax local já exportado para Kotlin; a próxima medição é o benchmark no Android físico da demonstração com `datDebug` e os Meta Wearables.
+- A IA comprovável é a cascata local de regras seguras e classificador softmax já exportada para Kotlin; a próxima medição é o benchmark no Android físico da demonstração com `datDebug` e os Meta Wearables.
 - A confirmação por áudio é obrigatória antes de qualquer comando de movimento.
 - O app não persiste mídia bruta e declara separadamente os fluxos de dados de Android, Meta AI e DAT.
 
