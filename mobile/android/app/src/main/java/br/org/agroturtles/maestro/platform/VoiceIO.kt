@@ -39,7 +39,7 @@ class VoiceIO(context: Context) : RecognitionListener, TextToSpeech.OnInitListen
     }
 
     override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) tts.language = Locale("pt", "BR")
+        if (status == TextToSpeech.SUCCESS) tts.language = Locale.forLanguageTag("pt-BR")
     }
 
     override fun onResults(results: Bundle) {

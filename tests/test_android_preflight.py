@@ -19,6 +19,8 @@ class AndroidPreflightTest(unittest.TestCase):
         self.assertEqual(21, preflight.parse_java_major('openjdk version "21" 2023-09-19'))
         self.assertEqual(8, preflight.parse_java_major('java version "1.8.0_412"'))
         self.assertIsNone(preflight.parse_java_major("unexpected output"))
+        self.assertTrue(preflight.is_supported_java_major(21))
+        self.assertFalse(preflight.is_supported_java_major(25))
 
     def test_reads_sdk_from_local_properties(self):
         with tempfile.TemporaryDirectory() as directory:

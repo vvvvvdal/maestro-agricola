@@ -14,6 +14,7 @@ import sys
 
 
 REQUIRED_JAVA = 17
+MAXIMUM_JAVA = 24
 REQUIRED_PLATFORM = 36
 
 
@@ -33,6 +34,10 @@ def parse_java_major(output: str) -> int | None:
         legacy = re.search(r'version\s+"1\.(\d+)', output)
         return int(legacy.group(1)) if legacy else None
     return major
+
+
+def is_supported_java_major(major: int | None) -> bool:
+    return major is not None and REQUIRED_JAVA <= major <= MAXIMUM_JAVA
 
 
 def read_sdk_dir(local_properties: Path) -> Path | None:
@@ -96,8 +101,9 @@ def collect_checks(
         major = parse_java_major(version_text)
         checks.append(Check(
             "JDK",
-            result.returncode == 0 and major is not None and major >= REQUIRED_JAVA,
-            f"{java} (versão {major or 'desconhecida'}; mínimo {REQUIRED_JAVA})",
+            result.returncode == 0
+            and is_supported_java_major(major),
+            f"{java} (versão {major or 'desconhecida'}; suportado {REQUIRED_JAVA}–{MAXIMUM_JAVA})",
         ))
 
     sdk = resolve_sdk(project_dir, sdk_dir)

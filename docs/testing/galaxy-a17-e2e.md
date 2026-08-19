@@ -11,12 +11,12 @@ Este é o roteiro de bancada para provar `Android → IA local → WebSocket →
 
 ## Portabilidade da instalação
 
-Não versione caminhos pessoais. O Android Studio do Felipe está em `~/Downloads/android-studio`, mas Átila e Rafael podem instalá-lo em qualquer lugar. Pela interface, use **File → Settings → Build Tools → Gradle → Gradle JDK** e selecione o JDK embutido 17 ou superior.
+Não versione caminhos pessoais. O Android Studio do Felipe está em `~/Downloads/android-studio`, mas Átila e Rafael podem instalá-lo em qualquer lugar. Pela interface, use **File → Settings → Build Tools → Gradle → Gradle JDK** e selecione JDK 17 a 24. O JDK 25 embutido nesta instalação foi rejeitado pelo Gradle 8.14.1; no computador do Felipe, use `~/.jdks/jbr-21.0.11`.
 
 No terminal, cada integrante pode configurar somente a sessão atual. Exemplo do Felipe:
 
 ```bash
-export JAVA_HOME="$HOME/Downloads/android-studio/jbr"
+export JAVA_HOME="$HOME/.jdks/jbr-21.0.11"
 export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
@@ -24,7 +24,7 @@ Ou, sem alterar o ambiente do terminal, informe os caminhos diretamente:
 
 ```bash
 python3 mobile/android/tools/preflight.py \
-  --java-home "$HOME/Downloads/android-studio/jbr" \
+  --java-home "$HOME/.jdks/jbr-21.0.11" \
   --sdk-dir "$HOME/Android/Sdk"
 ```
 
