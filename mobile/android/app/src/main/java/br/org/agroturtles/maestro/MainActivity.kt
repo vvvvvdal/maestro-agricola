@@ -100,7 +100,9 @@ class MainActivity : ComponentActivity() {
                         Text("Estado: ${result.state}")
                         Text(result.message)
                         result.prediction?.let {
-                            Text("IA: ${it.label} (${String.format("%.1f", it.confidence * 100)}%)")
+                            Text(
+                                "IA: ${it.label} (${String.format("%.1f", it.confidence * 100)}%, ${it.source})",
+                            )
                         }
                         OutlinedTextField(
                             value = transcript,

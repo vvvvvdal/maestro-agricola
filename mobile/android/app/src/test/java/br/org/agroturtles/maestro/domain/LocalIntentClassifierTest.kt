@@ -18,6 +18,11 @@ class LocalIntentClassifierTest {
         assertEquals("CONFIRM", classifier.classify("sim pode continuar").label)
         assertEquals("CANCEL", classifier.classify("não envie esse comando").label)
         assertEquals("UNKNOWN", classifier.classify("qual a cotação do dólar").label)
+        assertEquals("UNKNOWN", classifier.classify("sim mas espere").label)
+        assertEquals("UNKNOWN", classifier.classify("o produto foi pulverizado ontem").label)
+        assertEquals("CANCEL", classifier.classify("deixa quieto").label)
+        assertEquals("CONFIRM", classifier.classify("isso mesmo").label)
+        assertEquals("RULE", classifier.classify("não pulverize o talhão").source)
     }
 
     @Test
@@ -33,6 +38,7 @@ class LocalIntentClassifierTest {
             val prediction = classifier.classify(case.getString("text"))
             val id = case.getString("id")
             assertEquals(id, case.getString("expected_label"), prediction.label)
+            assertEquals(id, case.getString("expected_source"), prediction.source)
             assertEquals(
                 id,
                 case.getDouble("expected_confidence"),

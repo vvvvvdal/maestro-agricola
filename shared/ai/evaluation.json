@@ -1,50 +1,67 @@
 {
-  "examples": 16,
-  "correct": 14,
-  "accuracy": 0.875,
+  "examples": 64,
+  "correct": 64,
+  "accuracy": 1.0,
   "confidence_threshold": 0.4,
-  "operational_correct": 15,
-  "operational_accuracy": 0.9375,
+  "operational_correct": 64,
+  "operational_accuracy": 1.0,
+  "macro_f1": 1.0,
+  "per_label": {
+    "CANCEL": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "CONFIRM": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "SPRAY": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "UNKNOWN": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "source_counts": {
+    "MODEL": 24,
+    "RULE": 40
+  },
+  "unsafe_accepts": [],
+  "unsafe_accept_rate": 0.0,
   "confusion_matrix": {
     "CANCEL": {
-      "CANCEL": 3,
-      "CONFIRM": 1,
+      "CANCEL": 16,
+      "CONFIRM": 0,
       "SPRAY": 0,
       "UNKNOWN": 0
     },
     "CONFIRM": {
       "CANCEL": 0,
-      "CONFIRM": 4,
+      "CONFIRM": 16,
       "SPRAY": 0,
       "UNKNOWN": 0
     },
     "SPRAY": {
       "CANCEL": 0,
       "CONFIRM": 0,
-      "SPRAY": 4,
+      "SPRAY": 16,
       "UNKNOWN": 0
     },
     "UNKNOWN": {
       "CANCEL": 0,
-      "CONFIRM": 1,
+      "CONFIRM": 0,
       "SPRAY": 0,
-      "UNKNOWN": 3
+      "UNKNOWN": 16
     }
   },
-  "errors": [
-    {
-      "text": "interrompa o comando",
-      "expected": "CANCEL",
-      "predicted": "CONFIRM",
-      "confidence": 0.3865234789262399
-    },
-    {
-      "text": "onde esta meu celular",
-      "expected": "UNKNOWN",
-      "predicted": "CONFIRM",
-      "confidence": 0.34790812800653015
-    }
-  ],
-  "train_examples": 80,
-  "test_examples": 16
+  "errors": [],
+  "train_examples": 144,
+  "evaluation_examples": 64,
+  "evaluation_dataset": "shared/ai/dataset/evaluation.tsv"
 }

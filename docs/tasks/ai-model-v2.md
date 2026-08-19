@@ -40,3 +40,15 @@ Tornar a interpretação de voz do MVP mais robusta no Galaxy A17 sem depender d
 - conversa aberta, RAG, nuvem e fila offline de comandos físicos;
 - novos comandos de movimento, doca ou inspeção;
 - ajuste fino ou inferência de LLM no telefone.
+
+## Verificação executada
+
+- treino balanceado: 144 frases (36 por classe);
+- avaliação separada: 64 frases (16 por classe), sem sobreposição normalizada;
+- acurácia operacional: 100%; macro-F1: 1,00; aceites perigosos: 0;
+- origem das decisões na avaliação: 40 por regra e 24 pelo modelo;
+- artefato: aproximadamente 365 KiB, abaixo do limite de 1 MB;
+- `make test`: 34 testes gerais e 14 testes do bridge aprovados;
+- fixture de paridade: 18 casos gerados e validada pelo teste Python.
+
+Os 100% descrevem somente o conjunto pequeno e versionado do MVP, não desempenho no mundo real. A suíte Kotlin foi atualizada, mas não foi executada neste ambiente porque não há JDK disponível; deve ser rodada pelo Android Studio antes da gravação.

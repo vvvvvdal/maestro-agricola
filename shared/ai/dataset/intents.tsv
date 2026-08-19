@@ -23,6 +23,18 @@ SPRAY	aplique nesta parte da lavoura
 SPRAY	vamos pulverizar o talhao
 SPRAY	pulverizacao nesta regiao
 SPRAY	comece a aplicar o produto
+SPRAY	aplica no piquete tres
+SPRAY	pulveriza o lote dois
+SPRAY	borrife defensivo nesta area
+SPRAY	quero tratar o plot zero um
+SPRAY	faz a aplicacao no alvo marcado
+SPRAY	inicie a pulverizacao do piquete
+SPRAY	manda o robo aplicar o insumo
+SPRAY	preciso pulverizar o plot tres
+SPRAY	aplique produto no talhao mapeado
+SPRAY	pode tratar esta parte do campo
+SPRAY	borrifar o alvo visual
+SPRAY	realize a aplicacao neste lote
 CONFIRM	confirmar
 CONFIRM	confirmo
 CONFIRM	sim confirme
@@ -47,6 +59,18 @@ CONFIRM	pode iniciar
 CONFIRM	ordem confirmada
 CONFIRM	sim prossiga
 CONFIRM	esta certo confirme
+CONFIRM	isso mesmo
+CONFIRM	manda ver
+CONFIRM	exatamente
+CONFIRM	de acordo
+CONFIRM	pode ir
+CONFIRM	confirmado pode seguir
+CONFIRM	sim pode enviar agora
+CONFIRM	vai em frente
+CONFIRM	autorizado
+CONFIRM	correto
+CONFIRM	pode tocar
+CONFIRM	sim senhor
 CANCEL	cancelar
 CANCEL	cancele
 CANCEL	nao confirmar
@@ -71,6 +95,18 @@ CANCEL	nao autorizar
 CANCEL	quero cancelar
 CANCEL	nao faca isso
 CANCEL	interromper operacao
+CANCEL	deixa quieto
+CANCEL	melhor nao
+CANCEL	esquece isso
+CANCEL	volte atras
+CANCEL	pare o robo
+CANCEL	recuse essa ordem
+CANCEL	nao aplicar o produto
+CANCEL	nao pulverize esse lote
+CANCEL	aborta a operacao
+CANCEL	deixe quieto
+CANCEL	nao prossiga
+CANCEL	corta a operacao
 UNKNOWN	qual e a previsao do tempo
 UNKNOWN	que horas sao
 UNKNOWN	ligue para o rafael
@@ -95,3 +131,15 @@ UNKNOWN	qual foi o ultimo comando
 UNKNOWN	leia este texto
 UNKNOWN	iniciar cronometro
 UNKNOWN	procure uma receita
+UNKNOWN	inspecione o talhao dois
+UNKNOWN	talhao tres
+UNKNOWN	pulverizacao e perigosa
+UNKNOWN	o produto foi pulverizado ontem
+UNKNOWN	nao sei se devo pulverizar
+UNKNOWN	sim mas espere
+UNKNOWN	talvez pulverize depois
+UNKNOWN	acho que precisa de defensivo
+UNKNOWN	explique como pulverizar
+UNKNOWN	quero aprender sobre aplicacao
+UNKNOWN	onde fica o plot zero tres
+UNKNOWN	qual produto devo usar

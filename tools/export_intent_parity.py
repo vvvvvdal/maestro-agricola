@@ -25,10 +25,15 @@ PARITY_INPUTS = (
     ("confirm_synonym", "confirmo a ordem", "CONFIRM"),
     ("cancel_accent", "não envie esse comando", "CANCEL"),
     ("cancel_phrase", "cancele agora", "CANCEL"),
+    ("confirm_colloquial", "isso mesmo", "CONFIRM"),
+    ("cancel_colloquial", "deixa quieto", "CANCEL"),
+    ("unknown_hesitation", "sim mas espere", "UNKNOWN"),
+    ("unknown_historical", "o produto foi pulverizado ontem", "UNKNOWN"),
+    ("unknown_target_only", "talhão três", "UNKNOWN"),
     ("unknown_domain", "qual é a cotação do dólar", "UNKNOWN"),
     ("unknown_request", "conte uma história", "UNKNOWN"),
     ("threshold_rejection", "onde está meu celular", "UNKNOWN"),
-    ("cancel_threshold_rejection", "interrompa o comando", "UNKNOWN"),
+    ("cancel_explicit", "interrompa o comando", "CANCEL"),
     ("unknown_vocabulary", "xyzzy quux", "UNKNOWN"),
 )
 
@@ -48,6 +53,7 @@ def build_fixture(model_path: Path = MODEL_PATH) -> dict:
             "text": text,
             "expected_label": expected_label,
             "expected_confidence": prediction.confidence,
+            "expected_source": prediction.source,
         })
     return {
         "schema_version": "1.0",
