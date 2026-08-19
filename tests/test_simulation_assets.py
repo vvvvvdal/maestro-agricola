@@ -158,6 +158,7 @@ class SimulationAssetsTest(unittest.TestCase):
         self.assertIn('"ros_gz_sim"', launch)
         self.assertIn('"gz_sim.launch.py"', launch)
         self.assertIn('"turtlebot4_spawn.launch.py"', launch)
+        self.assertIn('str(simulation_share / "models")', launch)
         self.assertNotIn('"turtlebot4_ignition.launch.py"', launch)
         self.assertIn('gz_args += " -s"', launch)
         self.assertNotIn("--headless-rendering", launch)

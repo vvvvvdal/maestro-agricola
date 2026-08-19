@@ -74,6 +74,7 @@ def generate_launch_description() -> LaunchDescription:
         get_package_share_directory("irobot_create_description")
     )
     resource_path = os.pathsep.join([
+        str(simulation_share / "models"),
         str(turtlebot_bringup / "worlds"),
         str(create_bringup / "worlds"),
         str(turtlebot_description.parent),
