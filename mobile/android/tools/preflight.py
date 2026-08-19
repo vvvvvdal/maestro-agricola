@@ -121,6 +121,8 @@ def collect_checks(project_dir: Path, require_device: bool = False) -> list[Chec
         "league_spartan_semibold.ttf", "league_spartan_bold.ttf",
     )]
     checks.append(Check("Ícones da marca", all(path.is_file() for path in icons), str(icons[0].parent)))
+    header_logo = resources / "drawable-nodpi" / "maestro_logo_horizontal.png"
+    checks.append(Check("Lockup v2", header_logo.is_file(), str(header_logo)))
     checks.append(Check("League Spartan", all(path.is_file() for path in fonts), str(fonts[0].parent)))
 
     if require_device:
