@@ -7,6 +7,8 @@ Estas são as versões revisadas da proposta Maestro Agrícola.
 - `Maestro-Agricola-Versao-Resumida-Revisada.pdf`: exportação para compartilhamento.
 - `Maestro-Agricola-Versao-Tecnica-Revisada.pdf`: exportação para compartilhamento.
 
+As duas exportações usam na capa o lockup horizontal aprovado em 19 de agosto de 2026. O conteúdo das páginas internas continua derivado dos arquivos Markdown acima.
+
 ## Decisões incorporadas
 
 - O MVP não depende de IMU, pose de cabeça ou profundidade dos óculos.
