@@ -20,6 +20,16 @@ export JAVA_HOME="$HOME/Downloads/android-studio/jbr"
 export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
+Ou, sem alterar o ambiente do terminal, informe os caminhos diretamente:
+
+```bash
+python3 mobile/android/tools/preflight.py \
+  --java-home "$HOME/Downloads/android-studio/jbr" \
+  --sdk-dir "$HOME/Android/Sdk"
+```
+
+Átila e Rafael substituem somente esses dois argumentos pelos caminhos das próprias máquinas.
+
 O SDK deve ser apontado em `mobile/android/local.properties`, que não deve ser commitado:
 
 ```properties

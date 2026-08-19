@@ -59,8 +59,8 @@ def command_output(command: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(command, capture_output=True, text=True, check=False)
 
 
-def resolve_java() -> Path | None:
-    java_home = os.environ.get("JAVA_HOME")
+def resolve_java(explicit_java_home: Path | None = None) -> Path | None:
+    java_home = str(explicit_java_home) if explicit_java_home else os.environ.get("JAVA_HOME")
     if java_home:
         candidate = Path(java_home) / "bin" / "java"
         if candidate.is_file():
@@ -69,7 +69,9 @@ def resolve_java() -> Path | None:
     return Path(executable) if executable else None
 
 
-def resolve_sdk(project_dir: Path) -> Path | None:
+def resolve_sdk(project_dir: Path, explicit_sdk_dir: Path | None = None) -> Path | None:
+    if explicit_sdk_dir:
+        return explicit_sdk_dir.expanduser()
     for variable in ("ANDROID_SDK_ROOT", "ANDROID_HOME"):
         value = os.environ.get(variable)
         if value:
@@ -77,10 +79,15 @@ def resolve_sdk(project_dir: Path) -> Path | None:
     return read_sdk_dir(project_dir / "local.properties")
 
 
-def collect_checks(project_dir: Path, require_device: bool = False) -> list[Check]:
+def collect_checks(
+    project_dir: Path,
+    require_device: bool = False,
+    java_home: Path | None = None,
+    sdk_dir: Path | None = None,
+) -> list[Check]:
     checks: list[Check] = []
 
-    java = resolve_java()
+    java = resolve_java(java_home)
     if java is None:
         checks.append(Check("JDK", False, "Java não encontrado; instale JDK 17 e configure JAVA_HOME"))
     else:
@@ -93,7 +100,7 @@ def collect_checks(project_dir: Path, require_device: bool = False) -> list[Chec
             f"{java} (versão {major or 'desconhecida'}; mínimo {REQUIRED_JAVA})",
         ))
 
-    sdk = resolve_sdk(project_dir)
+    sdk = resolve_sdk(project_dir, sdk_dir)
     if sdk is None:
         checks.append(Check(
             "Android SDK",
@@ -150,9 +157,16 @@ def main() -> int:
         help="Diretório mobile/android",
     )
     parser.add_argument("--require-device", action="store_true", help="Exige ao menos um aparelho autorizado no adb")
+    parser.add_argument("--java-home", type=Path, help="JDK desta execução, sem alterar JAVA_HOME")
+    parser.add_argument("--sdk-dir", type=Path, help="Android SDK desta execução, sem criar local.properties")
     args = parser.parse_args()
 
-    checks = collect_checks(args.project_dir.resolve(), args.require_device)
+    checks = collect_checks(
+        args.project_dir.resolve(),
+        args.require_device,
+        args.java_home.expanduser().resolve() if args.java_home else None,
+        args.sdk_dir.expanduser().resolve() if args.sdk_dir else None,
+    )
     print("Preflight Android mock")
     for check in checks:
         marker = "OK" if check.ok else "ERRO"

@@ -32,6 +32,17 @@ class AndroidPreflightTest(unittest.TestCase):
         )
         self.assertEqual({"ABC123": "device", "OLD456": "unauthorized"}, devices)
 
+    def test_explicit_paths_take_precedence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            java_home = root / "studio-jbr"
+            sdk_dir = root / "android-sdk"
+            (java_home / "bin").mkdir(parents=True)
+            (java_home / "bin" / "java").touch()
+            sdk_dir.mkdir()
+            self.assertEqual(java_home / "bin" / "java", preflight.resolve_java(java_home))
+            self.assertEqual(sdk_dir, preflight.resolve_sdk(root, sdk_dir))
+
 
 if __name__ == "__main__":
     unittest.main()
