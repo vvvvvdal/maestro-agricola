@@ -13,6 +13,7 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
 - [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.
 - [`tasks/hackathon-day.md`](tasks/hackathon-day.md): plano de integração com os óculos no evento.
+- [`relatorio-evolucao-2026-08-19.md`](relatorio-evolucao-2026-08-19.md): histórico consolidado das mudanças, evidências, pendências e próximos passos.
 - [`references.md`](references.md): fontes oficiais e materiais de apoio.
 - [`references/ceia-materials.md`](references/ceia-materials.md): aprendizados aplicados das três palestras do programa.
 - [`submission/final-form.md`](submission/final-form.md): respostas A–D, pendências e checklist de envio.
