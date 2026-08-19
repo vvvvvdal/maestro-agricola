@@ -35,6 +35,9 @@ class MaestroBridgeNode(Node):
         self.declare_parameter("dock_action_timeout_s", 120.0)
         self.declare_parameter("navigation_timeout_s", 180.0)
         self.declare_parameter("action_retry_limit", 5)
+        self.declare_parameter("dock_approach_x", -0.5)
+        self.declare_parameter("dock_approach_y", 0.0)
+        self.declare_parameter("dock_approach_yaw", 0.0)
 
         namespace = str(self.get_parameter("robot_namespace").value).rstrip("/")
         self._map_frame = str(self.get_parameter("map_frame").value)
@@ -45,6 +48,12 @@ class MaestroBridgeNode(Node):
             self.get_parameter("navigation_timeout_s").value
         )
         self._action_retry_limit = int(self.get_parameter("action_retry_limit").value)
+        self._dock_approach = PoseTarget(
+            id="dock-approach",
+            x=float(self.get_parameter("dock_approach_x").value),
+            y=float(self.get_parameter("dock_approach_y").value),
+            yaw=float(self.get_parameter("dock_approach_yaw").value),
+        )
         self._pending: Queue[tuple[PoseTarget, str]] = Queue(maxsize=16)
         self._mission = MissionCycle()
         self._mission_lock = Lock()
@@ -52,6 +61,7 @@ class MaestroBridgeNode(Node):
         self._active_navigation: tuple[PoseTarget, str] | None = None
         self._undock_goal_handle = None
         self._nav_goal_handle = None
+        self._return_goal_handle = None
         self._dock_goal_handle = None
         self._latest_is_docked: bool | None = None
         self._dock_status_changed_at = monotonic()
@@ -116,6 +126,10 @@ class MaestroBridgeNode(Node):
         elif phase == MissionPhase.NAVIGATING:
             self._check_navigation_timeout()
         elif phase == MissionPhase.READY_TO_DOCK:
+            self._start_return_to_dock()
+        elif phase == MissionPhase.RETURNING_TO_DOCK:
+            self._check_return_to_dock_timeout()
+        elif phase == MissionPhase.READY_FOR_DOCK:
             self._start_dock()
         elif phase == MissionPhase.DOCKING:
             self._monitor_dock()
@@ -196,13 +210,7 @@ class MaestroBridgeNode(Node):
             return
 
         self._active_navigation = (pose, command_id)
-        goal = NavigateToPose.Goal()
-        goal.pose.header.stamp = self.get_clock().now().to_msg()
-        goal.pose.header.frame_id = self._map_frame
-        goal.pose.pose.position.x = pose.x
-        goal.pose.pose.position.y = pose.y
-        goal.pose.pose.orientation.z = math.sin(pose.yaw / 2.0)
-        goal.pose.pose.orientation.w = math.cos(pose.yaw / 2.0)
+        goal = self._navigation_goal(pose)
         try:
             future = self._nav_client.send_goal_async(goal)
         except Exception as exc:
@@ -254,6 +262,79 @@ class MaestroBridgeNode(Node):
             self._mission.navigation_completed,
             has_pending=not self._pending.empty(),
         )
+
+    def _start_return_to_dock(self) -> None:
+        if not self._nav_is_active() or not self._nav_client.server_is_ready():
+            self._fail_if_navigation_phase_expired("Nav2 return-to-dock action server")
+            return
+        if not self._transition(self._mission.begin_return_to_dock):
+            return
+        self.get_logger().info(
+            "Requesting Nav2 return to dock approach "
+            f"({self._dock_approach.x}, {self._dock_approach.y}, "
+            f"{self._dock_approach.yaw})"
+        )
+        try:
+            future = self._nav_client.send_goal_async(
+                self._navigation_goal(self._dock_approach)
+            )
+        except Exception as exc:
+            self._complete_return_to_dock(
+                False, f"could not send return-to-dock goal: {exc}"
+            )
+            return
+        future.add_done_callback(self._return_goal_response)
+
+    def _return_goal_response(self, future) -> None:
+        if self._phase() != MissionPhase.RETURNING_TO_DOCK:
+            return
+        try:
+            goal_handle = future.result()
+        except Exception as exc:
+            self._complete_return_to_dock(
+                False, f"return-to-dock goal failed: {exc}"
+            )
+            return
+        if not goal_handle.accepted:
+            self._complete_return_to_dock(False, "Nav2 rejected return-to-dock goal")
+            return
+        self._return_goal_handle = goal_handle
+        self.get_logger().info("Nav2 accepted return-to-dock approach")
+        goal_handle.get_result_async().add_done_callback(self._return_result)
+
+    def _return_result(self, future) -> None:
+        if self._phase() != MissionPhase.RETURNING_TO_DOCK:
+            return
+        try:
+            wrapped = future.result()
+            succeeded = wrapped.status == GoalStatus.STATUS_SUCCEEDED
+            reason = f"Return-to-dock Nav2 ended with status={wrapped.status}"
+        except Exception as exc:
+            succeeded = False
+            reason = f"Return-to-dock Nav2 result failed: {exc}"
+        self._complete_return_to_dock(succeeded, reason)
+
+    def _complete_return_to_dock(self, succeeded: bool, failure_reason: str) -> None:
+        self._return_goal_handle = None
+        transitioned = self._transition(
+            self._mission.return_to_dock_completed,
+            succeeded=succeeded,
+            has_pending=not self._pending.empty(),
+        )
+        if transitioned:
+            self.get_logger().info("Nav2 completed return-to-dock approach")
+        else:
+            self._fail_mission(failure_reason)
+
+    def _navigation_goal(self, pose: PoseTarget) -> NavigateToPose.Goal:
+        goal = NavigateToPose.Goal()
+        goal.pose.header.stamp = self.get_clock().now().to_msg()
+        goal.pose.header.frame_id = self._map_frame
+        goal.pose.pose.position.x = pose.x
+        goal.pose.pose.position.y = pose.y
+        goal.pose.pose.orientation.z = math.sin(pose.yaw / 2.0)
+        goal.pose.pose.orientation.w = math.cos(pose.yaw / 2.0)
+        return goal
 
     def _start_dock(self) -> None:
         if monotonic() < self._next_dock_attempt_at:
@@ -427,6 +508,17 @@ class MaestroBridgeNode(Node):
         if self._nav_goal_handle is not None:
             self._nav_goal_handle.cancel_goal_async()
         self._complete_navigation(False, "navigation timed out")
+
+    def _check_return_to_dock_timeout(self) -> None:
+        if self._phase_elapsed() <= self._navigation_timeout_s:
+            return
+        if self._return_goal_handle is not None:
+            self._return_goal_handle.cancel_goal_async()
+        self._complete_return_to_dock(False, "return-to-dock navigation timed out")
+
+    def _fail_if_navigation_phase_expired(self, dependency: str) -> None:
+        if self._phase_elapsed() > self._navigation_timeout_s:
+            self._fail_mission(f"{dependency} was not ready before timeout")
 
     def _fail_if_phase_expired(self, dependency: str) -> None:
         if self._phase_elapsed() > self._dock_action_timeout_s:

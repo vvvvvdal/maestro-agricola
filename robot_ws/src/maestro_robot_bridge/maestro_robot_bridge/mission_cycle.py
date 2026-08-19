@@ -10,6 +10,8 @@ class MissionPhase(str, Enum):
     READY = "READY"
     NAVIGATING = "NAVIGATING"
     READY_TO_DOCK = "READY_TO_DOCK"
+    RETURNING_TO_DOCK = "RETURNING_TO_DOCK"
+    READY_FOR_DOCK = "READY_FOR_DOCK"
     DOCKING = "DOCKING"
     DOCKED = "DOCKED"
     FAILED = "FAILED"
@@ -27,7 +29,7 @@ class MissionCycle:
             return False
         if self.phase == MissionPhase.DOCKED:
             self.phase = MissionPhase.NEEDS_UNDOCK
-        elif self.phase == MissionPhase.READY_TO_DOCK:
+        elif self.phase in (MissionPhase.READY_TO_DOCK, MissionPhase.READY_FOR_DOCK):
             self.phase = MissionPhase.READY
         return True
 
@@ -65,9 +67,24 @@ class MissionCycle:
         return True
 
     def begin_docking(self) -> bool:
-        if self.phase != MissionPhase.READY_TO_DOCK:
+        if self.phase != MissionPhase.READY_FOR_DOCK:
             return False
         self.phase = MissionPhase.DOCKING
+        return True
+
+    def begin_return_to_dock(self) -> bool:
+        if self.phase != MissionPhase.READY_TO_DOCK:
+            return False
+        self.phase = MissionPhase.RETURNING_TO_DOCK
+        return True
+
+    def return_to_dock_completed(self, *, succeeded: bool, has_pending: bool) -> bool:
+        if self.phase != MissionPhase.RETURNING_TO_DOCK:
+            return False
+        if not succeeded:
+            self.fail("navigation to dock approach failed")
+            return False
+        self.phase = MissionPhase.READY if has_pending else MissionPhase.READY_FOR_DOCK
         return True
 
     def docking_completed(
@@ -88,7 +105,7 @@ class MissionCycle:
     def retry_docking(self) -> bool:
         if self.phase != MissionPhase.DOCKING:
             return False
-        self.phase = MissionPhase.READY_TO_DOCK
+        self.phase = MissionPhase.READY_FOR_DOCK
         return True
 
     def fail(self, reason: str) -> None:

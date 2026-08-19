@@ -16,6 +16,10 @@ class MissionCycleTest(unittest.TestCase):
         self.assertTrue(cycle.command_queued())
         self.assertTrue(cycle.begin_navigation())
         self.assertTrue(cycle.navigation_completed(has_pending=False))
+        self.assertTrue(cycle.begin_return_to_dock())
+        self.assertTrue(
+            cycle.return_to_dock_completed(succeeded=True, has_pending=False)
+        )
         self.assertTrue(cycle.begin_docking())
         self.assertTrue(
             cycle.docking_completed(succeeded=True, is_docked=True, has_pending=False)
@@ -26,6 +30,8 @@ class MissionCycleTest(unittest.TestCase):
         cycle = self.ready_cycle()
         cycle.begin_navigation()
         cycle.navigation_completed(has_pending=False)
+        cycle.begin_return_to_dock()
+        cycle.return_to_dock_completed(succeeded=True, has_pending=False)
         self.assertTrue(cycle.command_queued())
         self.assertEqual(MissionPhase.READY, cycle.phase)
 
@@ -33,6 +39,8 @@ class MissionCycleTest(unittest.TestCase):
         cycle = self.ready_cycle()
         cycle.begin_navigation()
         cycle.navigation_completed(has_pending=False)
+        cycle.begin_return_to_dock()
+        cycle.return_to_dock_completed(succeeded=True, has_pending=False)
         cycle.begin_docking()
         self.assertTrue(cycle.command_queued())
         cycle.docking_completed(succeeded=True, is_docked=True, has_pending=True)
@@ -59,10 +67,33 @@ class MissionCycleTest(unittest.TestCase):
         self.assertTrue(cycle.navigation_completed(has_pending=False))
         self.assertEqual(MissionPhase.READY_TO_DOCK, cycle.phase)
 
+    def test_return_to_dock_failure_blocks_dock_servo(self):
+        cycle = self.ready_cycle()
+        cycle.begin_navigation()
+        cycle.navigation_completed(has_pending=False)
+        cycle.begin_return_to_dock()
+        self.assertFalse(
+            cycle.return_to_dock_completed(succeeded=False, has_pending=False)
+        )
+        self.assertEqual(MissionPhase.FAILED, cycle.phase)
+
+    def test_goal_queued_during_return_resumes_work_before_docking(self):
+        cycle = self.ready_cycle()
+        cycle.begin_navigation()
+        cycle.navigation_completed(has_pending=False)
+        cycle.begin_return_to_dock()
+        self.assertTrue(cycle.command_queued())
+        self.assertTrue(
+            cycle.return_to_dock_completed(succeeded=True, has_pending=True)
+        )
+        self.assertEqual(MissionPhase.READY, cycle.phase)
+
     def test_dock_failure_blocks_another_mission(self):
         cycle = self.ready_cycle()
         cycle.begin_navigation()
         cycle.navigation_completed(has_pending=False)
+        cycle.begin_return_to_dock()
+        cycle.return_to_dock_completed(succeeded=True, has_pending=False)
         cycle.begin_docking()
         self.assertFalse(
             cycle.docking_completed(succeeded=False, is_docked=False, has_pending=False)
@@ -74,9 +105,11 @@ class MissionCycleTest(unittest.TestCase):
         cycle = self.ready_cycle()
         cycle.begin_navigation()
         cycle.navigation_completed(has_pending=False)
+        cycle.begin_return_to_dock()
+        cycle.return_to_dock_completed(succeeded=True, has_pending=False)
         cycle.begin_docking()
         self.assertTrue(cycle.retry_docking())
-        self.assertEqual(MissionPhase.READY_TO_DOCK, cycle.phase)
+        self.assertEqual(MissionPhase.READY_FOR_DOCK, cycle.phase)
 
 
 if __name__ == "__main__":
