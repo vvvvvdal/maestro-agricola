@@ -36,3 +36,5 @@ O modelo local é lido diretamente de `../../shared/ai/intent_model.json` como a
 No emulador de desenvolvimento, o endpoint padrão é `ws://10.0.2.2:18765`. No Android físico da demonstração, edite o campo do app para `ws://IP_DO_COMPUTADOR:18765`.
 
 Gerar o APK não comprova câmera dos óculos, voz, TTS nem conexão com o bridge. Esses itens devem ser executados com `datDebug` no Android conectado aos Meta Wearables e registrados separadamente.
+
+O roteiro completo para o Galaxy A17, incluindo JDK portátil, USB/ADB, mock físico, DAT e diagnóstico por camada, está em [`../../docs/testing/galaxy-a17-e2e.md`](../../docs/testing/galaxy-a17-e2e.md).

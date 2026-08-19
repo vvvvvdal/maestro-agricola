@@ -1,5 +1,7 @@
 # Documentação
 
+Para o próximo ensaio físico, use [Teste integrado no Galaxy A17](testing/galaxy-a17-e2e.md).
+
 Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o arquivo correspondente quando uma decisão mudar; não deixe decisões importantes apenas no chat.
 
 ## Índice
