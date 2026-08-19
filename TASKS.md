@@ -856,7 +856,9 @@ Revisar com atenção antes de seguir depois de:
 
 # Prompt reutilizável para o Gemini
 
-Substitua `<TASK>` pelo número da task desejada.
+# Prompt operacional para Gemini / Antigravity
+
+Substitua `<TASK>` pelo número solicitado.
 
 ```text
 Você está trabalhando no repositório Maestro Agrícola.
@@ -866,68 +868,105 @@ Leia primeiro:
 - CONTRIBUTING.md
 - docs/README.md
 - TASKS.md
-- a documentação relevante em docs/ para a task solicitada.
+- somente a documentação em docs/ relevante para a Task <TASK>.
 
 Execute SOMENTE a Task <TASK> de TASKS.md.
 
-Regras obrigatórias:
-1. Não implemente nenhuma parte de tasks posteriores, mesmo que pareça conveniente.
-2. Antes de editar, inspecione a implementação atual e me dê um resumo curto de:
-   - como o comportamento funciona hoje;
-   - ambiguidades/riscos;
-   - arquivos que pretende alterar;
-   - critérios de aceite que vai validar.
-3. Preserve todas as mudanças do usuário que não pertençam à task. Verifique `git status` antes de começar.
-4. Faça a menor mudança possível e não faça refactors fora do escopo.
-5. Toda mudança de comportamento deve atualizar a documentação correspondente, seguindo o padrão já usado em `docs/`: objetivo, decisões/ambiguidades, critérios de aceite, plano, evidências e limitações quando aplicável.
-6. Não deixe decisões importantes somente na resposta do chat; registre-as na documentação apropriada.
-7. Atualize ou adicione testes proporcionais ao risco.
-8. Rode os testes relevantes definidos em TASKS.md. Se algum teste não puder ser executado, diga exatamente por quê; não declare que passou.
-9. Antes de finalizar, rode:
-   - git diff --check
-   - git diff
-   - git status
-10. Faça commit(s) atômico(s), sem incluir arquivos não relacionados, usando Conventional Commits com flag/escopo coerente, por exemplo:
-   - docs(tasks): ...
-   - refactor(bridge): ...
-   - feat(contract): ...
-   - feat(bridge): ...
-   - feat(android): ...
-   - feat(ai): ...
-   - test(e2e): ...
-11. Não use git reset --hard, force-push, rebase destrutivo ou --amend sem autorização explícita.
-12. Não faça commit se os critérios essenciais da task falharem. Pare e reporte o bloqueio.
+REGRAS DE EXECUÇÃO
 
-Ao terminar, retorne:
+1. Escopo
+- Não implemente nenhuma parte de tasks posteriores.
+- Não corrija problemas não relacionados encontrados durante testes.
+- Não regenere modelos, schemas, snapshots, lockfiles ou artefatos fora do escopo.
+- Preserve qualquer mudança do usuário que não pertença à task.
+
+2. Antes de editar
+- Rode `git status --porcelain`.
+- Inspecione a implementação atual.
+- Resuma em no máximo 8 bullets:
+  - comportamento atual;
+  - arquivos que pretende alterar;
+  - riscos/ambiguidades;
+  - critérios de aceite que vai validar.
+- Depois disso, implemente. Não fique esperando aprovação intermediária, a menos que exista uma ambiguidade realmente bloqueante.
+
+3. Comandos e hangs
+- Comandos simples como `pwd`, `git status`, `git diff`, buscas e inspeções não podem ficar rodando indefinidamente.
+- Se um comando simples não progredir em ~15 segundos, interrompa e use no máximo uma alternativa não destrutiva.
+- Exemplo: `git status` -> `git status --porcelain`.
+- Não repita o mesmo comando travado mais de uma vez.
+- Para testes, use o menor gate relevante para a task.
+- Se um teste focado ficar sem progresso por ~2 minutos, investigue ou interrompa em vez de apenas esperar.
+- Só rode Gazebo/E2E/build longo quando a task exigir; nesses casos monitore progresso/logs.
+
+4. Testes
+- NÃO rode `make test` por padrão.
+- Rode primeiro os testes explicitamente associados à Task <TASK>.
+- Só rode a suíte global se TASKS.md exigir ou se houver razão clara de regressão transversal.
+- Se uma suíte global falhar em componente fora do escopo, registre a falha e continue.
+
+Exemplo obrigatório de comportamento:
+Se a task é do bridge ROS e `make test` falha porque
+`shared/ai/intent_model.json` está desatualizado:
+- NÃO execute `make model`;
+- NÃO altere IA/dataset/modelo;
+- registre como OUT-OF-SCOPE/PRE-EXISTING quando houver evidência;
+- valide a task com `make test-robot` e testes focados relevantes.
+
+5. Regra anti-loop
+- Não entre em loop de `git status`, `make test`, `make test-ai`, rebuild ou comandos equivalentes.
+- Máximo de uma repetição do mesmo comando, e somente se houver uma hipótese nova.
+- Se não for bloqueante para os critérios de aceite, registre e siga.
+
+6. Documentação
+- Toda mudança de comportamento deve atualizar a documentação correspondente em `docs/`.
+- Siga o padrão existente no repo.
+- Registre evidência real: comandos executados, resultado, limitações.
+- Não declare teste, build, hardware ou E2E como aprovado se não foi executado.
+
+7. Git
+Antes de finalizar, rode:
+- `git diff --check`
+- `git diff`
+- `git status --porcelain`
+
+Faça apenas commit(s) atômico(s) pertencentes à Task <TASK>, usando Conventional Commits, por exemplo:
+- `docs(tasks): ...`
+- `refactor(bridge): ...`
+- `feat(contract): ...`
+- `feat(bridge): ...`
+- `feat(android): ...`
+- `feat(ai): ...`
+- `test(e2e): ...`
+
+Não use:
+- `git reset --hard`
+- force-push
+- rebase destrutivo
+- `--amend`
+sem autorização humana explícita.
+
+8. Quando um teste falhar
+Classifique a falha:
+- TASK-RELATED: precisa ser corrigida para cumprir a task.
+- OUT-OF-SCOPE: componente não pertence à task; registre e não altere.
+- PRE-EXISTING: há evidência de que já existia; registre e não altere.
+- ENVIRONMENT: ferramenta/hardware/serviço indisponível; registre exatamente.
+
+Só pare a task se a falha bloquear um critério essencial da própria Task <TASK>.
+
+AO TERMINAR
+
+Retorne de forma curta e objetiva:
 - resumo do que mudou;
 - arquivos alterados;
 - documentação atualizada;
-- testes executados + resultado;
-- testes não executados + motivo;
+- testes focados executados + resultados;
+- testes globais/externos não executados ou falhos + classificação e motivo;
 - riscos/pendências;
-- hash e mensagem de cada commit criado;
-- confirmação explícita de que nenhuma task posterior foi implementada.
+- hash e mensagem de cada commit;
+- confirmação: "Nenhuma task posterior foi implementada."
 
-Depois de concluir a Task <TASK>, PARE. Não comece a próxima task.
-```
-
----
-
-# Prompt inicial recomendado
-
-Para começar agora:
-
-```text
-Leia AGENTS.md, CONTRIBUTING.md, docs/README.md e TASKS.md.
-Execute SOMENTE a Task 1.
-
-Siga integralmente o protocolo de execução e commits definido em TASKS.md.
-Antes de editar, explique brevemente o lifecycle automático atual e quais
-arquivos você pretende alterar.
-
-Depois implemente, atualize testes e documentação, rode os testes relevantes,
-revise o diff e crie apenas commit(s) atômico(s) da Task 1.
-
-Ao terminar, reporte evidências, hashes dos commits e pare.
-Não implemente a Task 2.
+Depois de concluir a Task <TASK>, PARE.
+Não comece a próxima task.
 ```
