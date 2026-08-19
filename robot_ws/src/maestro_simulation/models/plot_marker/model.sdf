@@ -26,6 +26,16 @@
           <pbr><metal><albedo_map>model://plot_marker/materials/textures/plot-01.png</albedo_map></metal></pbr>
         </material>
       </visual>
+      <visual name="qr_visual_back">
+        <!-- Upright on the opposite face; local X follows the viewer's right. -->
+        <pose>0.026 0 0 1.570796 0 1.570796</pose>
+        <geometry><plane><normal>0 0 1</normal><size>0.68 0.95</size></plane></geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+          <pbr><metal><albedo_map>model://plot_marker/materials/textures/plot-01.png</albedo_map></metal></pbr>
+        </material>
+      </visual>
     </link>
 
     <link name="plot_02_marker">
@@ -50,6 +60,15 @@
           <pbr><metal><albedo_map>model://plot_marker/materials/textures/plot-02.png</albedo_map></metal></pbr>
         </material>
       </visual>
+      <visual name="qr_visual_back">
+        <pose>0.026 0 0 1.570796 0 1.570796</pose>
+        <geometry><plane><normal>0 0 1</normal><size>0.68 0.95</size></plane></geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+          <pbr><metal><albedo_map>model://plot_marker/materials/textures/plot-02.png</albedo_map></metal></pbr>
+        </material>
+      </visual>
     </link>
 
     <link name="plot_03_marker">
@@ -67,6 +86,15 @@
       </visual>
       <visual name="qr_visual">
         <pose>-0.026 0 0 1.570796 0 -1.570796</pose>
+        <geometry><plane><normal>0 0 1</normal><size>0.68 0.95</size></plane></geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+          <pbr><metal><albedo_map>model://plot_marker/materials/textures/plot-03.png</albedo_map></metal></pbr>
+        </material>
+      </visual>
+      <visual name="qr_visual_back">
+        <pose>0.026 0 0 1.570796 0 1.570796</pose>
         <geometry><plane><normal>0 0 1</normal><size>0.68 0.95</size></plane></geometry>
         <material>
           <ambient>1 1 1 1</ambient>

@@ -111,7 +111,7 @@ class SimulationAssetsTest(unittest.TestCase):
                 )
                 self.assertAlmostEqual(heading_to_marker, actual_target["yaw"], places=5)
 
-    def test_qr_plane_is_vertical_and_outside_front_face(self):
+    def test_qr_planes_are_upright_and_outside_both_faces(self):
         for link in self.model.findall("link"):
             with self.subTest(link=link.attrib["name"]):
                 board_size = numbers(
@@ -119,16 +119,31 @@ class SimulationAssetsTest(unittest.TestCase):
                         "collision[@name='board_collision']/geometry/box/size"
                     )
                 )
-                qr_pose = numbers(link.find("visual[@name='qr_visual']/pose"))
-                local_x, local_y, normal = rotated_axes(*qr_pose[3:])
+                front = link.find("visual[@name='qr_visual']")
+                back = link.find("visual[@name='qr_visual_back']")
+                self.assertIsNotNone(front)
+                self.assertIsNotNone(back)
+                front_pose = numbers(front.find("pose"))
+                back_pose = numbers(back.find("pose"))
 
-                self.assertLess(qr_pose[0], -board_size[0] / 2.0)
-                for actual, expected in zip(local_x, (0.0, -1.0, 0.0)):
-                    self.assertAlmostEqual(expected, actual, places=5)
-                for actual, expected in zip(local_y, (0.0, 0.0, 1.0)):
-                    self.assertAlmostEqual(expected, actual, places=5)
-                for actual, expected in zip(normal, (-1.0, 0.0, 0.0)):
-                    self.assertAlmostEqual(expected, actual, places=5)
+                self.assertLess(front_pose[0], -board_size[0] / 2.0)
+                self.assertGreater(back_pose[0], board_size[0] / 2.0)
+                self.assertEqual(
+                    front.find("material/pbr/metal/albedo_map").text,
+                    back.find("material/pbr/metal/albedo_map").text,
+                )
+
+                for pose, expected_x, expected_normal in (
+                    (front_pose, (0.0, -1.0, 0.0), (-1.0, 0.0, 0.0)),
+                    (back_pose, (0.0, 1.0, 0.0), (1.0, 0.0, 0.0)),
+                ):
+                    local_x, local_y, normal = rotated_axes(*pose[3:])
+                    for actual, expected in zip(local_x, expected_x):
+                        self.assertAlmostEqual(expected, actual, places=5)
+                    for actual, expected in zip(local_y, (0.0, 0.0, 1.0)):
+                        self.assertAlmostEqual(expected, actual, places=5)
+                    for actual, expected in zip(normal, expected_normal):
+                        self.assertAlmostEqual(expected, actual, places=5)
 
     def test_bridge_safety_limits_use_simulation_clock(self):
         launch = LAUNCH_PATH.read_text(encoding="utf-8")
