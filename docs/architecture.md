@@ -7,7 +7,7 @@ AI Glasses
   câmera via DAT + rota de áudio do sistema
           |
           v
-App companion Android/Kotlin ou iOS/Swift
+App companion Android/Kotlin
   fonte mock/DAT + voz local + IA local + confirmação
           |
           v
@@ -25,7 +25,7 @@ Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
 - Entrada e saída de voz pela rota Bluetooth disponível no sistema mobile, com microfone e alto-falante do telefone como fallback.
 - Sem display e sem lógica pesada embarcada.
 
-O DAT é usado para sessão e câmera. O reconhecimento de fala e o TTS pertencem às APIs nativas do Android/iOS; a rota de microfone e áudio dos óculos deve ser validada no hardware e não é tratada como uma API de áudio do DAT.
+O DAT é usado para sessão e câmera. O reconhecimento de fala e o TTS pertencem às APIs nativas do Android; a rota de microfone e áudio dos óculos deve ser validada no hardware e não é tratada como uma API de áudio do DAT.
 
 ### Companion app
 
@@ -37,7 +37,7 @@ O DAT é usado para sessão e câmera. O reconhecimento de fala e o TTS pertence
 - Executa a máquina de estados de confirmação.
 - Envia comandos idempotentes ao bridge.
 
-Existem duas implementações nativas porque a equipe precisa provar o fluxo no Motorola e no iPhone 13. Não há React Native. O modelo exportado e os schemas permanecem únicos para evitar duas regras de negócio divergentes.
+Existe uma única implementação nativa Android/Kotlin. Os flavors `mock` e `dat` isolam, respectivamente, a simulação e o hardware real sem duplicar regra de negócio. Não há React Native.
 
 ### Bridge ROS 2
 
@@ -126,7 +126,7 @@ IDLE -> CAPTURING -> INTERPRETING -> AWAITING_CONFIRMATION
 
 ## IA local compartilhada
 
-O repositório treina um classificador linear softmax pequeno para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`. São 96 frases em português, com 80 para treino e 16 para avaliação; as features são palavras, bigramas e afixos. O artefato JSON tem aproximadamente 65 KB e é interpretado diretamente em Kotlin e Swift, sem servidor e sem dependência de inferência externa. No conjunto separado de 16 frases, a política operacional com limiar 0,40 obteve 15/16 acertos; o erro restante virou `UNKNOWN`, portanto não enviou comando.
+O repositório treina um classificador linear softmax pequeno para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`. São 96 frases em português, com 80 para treino e 16 para avaliação; as features são palavras, bigramas e afixos. O artefato JSON tem aproximadamente 65 KB e é interpretado diretamente em Kotlin, sem servidor e sem dependência de inferência externa. No conjunto separado de 16 frases, a política operacional com limiar 0,40 obteve 15/16 acertos; o erro restante virou `UNKNOWN`, portanto não enviou comando.
 
 O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando disponíveis. Ele é uma etapa diferente do classificador de intenção do Maestro.
 
@@ -134,11 +134,11 @@ O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando
 
 | Adaptador | Estado |
 |---|---|
-| Mock Android e iOS | Implementado |
-| Modelo local Android e iOS | Implementado; build nativo pendente |
-| WebSocket Android e iOS | Implementado; teste em aparelho pendente |
-| DAT Android e iOS | Dependência e fronteira de integração presentes; adaptador real e ciclo no hardware pendentes |
-| Voz e TTS Android/iOS | Implementados com APIs nativas; builds físicos e rota Bluetooth pendentes |
+| Mock Android | Implementado |
+| Modelo local Android | Implementado; build nativo pendente |
+| WebSocket Android | Implementado; teste em aparelho pendente |
+| DAT Android | Dependência e fronteira de integração presentes; adaptador real e ciclo no hardware pendentes |
+| Voz e TTS Android | Implementados com APIs nativas; builds físicos e rota Bluetooth pendentes |
 | ROS 2/Nav2 | Jornada headless validada no Gazebo; Nav2 aceitou a meta e o robô iniciou movimento |
 
 ## Principais riscos

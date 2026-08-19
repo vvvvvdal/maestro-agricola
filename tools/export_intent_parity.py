@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build or verify the cross-platform intent-classifier parity fixture."""
+"""Build or verify the Python/Kotlin intent-classifier parity fixture."""
 
 from __future__ import annotations
 

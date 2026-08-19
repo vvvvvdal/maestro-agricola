@@ -10,7 +10,7 @@ digraph MaestroAgricola {
   }
 
   subgraph cluster_mobile {
-    label="Companion nativo — Kotlin ou Swift"; color="#4F8A68"; fontcolor="#174A2B"; style="rounded";
+    label="Companion Android — Kotlin"; color="#4F8A68"; fontcolor="#174A2B"; style="rounded";
     DAT [label="Meta Wearables DAT\nsessão + câmera", fillcolor="#E7F2EA"];
     FRAME [label="Captura sob demanda\n1 frame por ação", fillcolor="#E7F2EA"];
     QR [label="Placa PLOT-03\n+ detector QR local", fillcolor="#E7F2EA"];

@@ -11,9 +11,9 @@ Estas são as versões revisadas da proposta Maestro Agrícola.
 
 - O MVP não depende de IMU, pose de cabeça ou profundidade dos óculos.
 - O alvo é um marcador ou talhão previamente mapeado.
-- A câmera passa pelo DAT; o áudio usa as APIs nativas de Android e iOS e deve ser validado em cada aparelho real.
-- A IA comprovável é o classificador linear softmax local já exportado para Kotlin e Swift; a próxima medição é o benchmark nos dois smartphones.
+- A câmera passa pelo DAT; o áudio usa as APIs nativas do Android e deve ser validado no aparelho real.
+- A IA comprovável é o classificador linear softmax local já exportado para Kotlin; a próxima medição é o benchmark no emulador e no Motorola.
 - A confirmação por áudio é obrigatória antes de qualquer comando de movimento.
-- O app não persiste mídia bruta e declara separadamente os fluxos de dados de Android, iOS, Meta AI e DAT.
+- O app não persiste mídia bruta e declara separadamente os fluxos de dados de Android, Meta AI e DAT.
 
 Atualize primeiro os arquivos Markdown e depois regenere os PDFs.

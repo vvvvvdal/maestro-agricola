@@ -8,7 +8,7 @@ Deixar o MVP reproduzível por uma pessoa que acabou de clonar o repositório e 
 
 - O texto integral de cada campo do formulário não foi fornecido; as respostas seguem as quatro seções descritas pelo CEIA e devem ser ajustadas apenas se o formulário impor limite de caracteres.
 - O link do vídeo ainda não existe e será mantido como item pendente, nunca como link inventado.
-- Builds físicos de Android, iOS e DAT dependem dos aparelhos e de um Mac com Xcode; nenhuma evidência física será declarada antes da execução pela equipe.
+- Builds físicos de Android e DAT dependem dos aparelhos e da toolchain Android; nenhuma evidência física será declarada antes da execução pela equipe.
 - A demonstração local obrigatória usa mock de óculos, IA local, WebSocket, ROS 2, Nav2 e Gazebo.
 - As palestras anexadas são material de referência e não substituem a documentação oficial do DAT ou as regras do edital.
 
@@ -107,7 +107,7 @@ Evidência de sucesso final: `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e moviment
 
 - O deck de seis slides foi preservado como template e revisado sem reconstruir seu sistema visual.
 - A assinatura mudou para “Olhe. Fale. Confirme.”, alinhada ao gate obrigatório.
-- A arquitetura visível agora separa câmera via DAT de áudio do sistema mobile e inclui Kotlin, Swift, Nav2, Gazebo e TurtleBot 4.
+- A arquitetura visível agora separa câmera via DAT de áudio do sistema mobile e inclui Kotlin, Nav2, Gazebo e TurtleBot 4.
 - A evidência real substituiu promessas: `ACCEPTED`, Nav2 ativo, odometria alterada e `cancelar` sem comando.
 - O roteiro final tem aproximadamente 370 palavras e janela de ensaio de 2min40s a 2min55s.
 - Os seis slides foram inspecionados individualmente; o teste automático não encontrou overflow e a fidelidade ao template passou sem desvios.

@@ -16,11 +16,11 @@ A jornada tem três ações. Olhar: uma placa legível e seu QR identificam o pl
 
 ## Slide 4 — Arquitetura (1:22–1:59) — Rafael
 
-Por dentro, a câmera entra pelo DAT. Voz e TTS usam recursos nativos do celular, com o telefone como fallback. Kotlin e Swift consomem a mesma IA, o mesmo catálogo de plots e o mesmo contrato. Após a confirmação, um JSON com validade curta chega ao bridge, que valida e entrega uma meta ao Nav2 no Gazebo. Como o DAT público não documenta pose ou IMU, o MVP usa um alvo mapeado; GPS do operador não vira destino do robô.
+Por dentro, a câmera entra pelo DAT. Voz e TTS usam recursos nativos do celular, com o telefone como fallback. O app Kotlin consome a IA local, o catálogo de plots e o contrato versionado. Após a confirmação, um JSON com validade curta chega ao bridge, que valida e entrega uma meta ao Nav2 no Gazebo. Como o DAT público não documenta pose ou IMU, o MVP usa um alvo mapeado; GPS do operador não vira destino do robô.
 
 ## Slide 5 — Evidência e próximo teste (1:59–2:34) — Rafael
 
-Hoje já provamos três sinais: a placa completa foi decodificada como plot três; a política local obteve 15 de 16 acertos operacionais; e o cliente recebeu ACCEPTED, ativou o Nav2 e mudou a odometria do TurtleBot. “Cancelar” foi recusado sem movimento. O desenho cobre IA, câmera e voz, áudio, privacidade e captura sob demanda. O próximo gate é compilar nos dois aparelhos e validar DAT, latência, bateria e rota Bluetooth com os óculos reais.
+Hoje já provamos três sinais: a placa completa foi decodificada como plot três; a política local obteve 15 de 16 acertos operacionais; e o cliente recebeu ACCEPTED, ativou o Nav2 e mudou a odometria do TurtleBot. “Cancelar” foi recusado sem movimento. O desenho cobre IA, câmera e voz, áudio, privacidade e captura sob demanda. O próximo gate é compilar no Android e validar DAT, latência, bateria e rota Bluetooth com os óculos reais.
 
 ## Slide 6 — Fechamento (2:34–2:52) — Rafael
 
@@ -32,7 +32,7 @@ O Maestro conecta interface multimodal e robótica com protocolo aberto, confirm
 - Falar como conversa, não como leitura. Pausar após “É a forma como o humano conversa com ela”.
 - No slide 5, mostrar brevemente a placa detectada, `ACCEPTED`, o TurtleBot em movimento e a recusa de `cancelar`.
 - Cronometrar três vezes. Se passar de 2min55s, cortar exemplos da fala; não acelerar o fechamento.
-- Não dizer que DAT, iPhone, Motorola ou áudio Bluetooth já foram validados fisicamente.
+- Não dizer que DAT, Motorola ou áudio Bluetooth já foram validados fisicamente.
 
 ## Plano B sem captura de tela
 

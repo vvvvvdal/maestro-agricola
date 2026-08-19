@@ -22,7 +22,7 @@ ID e objetivo:
 
 - [ ] Não altera `contracts/`, modelo, segurança ou privacidade.
 - [ ] Se altera, dois integrantes revisaram a decisão.
-- [ ] Android, iOS e ROS continuam usando o mesmo contrato.
+- [ ] Android e ROS continuam usando o mesmo contrato.
 
 ## Checklist
 

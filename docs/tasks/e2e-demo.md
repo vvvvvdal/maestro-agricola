@@ -20,7 +20,7 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 
 1. As cinco branches publicadas entram na integração com histórico e limites documentados.
 2. Casos compartilhados cobrem ID visual, ID falado, concordância, divergência, ausência e alvo fora do mapa.
-3. Python, Kotlin e Swift implementam a mesma política de resolução do alvo.
+3. Python e Kotlin implementam a mesma política de resolução do alvo.
 4. A placa `PLOT-03` continua decodificável pelo detector já testado.
 5. A proposta e o pitch explicam qual IA local é usada, sem confundir STT, classificador e visão.
 6. Nenhuma divergência, intenção desconhecida, timeout ou alvo inexistente produz movimento.
@@ -45,12 +45,12 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 
 - As cinco branches publicadas foram integradas separadamente; os conflitos ficaram restritos ao índice de tarefas e ao `Makefile`.
 - `shared/target/target_resolution_cases.json` congela nove casos de visual, voz, concordância, conflito, ausência e alvo desconhecido.
-- A referência Python passou e os mesmos casos são consumidos por testes Kotlin e Swift.
+- A referência Python passou e os mesmos casos são consumidos por testes Kotlin.
 - A máquina de estados aceita `plot-03` falado mesmo sem QR, mas continua exigindo confirmação explícita.
 - Divergência entre o ID visual e o ID falado entra em `AMBIGUOUS` e não cria comando.
-- O catálogo `targets.json` do bridge também virou a allowlist dos dois apps; não foi criada uma segunda lista de alvos.
+- O catálogo `targets.json` do bridge também virou a allowlist do app Android; não foi criada uma segunda lista de alvos.
 - O gate da IA agora inclui 13 frases, entre elas `pulverize no plot-03` e `pulverize no plot três`.
-- Nesta máquina, 23 testes Python e 4 testes do bridge passaram. Os novos testes Kotlin/Swift aguardam as toolchains nativas já documentadas.
+- Nesta máquina, 23 testes Python e 4 testes do bridge passaram. Os novos testes Kotlin aguardam a toolchain Android já documentada.
 
 ## Resultado parcial — placa legível
 
@@ -76,6 +76,5 @@ Integrar as entregas já publicadas e fechar uma jornada única e segura: alvo m
 - `make demo`: aprovado — resposta `ACCEPTED`, Nav2 ativo, meta aceita e odometria alterada (`x=0.022`, `y=0.001`). A execução terminou com `SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados`.
 - O contêiner da demonstração foi encerrado após o teste.
 - Preflight Android: bloqueado neste computador por ausência de JDK 17 e Android SDK; o Gradle wrapper está presente.
-- Preflight iOS: bloqueado porque o host é Linux e não possui Xcode, Swift ou XcodeGen; arquivos do projeto e modelo local estão presentes.
 
-Nenhum build ou teste físico foi declarado como aprovado. Permanecem como gates humanos: compilar no Motorola, compilar no iPhone 13, conectar o detector ao frame mobile, validar o DAT e medir áudio, latência e bateria no hardware real.
+Nenhum build ou teste físico foi declarado como aprovado. Permanecem como gates humanos: compilar no Motorola, conectar o detector ao frame mobile, validar o DAT e medir áudio, latência e bateria no hardware real.

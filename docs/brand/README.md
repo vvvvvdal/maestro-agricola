@@ -26,7 +26,7 @@ Os valores foram extraídos dos pixels dominantes dos PNGs entregues pela equipe
 
 | Arquivo | Uso recomendado |
 | --- | --- |
-| `assets/brand/logo-icon-yellow.png` | ícone Android/iOS, avatar e aplicações pequenas |
+| `assets/brand/logo-icon-yellow.png` | ícone Android, avatar e aplicações pequenas |
 | `assets/brand/logo-icon-white.png` | símbolo isolado sobre fundo branco |
 | `assets/brand/logo-lockup-square.png` | composição centralizada ou peças quadradas |
 | `assets/brand/wordmark.png` | cabeçalho e materiais com pouco espaço vertical |

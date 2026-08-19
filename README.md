@@ -21,7 +21,7 @@ O Maestro Agrícola permite que o operador olhe para um alvo no campo, diga a a�
 O corte vertical demonstra o fluxo completo:
 
 ```text
-AI Glasses ou mock -> app Kotlin/Swift -> IA local + alvo -> JSON/WebSocket -> ROS 2/Nav2/Gazebo
+AI Glasses ou mock -> app Kotlin -> IA local + alvo -> JSON/WebSocket -> ROS 2/Nav2/Gazebo
 ```
 
 Para manter a demonstração verificável, o alvo do MVP será um marcador visual ou talhão previamente mapeado. A versão atual do Meta Wearables Device Access Toolkit (DAT) não expõe pose/IMU dos óculos; portanto, nenhuma parte crítica do MVP depende desse dado.
@@ -37,9 +37,8 @@ Para manter a demonstração verificável, o alvo do MVP será um marcador visua
 ## O que já existe
 
 - contrato JSON 1.0 com confirmação, expiração e UUID;
-- classificador local compartilhado por Android e iOS;
+- classificador de intenção executado localmente no Android;
 - app Android com flavors `mock` (API 26+) e `dat` (API 31+);
-- app iOS para iPhone 13/iOS 17.2+;
 - bridge WebSocket/ROS 2 com rejeição de comando inseguro e deduplicação;
 - cenário do Gazebo com três placas bifaciais (`plot-01` a `plot-03`), Nav2 e TurtleBot 4;
 - resolvedor compartilhado que aceita alvo visual, ID falado ou concordância entre os dois e recusa conflitos;
@@ -56,8 +55,7 @@ O adaptador do DAT real está isolado e ainda precisa receber o ciclo oficial de
 ├── README.md
 ├── contracts/           # schemas e fixtures JSON
 ├── mobile/
-│   ├── android/         # Kotlin, mock API 26+ e DAT API 31+
-│   └── ios/             # Swift, iOS 17.2+
+│   └── android/         # Kotlin, mock API 26+ e DAT API 31+
 ├── robot_ws/src/        # bridge ROS 2 e cenário Gazebo
 ├── shared/ai/           # dataset, modelo local e avaliação
 ├── tests/               # testes portáveis do modelo e do cliente mock
@@ -205,9 +203,9 @@ O cenário atual não é uma fazenda própria. `warehouse` e seu mapa de ocupaç
 
 ## Estado visual dos apps
 
-Android/Compose e iOS/SwiftUI já possuem telas diagnósticas equivalentes: fonte de frame, estado da jornada, resposta da IA, transcrição, endpoint WebSocket e botões para simular olhar, interpretar, falar e reiniciar. A identidade AgroTurtles também já está aplicada. Ainda são telas de MVP para teste, não uma interface final de produto.
+O app Android/Compose já possui uma tela diagnóstica com fonte de frame, estado da jornada, resposta da IA, transcrição, endpoint WebSocket e botões para simular olhar, interpretar, falar e reiniciar. A identidade AgroTurtles também já está aplicada. Ainda é uma tela de MVP para teste, não uma interface final de produto.
 
-Para abrir o Android, siga [`mobile/android/README.md`](mobile/android/README.md); é necessário JDK 17, Android SDK e Android Studio ou aparelho via `adb`. Para abrir o iOS, siga [`mobile/ios/README.md`](mobile/ios/README.md) em um Mac com Xcode. Um Linux não executa o simulador iOS.
+Para abrir o app, siga [`mobile/android/README.md`](mobile/android/README.md); é necessário JDK 17, Android SDK e Android Studio ou aparelho via `adb`.
 
 ## Testar a escolha do alvo
 
@@ -234,12 +232,11 @@ python3 tools/target_resolver.py "pulverize no plot quatro" --visual-target plot
 | Aparelho | Execução do mock | DAT real |
 |---|---:|---:|
 | Motorola com Android 8+ | Sim, flavor `mockDebug` | Somente se tiver Android 12+ |
-| iPhone 13 com iOS 17.2+ | Sim | Sim, sujeito ao hardware/firmware DAT |
 
 ## Próximas tarefas críticas
 
 1. Consultar o quadro executável em [`docs/tasks/mvp-week.md`](docs/tasks/mvp-week.md).
-2. Compilar e rodar `mockDebug` no Motorola e o projeto Swift no iPhone 13.
+2. Compilar e rodar `mockDebug` no emulador Android e no Motorola.
 3. Conectar a leitura real do QR ao frame mobile; o resolvedor visual/falado e a prova estática já estão implementados.
 4. Validar o sample `CameraAccess` e ligar o adaptador DAT.
 5. Rodar a jornada cinco vezes e registrar latência/falhas.

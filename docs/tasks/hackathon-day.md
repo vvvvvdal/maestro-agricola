@@ -8,7 +8,7 @@ O evento não é o momento de criar a solução. É o momento de substituir mock
 
 ## Pré-condições para viajar
 
-- APK Kotlin e projeto Swift compilando; ao menos um build instalável sem depender da internet.
+- APK Kotlin compilando e instalável sem depender da internet.
 - Jornada completa funcionando com Mock Device Kit.
 - Versão do DAT fixada e sample oficial já compreendido.
 - Modelo local e fixtures empacotados no repositório.
@@ -18,7 +18,7 @@ O evento não é o momento de criar a solução. É o momento de substituir mock
 
 ## Distribuição no evento
 
-- **Átila:** pareamento, permissões, DAT, câmera, áudio e build Kotlin/Swift.
+- **Átila:** pareamento, permissões, DAT, câmera, áudio e build Kotlin.
 - **Felipe:** feed visual, detector, bridge ROS 2, Gazebo e execução ponta a ponta.
 - **Rafael:** inferência local, métricas, evidências dos checkpoints e materiais do pitch.
 

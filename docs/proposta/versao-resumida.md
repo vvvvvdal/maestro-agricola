@@ -9,11 +9,11 @@
 
 ### Equipe
 
-- Átila Capozzoli Ribeiro Rodrigues - Fullstack Pleno com experiência em Kotlin e Swift; lidera app nativo e DAT.
+- Átila Capozzoli Ribeiro Rodrigues - Fullstack Pleno com experiência em Kotlin; lidera app nativo e DAT.
 - Felipe Gonçalves Vidal - Integrante do Pequi Mecânico; lidera visão, ROS 2, Gazebo e TurtleBot 4.
 - Rafael José de Souza Marques - Voluntário no CEIA; lidera IA local e classificação de intenção.
 
-Felipe e Rafael apresentam o pitch. O MVP mantém apps nativos Kotlin e Swift com o mesmo contrato e modelo local; React Native não será usado.
+Felipe e Rafael apresentam o pitch. O MVP mantém um app Android nativo em Kotlin; React Native não será usado.
 
 > Esta revisão preserva o escopo original e corrige premissas técnicas: o DAT atual não expõe pose/IMU dos óculos; por isso, o MVP seleciona um alvo visual previamente mapeado.
 
@@ -40,7 +40,7 @@ Somente após a confirmação o app envia um comando estruturado ao robô. O Mae
 O fluxo do MVP é modular:
 
 ```text
-AI Glasses -> app Kotlin/Swift -> alvo + intenção local -> JSON/WebSocket -> ROS 2/Gazebo
+AI Glasses -> app Kotlin -> alvo + intenção local -> JSON/WebSocket -> ROS 2/Gazebo
 ```
 
 - **Óculos:** câmera como entrada visual, microfones para voz e alto-falantes para resposta.
@@ -58,14 +58,14 @@ A placa do MVP combina texto grande e QR. Em campo, poeira ou obstrução contin
 
 ### Inteligência artificial
 
-O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, um classificador linear softmax local, treinado com 96 frases curtas em português e exportado em JSON com cerca de 65 KB, transforma o texto em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O modelo usa palavras, pares de palavras e afixos; Kotlin e Swift interpretam os mesmos pesos sem servidor. Com limiar de 0,40, a avaliação separada acertou 15 de 16 frases, e a restante foi recusada como `UNKNOWN`. O benchmark nos dois smartphones ainda será executado.
+O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, um classificador linear softmax local, treinado com 96 frases curtas em português e exportado em JSON com cerca de 65 KB, transforma o texto em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O modelo usa palavras, pares de palavras e afixos, e o app Kotlin interpreta seus pesos sem servidor. Com limiar de 0,40, a avaliação separada acertou 15 de 16 frases, e a restante foi recusada como `UNKNOWN`. O benchmark no emulador Android e no Motorola ainda será executado.
 
 ## 4. Checkpoints obrigatórios
 
 - **Inteligência artificial:** classificador local funcional e demonstrável no companion app.
 - **Câmera ou microfone:** câmera dos óculos como entrada visual principal e voz como canal de comando.
 - **Output por áudio:** confirmação, erro, cancelamento e sucesso pelos alto-falantes.
-- **Privacidade e dados:** o Maestro não salva fotos, áudio ou transcrições por padrão; a mídia é liberada após a interação. A equipe também documentará os fluxos próprios de Android, iOS, Meta AI e DAT e desabilitará analytics opcionais quando permitido.
+- **Privacidade e dados:** o Maestro não salva fotos, áudio ou transcrições por padrão; a mídia é liberada após a interação. A equipe também documentará os fluxos próprios de Android, Meta AI e DAT e desabilitará analytics opcionais quando permitido.
 - **Eficiência de bateria:** captura sob demanda ou stream de baixa taxa, inferência pequena e encerramento dos recursos ao fim da jornada.
 
 ## 5. Segurança e tratamento de erros

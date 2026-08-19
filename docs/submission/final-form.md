@@ -40,7 +40,7 @@ Se nenhum QR conhecido nem ID falado for encontrado, se houver mais de um alvo, 
 | Placa legível + QR, com fallback por ID falado | O DAT público oferece câmera, mas não uma pose/IMU que converta direção da cabeça em coordenadas. A placa torna a prova determinística; voz e câmera precisam concordar quando ambas fornecem ID. | Raycasting, GPS do operador como destino, RTK e localização visual completa. |
 | Agente estreito com quatro classes (`SPRAY`, `CONFIRM`, `CANCEL`, `UNKNOWN`) | Cabe no celular, é rápido, testável e transforma ambiguidades em `UNKNOWN` em vez de inventar ações. | LLM em nuvem e linguagem aberta para qualquer tarefa. |
 | Captura sob demanda, um frame por interação | Reduz uso de bateria, aquecimento, banda e exposição de terceiros. | Streaming contínuo durante toda a operação. |
-| Kotlin e Swift nativos com contrato compartilhado | Os samples e o ciclo de vida do DAT são nativos; Android e iOS consomem o mesmo modelo e JSON sem depender de uma camada que esconda o SDK. | React Native no MVP. |
+| Android/Kotlin nativo com contrato versionado | Os samples e o ciclo de vida do DAT são nativos; o app consome o modelo e o JSON canônicos sem depender de uma camada que esconda o SDK. | React Native no MVP. |
 | WebSocket/JSON versionado entre app e robô | Desacopla óculos, celular e ROS 2; facilita mock, validação, expiração e deduplicação. | Acoplar o app diretamente a tópicos ROS 2 ou a um fabricante de máquina. |
 
 ### A6. Concorrentes e diferenciação
@@ -55,9 +55,9 @@ Fontes oficiais: [Meta AI](https://ai.meta.com/meta-ai/), [John Deere Operations
 
 | Pilar | Implementação e evidência do MVP |
 |---|---|
-| Uso de IA | Classificador softmax local de cerca de 65 KB, treinado com 96 frases em português e compartilhado entre Kotlin e Swift. Ele retorna quatro intenções; no conjunto separado, a política com limiar 0,40 acertou 15 de 16 frases e recusou a restante como `UNKNOWN`. STT é uma etapa nativa separada. |
+| Uso de IA | Classificador softmax local de cerca de 65 KB, treinado com 96 frases em português e executado em Kotlin. Ele retorna quatro intenções; no conjunto separado, a política com limiar 0,40 acertou 15 de 16 frases e recusou a restante como `UNKNOWN`. STT é uma etapa nativa separada. |
 | Câmera/microfone | A câmera entra pelo DAT e é consumida sob demanda. A voz usa o reconhecimento nativo do celular; nos óculos reais, o roteamento do microfone por Bluetooth precisa ser validado. O telefone é o fallback explícito. |
-| Saída por áudio | TTS nativo do Android/iOS informa pergunta de confirmação, sucesso ou falha. O áudio pode sair pelos open-ear speakers quando a rota Bluetooth do sistema estiver disponível; o alto-falante do telefone é o fallback. |
+| Saída por áudio | TTS nativo do Android informa pergunta de confirmação, sucesso ou falha. O áudio pode sair pelos open-ear speakers quando a rota Bluetooth do sistema estiver disponível; o alto-falante do telefone é o fallback. |
 | Privacidade | Frame e áudio são efêmeros e não são gravados pelo Maestro. Logs guardam apenas IDs, estados, latências e erros. Há confirmação explícita, validade curta e nenhuma execução diante de ambiguidade. |
 | Eficiência de bateria | Sessão curta, captura sob demanda, um frame por ação, modelo pequeno local e encerramento de câmera/áudio ao fim da interação. Bateria e temperatura serão medidas no hardware real. |
 
@@ -111,7 +111,7 @@ A equipe AgroTurtles definiu o problema, escopo, arquitetura, decisões, critér
 ## Revisão humana obrigatória antes do envio
 
 - Felipe e Rafael: ensaiar o roteiro e confirmar que as falas refletem o vídeo gravado.
-- Átila: revisar as afirmações sobre Kotlin, Swift, DAT, reconhecimento de voz, TTS e aparelhos-alvo.
+- Átila: revisar as afirmações sobre Kotlin, DAT, reconhecimento de voz, TTS e aparelhos Android-alvo.
 - Rafael: revisar classificador, métricas e limites da IA.
 - Felipe: revisar ROS 2, Nav2, Gazebo, QR e evidências da demo.
 - Todos: conferir limites de caracteres do formulário e as três caixas de confirmação da Seção D.

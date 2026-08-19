@@ -34,15 +34,6 @@ log/
 *.iml
 captures/
 
-# iOS / Xcode
-DerivedData/
-*.xcuserstate
-xcuserdata/
-*.xccheckout
-*.xcscmblueprint
-.swiftpm/
-.build/
-
 # Editors and OS
 .DS_Store
 Thumbs.db

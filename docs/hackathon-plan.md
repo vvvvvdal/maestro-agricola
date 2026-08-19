@@ -4,14 +4,14 @@
 
 O MVP cabe em sete dias se a equipe preservar um único corte vertical e trabalhar em paralelo por interfaces estáveis. O objetivo da semana não é suportar toda a agricultura de precisão; é provar uma interação completa, segura e demonstrável.
 
-Os aplicativos serão nativos em Kotlin e Swift para atender aos dois aparelhos disponíveis. Eles compartilham o contrato, o modelo local e a máquina de estados; somente as integrações de sistema e DAT são específicas. React Native fica fora do projeto. Para o pitch ao vivo, a equipe escolhe o aparelho que estiver mais estável.
+O aplicativo será Android nativo em Kotlin, com flavors `mock` e `dat` que compartilham contrato, modelo local e máquina de estados. React Native fica fora do projeto. Para o pitch, a equipe escolhe entre emulador e Motorola conforme o ambiente mais estável.
 
 ## Escopo congelado da semana
 
 - Um alvo visual: QR `plot-03`, previamente mapeado.
 - Uma ação operacional: `SPRAY` como pedido demonstrativo.
 - Três respostas de controle: `CONFIRM`, `CANCEL` e `UNKNOWN`.
-- Dois apps companion nativos, com uma única regra de negócio e um único modelo.
+- Um app companion Android nativo, com uma única regra de negócio e um único modelo.
 - Um bridge WebSocket/ROS 2.
 - Um TurtleBot 4 simulado no Gazebo.
 - Captura sob demanda e nenhuma mídia bruta persistida.
@@ -62,7 +62,7 @@ Os aplicativos serão nativos em Kotlin e Swift para atender aos dois aparelhos 
 
 ## Papéis
 
-- **Átila:** aplicativos Kotlin/Swift, DAT, áudio e orquestração mobile.
+- **Átila:** aplicativo Kotlin, DAT, áudio e orquestração mobile.
 - **Felipe:** visão computacional, ROS 2, Gazebo, TurtleBot 4 e integração do simulador.
 - **Rafael:** IA local, classificação de intenção, métricas e evidências do checkpoint.
 - **Felipe e Rafael:** apresentação do pitch.

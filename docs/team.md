@@ -2,17 +2,17 @@
 
 ## Átila Capozzoli Ribeiro Rodrigues
 
-Desenvolvedor Fullstack Pleno com experiência em aplicativos Kotlin, Swift e React Native.
+Desenvolvedor Fullstack Pleno com experiência em aplicativos Kotlin e React Native.
 
 **Responsabilidade principal:** aplicativo companion nativo.
 
-- Android/Kotlin e iOS/Swift, mantendo a mesma regra de negócio.
+- Android/Kotlin, com flavors separados para mock e DAT.
 - Integração com o Meta Wearables DAT.
 - Permissões, sessão, câmera e ciclo de vida.
 - Captura de voz, transcrição e resposta por áudio.
 - Máquina de estados e integração dos componentes no app.
 
-**Decisão de escopo:** o MVP terá apps nativos Kotlin e Swift para validar o Motorola e o iPhone 13. React Native não será usado. A demo ao vivo pode escolher o aparelho mais estável.
+**Decisão de escopo:** o MVP terá somente um app Android nativo em Kotlin. React Native não será usado. A demo pode rodar no emulador ou no Motorola, escolhendo o ambiente mais estável.
 
 ## Felipe Gonçalves Vidal
 
@@ -37,7 +37,7 @@ Estudante de Ciência da Computação no INF/UFG e voluntário no CEIA.
 - Conjunto pequeno de frases em português para treino e teste.
 - Treino ou adaptação de um classificador leve e exportação para execução local.
 - Limiar de confiança, tratamento de ambiguidade e métricas.
-- Interface e exemplos para integração do mesmo modelo em Kotlin e Swift.
+- Interface e exemplos para integração do mesmo modelo em Kotlin.
 - Evidências do checkpoint de IA funcional.
 
 ## Pitch e demonstração

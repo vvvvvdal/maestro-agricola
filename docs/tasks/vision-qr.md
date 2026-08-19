@@ -25,7 +25,7 @@ Concluir a prova isolada VIS-02 antes de acoplar visão aos apps: transformar um
 
 ## Fora de escopo desta task
 
-- Integrar o detector ao Kotlin, Swift ou DAT.
+- Integrar o detector ao app Kotlin e ao frame fornecido pelo DAT.
 - Estimar pose ou coordenada a partir da câmera.
 - Instalar OpenCV automaticamente ou persistir frames de câmera.
 

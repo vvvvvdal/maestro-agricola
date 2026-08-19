@@ -5,12 +5,10 @@
 - [Meta Wearables Developer Center — Getting Started](https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit)
 - [Meta Wearables DAT Android](https://github.com/facebook/meta-wearables-dat-android)
 - [Sample Android CameraAccess](https://github.com/facebook/meta-wearables-dat-android/tree/main/samples/CameraAccess)
-- [Meta Wearables DAT iOS](https://github.com/facebook/meta-wearables-dat-ios)
-- [Sample iOS CameraAccess](https://github.com/facebook/meta-wearables-dat-ios/tree/main/samples/CameraAccess)
 
-O projeto mantém implementações nativas Kotlin e Swift. Os samples `CameraAccess` da mesma versão do DAT são a referência de ciclo de vida para cada plataforma.
+O projeto mantém implementações nativas Kotlin. Os samples `CameraAccess` da mesma versão do DAT são a referência de ciclo de vida para cada plataforma.
 
-Versão fixada nesta primeira implementação: DAT 0.9.0. O sample oficial consultado exige Android API 31+ no flavor real e iOS 17.2+ no iPhone.
+Versão fixada nesta primeira implementação: DAT 0.9.0. O sample oficial consultado exige Android API 31+ no flavor real.
 
 ## Processo de desenvolvimento
 

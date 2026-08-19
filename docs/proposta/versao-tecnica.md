@@ -9,17 +9,17 @@
 
 ### Equipe
 
-- Átila Capozzoli Ribeiro Rodrigues - Desenvolvedor Fullstack Pleno com experiência em apps Kotlin, Swift e React Native; lidera o app nativo, o DAT, áudio e a máquina de estados.
+- Átila Capozzoli Ribeiro Rodrigues - Desenvolvedor Fullstack Pleno com experiência em apps Kotlin e React Native; lidera o app Android nativo, o DAT, áudio e a máquina de estados.
 - Felipe Gonçalves Vidal - Estudante de Ciência da Computação (INF/UFG) e integrante do Núcleo de Robótica Pequi Mecânico; lidera visão computacional, ROS 2, Gazebo, TurtleBot 4 e integração com o simulador.
 - Rafael José de Souza Marques - Estudante de Ciência da Computação (INF/UFG) e voluntário no CEIA; lidera IA local, classificador de intenção, conjunto de testes e métricas do modelo.
 
-Felipe e Rafael apresentam o pitch. O MVP mantém apps nativos Kotlin e Swift, mas compartilha contrato, modelo local e comportamento para não criar dois produtos diferentes. React Native fica fora do escopo.
+Felipe e Rafael apresentam o pitch. O MVP mantém um único app Android nativo em Kotlin, com contrato e modelo local canônicos. React Native fica fora do escopo.
 
 > Revisão de viabilidade: o escopo “olhar, falar e confirmar” foi preservado. Foram removidas dependências de pose/IMU e profundidade que não estão disponíveis na superfície atual do DAT. O MVP usa um alvo visual mapeado e mantém a localização métrica no lado ROS.
 
 ## 1. Resumo executivo
 
-O Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas autônomos. O operador centraliza um alvo visual, expressa a ação por voz e confirma o comando por áudio. Um app companion nativo Android ou iOS interpreta a intenção e envia um comando versionado a um bridge ROS 2, que associa o alvo a uma pose conhecida e aciona a navegação no Gazebo.
+O Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas autônomos. O operador centraliza um alvo visual, expressa a ação por voz e confirma o comando por áudio. Um app companion nativo Android interpreta a intenção e envia um comando versionado a um bridge ROS 2, que associa o alvo a uma pose conhecida e aciona a navegação no Gazebo.
 
 O produto não implementa navegação pesada, desvio de obstáculos ou segurança funcional do veículo. Essas responsabilidades continuam no robô. O Maestro atua como camada de interação, validação e orquestração.
 
@@ -78,7 +78,7 @@ AI Glasses
   câmera + microfones + alto-falantes
           |
           v
-Companion app nativo Kotlin ou Swift
+Companion app Android nativo em Kotlin
   DAT + áudio do sistema + STT + classificador + visão + segurança
           |
           v
@@ -91,7 +91,7 @@ Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
 ### 5.1 Óculos
 
 - Câmera acessada pelo DAT mediante registro, permissão, sessão e stream.
-- Microfones e alto-falantes usados pelo caminho de áudio nativo do Android ou iOS.
+- Microfones e alto-falantes usados pelo caminho de áudio nativo do Android.
 - Sem display; todos os estados relevantes precisam de feedback sonoro.
 - Sem processamento de negócio nos óculos.
 
@@ -163,7 +163,7 @@ Essas opções exigem validação separada e não entram na demonstração princ
 
 ### 7.1 Captura e transcrição
 
-O caminho de áudio é configurado antes do stream de câmera. No Android, o app seleciona o dispositivo de comunicação Bluetooth e prefere reconhecimento offline. No iOS, configura uma sessão de áudio Bluetooth e solicita reconhecimento on-device. Os dois apps reproduzem TTS pelo caminho de saída ativo.
+O caminho de áudio é configurado antes do stream de câmera. No Android, o app seleciona o dispositivo de comunicação Bluetooth, prefere reconhecimento offline e reproduz TTS pelo caminho de saída ativo.
 
 O STT fica atrás de uma interface e o MVP exige execução on-device quando o pacote de idioma estiver disponível. Caso um aparelho não ofereça reconhecimento offline, o plano de contingência para desenvolvimento é entrada textual simulada, sem enviar áudio a um serviço externo. O classificador de intenção continua sempre local.
 
@@ -185,9 +185,9 @@ Rótulos iniciais:
 - `CANCEL`
 - `UNKNOWN`
 
-O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e prefixos/sufixos de seis caracteres. A mesma política e os mesmos pesos são interpretados em Kotlin e Swift. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no Motorola e no iPhone 13.
+O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e prefixos/sufixos de seis caracteres. A mesma política e os mesmos pesos são interpretados em Kotlin. Com limiar operacional de 0,40, a avaliação atual acertou 15 de 16 frases separadas para teste; a frase restante foi recusada como `UNKNOWN`, em vez de gerar uma intenção incorreta. O próximo benchmark mede latência, memória e acurácia no emulador Android e no Motorola.
 
-O STT não é esse modelo: Android e iOS tentam transcrição on-device por suas APIs nativas. O classificador do Maestro recebe somente o texto e não envia áudio ou transcrição para um servidor de inferência.
+O STT não é esse modelo: o Android tenta a transcrição on-device por sua API nativa. O classificador do Maestro recebe somente o texto e não envia áudio ou transcrição para um servidor de inferência.
 
 ### 7.3 Regras de segurança sobre a IA
 
@@ -198,7 +198,7 @@ O STT não é esse modelo: Android e iOS tentam transcrição on-device por suas
 
 ## 8. Câmera e áudio simultâneos
 
-Câmera e áudio não devem ser tratados como uma única API. O DAT fornece o caminho de câmera; o áudio segue as APIs nativas de Android ou iOS e o comportamento pode variar por smartphone, sistema, versão do SDK, firmware e ambiente de rádio.
+Câmera e áudio não devem ser tratados como uma única API. O DAT fornece o caminho de câmera; o áudio segue as APIs nativas de Android e o comportamento pode variar por smartphone, sistema, versão do SDK, firmware e ambiente de rádio.
 
 Plano de validação:
 
@@ -288,7 +288,7 @@ Somente `AWAITING_CONFIRMATION -> SENDING` aceita uma confirmação válida. Fra
 
 ### 12.2 Plataforma e SDK
 
-Android, iOS, Meta AI e DAT podem processar informações necessárias para pareamento, permissões, funcionamento e telemetria. A equipe deve:
+Android, Meta AI e DAT podem processar informações necessárias para pareamento, permissões, funcionamento e telemetria. A equipe deve:
 
 - documentar esses fluxos na política de privacidade;
 - ativar o opt-out de analytics opcionais do DAT quando permitido;
@@ -357,7 +357,7 @@ A jornada crítica precisa rodar cinco vezes seguidas no cenário limpo, incluin
 
 ### Antes do hackathon
 
-- compilar os flavors mock no Motorola e no iPhone 13 e validar IA e áudio on-device;
+- compilar o flavor mock no emulador e no Motorola e validar IA e áudio on-device;
 - integrar o detector de QR ao frame simulado;
 - rodar CameraAccess e Mock Device Kit e substituir os adaptadores DAT provisórios;
 - manter os testes automatizados do contrato, da IA, do bridge e dos estados;
@@ -379,7 +379,6 @@ Após o MVP, o produto pode evoluir de alvos mapeados para localização visual 
 ## 18. Referências principais
 
 - [DAT Android](https://github.com/facebook/meta-wearables-dat-android) e [CameraAccess Android](https://github.com/facebook/meta-wearables-dat-android/tree/main/samples/CameraAccess).
-- [DAT iOS](https://github.com/facebook/meta-wearables-dat-ios) e [CameraAccess iOS](https://github.com/facebook/meta-wearables-dat-ios/tree/main/samples/CameraAccess).
 - [Getting started toolkit](https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit).
 - Edital AI Glasses Brasil 2026.
 - Materiais de apoio Meta, Unidades XII, XIII e XIV.

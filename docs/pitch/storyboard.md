@@ -43,7 +43,7 @@
 
 **Apresentador:** Rafael.
 
-**Texto:** câmera via DAT → app Kotlin/Swift + softmax local → WebSocket → ROS 2/Nav2/Gazebo.
+**Texto:** câmera via DAT → app Kotlin + softmax local → WebSocket → ROS 2/Nav2/Gazebo.
 
 **Edição:** animar o fluxo da esquerda para a direita. A fala explica que voz/TTS usam o sistema mobile, a rota Bluetooth será validada e o telefone é fallback. Inserir 3 a 5 segundos da simulação recebendo o comando.
 

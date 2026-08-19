@@ -32,7 +32,7 @@ Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as 
 | Integração | `make demo` | undock → mock/IA local → WebSocket → Nav2 → dock | Sim |
 | Rota completa | `make demo-route` | visita os três plots em ordem e retorna à doca | Sim + NVIDIA |
 | Visual NVIDIA | `make gazebo` + `make demo-visual` | mesma integração com a janela 3D na GPU | Sim + NVIDIA/X11 |
-| Mobile mock | Gradle/Xcode | comportamento nativo no aparelho | Não para o build |
+| Mobile mock | Gradle/Android Studio | comportamento nativo no aparelho | Não para o build |
 
 ## Teste recomendado do zero
 
@@ -234,18 +234,6 @@ Na pasta `mobile/android`:
 
 No emulador, use `ws://10.0.2.2:18765`. No Motorola físico, use `ws://IP_DO_COMPUTADOR:18765`; celular e computador precisam alcançar a mesma rede local. O flavor mock aceita API 26+, enquanto o DAT real exige o nível definido pelo sample oficial.
 
-## iOS mock
-
-Em um Mac com Xcode e XcodeGen:
-
-```bash
-cd mobile/ios
-xcodegen generate
-open MaestroAgricola.xcodeproj
-```
-
-Escolha o iPhone 13 como destino, configure a assinatura e substitua `127.0.0.1` pelo IP do computador que executa o bridge. No iPhone, `127.0.0.1` aponta para o próprio telefone.
-
 ## Evidência mínima para a entrega
 
 Registre, sem mídia bruta:
@@ -254,4 +242,4 @@ Registre, sem mídia bruta:
 2. JSON `ACCEPTED` do `make demo`;
 3. trecho de log mostrando a meta de navegação;
 4. uma recusa local por intenção ou confirmação inválida;
-5. versão do build mock executado em cada aparelho.
+5. versão do build mock executado no emulador ou aparelho Android.

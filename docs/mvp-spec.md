@@ -52,8 +52,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 ## Plataformas do MVP
 
 - Android/Kotlin: `mockDebug` em API 26+; o flavor `datDebug` depende dos requisitos da versão do DAT fixada e deve ser confirmado contra o sample oficial antes do build físico.
-- iOS/Swift: iOS 17.2+; alvo principal de teste é o iPhone 13.
-- Os dois apps consomem o mesmo `intent_model.json` e o contrato JSON 1.0.
+- O app Android consome o `intent_model.json` canônico e o contrato JSON 1.0.
 - Basta um app executar a demo ao vivo, mas os dois builds nativos devem passar antes da entrega.
 - A fonte simulada é obrigatória para desenvolvimento. A captura DAT real é a troca isolada do hackathon.
 

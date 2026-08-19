@@ -18,7 +18,7 @@
 <g id="clust2" class="cluster">
 <title>cluster_mobile</title>
 <path fill="white" stroke="#4f8a68" d="M20,-393C20,-393 670,-393 670,-393 676,-393 682,-399 682,-405 682,-405 682,-822 682,-822 682,-828 676,-834 670,-834 670,-834 20,-834 20,-834 14,-834 8,-828 8,-822 8,-822 8,-405 8,-405 8,-399 14,-393 20,-393"/>
-<text text-anchor="middle" x="345" y="-810.8" font-family="DejaVu Sans" font-size="24.00" fill="#174a2b">Companion nativo — Kotlin ou Swift</text>
+<text text-anchor="middle" x="345" y="-810.8" font-family="DejaVu Sans" font-size="24.00" fill="#174a2b">Companion Android — Kotlin</text>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_network</title>

@@ -16,9 +16,8 @@ O projeto usa `main` como linha integrada e sempre demonstrável. As branches s�
 | Branch | Tarefas | Liderança | Evidência para merge |
 |---|---|---|---|
 | `feat/android-mock-smoke` | MOB-01 e MOB-03 | Átila | `mockDebug` instalado no Motorola, voz/TTS demonstrados e log sem mídia bruta |
-| `feat/ios-mock-smoke` | IOS-01 | Átila | projeto executado no iPhone 13 com fonte mock e IA local |
 | `feat/vision-qr` | VIS-02 e VIS-03 | Felipe | `plot-03` detectado em imagem conhecida e `UNKNOWN` sem marcador |
-| `feat/ai-device-eval` | AI-03 e apoio a QA-01 | Rafael | mesmos casos em Python, Kotlin e Swift, com confiança e limiar registrados |
+| `feat/ai-device-eval` | AI-03 e apoio a QA-01 | Rafael | mesmos casos em Python e Kotlin, com confiança e limiar registrados |
 
 A integração INT-01/INT-02 deve nascer depois, em `feat/e2e-demo`, a partir da `main` já atualizada com as entregas acima. Não use uma branch de integração permanente.
 
@@ -60,7 +59,7 @@ git pull --ff-only
 
 As pastas indicam a liderança de revisão, não exclusividade:
 
-- `mobile/android/` e `mobile/ios/`: Átila.
+- `mobile/android/`: Átila.
 - `robot_ws/` e visão: Felipe.
 - `shared/ai/`, dataset e métricas: Rafael.
 - `contracts/`: equipe; Felipe revisa o lado ROS e Átila o lado mobile.
@@ -74,7 +73,7 @@ Ao tocar a frente de outra pessoa, explique no PR o motivo e marque a liderança
 - `docker compose config --quiet` passa quando Compose mudar.
 - Nenhum segredo, mídia bruta ou arquivo de build foi adicionado.
 - O PR mostra como reproduzir a evidência.
-- Contrato, modelo e comportamento continuam iguais em Android, iOS e ROS.
+- Contrato, modelo e comportamento continuam coerentes entre Android e ROS.
 - Falhas de alvo, intenção ou confirmação continuam sem produzir movimento.
 
 ## Congelamento

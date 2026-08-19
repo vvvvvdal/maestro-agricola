@@ -4,7 +4,7 @@
 
 O MVP demonstra uma única jornada: reconhecer o QR de `plot-03`, classificar a intenção `SPRAY`, pedir confirmação e enviar um comando idempotente para o TurtleBot 4 simulado no Gazebo.
 
-Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem aberta, localização sem marcador, robô físico ou pulverização real. Kotlin e Swift compartilham o contrato, o modelo e o comportamento; não são dois produtos independentes.
+Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem aberta, localização sem marcador, robô físico ou pulverização real. O app Android/Kotlin compartilha contrato e modelo com os componentes Python/ROS 2.
 
 ## Estado em 16 de agosto
 
@@ -12,9 +12,8 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 - [x] Modelo local treinado e avaliado: 15/16 acertos operacionais.
 - [x] Núcleo seguro do bridge ROS 2 testado, incluindo expiração e deduplicação.
 - [x] QR `plot-03`, modelo do Gazebo, mapa de pose e launch integrado criados.
-- [x] Esqueletos nativos Kotlin e Swift com IA, confirmação, timeout e WebSocket implementados.
+- [x] Esqueleto nativo Kotlin com IA, confirmação, timeout e WebSocket implementado.
 - [ ] Build Android executado no Motorola.
-- [ ] Build Swift executado no iPhone 13.
 - [x] Imagem Docker construída e jornada headless validada: comando aceito pelo Nav2 e odometria alterada.
 - [ ] Detector de QR real conectado ao frame.
 - [ ] Adaptador DAT real conectado ao ciclo oficial de sessão/captura.
@@ -23,7 +22,6 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 
 - [x] **ARC-01 - Congelar o contrato JSON** - Felipe + Átila. Evidência: schemas, fixtures e testes de expiração/deduplicação.
 - [ ] **MOB-01 - Criar o app Android/Kotlin** - Átila. Evidência: projeto compila e possui módulos ou interfaces para câmera, áudio, IA e transporte.
-- [ ] **IOS-01 - Compilar o app iOS/Swift** - Átila. Evidência: projeto gerado e executado no iPhone 13 com a fonte mock.
 - [x] **ROS-01 - Criar o pacote do bridge ROS 2** - Felipe. Evidência: núcleo recebe JSON e enfileira uma meta; teste ROS completo depende do container.
 - [x] **AI-01 - Congelar rótulos e frases de avaliação** - Rafael. Evidência: 96 frases e split determinístico para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
 - [x] **VIS-01 - Congelar o alvo visual** - Felipe. Evidência: QR `plot-03`, textura e mapa para pose no cenário.
@@ -39,7 +37,7 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 ## Dia 3 - adaptadores e primeiro gate
 
 - [ ] **MOB-04 - Implementar máquina de estados** - Átila. Evidência: caminho feliz, recusa e timeout testados sem SDK real.
-- [-] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Paridade de 11 casos compartilhados preparada para Kotlin e Swift; falta executar os testes nas toolchains nativas e medir nos aparelhos.
+- [-] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Paridade de 11 casos compartilhados preparada para Kotlin; falta executar os testes na toolchain Android e medir no aparelho.
 - [ ] **VIS-03 - Entregar adaptador de visão** - Felipe + Átila. Evidência: frame retorna `target_id`, confiança e timestamp no app.
 - [x] **ROS-03 - Validar segurança do bridge** - Felipe. Evidência: testes rejeitam comando vencido/não confirmado e deduplicam UUID.
 
@@ -83,4 +81,4 @@ Se algum sinal estiver vermelho, cortar complexidade e preservar a jornada verti
 
 ## Critério de sucesso da semana
 
-O MVP da semana está pronto sem os óculos reais quando ao menos um app executa a jornada completa com fonte mock, voz local e TurtleBot 4 no Gazebo; os builds mock Kotlin e Swift também devem passar nos dois aparelhos disponíveis. A troca do mock pelo DAT real deve permanecer isolada atrás da mesma interface de frame.
+O MVP da semana está pronto sem os óculos reais quando o app Android executa a jornada completa com fonte mock, voz local e TurtleBot 4 no Gazebo; o build `mockDebug` deve passar no emulador ou no Motorola. A troca do mock pelo DAT real deve permanecer isolada atrás da mesma interface de frame.

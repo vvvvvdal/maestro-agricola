@@ -7,9 +7,7 @@ Permitir que a equipe veja o estado atual do MVP sem confundir a interface WebSo
 ## Estado encontrado
 
 - Android já possui uma tela Compose diagnóstica com estado, mensagem, confiança da IA, transcrição, endpoint e ações de olhar, interpretar, falar e reiniciar.
-- iOS possui a mesma jornada em SwiftUI.
 - Este Linux não possui JDK, Android SDK, `adb` ou emulador configurados; por isso, a tela Android não pode ser compilada localmente ainda.
-- iOS exige macOS/Xcode e deve ser aberto no Mac ou instalado no iPhone 13 a partir de um Mac.
 - A simulação usa o mundo `warehouse` fornecido pelo `turtlebot4_ignition_bringup`, acrescenta a placa `PLOT-03` e executa SLAM online. Não existe ainda um mundo agrícola próprio nem mapa de ocupação pré-salvo.
 - O fluxo comprovado do `pluginbot-turtlebot4` executa Gazebo e RViz dentro do mesmo contêiner, compartilha o X11 e usa `--gpus all`.
 - A GTX 1650 e o runtime NVIDIA estão disponíveis. O primeiro experimento do Maestro separava servidor headless, GUI no host e renderização por software; essa combinação foi descartada após congelamento.
