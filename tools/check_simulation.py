@@ -81,7 +81,12 @@ def wait_for_nav2(timeout_seconds: float) -> None:
     while time.monotonic() < deadline:
         require_processes()
         require_no_fatal_render_error()
-        result = container_shell(command, timeout=10)
+        try:
+            result = container_shell(command, timeout=10)
+        except subprocess.TimeoutExpired:
+            print("Consulta do Nav2 ocupada; tentando novamente...")
+            time.sleep(3)
+            continue
         if result.returncode == 0 and "active [3]" in result.stdout.lower():
             print("[OK] Nav2 ativo")
             return
