@@ -12,6 +12,7 @@
 - Revisão visual solicitada em 18/08: `plot-03` permanece em `(2, 1)`. `plot-01` vai para `(2.2, -1.8)`, no lado direito da área central, e `plot-02` para `(0.5, 1.8)`, no lado esquerdo. Assim os marcadores ocupam os dois pontos indicados na captura, em vez de parecerem uma única fileira.
 - `plot-01` e `plot-02` são girados para olhar para o centro. As metas seguras ficam 0,5 m diante das placas: `(2.2, -2.3, +π/2)`, `(0.5, 2.3, -π/2)` e `(1.5, 1, 0)` para `plot-01`, `plot-02` e `plot-03`, respectivamente. A rota continua curta para a demonstração.
 - Cada textura fica sobre a face frontal local da placa. A transformação mantém a imagem vertical e 1 mm para fora da superfície; as placas laterais giram o conjunto inteiro para olhar para o centro.
+- A revisão visual mostrou que a face traseira continuava verde. Cada placa passa a repetir o mesmo QR na face oposta, também vertical, não espelhado e 1 mm para fora. Assim a identificação funciona por qualquer lado de aproximação; isso melhora a percepção, mas não altera as coordenadas usadas pelo Nav2.
 - O bridge solicita `Undock` automaticamente ao iniciar. Comandos ficam na fila até a saída ser confirmada.
 - O bridge executa todas as metas já enfileiradas e solicita `Dock` quando a fila termina. Se a navegação falhar, ainda tenta voltar à doca.
 - Falha ou recusa do undock bloqueia navegação; falha do dock fica explícita no log e bloqueia uma nova missão até reinício limpo. O comportamento do PB de continuar após falha de undock não é seguro para este MVP.
@@ -33,7 +34,7 @@
 
 ## Critérios de aceite
 
-- [ ] `plot-01`, `plot-02` e `plot-03` possuem QR distintos, legíveis e fixados verticalmente na face das placas.
+- [ ] `plot-01`, `plot-02` e `plot-03` possuem QR distintos, legíveis e fixados verticalmente nas duas faces das placas.
 - [ ] O catálogo versionado contém os três IDs, com duas placas em lados opostos e metas próximas/seguras.
 - [ ] O detector estático reconhece as três placas.
 - [ ] O launch usa `/turtlebot1` e cria um único conjunto de três placas.
