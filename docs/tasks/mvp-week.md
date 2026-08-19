@@ -62,7 +62,7 @@ Se algum sinal estiver vermelho, cortar complexidade e preservar a jornada verti
 
 - [x] **QA-01 - Testar recusa, ambiguidade e timeout** - Rafael + Átila. Nove testes da máquina de estados comprovam comando nulo em recusa, ambiguidade, alvo inválido, conflito, timeout e confirmação tardia; 12 testes Kotlin e o APK `mockDebug` passaram.
 - [ ] **QA-02 - Testar desconexão, expiração e duplicata** - Felipe. Evidência: nenhum comando tardio ou repetido move o robô.
-- [ ] **QA-03 - Revisar privacidade e bateria** - equipe. Evidência: mídia não persistida, sessão encerrada e captura sob demanda.
+- [-] **QA-03 - Revisar privacidade e bateria** - equipe. Inventário, auditoria estática e par físico de cinco ciclos mock concluídos sem caminhos suspeitos; bateria controlada, armazenamento externo, DAT, microfone e ciclo completo permanecem pendentes.
 - [-] **QA-04 - Montar evidência 5/5 checkpoints** - Rafael. Spec, matriz versionada e validador iniciados; IA, privacidade e eficiência possuem evidência parcial, enquanto entrada física e áudio ainda dependem da integração mobile.
 
 ## Dia 6 - congelamento e gravação

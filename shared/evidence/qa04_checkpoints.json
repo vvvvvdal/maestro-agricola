@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-08-19T18:37:34-03:00",
+  "updated_at": "2026-08-19T19:36:55-03:00",
   "overall_status": "PARTIAL",
   "status_policy": {
     "allowed": [
@@ -130,15 +130,21 @@
           "type": "source_code",
           "path": "mobile/android/app/src/main/java/br/org/agroturtles/maestro/MainActivity.kt",
           "summary": "Resultados da máquina de estados são encaminhados ao TTS"
+        },
+        {
+          "id": "edge40neo-phone-speaker-observation",
+          "status": "PASS",
+          "type": "structured_result",
+          "path": "shared/evidence/android_runtime_qa03_comparison.json",
+          "summary": "Rafael ouviu as frases do TTS pelo alto-falante inferior do Edge 40 Neo durante os ciclos mock, sem gravação de áudio"
         }
       ],
       "pending": [
-        "Executar confirmação, cancelamento e sucesso audíveis no Edge 40 Neo",
-        "Registrar se a saída ocorreu nos óculos, em outro Bluetooth ou no telefone",
+        "Comprovar em runtime que o TTS é encerrado ao destruir a atividade",
         "Validar rota Bluetooth dos óculos quando o hardware estiver disponível"
       ],
       "contains_raw_media": false,
-      "pitch_claim": "TTS Android está implementado; a rota física de saída ainda não foi validada"
+      "pitch_claim": "O TTS foi ouvido no alto-falante do Edge 40 Neo; a rota dos óculos e o encerramento em runtime ainda não foram validados"
     },
     {
       "id": "PRIVACY",
@@ -176,13 +182,34 @@
           "type": "documentation",
           "path": "docs/proposta/versao-tecnica.md",
           "summary": "Fluxos e compromissos de privacidade descritos em nível de arquitetura"
+        },
+        {
+          "id": "privacy-data-inventory",
+          "status": "PASS",
+          "type": "documentation",
+          "path": "docs/privacy-data-flow.md",
+          "summary": "Maestro, Android, DAT/Meta e bridge documentados separadamente"
+        },
+        {
+          "id": "privacy-static-audit",
+          "status": "PARTIAL",
+          "type": "structured_result",
+          "path": "shared/evidence/privacy_audit.json",
+          "summary": "Controles estáticos registrados; execução física permanece pendente"
+        },
+        {
+          "id": "android-runtime-qa03-privacy",
+          "status": "PARTIAL",
+          "type": "structured_result",
+          "path": "shared/evidence/android_runtime_qa03_comparison.json",
+          "summary": "Cinco ciclos mock no Edge 40 Neo sem caminhos suspeitos; armazenamento externo, DAT e microfone permanecem pendentes"
         }
       ],
       "pending": [
-        "Executar auditoria do armazenamento e logs depois de uma jornada real",
-        "Documentar separadamente Maestro, Android, DAT/Meta e serviços externos",
+        "Executar auditoria depois de uma jornada real com DAT e microfone",
+        "Concluir a auditoria do armazenamento externo do app",
         "Confirmar opt-outs contra a versão atual do DAT",
-        "Incorporar o resultado físico da QA-03"
+        "Confirmar a rota física de áudio sem registrar fala do usuário"
       ],
       "contains_raw_media": false,
       "pitch_claim": "O código não persiste mídia por padrão; a auditoria física completa ainda será executada"
@@ -223,16 +250,30 @@
           "type": "source_code",
           "path": "mobile/android/app/src/main/java/br/org/agroturtles/maestro/platform/VoiceIO.kt",
           "summary": "SpeechRecognizer e TTS são destruídos no fechamento"
+        },
+        {
+          "id": "android-runtime-collector",
+          "status": "PARTIAL",
+          "type": "source_code",
+          "path": "tools/collect_android_runtime_evidence.py",
+          "summary": "Coletor sanitizado preparado para bateria, condição térmica, memória e armazenamento"
+        },
+        {
+          "id": "android-runtime-qa03-efficiency",
+          "status": "PARTIAL",
+          "type": "structured_result",
+          "path": "shared/evidence/android_runtime_qa03_comparison.json",
+          "summary": "Após cinco ciclos mock: térmico NONE, temperatura +1,9 °C e PSS final 102585 KB; bateria inconclusiva porque o aparelho passou a CHARGING"
         }
       ],
       "pending": [
-        "Definir e executar protocolo físico com duração, carga e número de interações registrados",
-        "Medir bateria e condição térmica antes e depois",
+        "Repetir o protocolo físico com o aparelho desconectado da energia e carga inicial estável",
+        "Medir memória com o app ativo antes e depois para obter uma comparação válida",
         "Comprovar encerramento da sessão e câmera DAT",
-        "Incorporar o resultado físico da QA-03"
+        "Executar a jornada completa com câmera e áudio simultâneos"
       ],
       "contains_raw_media": false,
-      "pitch_claim": "A IA é pequena e rápida; bateria e temperatura da jornada completa ainda não foram medidas"
+      "pitch_claim": "A IA é pequena e rápida; o mock permaneceu sem pressão térmica, mas o consumo da jornada completa ainda exige medição sem carregamento"
     }
   ]
 }

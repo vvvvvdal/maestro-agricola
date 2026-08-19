@@ -76,6 +76,8 @@ Para `PASS`:
 
 Não é necessário persistir áudio para provar o checkpoint. Uma observação humana identificada e logs técnicos sem conteúdo bruto são a evidência padrão.
 
+Em 19 de agosto de 2026, Rafael confirmou que ouviu as frases do TTS pelo alto-falante inferior do Edge 40 Neo durante cinco ciclos mock. A observação comprova audibilidade e rota do telefone sem gravação de áudio; encerramento do TTS em runtime e rota Bluetooth dos óculos continuam pendentes.
+
 ### 4. Privacidade e dados
 
 Para `PASS`:

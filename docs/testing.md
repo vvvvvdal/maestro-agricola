@@ -256,6 +256,26 @@ python3 -m unittest tests/test_qa04_evidence.py
 
 O primeiro comando valida estados, IDs, arquivos referenciados e a regra de que a QA-04 só pode ser `PASS` quando os cinco checkpoints também forem `PASS`. O segundo comprova que inconsistências são rejeitadas.
 
+### QA-03/QA-04 — snapshot Android sem mídia
+
+Com exatamente um aparelho autorizado no ADB e o APK mock já montado:
+
+```bash
+python3 tools/collect_android_runtime_evidence.py \
+  --phase qa03_before \
+  --output shared/evidence/android_runtime_qa03_before.json
+```
+
+Depois da jornada, repita com `--phase qa03_after` e grave em `shared/evidence/android_runtime_qa03_after.json`. Compare os dois snapshots em `shared/evidence/android_runtime_qa03_comparison.json`, registrando duração, interações, estado de alimentação e limitações. Uma medição de consumo feita enquanto o aparelho está carregando deve permanecer `PARTIAL`.
+
+O coletor registra somente metadados de aparelho, build, bateria, condição térmica, memória e contagens de arquivos. Ele não lê conteúdo de arquivo nem captura logcat, áudio, imagem, transcrição ou serial do aparelho.
+
+Teste do coletor:
+
+```bash
+python3 -m unittest tests/test_android_runtime_evidence.py
+```
+
 ## Evidência mínima para a entrega
 
 Registre, sem mídia bruta:

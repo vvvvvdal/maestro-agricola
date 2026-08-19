@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-19T19:36:55-03:00",
+  "status": "PARTIAL",
+  "scope": "Auditoria estática e plano de coleta Android sem mídia bruta",
+  "data_processors": [
+    {
+      "id": "MAESTRO",
+      "data": [
+        "frame efêmero ou target_id mock",
+        "transcrição curta em memória",
+        "intenção e confiança",
+        "UUID, alvo, confirmação e expiração",
+        "métricas técnicas"
+      ],
+      "persistence_by_maestro": "Modelo, fixtures e evidências técnicas são versionados; mídia e transcrição de usuário não são persistidas por padrão",
+      "network": "JSON de comando sem mídia segue ao bridge WebSocket após confirmação"
+    },
+    {
+      "id": "ANDROID",
+      "data": [
+        "áudio capturado pelo SpeechRecognizer",
+        "transcrição produzida pelo provedor",
+        "texto enviado ao TTS",
+        "permissões e metadados do sandbox"
+      ],
+      "persistence_by_maestro": "Nenhuma persistência solicitada pelo código atual",
+      "network": "Comportamento do provedor de STT/TTS precisa ser confirmado no aparelho; preferência offline não é garantia"
+    },
+    {
+      "id": "DAT_META",
+      "data": [
+        "registro e sessão",
+        "permissões",
+        "câmera",
+        "telemetria opcional conforme SDK"
+      ],
+      "persistence_by_maestro": "Nenhum frame DAT real é persistido pelo adaptador atual, que ainda é um stub",
+      "network": "Fluxos e opt-outs precisam ser confirmados contra a versão atual do DAT"
+    },
+    {
+      "id": "BRIDGE_EXTERNAL",
+      "data": [
+        "comando JSON versionado",
+        "ACK",
+        "IDs, estados e erros técnicos"
+      ],
+      "persistence_by_maestro": "Sem banco local no app; logs do bridge pertencem ao ambiente da demonstração",
+      "network": "WebSocket para bridge ROS 2; nenhuma inferência de intenção externa"
+    }
+  ],
+  "static_controls": [
+    {
+      "id": "NO_APP_FILE_WRITES",
+      "status": "PASS",
+      "evidence_path": "docs/privacy-data-flow.md",
+      "summary": "Busca estática não encontrou escrita de foto, áudio, transcrição, banco ou preferências no app"
+    },
+    {
+      "id": "BACKUP_DISABLED",
+      "status": "PASS",
+      "evidence_path": "mobile/android/app/src/main/AndroidManifest.xml",
+      "summary": "android:allowBackup está definido como false"
+    },
+    {
+      "id": "DAT_ANALYTICS_OPT_OUT_DECLARED",
+      "status": "PARTIAL",
+      "evidence_path": "mobile/android/app/src/main/AndroidManifest.xml",
+      "summary": "Opt-outs estão declarados, mas precisam ser confirmados na versão atual do DAT"
+    },
+    {
+      "id": "LOCAL_INTENT_INFERENCE",
+      "status": "PASS",
+      "evidence_path": "shared/ai/device_evaluation.json",
+      "summary": "Benchmark usa fixture fixa, sem áudio, transcrição de usuário ou rede"
+    }
+  ],
+  "runtime_collection": {
+    "status": "PARTIAL",
+    "collector_path": "tools/collect_android_runtime_evidence.py",
+    "before_snapshot": "shared/evidence/android_runtime_qa03_before.json",
+    "after_snapshot": "shared/evidence/android_runtime_qa03_after.json",
+    "comparison": "shared/evidence/android_runtime_qa03_comparison.json",
+    "captures_logcat": false,
+    "reads_file_contents": false,
+    "stores_device_serial": false,
+    "summary": "Cinco ciclos mock no Edge 40 Neo: nenhum caminho suspeito, térmico NONE, PSS final de 102585 KB e TTS ouvido pelo alto-falante do telefone",
+    "limitation": "Bateria inconclusiva porque o estado mudou de FULL para CHARGING; armazenamento externo e áudio físico permanecem pendentes"
+  },
+  "open_items": [
+    "Repetir o protocolo de bateria com alimentação desconectada e estado inicial estável",
+    "Executar jornada física com câmera DAT e microfone",
+    "Confirmar provedor de reconhecimento e futura rota Bluetooth dos óculos",
+    "Confirmar versão atual do DAT e suporte aos opt-outs",
+    "Revisar bateria, temperatura, armazenamento e encerramento de recursos"
+  ],
+  "limitations": [
+    "Análise estática não comprova o comportamento interno do Android ou DAT",
+    "Auditoria por nomes de arquivo não inspeciona conteúdo de bancos ou preferências",
+    "Cópias temporárias mantidas pelo sistema operacional podem ficar fora do sandbox auditado"
+  ]
+}

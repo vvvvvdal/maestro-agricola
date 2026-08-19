@@ -14,11 +14,13 @@ A principal mudança de escopo foi a retirada completa da implementação iOS em
 
 Na frente de IA sob responsabilidade de Rafael, o projeto já possui dataset versionado, modelo compacto, avaliação offline, fixture de paridade Python/Kotlin e medição no Motorola Edge 40 Neo. A tarefa AI-03 foi concluída em 19 de agosto: o APK `mockDebug` passou nos testes, foi instalado no aparelho e executou 390 inferências dos 13 casos de paridade sem divergências.
 
-O MVP ainda não está concluído de ponta a ponta no celular. Permanecem pendentes, principalmente, a integração real do DAT, câmera e áudio simultâneos, QR obtido de um frame real no app, ligação física app–WebSocket–bridge, testes de falha segura e cinco execuções completas da demonstração.
+Depois da AI-03, a equipe concluiu a QA-01 com testes de recusa, ambiguidade e timeout, iniciou a matriz da QA-04 e executou uma coleta parcial da QA-03 no Edge 40 Neo. O TTS foi ouvido pelo alto-falante inferior do telefone e nenhum caminho interno suspeito de foto, áudio ou transcrição foi encontrado.
+
+O MVP ainda não está concluído de ponta a ponta no celular. Permanecem pendentes, principalmente, a integração real do DAT, câmera e microfone simultâneos, QR obtido de um frame real no app, ligação física app–WebSocket–bridge, desconexão ponta a ponta e cinco execuções completas da demonstração.
 
 ## 2. Fontes e limite da auditoria
 
-Este relatório foi elaborado a partir do estado atual do código, dos testes, dos artefatos estruturados e dos registros em `docs/tasks/`. A pasta `.git` disponível neste ambiente não contém metadados utilizáveis; por isso, não foi possível reconstruir o histórico commit a commit nem atribuir cada alteração a um autor pelo Git.
+Este relatório foi elaborado a partir do estado atual do código, dos testes, dos artefatos estruturados e dos registros em `docs/tasks/`. A pasta `.git` do workspace principal não contém metadados utilizáveis; os commits já publicados foram operados por uma cópia Git temporária da branch `atualizações-testes`. Por isso, este documento descreve a evolução técnica observável, mas não substitui uma auditoria completa de autoria commit a commit.
 
 As datas e a ordem abaixo são, portanto, baseadas nas evidências documentadas no próprio projeto. Afirmações marcadas como concluídas possuem código, teste, artefato ou registro de execução associado. Itens apenas planejados são apresentados como pendentes.
 
@@ -155,6 +157,32 @@ Resultados no Motorola Edge 40 Neo, Android 15/API 35, ARM64:
 
 O benchmark usa somente frases fixas do fixture. Não captura áudio, não usa transcrições reais, não acessa a rede e não envia comandos ao robô.
 
+### 3.10. QA-01 — falhas seguras antes do transporte
+
+A QA-01 foi concluída com nove testes da máquina de estados. Os cenários de recusa, intenção desconhecida, alvo ausente ou desconhecido, conflito entre alvo visual e falado, timeout e confirmação tardia terminam sem produzir comando. Uma confirmação ambígua pode ser repetida dentro do prazo, mas também não cria comando.
+
+Na validação registrada, 12 testes Kotlin e o APK `mockDebug` passaram. Essa evidência comprova a fronteira local antes do transporte; desconexão WebSocket, expiração e duplicata no fluxo integrado continuam pertencendo à QA-02.
+
+### 3.11. QA-03 — privacidade, áudio e eficiência
+
+Foi criado um inventário que separa os dados tratados pelo Maestro, Android, DAT/Meta e bridge externo, além de um coletor Android que não captura logcat, mídia, transcrição, conteúdo de arquivos ou serial do aparelho.
+
+No Edge 40 Neo foram executados cinco ciclos seguros no `mockDebug`, usando alvo e intenção fixos, cancelamento e reinício. O protocolo não usou DAT nem microfone e não confirmou ou enviou comandos. Entre os snapshots:
+
+- nenhum caminho interno com nome ou extensão suspeita foi encontrado;
+- o único arquivo criado foi `./files/profileInstalled`, marcador técnico do AndroidX Profile Installer;
+- o estado térmico permaneceu `NONE` e a temperatura de bateria variou de 36,0 °C para 37,9 °C;
+- o PSS final observado foi 102585 KB, aproximadamente 100,2 MiB;
+- Rafael confirmou que ouviu as frases do TTS pelo alto-falante inferior do telefone, sem gravação de áudio.
+
+A medição de consumo permaneceu inconclusiva porque o estado da bateria mudou de `FULL` para `CHARGING` e o nível permaneceu em 100%. O armazenamento externo, o encerramento de recursos em runtime e a jornada simultânea com DAT e microfone também continuam pendentes. Por esses motivos, a QA-03 permanece `PARTIAL`.
+
+### 3.12. QA-04 — matriz dos cinco checkpoints
+
+Foi criada uma spec, uma matriz JSON versionada, um validador e testes automatizados para os cinco checkpoints: IA, câmera ou microfone, output por áudio, privacidade e eficiência. A matriz referencia arquivos rastreáveis, não armazena mídia bruta e só permite `overall_status=PASS` quando os cinco checkpoints estiverem aprovados.
+
+O estado atual é `PARTIAL`: a IA possui modelo, paridade e benchmark físico, mas precisa ser renovada no APK final; entrada física dos óculos permanece `BLOCKED`; o TTS do telefone foi ouvido, mas o encerramento em runtime e a rota dos óculos não foram validados; privacidade e eficiência possuem evidências parciais da execução mock.
+
 ## 4. Testes e evidências acumuladas
 
 | Área | Evidência disponível | Estado |
@@ -164,12 +192,17 @@ O benchmark usa somente frases fixas do fixture. Não captura áudio, não usa t
 | IA Kotlin | 13 casos compartilhados e hash do modelo | Concluído |
 | IA em aparelho | 390 inferências no Edge 40 Neo, sem divergência | Concluído |
 | Android mock | oito testes Kotlin e APK `mockDebug` | Concluído |
+| Segurança local QA-01 | nove cenários sem comando indevido; 12 testes Kotlin e APK aprovados | Concluído |
 | Visão estática | oito testes para conhecido, desconhecido e ambíguo | Concluído |
 | ROS/Gazebo | jornada headless e movimentação registradas | Concluído no simulador |
+| TTS no aparelho | frases ouvidas pelo alto-falante inferior do Edge 40 Neo | Concluído para a rota do telefone |
+| Privacidade em runtime | cinco ciclos mock sem caminho interno suspeito | Parcial |
+| Eficiência em runtime | térmico `NONE`, temperatura e PSS registrados | Parcial; bateria inconclusiva durante carregamento |
+| Matriz QA-04 | cinco checkpoints, referências rastreáveis e validador automatizado | Parcial |
 | DAT real | sessão/captura do sample oficial | Pendente |
 | Câmera + microfone no aparelho | execução simultânea no modelo do evento | Pendente |
 | App físico até o Gazebo | ACK e movimento originados pelo celular | Pendente |
-| Falhas ponta a ponta | recusa, ambiguidade, timeout e desconexão | Pendente |
+| Falhas ponta a ponta | desconexão e falhas integradas com bridge/simulador | Pendente |
 
 Há um registro anterior de `make test-quick` com 31 testes portáteis, 14 do bridge e validação do Compose. Em uma execução posterior da suíte Python global, o pacote de desenvolvimento `websockets`, já declarado em `tools/requirements-dev.txt`, não estava instalado no host; por isso, essa execução global específica não deve ser descrita como aprovada até uma nova rodada em ambiente completo.
 
@@ -186,7 +219,9 @@ As mudanças mantiveram os princípios permanentes do projeto:
 - captura sob demanda em vez de streaming permanente;
 - separação entre dados tratados pelo app, Android, DAT e serviços externos.
 
-A validação final de privacidade, bateria, temperatura e encerramento de sessão em uma jornada real ainda está pendente em QA-03.
+A QA-03 avançou com inventário de dados, auditoria estática e um par de snapshots físicos após cinco ciclos mock. Não foram encontrados caminhos internos suspeitos e a saída TTS pelo telefone foi confirmada. A temperatura e a condição térmica foram registradas, mas o consumo de bateria não pode ser concluído porque o aparelho entrou em estado `CHARGING` durante a coleta.
+
+A aprovação final ainda exige repetir a medição com alimentação controlada, auditar o armazenamento externo, comprovar o encerramento dos recursos e executar câmera e microfone simultâneos no aparelho da demonstração. Nenhum resultado parcial deve ser apresentado como validação do comportamento interno do Android ou do DAT.
 
 ## 6. Documentação, identidade visual e pitch
 
@@ -201,8 +236,9 @@ Os materiais foram revisados para remover a plataforma descartada. A gravação 
 - AI-01: concluída;
 - AI-02: concluída;
 - AI-03: concluída e comprovada no Edge 40 Neo;
-- QA-01: pendente, em conjunto com Átila;
-- QA-04: pendente;
+- QA-01: concluída, em conjunto com Átila;
+- QA-03: inventário, auditoria e coleta mock parcial concluídos com a equipe;
+- QA-04: spec, matriz e validador concluídos; fechamento dos cinco checkpoints ainda parcial;
 - ensaios e edição final do pitch: pendentes, em conjunto com Felipe.
 
 ### Átila — Android, DAT, áudio e estados
@@ -210,8 +246,8 @@ Os materiais foram revisados para remover a plataforma descartada. A gravação 
 - base Android mock implementada e compilada;
 - classificador integrado e APK validado;
 - sessão/câmera DAT real pendente;
-- voz/TTS e rota Bluetooth no aparelho pendentes;
-- caminho feliz, recusa e timeout no app ainda não encerrados no checklist.
+- TTS ouvido pelo alto-falante do Edge 40 Neo; STT e rota Bluetooth dos óculos pendentes;
+- recusa, ambiguidade e timeout aprovados na fronteira local; caminho feliz integrado ainda pendente.
 
 ### Felipe — visão, ROS 2 e simulador
 
@@ -228,26 +264,26 @@ Os materiais foram revisados para remover a plataforma descartada. A gravação 
 4. A versão atual do DAT deve ser confirmada em fonte oficial antes de qualquer alteração de dependência ou API.
 5. O adaptador DAT é apenas uma fronteira preparada; ainda não há comprovação de sessão e captura reais.
 6. O QR ainda precisa ser detectado a partir de um frame real dentro do app.
-7. Voz, TTS, câmera e microfone simultâneos precisam ser testados no aparelho exato da demonstração.
+7. O TTS foi ouvido pelo telefone, mas STT, rota Bluetooth, câmera e microfone simultâneos ainda precisam ser testados no aparelho exato da demonstração.
 8. A jornada Android → WebSocket → bridge → Gazebo ainda precisa de evidência ponta a ponta.
 9. O conjunto de avaliação da IA tem apenas 16 exemplos separados; a métrica é útil para o MVP, mas não representa validação ampla em campo.
-10. Sem histórico Git utilizável neste ambiente, este relatório não substitui uma auditoria de commits e autores.
+10. O workspace principal não oferece histórico Git utilizável; este relatório não substitui uma auditoria de commits e autores na cópia Git completa.
 
 ## 9. Próximo ponto de partida recomendado
 
-O melhor próximo passo para Rafael é iniciar **QA-01 — recusa, ambiguidade e timeout**, porque a AI-03 já está encerrada e esses testes validam a regra de segurança mais importante antes da integração completa.
+O melhor próximo passo independente para Rafael é consolidar a QA-03/QA-04 e manter as afirmações documentais alinhadas às evidências, enquanto DAT e integração ponta a ponta avançam com os outros responsáveis.
 
 Sequência recomendada:
 
-1. definir, com Átila, casos de aceite para recusa, intenção incerta, conflito de alvo e timeout;
-2. automatizar primeiro os casos no `InteractionEngine`, garantindo que nenhum deles chame `CommandTransport`;
-3. repetir os mesmos casos no APK mock do Edge 40 Neo;
-4. registrar resultado, duração, estado final e ausência de comando enviado, sem salvar fala real;
-5. depois avançar para QA-04, reunindo evidências de IA, câmera/microfone, áudio, privacidade e eficiência;
-6. em paralelo à integração da equipe, preparar o trecho de IA e métricas do pitch sem afirmar que DAT ou o fluxo físico completo já estão concluídos.
+1. manter a matriz QA-04 sincronizada com cada evidência entregue pela equipe;
+2. repetir a coleta de bateria com o Edge 40 Neo desconectado da energia e com condições iniciais registradas;
+3. comprovar encerramento de TTS e recursos em runtime sem gravar áudio ou transcrição;
+4. renovar hashes, paridade, latência e memória da AI-03 somente após o congelamento do APK final;
+5. revisar relatório, proposta e formulário de submissão para remover afirmações superadas ou não comprovadas;
+6. deixar a revisão do roteiro do pitch para uma etapa posterior, conforme decisão da equipe.
 
 ## 10. Conclusão
 
 O projeto já possui uma base coerente e verificável: Android/Kotlin, IA local versionada, segurança por confirmação, alvo mapeado, bridge independente do fabricante e simulação ROS 2/Gazebo. A mudança para Android-only reduziu o risco de dispersão e permitiu concluir a avaliação da IA no aparelho físico.
 
-O marco mais recente é a conclusão da AI-03. O foco agora deve sair da construção isolada dos componentes e ir para os cenários de falha segura e para a integração ponta a ponta no celular, mantendo claramente separados o que funciona com mock e o que já foi validado com DAT real.
+Os marcos mais recentes são a conclusão da AI-03 e da QA-01, a coleta parcial da QA-03 no Edge 40 Neo e a criação da matriz verificável da QA-04. O foco agora deve ir para a medição controlada de bateria, o fechamento das evidências físicas e a integração ponta a ponta no celular, mantendo claramente separados o que funciona com mock, o que foi observado no telefone e o que ainda depende do DAT real.

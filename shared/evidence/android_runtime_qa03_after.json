@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-08-19T19:29:02-03:00",
+  "phase": "qa03_after",
+  "collection_status": "PARTIAL",
+  "scope": "Metadados técnicos Android sem mídia, logcat ou conteúdo de arquivos",
+  "package": "br.org.agroturtles.maestro.mock",
+  "device": {
+    "manufacturer": "motorola",
+    "model": "motorola edge 40 neo",
+    "android_release": "15",
+    "android_api": 35,
+    "abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "armeabi"
+    ]
+  },
+  "build": {
+    "version_name": "0.1.0-mock",
+    "version_code": 1,
+    "apk_sha256": "1f8d931b5bea848dc2d89ba7892b16f1226580d1cc33424741e1510cd86c2416",
+    "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960"
+  },
+  "battery": {
+    "level_percent": 100,
+    "temperature_c": 37.9,
+    "voltage_mv": 4447,
+    "status_code": 2,
+    "plugged_code": null
+  },
+  "thermal": {
+    "scan_available": true,
+    "status": {
+      "code": 0,
+      "name": "NONE"
+    }
+  },
+  "memory": {
+    "scan_available": true,
+    "total_pss_kb": 102585
+  },
+  "storage_audit": {
+    "internal": {
+      "scan_available": true,
+      "file_count": 1,
+      "suspicious_file_count": 0,
+      "suspicious_paths": []
+    },
+    "external": {
+      "scan_available": false,
+      "file_count": 0,
+      "suspicious_file_count": 0,
+      "suspicious_paths": []
+    },
+    "limitation": "Caminhos e contagens não comprovam o conteúdo de bancos, preferências ou caches do sistema"
+  },
+  "privacy": {
+    "captures_logcat": false,
+    "reads_file_contents": false,
+    "captures_audio": false,
+    "captures_images": false,
+    "captures_transcripts": false,
+    "stores_device_serial": false
+  }
+}
