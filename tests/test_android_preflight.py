@@ -19,6 +19,8 @@ class AndroidPreflightTest(unittest.TestCase):
         self.assertEqual(21, preflight.parse_java_major('openjdk version "21" 2023-09-19'))
         self.assertEqual(8, preflight.parse_java_major('java version "1.8.0_412"'))
         self.assertIsNone(preflight.parse_java_major("unexpected output"))
+        self.assertTrue(preflight.is_supported_java_major(21))
+        self.assertFalse(preflight.is_supported_java_major(25))
 
     def test_reads_sdk_from_local_properties(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -31,6 +33,17 @@ class AndroidPreflightTest(unittest.TestCase):
             "List of devices attached\nABC123\tdevice\nOLD456\tunauthorized\n\n"
         )
         self.assertEqual({"ABC123": "device", "OLD456": "unauthorized"}, devices)
+
+    def test_explicit_paths_take_precedence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            java_home = root / "studio-jbr"
+            sdk_dir = root / "android-sdk"
+            (java_home / "bin").mkdir(parents=True)
+            (java_home / "bin" / "java").touch()
+            sdk_dir.mkdir()
+            self.assertEqual(java_home / "bin" / "java", preflight.resolve_java(java_home))
+            self.assertEqual(sdk_dir, preflight.resolve_sdk(root, sdk_dir))
 
 
 if __name__ == "__main__":

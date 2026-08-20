@@ -2,10 +2,10 @@
 
 O projeto possui dois flavors:
 
-- `mockDebug`: API 26+, usa uma fonte simulada e permite testar a jornada em aparelhos antigos.
+- `mockDebug`: API 26+, usa uma fonte simulada para desenvolvimento e testes automatizados.
 - `datDebug`: API 31+, inclui o Meta Wearables DAT 0.9.0 para integração com os óculos.
 
-O sample oficial atual do DAT usa `minSdk = 31`. Portanto, um Motorola abaixo do Android 12 pode executar o flavor `mock`, mas não pode parear os óculos pelo DAT.
+O sample oficial atual do DAT usa `minSdk = 31`. A demonstração exige um Android compatível com esse nível e com o ciclo oficial de pareamento do DAT.
 
 Antes do build `datDebug`, defina `GITHUB_TOKEN` com permissão `read:packages` ou `github_token` em `local.properties`. Nunca versione o token.
 
@@ -17,7 +17,7 @@ Confirme a toolchain antes de iniciar downloads ou builds longos:
 python3 mobile/android/tools/preflight.py
 ```
 
-O preflight exige JDK 17, Android SDK, Platform API 36 e Gradle wrapper. Para também verificar se o Motorola aparece como autorizado no `adb`:
+O preflight exige JDK 17, Android SDK, Platform API 36 e Gradle wrapper. Para também verificar se o Android físico da demonstração aparece como autorizado no `adb`:
 
 ```bash
 python3 mobile/android/tools/preflight.py --require-device
@@ -33,6 +33,8 @@ Somente depois dos itens `[OK]` execute:
 
 O modelo local é lido diretamente de `../../shared/ai/intent_model.json` como asset, sem cópia manual.
 
-No emulador, o endpoint padrão é `ws://10.0.2.2:18765`. No Motorola físico, edite o campo do app para `ws://IP_DO_COMPUTADOR:18765`.
+No emulador de desenvolvimento, o endpoint padrão é `ws://10.0.2.2:18765`. No Android físico da demonstração, edite o campo do app para `ws://IP_DO_COMPUTADOR:18765`.
 
-Gerar o APK não comprova voz, TTS nem conexão com o bridge. Esses três itens devem ser executados no Motorola e registrados separadamente.
+Gerar o APK não comprova câmera dos óculos, voz, TTS nem conexão com o bridge. Esses itens devem ser executados com `datDebug` no Android conectado aos Meta Wearables e registrados separadamente.
+
+O roteiro completo para o Galaxy A17, incluindo JDK portátil, USB/ADB, mock físico, DAT e diagnóstico por camada, está em [`../../docs/testing/galaxy-a17-e2e.md`](../../docs/testing/galaxy-a17-e2e.md).

@@ -133,7 +133,7 @@ O preflight confirmou JDK, SDK, Platform API 36, Gradle e recursos do app. Na pr
 
 Também foram implementados:
 
-- fixture compartilhado com 13 casos e SHA-256 do modelo;
+- fixture compartilhado com 18 casos e SHA-256 do modelo;
 - verificação de paridade semântica entre Python e Kotlin;
 - tolerância numérica explícita para ruído de ponto flutuante;
 - testes de regressão contra mudanças estruturais ou numéricas relevantes;
@@ -144,15 +144,15 @@ Resultados no Motorola Edge 40 Neo, Android 15/API 35, ARM64:
 
 | Evidência | Resultado |
 |---|---:|
-| Testes Kotlin | 8 aprovados |
+| Testes Kotlin | 12 aprovados |
 | Build | `testMockDebugUnitTest assembleMockDebug` aprovado |
-| Casos compartilhados | 13 |
-| Inferências medidas | 390 |
+| Casos compartilhados | 18 |
+| Inferências medidas | 540 |
 | Divergências | 0 |
-| Latência mediana | 446 µs |
-| Latência p95 | 675 µs |
-| Latência máxima | 883 µs |
-| Pico de heap observado | 13.256.176 bytes |
+| Latência mediana | 229 µs |
+| Latência p95 | 1.013 µs |
+| Latência máxima | 1.178 µs |
+| Pico de heap observado | 19.254.032 bytes |
 | APK | aproximadamente 12 MB |
 
 O benchmark usa somente frases fixas do fixture. Não captura áudio, não usa transcrições reais, não acessa a rede e não envia comandos ao robô.

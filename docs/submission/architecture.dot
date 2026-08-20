@@ -15,7 +15,7 @@ digraph MaestroAgricola {
     FRAME [label="Captura sob demanda\n1 frame por ação", fillcolor="#E7F2EA"];
     QR [label="Placa PLOT-03\n+ detector QR local", fillcolor="#E7F2EA"];
     VOICE [label="STT + TTS nativos\npt-BR", fillcolor="#E7F2EA"];
-    AI [label="Softmax local · 65 KB\n4 intenções · limiar 0,40", fillcolor="#E7F2EA"];
+    AI [label="Regras + softmax local · 367 KiB\n4 intenções · limiar 0,40", fillcolor="#E7F2EA"];
     TARGET [label="Resolvedor de alvo\nvisual + ID falado", fillcolor="#E7F2EA"];
     FSM [label="Política de segurança\nalvo + intenção + confirmação", fillcolor="#FFF0D5", color="#B77816"];
     PRIV [label="Telemetria sem mídia bruta\nframe e áudio efêmeros", fillcolor="#FCECEC", color="#A33C3C"];

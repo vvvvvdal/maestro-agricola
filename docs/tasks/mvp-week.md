@@ -13,7 +13,7 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 - [x] Núcleo seguro do bridge ROS 2 testado, incluindo expiração e deduplicação.
 - [x] QR `plot-03`, modelo do Gazebo, mapa de pose e launch integrado criados.
 - [x] Esqueleto nativo Kotlin com IA, confirmação, timeout e WebSocket implementado.
-- [ ] Build Android executado no Motorola.
+- [ ] Build `datDebug` executado em Android compatível e conectado aos Meta Wearables.
 - [x] Imagem Docker construída e jornada headless validada: comando aceito pelo Nav2 e odometria alterada.
 - [ ] Detector de QR real conectado ao frame.
 - [ ] Adaptador DAT real conectado ao ciclo oficial de sessão/captura.
@@ -28,7 +28,7 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 
 ## Dia 2 - provas isoladas
 
-- [ ] **MOB-02 - Rodar CameraAccess e Mock Device Kit** - Átila. Evidência: frame recebido e versão do DAT registrada.
+- [ ] **MOB-02 - Rodar CameraAccess com os Meta Wearables** - Átila. Evidência: frame real recebido no Android e versão do DAT registrada. O Mock Device Kit é apoio de desenvolvimento, não a evidência final.
 - [ ] **MOB-03 - Provar voz e TTS no Android** - Átila. Evidência: transcrição curta entra no app e resposta falada é reproduzida.
 - [x] **AI-02 - Treinar ou adaptar classificador local leve** - Rafael. Evidência: JSON de aproximadamente 65 KB, relatório e limiar 0,40.
 - [x] **VIS-02 - Detectar o QR em imagem estática** - Felipe. Evidência: textura `plot-03` detectada; imagem vazia e QR fora do mapa retornam `UNKNOWN`; dois QRs retornam `AMBIGUOUS` em oito testes automatizados.
@@ -37,7 +37,7 @@ Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem
 ## Dia 3 - adaptadores e primeiro gate
 
 - [ ] **MOB-04 - Implementar máquina de estados** - Átila. Evidência: caminho feliz, recusa e timeout testados sem SDK real.
-- [x] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Oito testes Kotlin e o APK `mockDebug` passaram; no Edge 40 Neo, 390 inferências dos 13 casos tiveram zero divergências, mediana de 446 µs e p95 de 675 µs.
+- [-] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Paridade de 11 casos compartilhados preparada para Kotlin; falta executar os testes na toolchain Android e medir no aparelho.
 - [ ] **VIS-03 - Entregar adaptador de visão** - Felipe + Átila. Evidência: frame retorna `target_id`, confiança e timestamp no app.
 - [x] **ROS-03 - Validar segurança do bridge** - Felipe. Evidência: testes rejeitam comando vencido/não confirmado e deduplicam UUID.
 
@@ -60,10 +60,10 @@ Se algum sinal estiver vermelho, cortar complexidade e preservar a jornada verti
 
 ## Dia 5 - checkpoints e falhas
 
-- [x] **QA-01 - Testar recusa, ambiguidade e timeout** - Rafael + Átila. Nove testes da máquina de estados comprovam comando nulo em recusa, ambiguidade, alvo inválido, conflito, timeout e confirmação tardia; 12 testes Kotlin e o APK `mockDebug` passaram.
+- [ ] **QA-01 - Testar recusa, ambiguidade e timeout** - Rafael + Átila. Evidência: nenhum dos casos envia movimento.
 - [ ] **QA-02 - Testar desconexão, expiração e duplicata** - Felipe. Evidência: nenhum comando tardio ou repetido move o robô.
-- [-] **QA-03 - Revisar privacidade e bateria** - equipe. Inventário, auditoria estática e par físico de cinco ciclos mock concluídos sem caminhos suspeitos; bateria controlada, armazenamento externo, DAT, microfone e ciclo completo permanecem pendentes.
-- [-] **QA-04 - Montar evidência 5/5 checkpoints** - Rafael. Spec, matriz versionada e validador iniciados; IA, privacidade e eficiência possuem evidência parcial, enquanto entrada física e áudio ainda dependem da integração mobile.
+- [ ] **QA-03 - Revisar privacidade e bateria** - equipe. Evidência: mídia não persistida, sessão encerrada e captura sob demanda.
+- [ ] **QA-04 - Montar evidência 5/5 checkpoints** - Rafael. Evidência: IA, câmera ou microfone, áudio, privacidade e eficiência demonstráveis.
 
 ## Dia 6 - congelamento e gravação
 
@@ -81,4 +81,4 @@ Se algum sinal estiver vermelho, cortar complexidade e preservar a jornada verti
 
 ## Critério de sucesso da semana
 
-O MVP da semana está pronto sem os óculos reais quando o app Android executa a jornada completa com fonte mock, voz local e TurtleBot 4 no Gazebo; o build `mockDebug` deve passar no emulador ou no Motorola. A troca do mock pelo DAT real deve permanecer isolada atrás da mesma interface de frame.
+O MVP da semana está pronto quando o build `datDebug` executa em um Android físico compatível, recebe o frame dos Meta Wearables pelo DAT, usa voz e IA local, exige confirmação e move o TurtleBot 4 no Gazebo. O `mockDebug` deve continuar passando como teste de desenvolvimento, mas não substitui essa evidência.

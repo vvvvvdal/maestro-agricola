@@ -20,14 +20,14 @@ O usuário inicial é o operador de campo que acompanha robôs ou máquinas agr�
 2. A câmera dos óculos entrega ao app nativo um frame sob demanda pelo Meta Wearables DAT. No desenvolvimento sem hardware, a mesma interface recebe um frame simulado.
 3. O app identifica localmente o QR `plot-03`, extrai um ID explicitamente falado quando presente e exige concordância entre as duas fontes.
 4. O reconhecimento de fala nativo do celular produz a transcrição. O app pede processamento offline quando o sistema operacional oferece essa opção.
-5. Um classificador softmax de cerca de 65 KB, treinado com 96 frases e executado localmente no app, converte a frase na intenção restrita `SPRAY`.
+5. Uma cascata local de regras de alta precisão e classificador softmax, empacotada em cerca de 367 KiB e executada no app, converte a frase na intenção restrita `SPRAY`.
 6. O app emite feedback sonoro inicial e fala: “Pulverizar talhão três. Confirmar?”. A meta é iniciar o feedback em menos de 1 segundo e concluir a resposta em até 3 segundos; esses tempos ainda precisam ser medidos nos aparelhos físicos.
 7. O operador diz “confirmar”. Uma resposta negativa ou o fim do tempo cancela a interação.
 8. Somente após a confirmação, o app envia um JSON versionado e com validade curta pela rede local.
 9. O bridge valida schema, validade e duplicidade, traduz `plot-03` para uma meta do ROS 2/Nav2 e responde `ACCEPTED`.
 10. O TurtleBot 4 inicia o deslocamento no Gazebo e o app informa “Comando enviado”.
 
-O MVP comprova a sequência completa com mock dos óculos, IA local, WebSocket, ROS 2, Nav2 e Gazebo. A troca do mock pela câmera real fica isolada no adaptador DAT.
+O MVP comprova a sequência completa com os Meta Wearables enviando o frame pelo DAT ao app Android, IA local, WebSocket, ROS 2, Nav2 e Gazebo. O mock permanece apenas como ferramenta de desenvolvimento e contingência técnica; não substitui a evidência principal com os óculos.
 
 ### A4. Walkthrough — fluxo de exceção principal
 
@@ -55,7 +55,7 @@ Fontes oficiais: [Meta AI](https://ai.meta.com/meta-ai/), [John Deere Operations
 
 | Pilar | Implementação e evidência do MVP |
 |---|---|
-| Uso de IA | Classificador softmax local de cerca de 65 KB, treinado com 96 frases em português e executado em Kotlin. Ele retorna quatro intenções; no conjunto separado, a política com limiar 0,40 acertou 15 de 16 frases e recusou a restante como `UNKNOWN`. STT é uma etapa nativa separada. |
+| Uso de IA | Cascata local de regras seguras e classificador softmax, treinado com 144 frases e executado em Kotlin. O artefato de cerca de 367 KiB retorna quatro intenções e a origem `RULE` ou `MODEL`; na avaliação independente versionada, classificou 64/64 casos com zero aceite perigoso. É uma suíte controlada, não benchmark de campo. STT é uma etapa nativa separada. |
 | Câmera/microfone | A câmera entra pelo DAT e é consumida sob demanda. A voz usa o reconhecimento nativo do celular; nos óculos reais, o roteamento do microfone por Bluetooth precisa ser validado. O telefone é o fallback explícito. |
 | Saída por áudio | TTS nativo do Android informa pergunta de confirmação, sucesso ou falha. O áudio pode sair pelos open-ear speakers quando a rota Bluetooth do sistema estiver disponível; o alto-falante do telefone é o fallback. |
 | Privacidade | Frame e áudio são efêmeros e não são gravados pelo Maestro. Logs guardam apenas IDs, estados, latências e erros. Há confirmação explícita, validade curta e nenhuma execução diante de ambiguidade. |

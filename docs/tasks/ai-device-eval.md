@@ -4,7 +4,7 @@ Branch: `feat/ai-device-eval`
 
 ## Objetivo
 
-Evitar divergência silenciosa entre o classificador de referência em Python e o adaptador local Kotlin. A medição física de latência e memória permanece separada porque depende do emulador ou Motorola.
+Evitar divergência silenciosa entre o classificador de referência em Python e o adaptador local Kotlin. A medição física de latência e memória permanece separada porque depende do Android que executará `datDebug` com os Meta Wearables.
 
 ## Critérios de aceite desta etapa
 
@@ -22,40 +22,30 @@ Evitar divergência silenciosa entre o classificador de referência em Python e 
 4. Executar a referência Python nesta máquina.
 5. Documentar, sem mascarar, que os testes Kotlin só ficam comprovados quando executados na toolchain Android.
 
-## Fora do escopo desta etapa
+## Fora do benchmark local
 
-- Benchmark de bateria ou qualidade de STT.
+- Bateria e qualidade de STT no aparelho.
+- Execução com `datDebug` e os Meta Wearables.
 - Inferência sobre áudio bruto; o classificador recebe somente texto transcrito.
 
 ## Resultado em 18 de agosto de 2026
 
-- `shared/ai/parity_cases.json` fixa 13 casos e o SHA-256 do modelo canônico.
-- `python3 tools/export_intent_parity.py --check` passou, incluindo duas recusas por confiança abaixo de 0,40 e um caso sem vocabulário conhecido.
-- O verificador aceita apenas ruído de ponto flutuante dentro da tolerância declarada; mudanças semânticas, estruturais ou numéricas relevantes continuam falhando.
-- Seis testes Python específicos cobrem conteúdo atualizado, IDs únicos, tolerância numérica e rejeição de alterações relevantes.
-- O Android agora possui testes que leem exatamente o mesmo fixture, verificam o SHA-256 do modelo e comparam rótulo e confiança usando o limiar compartilhado.
-- Em 18 de agosto, os testes Kotlin ainda não haviam sido executados porque o Android SDK não estava configurado; essa lacuna foi encerrada pela validação de 19 de agosto descrita abaixo.
+- `shared/ai/parity_cases.json` fixa 11 casos e o SHA-256 do modelo canônico.
+- `python3 tools/export_intent_parity.py --check` passou, incluindo duas recusas por confiança abaixo de 0,40.
+- Dois testes Python passaram: conteúdo atualizado e IDs únicos.
+- O Android agora possui testes que leem exatamente o mesmo fixture e comparam rótulo e confiança.
+- Os testes Kotlin não foram executados nesta máquina: não há JDK/Android SDK. AI-03 permanece em andamento até essa evidência existir.
 - Nenhuma dependência, credencial ou chamada de rede foi adicionada.
 
-### Continuação da validação em 18 de agosto de 2026
+## Renovação do modelo v2 em 19 de agosto de 2026
 
-- O verificador do treino passou a tolerar somente ruído de ponto flutuante de até `1e-12`; alterações estruturais ou numéricas relevantes continuam reprovando o artefato.
-- `tools/export_intent_parity.py --check` aprovou os 13 casos e o modelo `4ff906a157c8`.
-- Nove testes específicos de modelo, fixture e tolerância passaram; os 14 testes do bridge também permaneceram verdes.
-- A suíte global não foi declarada aprovada neste host porque a dependência de desenvolvimento `websockets`, já listada em `tools/requirements-dev.txt`, não está instalada.
-- O preflight Android confirmou JDK 21 e Gradle wrapper, mas não encontrou Android SDK. Benchmark de emulador/Motorola e teste Gradle permanecem como handoff explícito.
-
-### Validação Android em 19 de agosto de 2026
-
-- O preflight aprovou JDK 21, Android SDK, Platform API 36 e Gradle wrapper.
-- A primeira resolução Android detectou que OkHttp 5.5.0 exige `compileSdk 37`, incompatível com o AGP 8.11.1 e o `compileSdk 36` congelados pelo projeto.
-- O artefato oficial OkHttp 5.4.0 declara `minCompileSdk=36`; a versão foi fixada em 5.4.0 sem adicionar dependências ou alterar a interface `CommandTransport`.
-- `./gradlew testMockDebugUnitTest assembleMockDebug` passou com oito testes Kotlin, incluindo os 13 casos compartilhados de paridade.
-- O APK `app-mock-debug.apk` foi gerado com 12 MB e, após incluir o coletor mock, SHA-256 `9746ed29133a424d96850fe7e8d961b573ceeb7a992f7f2a1216db2da36788ee`.
-- O APK foi instalado no Motorola Edge 40 Neo com Android 15/API 35 e ABI ARM64.
-- O benchmark isolado do flavor mock executou 13 casos, com cinco aquecimentos e 30 medições por caso: 390 inferências medidas, zero divergências, mediana de 446 µs, p95 de 675 µs e máximo de 883 µs.
-- O pico de heap observado foi 13.256.176 bytes. A medição usa somente o fixture versionado, sem áudio, transcrição de usuário, rede ou comando ao robô.
-- A evidência estruturada está em `shared/ai/device_evaluation.json`. AI-03 concluída.
+- APK `mockDebug`: SHA-256 `6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b`.
+- Modelo canônico: SHA-256 `4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd`.
+- Motorola Edge 40 Neo, Android 15/API 35, ARM64.
+- 18 casos, 30 iterações medidas por caso e 540 inferências no total.
+- Zero divergências; mediana 229 µs, p95 1.013 µs e máxima 1.178 µs.
+- Pico aproximado de heap observado: 19.254.032 bytes.
+- Fixture fixa, sem áudio, transcrição de usuário, rede ou comando ao robô.
 
 ## Handoff para Rafael e Átila
 
@@ -73,15 +63,4 @@ cd mobile/android
 ./gradlew :app:testMockDebugUnitTest
 ```
 
-Em uma nova coleta, executar pelo menos 30 inferências no aparelho físico do MVP, relatando mediana e p95 de latência, pico aproximado de memória, versão do sistema e qualquer divergência de rótulo. Não usar um novo benchmark como afirmação no pitch antes da medição real.
-
-O emulador foi dispensado porque o host de 8 GB não o executou com estabilidade. A evidência final foi coletada no aparelho físico do MVP, que representa o ambiente relevante da demonstração.
-
-Para repetir a medição no flavor mock:
-
-```bash
-adb logcat -c
-adb shell am start -n \
-  br.org.agroturtles.maestro.mock/br.org.agroturtles.maestro.benchmark.IntentBenchmarkActivity
-adb logcat -d -s MaestroAIBenchmark:I '*:S'
-```
+Se o APK ou o modelo mudar após o congelamento de features, repetir a coleta física antes da entrega. O benchmark local pode ser afirmado com seu escopo exato, mas não deve ser apresentado como validação de STT, `datDebug` ou Meta Wearables.

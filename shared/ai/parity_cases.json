@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960",
+  "model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd",
   "confidence_threshold": 0.4,
   "confidence_tolerance": 1e-09,
   "cases": [
@@ -8,79 +8,127 @@
       "id": "spray_uppercase_accent",
       "text": "PULVERIZE ESTE TALHÃO",
       "expected_label": "SPRAY",
-      "expected_confidence": 0.972380750003645
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "spray_phrase",
       "text": "pode aplicar o defensivo aqui",
       "expected_label": "SPRAY",
-      "expected_confidence": 0.9585440034860789
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "spray_explicit_plot_numeric",
       "text": "pulverize no plot-03",
       "expected_label": "SPRAY",
-      "expected_confidence": 0.7742662753183867
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "spray_explicit_plot_words",
       "text": "pulverize no plot três",
       "expected_label": "SPRAY",
-      "expected_confidence": 0.7742662753183867
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "confirm_phrase",
       "text": "sim, pode continuar",
       "expected_label": "CONFIRM",
-      "expected_confidence": 0.9994750649545261
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "confirm_synonym",
       "text": "confirmo a ordem",
       "expected_label": "CONFIRM",
-      "expected_confidence": 0.9653620674743089
+      "expected_confidence": 0.9981738276557648,
+      "expected_source": "MODEL"
     },
     {
       "id": "cancel_accent",
       "text": "não envie esse comando",
       "expected_label": "CANCEL",
-      "expected_confidence": 0.9962234068576779
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "cancel_phrase",
       "text": "cancele agora",
       "expected_label": "CANCEL",
-      "expected_confidence": 0.9948547637454879
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
+    },
+    {
+      "id": "confirm_colloquial",
+      "text": "isso mesmo",
+      "expected_label": "CONFIRM",
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
+    },
+    {
+      "id": "cancel_colloquial",
+      "text": "deixa quieto",
+      "expected_label": "CANCEL",
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
+    },
+    {
+      "id": "unknown_hesitation",
+      "text": "sim mas espere",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
+    },
+    {
+      "id": "unknown_historical",
+      "text": "o produto foi pulverizado ontem",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
+    },
+    {
+      "id": "unknown_target_only",
+      "text": "talhão três",
+      "expected_label": "UNKNOWN",
+      "expected_confidence": 0.9822715236025311,
+      "expected_source": "MODEL"
     },
     {
       "id": "unknown_domain",
       "text": "qual é a cotação do dólar",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.9637605017452179
+      "expected_confidence": 0.9592001300030367,
+      "expected_source": "MODEL"
     },
     {
       "id": "unknown_request",
       "text": "conte uma história",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.938218850520975
+      "expected_confidence": 0.9764838490221197,
+      "expected_source": "MODEL"
     },
     {
       "id": "threshold_rejection",
       "text": "onde está meu celular",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.3479081280065302
+      "expected_confidence": 0.9976879200837183,
+      "expected_source": "MODEL"
     },
     {
-      "id": "cancel_threshold_rejection",
+      "id": "cancel_explicit",
       "text": "interrompa o comando",
-      "expected_label": "UNKNOWN",
-      "expected_confidence": 0.3865234789262399
+      "expected_label": "CANCEL",
+      "expected_confidence": 1.0,
+      "expected_source": "RULE"
     },
     {
       "id": "unknown_vocabulary",
       "text": "xyzzy quux",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 1.0
+      "expected_confidence": 0.5695690725269129,
+      "expected_source": "MODEL"
     }
   ]
 }

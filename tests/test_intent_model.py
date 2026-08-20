@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+import json
 from pathlib import Path
 
 
@@ -43,6 +44,38 @@ class IntentModelTest(unittest.TestCase):
     def test_low_confidence_becomes_unknown(self) -> None:
         prediction = self.model.predict_with_threshold("onde está meu celular", threshold=0.40)
         self.assertEqual("UNKNOWN", prediction.label)
+
+    def test_adversarial_phrases_are_safe(self) -> None:
+        cases = {
+            "aplica no piquete três": "SPRAY",
+            "isso mesmo": "CONFIRM",
+            "manda ver": "CONFIRM",
+            "deixa quieto": "CANCEL",
+            "corta a operação": "CANCEL",
+            "inspecione o talhão dois": "UNKNOWN",
+            "pulverização é perigosa": "UNKNOWN",
+            "o produto foi pulverizado ontem": "UNKNOWN",
+            "não sei se devo pulverizar": "UNKNOWN",
+            "sim mas espere": "UNKNOWN",
+            "talhão três": "UNKNOWN",
+        }
+        for text, expected in cases.items():
+            with self.subTest(text=text):
+                prediction = self.model.predict_with_threshold(text)
+                self.assertEqual(expected, prediction.label)
+
+    def test_rules_report_their_origin(self) -> None:
+        prediction = self.model.predict("não pulverize esse talhão")
+        self.assertEqual("CANCEL", prediction.label)
+        self.assertEqual("RULE", prediction.source)
+
+    def test_versioned_evaluation_meets_safety_targets(self) -> None:
+        report = json.loads((ROOT / "shared" / "ai" / "evaluation.json").read_text())
+        self.assertGreaterEqual(report["examples"], 64)
+        self.assertGreaterEqual(report["operational_accuracy"], 0.95)
+        self.assertGreaterEqual(report["macro_f1"], 0.95)
+        self.assertEqual([], report["unsafe_accepts"])
+        self.assertLess((ROOT / "shared" / "ai" / "intent_model.json").stat().st_size, 1_000_000)
 
 
 if __name__ == "__main__":

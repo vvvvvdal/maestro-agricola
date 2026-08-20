@@ -12,7 +12,7 @@ Desenvolvedor Fullstack Pleno com experiência em aplicativos Kotlin e React Nat
 - Captura de voz, transcrição e resposta por áudio.
 - Máquina de estados e integração dos componentes no app.
 
-**Decisão de escopo:** o MVP terá somente um app Android nativo em Kotlin. React Native não será usado. A demo pode rodar no emulador ou no Motorola, escolhendo o ambiente mais estável.
+**Decisão de escopo:** o MVP terá somente um app Android nativo em Kotlin. React Native não será usado. A demo principal roda em um Android físico compatível com o DAT e conectado aos Meta Wearables; o emulador permanece apenas como ferramenta de desenvolvimento.
 
 ## Felipe Gonçalves Vidal
 

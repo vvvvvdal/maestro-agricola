@@ -8,11 +8,12 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from intent_model import IntentModel, features
+from intent_model import IntentModel, features, normalize_text
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "shared" / "ai" / "dataset" / "intents.tsv"
+EVALUATION_DATASET = ROOT / "shared" / "ai" / "dataset" / "evaluation.tsv"
 MODEL = ROOT / "shared" / "ai" / "intent_model.json"
 REPORT = ROOT / "shared" / "ai" / "evaluation.json"
 EPOCHS = 350
@@ -20,28 +21,50 @@ LEARNING_RATE = 0.04
 L2 = 0.0005
 CONFIDENCE_THRESHOLD = 0.40
 ARTIFACT_FLOAT_TOLERANCE = 1e-12
+DETERMINISTIC_RULES = [
+    {
+        "label": "CANCEL",
+        "patterns": [
+            r"\b(cancelar|cancele|cancela|abortar|aborte|aborta|interromper|interrompa|pare|parar|recusar|recuse|desista)\b",
+            r"\bnao\s+(execute|executar|envie|enviar|faca|pulverize|pulverizar|aplique|aplicar|confirme|confirmar|prossiga|prosseguir)\b",
+            r"\b(deixa quieto|deixe quieto|melhor nao|esquece isso|esqueca isso|volte atras)\b",
+        ],
+    },
+    {
+        "label": "UNKNOWN",
+        "patterns": [
+            r"\b(nao sei|talvez|acho que|quem sabe|espera|espere|aguarde)\b",
+            r"\b(foi|era|estava)\s+(pulverizado|pulverizada|aplicado|aplicada|tratado|tratada)\b",
+            r"\b(aprender|aprenda|explique|explicar|perigoso|perigosa|inspecione|inspecionar)\b",
+        ],
+    },
+    {
+        "label": "CONFIRM",
+        "patterns": [
+            r"^(sim|confirmo|confirmado|afirmativo|correto|autorizado|autorizo|isso mesmo|pode ir|manda ver|pode tocar|confirma ai|exatamente|de acordo)$",
+            r"^(sim )?(pode|pode sim) (executar|prosseguir|continuar|mandar|enviar|iniciar)( agora)?$",
+            r"^(vai|vamos) em frente$",
+            r"^confirmado pode (seguir|prosseguir)$",
+        ],
+    },
+    {
+        "label": "SPRAY",
+        "patterns": [
+            r"\b(pulverize|pulverizar|pulveriza|aplique|aplicar|aplica|trate|tratar|borrife|borrifar)\b",
+            r"\b(faca|faz|realize|realizar|comece|inicie|iniciar|mande|mandar|quero|preciso|pode)\b.*\b(pulverizacao|aplicacao|tratamento|defensivo|produto|insumo|veneno)\b",
+        ],
+    },
+]
 
 
-def load_examples() -> list[tuple[str, str]]:
+def load_examples(path: Path) -> list[tuple[str, str]]:
     rows = []
-    for index, line in enumerate(DATASET.read_text(encoding="utf-8").splitlines()):
+    for index, line in enumerate(path.read_text(encoding="utf-8").splitlines()):
         if index == 0 or not line.strip():
             continue
         label, text = line.split("\t", 1)
         rows.append((label, text))
     return rows
-
-
-def split(examples: list[tuple[str, str]]) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
-    grouped: dict[str, list[str]] = defaultdict(list)
-    for label, text in examples:
-        grouped[label].append(text)
-    train = []
-    test = []
-    for label, texts in sorted(grouped.items()):
-        for index, text in enumerate(texts):
-            (test if index % 5 == 4 else train).append((label, text))
-    return train, test
 
 
 def train(examples: list[tuple[str, str]]) -> dict:
@@ -87,10 +110,11 @@ def train(examples: list[tuple[str, str]]) -> dict:
     }
 
     return {
-        "schema_version": "1.0",
-        "model_type": "linear_softmax",
+        "schema_version": "2.0",
+        "model_type": "hybrid_regex_linear_softmax",
         "labels": labels,
-        "feature_type": "word_unigrams_bigrams_and_six_character_affixes",
+        "feature_type": "word_unigrams_bigrams_and_character_ngrams_3_to_5",
+        "deterministic_rules": DETERMINISTIC_RULES,
         "bias": bias,
         "weights": compact_weights,
         "epochs": EPOCHS,
@@ -107,10 +131,13 @@ def evaluate(model: IntentModel, examples: list[tuple[str, str]]) -> dict:
     errors = []
     correct = 0
     operational_correct = 0
+    source_counts: dict[str, int] = defaultdict(int)
+    unsafe_accepts = []
     for expected, text in examples:
         prediction = model.predict(text)
         operational = model.predict_with_threshold(text, CONFIDENCE_THRESHOLD)
-        confusion[expected][prediction.label] += 1
+        source_counts[operational.source] += 1
+        confusion[expected][operational.label] += 1
         if prediction.label == expected:
             correct += 1
         else:
@@ -122,6 +149,26 @@ def evaluate(model: IntentModel, examples: list[tuple[str, str]]) -> dict:
             })
         if operational.label == expected:
             operational_correct += 1
+        if expected in {"CANCEL", "UNKNOWN"} and operational.label in {"SPRAY", "CONFIRM"}:
+            unsafe_accepts.append({
+                "text": text,
+                "expected": expected,
+                "predicted": operational.label,
+                "confidence": operational.confidence,
+                "source": operational.source,
+            })
+
+    per_label = {}
+    f1_values = []
+    for label in labels:
+        true_positive = confusion[label][label]
+        false_positive = sum(confusion[expected][label] for expected in labels if expected != label)
+        false_negative = sum(confusion[label][candidate] for candidate in labels if candidate != label)
+        precision = true_positive / (true_positive + false_positive) if true_positive + false_positive else 0.0
+        recall = true_positive / (true_positive + false_negative) if true_positive + false_negative else 0.0
+        f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+        per_label[label] = {"precision": precision, "recall": recall, "f1": f1}
+        f1_values.append(f1)
     return {
         "examples": len(examples),
         "correct": correct,
@@ -129,18 +176,28 @@ def evaluate(model: IntentModel, examples: list[tuple[str, str]]) -> dict:
         "confidence_threshold": CONFIDENCE_THRESHOLD,
         "operational_correct": operational_correct,
         "operational_accuracy": operational_correct / len(examples) if examples else 0.0,
+        "macro_f1": sum(f1_values) / len(f1_values) if f1_values else 0.0,
+        "per_label": per_label,
+        "source_counts": dict(sorted(source_counts.items())),
+        "unsafe_accepts": unsafe_accepts,
+        "unsafe_accept_rate": len(unsafe_accepts) / len(examples) if examples else 0.0,
         "confusion_matrix": confusion,
         "errors": errors,
     }
 
 
 def build_artifacts() -> tuple[dict, dict]:
-    examples = load_examples()
-    train_examples, test_examples = split(examples)
+    train_examples = load_examples(DATASET)
+    test_examples = load_examples(EVALUATION_DATASET)
+    train_texts = {normalize_text(text) for _, text in train_examples}
+    overlap = sorted(train_texts & {normalize_text(text) for _, text in test_examples})
+    if overlap:
+        raise ValueError("train/evaluation overlap: " + ", ".join(overlap))
     payload = train(train_examples)
     report = evaluate(IntentModel(payload), test_examples)
     report["train_examples"] = len(train_examples)
-    report["test_examples"] = len(test_examples)
+    report["evaluation_examples"] = len(test_examples)
+    report["evaluation_dataset"] = str(EVALUATION_DATASET.relative_to(ROOT))
     return payload, report
 
 
@@ -202,6 +259,7 @@ def main() -> None:
         f"{report['operational_accuracy']:.3f} "
         f"({report['operational_correct']}/{report['examples']}, threshold={CONFIDENCE_THRESHOLD})"
     )
+    print(f"macro F1: {report['macro_f1']:.3f}; unsafe accepts: {len(report['unsafe_accepts'])}")
 
 
 if __name__ == "__main__":

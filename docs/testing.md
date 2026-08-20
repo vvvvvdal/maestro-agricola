@@ -223,7 +223,7 @@ Use `make status` para confirmar que não há serviço ativo.
 
 Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da demo. Avalie a execução pela mensagem `DEMO APROVADA` emitida antes de encerrar.
 
-## Android mock
+## Android: desenvolvimento e demonstração com DAT
 
 Na pasta `mobile/android`:
 
@@ -232,49 +232,7 @@ Na pasta `mobile/android`:
 ./gradlew :app:assembleMockDebug
 ```
 
-No emulador, use `ws://10.0.2.2:18765`. No Motorola físico, use `ws://IP_DO_COMPUTADOR:18765`; celular e computador precisam alcançar a mesma rede local. O flavor mock aceita API 26+, enquanto o DAT real exige o nível definido pelo sample oficial.
-
-### QA-01 — falha segura antes do transporte
-
-Para repetir somente os cenários de recusa, ambiguidade e timeout:
-
-```bash
-./gradlew :app:testMockDebugUnitTest \
-  --tests br.org.agroturtles.maestro.domain.InteractionEngineTest
-```
-
-Os nove testes da máquina de estados exigem `command == null` para intenção desconhecida, alvo ausente ou desconhecido, conflito visual/falado, recusa, timeout e confirmação tardia. Uma confirmação ambígua pode ser repetida dentro do timeout, mas também não cria comando. Somente alvo resolvido, intenção `SPRAY` e confirmação `CONFIRM` entram em `SENDING`.
-
-### QA-04 — integridade da matriz de checkpoints
-
-Na raiz do projeto:
-
-```bash
-python3 tools/check_qa04_evidence.py
-python3 -m unittest tests/test_qa04_evidence.py
-```
-
-O primeiro comando valida estados, IDs, arquivos referenciados e a regra de que a QA-04 só pode ser `PASS` quando os cinco checkpoints também forem `PASS`. O segundo comprova que inconsistências são rejeitadas.
-
-### QA-03/QA-04 — snapshot Android sem mídia
-
-Com exatamente um aparelho autorizado no ADB e o APK mock já montado:
-
-```bash
-python3 tools/collect_android_runtime_evidence.py \
-  --phase qa03_before \
-  --output shared/evidence/android_runtime_qa03_before.json
-```
-
-Depois da jornada, repita com `--phase qa03_after` e grave em `shared/evidence/android_runtime_qa03_after.json`. Compare os dois snapshots em `shared/evidence/android_runtime_qa03_comparison.json`, registrando duração, interações, estado de alimentação e limitações. Uma medição de consumo feita enquanto o aparelho está carregando deve permanecer `PARTIAL`.
-
-O coletor registra somente metadados de aparelho, build, bateria, condição térmica, memória e contagens de arquivos. Ele não lê conteúdo de arquivo nem captura logcat, áudio, imagem, transcrição ou serial do aparelho.
-
-Teste do coletor:
-
-```bash
-python3 -m unittest tests/test_android_runtime_evidence.py
-```
+No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da demonstração, use `ws://IP_DO_COMPUTADOR:18765`; aparelho e computador precisam alcançar a mesma rede local. O `mockDebug` serve para desenvolvimento. A evidência principal do MVP usa `datDebug`, um Android compatível e os Meta Wearables pareados.
 
 ## Evidência mínima para a entrega
 
@@ -284,4 +242,4 @@ Registre, sem mídia bruta:
 2. JSON `ACCEPTED` do `make demo`;
 3. trecho de log mostrando a meta de navegação;
 4. uma recusa local por intenção ou confirmação inválida;
-5. versão do build mock executado no emulador ou aparelho Android.
+5. versão do build `datDebug`, modelo do Android e Meta Wearables usados na jornada real.

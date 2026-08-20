@@ -1,5 +1,7 @@
 # Documentação
 
+Para o próximo ensaio físico, use [Teste integrado no Galaxy A17](testing/galaxy-a17-e2e.md).
+
 Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o arquivo correspondente quando uma decisão mudar; não deixe decisões importantes apenas no chat.
 
 ## Índice
@@ -8,15 +10,11 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`product-brief.md`](product-brief.md): problema, proposta de valor, público e limites.
 - [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
 - [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
-- [`privacy-data-flow.md`](privacy-data-flow.md): inventário separado de dados do Maestro, Android, DAT/Meta e bridge.
 - [`testing.md`](testing.md): teste guiado, saída esperada, diagnóstico e mobile.
 - [`team.md`](team.md): papéis, responsabilidades e acordos de integração.
 - [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
 - [`tasks/mvp-week.md`](tasks/mvp-week.md): tarefas executáveis para os sete dias do MVP.
-- [`tasks/qa-01-safety.md`](tasks/qa-01-safety.md): critérios de recusa, ambiguidade e timeout sem emissão de comando.
-- [`tasks/qa-04-checkpoints.md`](tasks/qa-04-checkpoints.md): spec e protocolo da matriz dos cinco checkpoints obrigatórios.
 - [`tasks/hackathon-day.md`](tasks/hackathon-day.md): plano de integração com os óculos no evento.
-- [`relatorio-evolucao-2026-08-19.md`](relatorio-evolucao-2026-08-19.md): histórico consolidado das mudanças, evidências, pendências e próximos passos.
 - [`references.md`](references.md): fontes oficiais e materiais de apoio.
 - [`references/ceia-materials.md`](references/ceia-materials.md): aprendizados aplicados das três palestras do programa.
 - [`submission/final-form.md`](submission/final-form.md): respostas A–D, pendências e checklist de envio.

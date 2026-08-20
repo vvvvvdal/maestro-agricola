@@ -4,7 +4,7 @@
 
 O MVP cabe em sete dias se a equipe preservar um único corte vertical e trabalhar em paralelo por interfaces estáveis. O objetivo da semana não é suportar toda a agricultura de precisão; é provar uma interação completa, segura e demonstrável.
 
-O aplicativo será Android nativo em Kotlin, com flavors `mock` e `dat` que compartilham contrato, modelo local e máquina de estados. React Native fica fora do projeto. Para o pitch, a equipe escolhe entre emulador e Motorola conforme o ambiente mais estável.
+O aplicativo será Android nativo em Kotlin, com flavors `mock` e `dat` que compartilham contrato, modelo local e máquina de estados. React Native fica fora do projeto. O `mock` antecipa o desenvolvimento, mas o MVP e o pitch demonstram `datDebug` em um Android físico conectado aos Meta Wearables.
 
 ## Escopo congelado da semana
 

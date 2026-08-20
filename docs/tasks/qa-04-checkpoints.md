@@ -10,12 +10,18 @@ Rafael mantém a spec, a matriz e as métricas. Isso não transforma em responsa
 
 A situação atual fica registrada em `shared/evidence/qa04_checkpoints.json`. O arquivo contém somente metadados técnicos, referências a arquivos do repositório, resultados resumidos e pendências. Ele não armazena áudio, imagem ou transcrição real.
 
+A rastreabilidade separa os hashes do modelo e APK efetivamente benchmarkados dos hashes do candidato atual. O validador compara o modelo atual com o artefato canônico e o fixture de paridade, compara a geração benchmarkada com `device_evaluation.json` e impede `PASS` enquanto houver divergência ainda não revalidada.
+
 Validação:
 
 ```bash
 python3 tools/check_qa04_evidence.py
+python3 tools/check_qa04_evidence.py \
+  --apk mobile/android/app/build/outputs/apk/mock/debug/app-mock-debug.apk
 python3 -m unittest tests/test_qa04_evidence.py
 ```
+
+O primeiro comando valida somente evidências versionadas e é reproduzível mesmo quando o clone contém builds locais antigos. Depois de montar o APK candidato, o segundo comando confere explicitamente seu SHA-256 contra a matriz.
 
 ## Estados permitidos
 
@@ -46,11 +52,11 @@ Para `PASS`:
 
 - o APK executa o modelo canônico localmente, sem servidor de inferência;
 - SHA-256 do modelo, APK e fixture são registrados;
-- os 13 casos compartilhados não divergem entre Python e Kotlin;
+- os 18 casos compartilhados não divergem entre Python e Kotlin;
 - mediana, p95, máximo e pico aproximado de heap são coletados no aparelho físico;
 - a coleta usada na entrega corresponde ao APK final ou a diferença de build é justificada e aprovada.
 
-Situação inicial: o modelo e o benchmark da AI-03 passaram no Edge 40 Neo, mas o APK foi alterado depois pela QA-01. A evidência permanece válida para o modelo, enquanto a rastreabilidade do build final continua pendente.
+Situação atual: o modelo v2 e o APK candidato foram renovados no Edge 40 Neo com hashes coincidentes, 18 casos, 540 inferências e zero divergências. A coleta deve ser repetida se o modelo ou o APK mudar após o congelamento de features; por isso o checkpoint continua `PARTIAL`.
 
 ### 2. Câmera ou microfone
 

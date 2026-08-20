@@ -107,6 +107,8 @@ class MaestroBridgeNode(Node):
         with self._mission_lock:
             if self._pending.full():
                 return False, "navigation queue is full"
+            if self._latest_is_docked is True:
+                return False, "robot unavailable: robot is docked"
             previous = self._mission.phase
             if not self._mission.command_queued():
                 reason = self._mission.failure_reason or "mission lifecycle failed"

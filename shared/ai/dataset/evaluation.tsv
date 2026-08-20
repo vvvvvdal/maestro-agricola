@@ -1,0 +1,65 @@
+label	text
+SPRAY	pulverize no plot zero tres
+SPRAY	aplica no piquete quatro
+SPRAY	trate o lote numero dois
+SPRAY	quero aplicar defensivo aqui
+SPRAY	borrife o produto nesse alvo
+SPRAY	mande pulverizar a regiao marcada
+SPRAY	iniciar tratamento no talhao um
+SPRAY	faz a aplicacao nesta plantacao
+SPRAY	preciso pulverizar essa area
+SPRAY	pulveriza este pedaco da lavoura
+SPRAY	pode aplicar insumo no alvo
+SPRAY	realize a pulverizacao do plot dois
+SPRAY	aplique o defensivo no piquete
+SPRAY	comeca a pulverizacao agora
+SPRAY	quero tratar a area selecionada
+SPRAY	manda o turtlebot pulverizar aqui
+CONFIRM	isso mesmo por favor
+CONFIRM	manda ver agora
+CONFIRM	sim pode prosseguir
+CONFIRM	confirmado vamos seguir
+CONFIRM	pode executar agora
+CONFIRM	vamos seguir em frente
+CONFIRM	afirmativo pode seguir
+CONFIRM	exatamente isso
+CONFIRM	estou de acordo
+CONFIRM	correto pode prosseguir
+CONFIRM	autorizado pode executar
+CONFIRM	pode continuar agora
+CONFIRM	sim pode mandar agora
+CONFIRM	eu confirmo
+CONFIRM	pode tocar agora
+CONFIRM	confirmacao autorizada
+CANCEL	deixa isso quieto
+CANCEL	nao execute essa ordem
+CANCEL	cancele o envio
+CANCEL	pare a missao
+CANCEL	aborte agora
+CANCEL	melhor nao executar
+CANCEL	nao pulverize esse talhao
+CANCEL	interrompa a operacao
+CANCEL	esquece essa ordem
+CANCEL	nao pode enviar
+CANCEL	volte atras agora
+CANCEL	desista desse comando
+CANCEL	recuse a ordem
+CANCEL	deixe essa operacao quieta
+CANCEL	nao aplique produto
+CANCEL	quero cancelar tudo
+UNKNOWN	inspecione o talhao quatro
+UNKNOWN	apenas o talhao tres
+UNKNOWN	a pulverizacao parece perigosa
+UNKNOWN	o produto foi aplicado ontem
+UNKNOWN	nao sei se posso pulverizar
+UNKNOWN	sim mas aguarde
+UNKNOWN	talvez faca isso depois
+UNKNOWN	acho que precisa de tratamento
+UNKNOWN	explique a pulverizacao
+UNKNOWN	quero aprender a aplicar defensivo
+UNKNOWN	onde esta o plot um
+UNKNOWN	qual defensivo usar
+UNKNOWN	mostre a camera
+UNKNOWN	qual a umidade agora
+UNKNOWN	leia a placa do galpao
+UNKNOWN	xyzzy quux

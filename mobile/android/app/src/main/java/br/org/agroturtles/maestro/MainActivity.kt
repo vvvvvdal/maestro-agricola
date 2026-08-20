@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -22,6 +24,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import br.org.agroturtles.maestro.domain.InteractionEngine
@@ -30,8 +34,6 @@ import br.org.agroturtles.maestro.domain.LocalIntentClassifier
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
 import br.org.agroturtles.maestro.platform.VoiceIO
 import br.org.agroturtles.maestro.platform.WebSocketCommandTransport
-import br.org.agroturtles.maestro.ui.MaestroBlue
-import br.org.agroturtles.maestro.ui.MaestroGreen
 import br.org.agroturtles.maestro.ui.MaestroTheme
 
 
@@ -86,21 +88,21 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        Text(
-                            "MAESTRO AGRÍCOLA",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaestroGreen,
-                        )
-                        Text(
-                            "POR AGROTURTLES",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaestroBlue,
+                        Image(
+                            painter = painterResource(R.drawable.maestro_logo_horizontal),
+                            contentDescription = "Maestro Agrícola por AgroTurtles",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(64.dp),
                         )
                         Text("Fonte: ${BuildConfig.FRAME_SOURCE}")
                         Text("Estado: ${result.state}")
                         Text(result.message)
                         result.prediction?.let {
-                            Text("IA: ${it.label} (${String.format("%.1f", it.confidence * 100)}%)")
+                            Text(
+                                "IA: ${it.label} (${String.format("%.1f", it.confidence * 100)}%, ${it.source})",
+                            )
                         }
                         OutlinedTextField(
                             value = transcript,
