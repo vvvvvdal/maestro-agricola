@@ -10,12 +10,18 @@ Rafael mantém a spec, a matriz e as métricas. Isso não transforma em responsa
 
 A situação atual fica registrada em `shared/evidence/qa04_checkpoints.json`. O arquivo contém somente metadados técnicos, referências a arquivos do repositório, resultados resumidos e pendências. Ele não armazena áudio, imagem ou transcrição real.
 
+A rastreabilidade separa os hashes do modelo e APK efetivamente benchmarkados dos hashes do candidato atual. O validador compara o modelo atual com o artefato canônico e o fixture de paridade, compara a geração benchmarkada com `device_evaluation.json` e impede `PASS` enquanto houver divergência ainda não revalidada.
+
 Validação:
 
 ```bash
 python3 tools/check_qa04_evidence.py
+python3 tools/check_qa04_evidence.py \
+  --apk mobile/android/app/build/outputs/apk/mock/debug/app-mock-debug.apk
 python3 -m unittest tests/test_qa04_evidence.py
 ```
+
+O primeiro comando valida somente evidências versionadas e é reproduzível mesmo quando o clone contém builds locais antigos. Depois de montar o APK candidato, o segundo comando confere explicitamente seu SHA-256 contra a matriz.
 
 ## Estados permitidos
 
@@ -46,11 +52,11 @@ Para `PASS`:
 
 - o APK executa o modelo canônico localmente, sem servidor de inferência;
 - SHA-256 do modelo, APK e fixture são registrados;
-- os 13 casos compartilhados não divergem entre Python e Kotlin;
+- os 18 casos compartilhados não divergem entre Python e Kotlin;
 - mediana, p95, máximo e pico aproximado de heap são coletados no aparelho físico;
 - a coleta usada na entrega corresponde ao APK final ou a diferença de build é justificada e aprovada.
 
-Situação inicial: o modelo e o benchmark da AI-03 passaram no Edge 40 Neo, mas o APK foi alterado depois pela QA-01. A evidência permanece válida para o modelo, enquanto a rastreabilidade do build final continua pendente.
+Situação atual: o modelo v2 e o APK candidato foram renovados no Edge 40 Neo com hashes coincidentes, 18 casos, 540 inferências e zero divergências. A coleta deve ser repetida se o modelo ou o APK mudar após o congelamento de features; por isso o checkpoint continua `PARTIAL`.
 
 ### 2. Câmera ou microfone
 
@@ -113,6 +119,14 @@ Não existe limiar numérico inventado nesta spec. A matriz registra o resultado
 6. Anotar bateria, condição térmica final, falhas e rota de áudio.
 7. Atualizar a matriz com caminhos de evidência, responsável e horário.
 8. Marcar `PASS` somente após revisão dos critérios do checkpoint.
+
+### Execução física parcial de 19 de agosto de 2026
+
+Foi executado no Edge 40 Neo um protocolo sanitizado de 314 segundos com o APK `mockDebug` e o modelo canônico v2. Em cada um dos cinco ciclos, o alvo foi simulado, a intenção fixa de pulverização foi interpretada e a confirmação foi deixada expirar. Todos terminaram em `CANCELLED`, nenhum comando foi confirmado e o bridge não foi acionado.
+
+O estado térmico permaneceu `NONE`, a temperatura de bateria variou de 37,9 °C para 37,0 °C e, com o app ativo nos dois snapshots, o PSS variou de 160140 KB para 149754 KB. A auditoria de caminhos internos continuou com zero nomes suspeitos de foto, áudio ou transcrição. A coleta não leu conteúdos, não capturou logcat, mídia, transcrição nem identificador do dispositivo.
+
+A bateria permaneceu em 95%, porém o celular estava em `CHARGING` antes e depois por causa da conexão USB. Por isso consumo de bateria, armazenamento externo e jornada real com DAT/microfone continuam `PARTIAL`; esses dados não autorizam promover os checkpoints de privacidade ou eficiência para `PASS`.
 
 ## Privacidade da própria evidência
 

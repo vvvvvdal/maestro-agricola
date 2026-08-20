@@ -23,6 +23,7 @@ Tornar a interpretação de voz do MVP mais robusta no Galaxy A17 sem depender d
 6. Python e Kotlin produzem rótulo, confiança e origem equivalentes para o fixture compartilhado.
 7. Há testes para negação, hesitação, fala histórica, confirmação coloquial, erro de ASR e frase contendo apenas o alvo.
 8. Nenhuma dependência é adicionada e nenhuma mídia é persistida.
+9. A verificação somente leitura tolera ruído absoluto de ponto flutuante de até `1e-12`, mas reprova mudanças numéricas relevantes ou estruturais.
 
 ## Casos críticos
 
@@ -48,7 +49,11 @@ Tornar a interpretação de voz do MVP mais robusta no Galaxy A17 sem depender d
 - acurácia operacional: 100%; macro-F1: 1,00; aceites perigosos: 0;
 - origem das decisões na avaliação: 40 por regra e 24 pelo modelo;
 - artefato: aproximadamente 365 KiB, abaixo do limite de 1 MB;
-- `make test`: 34 testes gerais e 14 testes do bridge aprovados;
+- suíte Python: 56 testes aprovados e quatro testes opcionais de OpenCV ignorados;
+- suíte Android: 12 testes aprovados e `assembleMockDebug` concluído;
+- bridge ROS: 15 testes focados e 19 testes do pacote aprovados;
 - fixture de paridade: 18 casos gerados e validada pelo teste Python.
+- checker somente leitura validado contra ruído de plataforma, alteração numérica relevante e mudança estrutural.
+- benchmark no Edge 40 Neo: 540 inferências, zero divergências, mediana 229 µs, p95 1.013 µs e pico de heap de 19.254.032 bytes.
 
-Os 100% descrevem somente o conjunto pequeno e versionado do MVP, não desempenho no mundo real. A suíte Kotlin foi atualizada, mas não foi executada neste ambiente porque não há JDK disponível; deve ser rodada pelo Android Studio antes da gravação.
+Os 100% descrevem somente o conjunto pequeno e versionado do MVP, não desempenho no mundo real. O benchmark usa o flavor `mockDebug`, fixture fixa e o alto-falante do telefone; não comprova STT, DAT nem os Meta Wearables.

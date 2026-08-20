@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-08-19T19:36:55-03:00",
+  "schema_version": "1.1",
+  "updated_at": "2026-08-19T22:57:12-03:00",
   "overall_status": "PARTIAL",
   "status_policy": {
     "allowed": [
@@ -13,9 +13,10 @@
     "pass_rule": "overall_status só pode ser PASS quando os cinco checkpoints forem PASS"
   },
   "build_traceability": {
-    "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960",
-    "device_benchmarked_apk_sha256": "9746ed29133a424d96850fe7e8d961b573ceeb7a992f7f2a1216db2da36788ee",
-    "current_candidate_apk_sha256": "1f8d931b5bea848dc2d89ba7892b16f1226580d1cc33424741e1510cd86c2416",
+    "device_benchmarked_model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd",
+    "device_benchmarked_apk_sha256": "6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b",
+    "current_candidate_model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd",
+    "current_candidate_apk_sha256": "6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b",
     "final_build_benchmark_pending": true
   },
   "checkpoints": [
@@ -29,7 +30,7 @@
       "status": "PARTIAL",
       "acceptance_criteria": [
         "Modelo canônico executado localmente no Android sem servidor de inferência",
-        "Paridade Python/Kotlin aprovada nos 13 casos compartilhados",
+        "Paridade Python/Kotlin aprovada nos 18 casos compartilhados",
         "Latência e memória medidas no aparelho físico",
         "APK usado pela evidência final identificado por SHA-256"
       ],
@@ -39,28 +40,28 @@
           "status": "PASS",
           "type": "structured_result",
           "path": "shared/ai/evaluation.json",
-          "summary": "15 de 16 acertos operacionais com limiar 0,40"
+          "summary": "64 de 64 acertos operacionais com limiar 0,40 e zero aceite perigoso"
         },
         {
           "id": "ai-device-benchmark",
           "status": "PASS",
           "type": "structured_result",
           "path": "shared/ai/device_evaluation.json",
-          "summary": "390 inferências no Edge 40 Neo, zero divergências, mediana 446 us e p95 675 us"
+          "summary": "540 inferências do modelo v2 no Edge 40 Neo, zero divergências, mediana 229 us e p95 1013 us"
         },
         {
           "id": "ai-parity-fixture",
           "status": "PASS",
           "type": "versioned_fixture",
           "path": "shared/ai/parity_cases.json",
-          "summary": "13 casos compartilhados e hash do modelo canônico"
+          "summary": "18 casos compartilhados e hash do modelo canônico v2"
         }
       ],
       "pending": [
-        "Repetir ou renovar a evidência de integração no APK final após o congelamento de features"
+        "Repetir o benchmark físico somente se o APK ou o modelo mudar após o congelamento de features"
       ],
       "contains_raw_media": false,
-      "pitch_claim": "O classificador local foi validado no Edge 40 Neo; a coleta do APK final ainda será renovada"
+      "pitch_claim": "O modelo v2 e o APK candidato atual foram validados no Edge 40 Neo; uma alteração posterior exige nova coleta"
     },
     {
       "id": "GLASSES_INPUT",
@@ -198,11 +199,11 @@
           "summary": "Controles estáticos registrados; execução física permanece pendente"
         },
         {
-          "id": "android-runtime-qa03-privacy",
+          "id": "android-runtime-qa04-privacy",
           "status": "PARTIAL",
           "type": "structured_result",
-          "path": "shared/evidence/android_runtime_qa03_comparison.json",
-          "summary": "Cinco ciclos mock no Edge 40 Neo sem caminhos suspeitos; armazenamento externo, DAT e microfone permanecem pendentes"
+          "path": "shared/evidence/android_runtime_qa04_comparison.json",
+          "summary": "Cinco ciclos mock no Edge 40 Neo, todos cancelados por timeout, sem caminhos suspeitos; armazenamento externo, DAT e microfone permanecem pendentes"
         }
       ],
       "pending": [
@@ -235,7 +236,7 @@
           "status": "PASS",
           "type": "structured_result",
           "path": "shared/ai/device_evaluation.json",
-          "summary": "Mediana 446 us, p95 675 us e pico de heap 13256176 bytes"
+          "summary": "Mediana 229 us, p95 1013 us e pico de heap 19254032 bytes em 540 inferências no Edge 40 Neo"
         },
         {
           "id": "resource-lifecycle-design",
@@ -259,16 +260,15 @@
           "summary": "Coletor sanitizado preparado para bateria, condição térmica, memória e armazenamento"
         },
         {
-          "id": "android-runtime-qa03-efficiency",
+          "id": "android-runtime-qa04-efficiency",
           "status": "PARTIAL",
           "type": "structured_result",
-          "path": "shared/evidence/android_runtime_qa03_comparison.json",
-          "summary": "Após cinco ciclos mock: térmico NONE, temperatura +1,9 °C e PSS final 102585 KB; bateria inconclusiva porque o aparelho passou a CHARGING"
+          "path": "shared/evidence/android_runtime_qa04_comparison.json",
+          "summary": "Em 314 segundos e cinco ciclos mock: térmico NONE, temperatura -0,9 °C e PSS de 160140 KB para 149754 KB; bateria inconclusiva porque o aparelho permaneceu em CHARGING"
         }
       ],
       "pending": [
         "Repetir o protocolo físico com o aparelho desconectado da energia e carga inicial estável",
-        "Medir memória com o app ativo antes e depois para obter uma comparação válida",
         "Comprovar encerramento da sessão e câmera DAT",
         "Executar a jornada completa com câmera e áudio simultâneos"
       ],

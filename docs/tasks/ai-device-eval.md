@@ -22,10 +22,10 @@ Evitar divergência silenciosa entre o classificador de referência em Python e 
 4. Executar a referência Python nesta máquina.
 5. Documentar, sem mascarar, que os testes Kotlin só ficam comprovados quando executados na toolchain Android.
 
-## Não concluído por esta etapa
+## Fora do benchmark local
 
-- Benchmark de latência, memória, bateria ou qualidade de STT nos aparelhos.
-- Build do APK.
+- Bateria e qualidade de STT no aparelho.
+- Execução com `datDebug` e os Meta Wearables.
 - Inferência sobre áudio bruto; o classificador recebe somente texto transcrito.
 
 ## Resultado em 18 de agosto de 2026
@@ -36,6 +36,16 @@ Evitar divergência silenciosa entre o classificador de referência em Python e 
 - O Android agora possui testes que leem exatamente o mesmo fixture e comparam rótulo e confiança.
 - Os testes Kotlin não foram executados nesta máquina: não há JDK/Android SDK. AI-03 permanece em andamento até essa evidência existir.
 - Nenhuma dependência, credencial ou chamada de rede foi adicionada.
+
+## Renovação do modelo v2 em 19 de agosto de 2026
+
+- APK `mockDebug`: SHA-256 `6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b`.
+- Modelo canônico: SHA-256 `4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd`.
+- Motorola Edge 40 Neo, Android 15/API 35, ARM64.
+- 18 casos, 30 iterações medidas por caso e 540 inferências no total.
+- Zero divergências; mediana 229 µs, p95 1.013 µs e máxima 1.178 µs.
+- Pico aproximado de heap observado: 19.254.032 bytes.
+- Fixture fixa, sem áudio, transcrição de usuário, rede ou comando ao robô.
 
 ## Handoff para Rafael e Átila
 
@@ -53,4 +63,4 @@ cd mobile/android
 ./gradlew :app:testMockDebugUnitTest
 ```
 
-Depois dos testes, registrar no Android físico da demonstração pelo menos 30 inferências, relatando mediana e p95 de latência, pico aproximado de memória, versão do sistema e qualquer divergência de rótulo. Não usar esse benchmark como afirmação no pitch antes da medição real com `datDebug` e os Meta Wearables.
+Se o APK ou o modelo mudar após o congelamento de features, repetir a coleta física antes da entrega. O benchmark local pode ser afirmado com seu escopo exato, mas não deve ser apresentado como validação de STT, `datDebug` ou Meta Wearables.
