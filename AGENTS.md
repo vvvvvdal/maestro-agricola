@@ -30,6 +30,9 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 - Uma tarefa por vez; mudanças pequenas, revisáveis e verificáveis.
 - Antes de implementar, listar ambiguidades e critérios de aceite.
 - Depois de implementar, comparar código, testes e spec.
+- `SPRAY` não pode causar `Undock`, return-to-dock ou `Dock` implicitamente; a Task 1 já removeu esse lifecycle automático.
+- `DOCK` e `UNDOCK` devem permanecer comandos explícitos, confirmados e validados pelo contrato.
+- A IA nunca recebe autoridade para gerar pose/action ROS livremente; ela produz somente intenção/entidades estruturadas que passam por validação determinística.
 
 ## Protocolo obrigatório para agentes de código
 
@@ -78,38 +81,57 @@ timeout 2m python3 -m pytest \
 
 ### Regra específica para wrappers `make` no Antigravity/Gemini
 
-O runner do Antigravity já apresentou hangs em comandos `make` mesmo quando o
-comando subjacente funciona normalmente no terminal do usuário.
+O runner do Antigravity já apresentou hangs em comandos `make` mesmo quando o comando subjacente funciona normalmente no terminal do usuário.
 
 Portanto:
 
 - não use `make` como primeira opção quando o comando direto equivalente for conhecido;
-- para a Task 1 de lifecycle do bridge, use obrigatoriamente primeiro:
+- execute primeiro `python3 -m pytest <arquivos-da-task> -q`;
+- se um wrapper `make` ficar sem progresso, interrompa e não repita sem hipótese nova;
+- um hang do wrapper é limitação do runner, não motivo para alterar código do produto;
+- não rode `make model` ou regenere artefatos de IA em tasks de contrato/bridge/Android que não alteram a IA.
 
-```bash
-python3 -m pytest \
-  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
+### Pytest do host e plugins ROS externos
+
+No host de desenvolvimento já ocorreu a combinação:
+
+```text
+Conda/Python
+-> pytest auto-carrega launch_pytest do workspace ROS
+-> import de dependência ROS externa falha antes da coleta
 ```
 
-- se um wrapper `make` ficar sem progresso, interrompa e não repita;
-- execute diretamente `python3 -m pytest <arquivo> -q` para os testes focados;
-- um hang do wrapper `make` é uma limitação do runner, não motivo para alterar
-  código do produto;
-- não rode `make test-ai`, `make model` ou suites de outros domínios para validar
-  uma task exclusiva do bridge ROS.
+Para **testes unitários/portáteis que não dependem de `launch_pytest`**, pode-se usar:
 
-Ajuste o timeout quando a própria documentação do projeto justificar uma duração maior.
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+python3 -m pytest <arquivo-ou-diretório> -q
+```
+
+Para a suíte Python unitária do bridge:
+
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=robot_ws/src/maestro_robot_bridge \
+python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+```
+
+Não use `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` cegamente em testes que realmente dependam de plugins pytest/ROS; nesses casos, corrija/ative o ambiente apropriado.
 
 ### 3. Estratégia de testes
 
 - Rode primeiro o menor teste capaz de validar a mudança.
 - Prefira invocar `pytest` diretamente em arquivos específicos em vez de passar
   por `make`, especialmente dentro do Antigravity.
-- Na Task 1, o gate inicial canônico é:
+- A Task 1 já está concluída; não volte a tratá-la como task ativa.
+- Para a Task 2, o gate inicial esperado é o contrato/core:
 
 ```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=robot_ws/src/maestro_robot_bridge \
 python3 -m pytest \
-  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
+  robot_ws/src/maestro_robot_bridge/test/test_contract.py \
+  robot_ws/src/maestro_robot_bridge/test/test_bridge_core.py -q
 ```
 
 - Não rode `make test` ou outra suíte global por padrão se a task possui um gate mais focado.
@@ -122,12 +144,12 @@ python3 -m pytest \
 Exemplo:
 
 ```text
-Task atual: lifecycle ROS
-python3 -m pytest robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q: PASS
+Task atual: contrato DOCK/UNDOCK
+pytest focado de contract/core: PASS
 make test: FAIL ou trava por motivo fora do escopo/runner
 
 Ação correta:
-- considerar o pytest focado como evidência primária da Task 1;
+- considerar o pytest focado como evidência primária da task;
 - registrar a falha/hang global como fora do escopo ou limitação do ambiente;
 - NÃO executar `make model`;
 - NÃO alterar dataset/modelo;
@@ -169,6 +191,8 @@ Não afirme que uma falha é preexistente sem evidência. Quando necessário, co
   - pertencem ao escopo da task; e
   - a task/documentação manda regenerá-los.
 - Exemplo: `shared/ai/intent_model.json` não deve ser regenerado durante uma task exclusiva do bridge ROS.
+- Antes de regenerar o modelo, prefira `python3 tools/train_intent_model.py --check`.
+- O checker canônico já tolera ruído irrelevante de ponto flutuante; se `--check` passa, não regenere o artefato apenas para obter bytes numericamente diferentes.
 
 ### 7. Documentação
 
@@ -202,7 +226,9 @@ feat(contract): add dock and undock intents
 feat(bridge): add explicit undock command
 feat(bridge): add explicit dock command
 feat(android): transport dock and undock intents
-feat(ai): classify dock and undock commands
+test(ai): benchmark local intent baseline
+feat(ai): improve local intent baseline
+feat(ai): integrate selected on-device intent backend
 test(e2e): validate explicit docking lifecycle
 ```
 
