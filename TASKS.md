@@ -1,8 +1,8 @@
-# Roadmap — Dock/Undock explícitos e evolução da IA local
+# Roadmap — Dock e Undock como comandos explícitos
 
 Branch de integração atual: `main`
 
-Este arquivo conclui a migração do ciclo automático de dock/undock para comandos explícitos, preserva a confirmação de segurança e define a etapa de avaliação/substituição da IA local antes do E2E final.
+Este arquivo transforma o ciclo automático de dock/undock em comandos explícitos controlados pela IA, mantendo o fluxo seguro de confirmação e o bridge ROS 2 previsível.
 
 > **Regra principal:** execute **uma task por vez**, na ordem deste arquivo. Não antecipe tasks futuras.
 
@@ -55,7 +55,7 @@ feat(contract): add dock and undock intents
 feat(bridge): add explicit undock command
 feat(bridge): add explicit dock command
 feat(android): transport dock and undock intents
-feat(ai): improve/integrate local intent backend
+feat(ai): classify dock and undock commands
 test(e2e): validate explicit docking lifecycle
 ```
 
@@ -74,33 +74,30 @@ Regras de commit:
 
 Marque uma task como concluída somente quando código, testes e documentação estiverem coerentes e houver evidência reproduzível.
 
-## Estado atual da `main`
-
-Baseline já consolidada antes da próxima implementação:
-
-- **Task 0 — concluída:** roadmap versionado.
-- **Task 1 — concluída:** `SPRAY` não faz mais undock, return-to-dock ou dock automaticamente.
-- **Task 1 — evidência física:** com o robô dockado, `SPRAY` foi rejeitado; após `Undock` manual pelo HMI, o comando falado `pulverizar o talhão 2` + confirmação por voz foi aceito, o TurtleBot chegou ao `plot-02` e permaneceu no destino.
-- **Task 1 — evidência unitária:** teste focado do mission cycle passou com 15 casos; suíte Python do bridge passou com 19 testes no momento da validação.
-- **Correção de baseline da IA — concluída:** o checker de artefatos tolera apenas ruído irrelevante de ponto flutuante (`1e-12`) e continua rejeitando mudanças reais/estruturais.
-- **Checker da IA — evidência:** `python3 tools/train_intent_model.py --check` passou sem regenerar o modelo; o teste específico de comparação de artefatos passou com 3 casos.
-- **Próxima task de implementação:** **Task 2 — contrato `DOCK`/`UNDOCK`**.
-
-### Limitação de IA observada no uso real
-
-A avaliação versionada atual pode apresentar métricas perfeitas no conjunto existente e ainda assim não representar bem linguagem natural real. Já foi observado que pequenas paráfrases de um comando válido podem produzir `UNKNOWN` ou classificação inesperada.
-
-Por isso, **não escolher nem trocar o modelo apenas pela métrica atual**. Depois da Task 5, a evolução da IA será feita pelas Tasks 6A–6F usando corpus real de fala/ASR, benchmark reproduzível e teste no smartphone-alvo.
-
 ---
 
 # Task 0 — Versionar este roadmap
 
 Status: `DONE`
 
-## Resultado
+## Objetivo
 
-O roadmap foi versionado antes da refatoração do lifecycle. Nenhuma ação adicional é necessária nesta task.
+Adicionar este `TASKS.md` ao repositório antes de iniciar a refatoração.
+
+## Critérios de aceite
+
+- `TASKS.md` está na raiz do repositório.
+- Nenhuma outra mudança não relacionada entra no commit.
+- `git diff --check` passa.
+
+## Commit sugerido
+
+```bash
+git add TASKS.md
+git diff --cached
+git diff --check
+git commit -m "docs(tasks): add explicit docking roadmap"
+```
 
 ---
 
@@ -108,93 +105,132 @@ O roadmap foi versionado antes da refatoração do lifecycle. Nenhuma ação adi
 
 Status: `DONE`
 
-## Objetivo concluído
+## Objetivo
 
-Um comando `SPRAY` navega até o talhão solicitado e termina ali. O bridge não faz undock antes da missão nem retorna/docka automaticamente depois que a navegação termina.
+Um comando `SPRAY` deve navegar até o talhão solicitado e terminar ali. O bridge não deve fazer undock antes da missão nem retornar/dockar automaticamente depois que a fila terminar.
 
-## Comportamento atual validado
+## Contexto
+
+Antes da Task 1, o bridge executava um ciclo automático:
+
+```text
+undock -> navigation -> return-to-dock approach -> dock
+```
+
+Esse comportamento torna missões consecutivas difíceis de prever e mistura uma intenção agrícola (`SPRAY`) com decisões implícitas de mobilidade (`DOCK`/`UNDOCK`).
+
+## Comportamento desejado
 
 ```text
 SPRAY
-  -> valida estado
   -> Nav2 target
   -> completion
   -> READY / idle
 ```
 
-Se o bridge sabe que o robô está dockado, `SPRAY` é rejeitado em vez de executar `Undock` implicitamente.
+Depois da navegação, o robô permanece no destino até receber outro comando explícito.
 
-## Invariantes que as próximas tasks devem preservar
+## Escopo principal
 
-- `SPRAY` nunca chama `Undock` automaticamente.
-- conclusão de `SPRAY` nunca inicia return-to-dock.
-- conclusão de `SPRAY` nunca chama `Dock`.
-- o robô permanece no destino depois da navegação.
-- os action clients/utilidades de Dock/Undock permanecem disponíveis para Tasks 3 e 4.
-- um robô dockado não recebe navegação `SPRAY` até existir um `UNDOCK` explícito válido.
+Inspecione principalmente:
 
-## Critérios de aceite — resultado
+- `robot_ws/src/maestro_robot_bridge/maestro_robot_bridge/mission_cycle.py`
+- `robot_ws/src/maestro_robot_bridge/maestro_robot_bridge/bridge_node.py`
+- `robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py`
+- testes do bridge diretamente afetados pelo lifecycle
+
+## Requisitos
+
+- `SPRAY` executa somente navegação para o alvo solicitado.
+- Quando Nav2 termina, a máquina de estados volta para `READY`/idle.
+- Não chamar `Undock` automaticamente.
+- Não navegar automaticamente para a aproximação da doca.
+- Não chamar `Dock` automaticamente.
+- Manter disponível a infraestrutura/action clients existentes de Dock/Undock para as tasks posteriores.
+- Remover estados/transições obsoletos somente quando isso puder ser feito sem antecipar `DOCK`/`UNDOCK` explícitos.
+
+## Não fazer
+
+- Não adicionar intents `DOCK`/`UNDOCK` ainda.
+- Não alterar Android.
+- Não alterar o modelo de IA.
+- Não remover os action clients de Dock/Undock se serão reutilizados depois.
+- Não refatorar Nav2 fora do necessário.
+- Não atualizar os testes E2E globais para a arquitetura final ainda; isso é responsabilidade da Task 7, exceto o mínimo necessário para manter a suíte unitária coerente.
+
+## Critérios de aceite
 
 - [x] `SPRAY -> Nav2 target -> completion -> READY/idle`.
 - [x] Nenhum undock automático ocorre.
 - [x] Nenhum return-to-dock automático ocorre.
 - [x] Nenhum dock automático ocorre.
-- [x] Navegação normal não reintroduz lifecycle implícito de doca.
-- [x] Testes unitários relevantes passaram.
-- [x] Smoke test no Gazebo comprovou chegada ao `plot-02` e permanência no destino.
+- [x] Uma nova navegação pode ser enfileirada/executada depois da anterior sem ciclo implícito de doca.
+- [x] Testes unitários relevantes passam.
 
-## Evidência registrada
+## Testes e evidência
 
-Teste focado:
+### Gate obrigatório desta task
+
+No Antigravity/Gemini, **não use `make test-robot` como primeira opção para a Task 1**.
+O runner tem apresentado hangs ao executar wrappers `make`, mesmo quando o teste
+Python subjacente é rápido.
+
+Execute diretamente o teste focado:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-timeout 2m python3 -m pytest \
+python3 -m pytest \
   robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
 ```
 
-Resultado observado na validação da task: `15 passed`.
+Esse é o gate mínimo obrigatório da Task 1.
 
-Suíte do bridge:
+Se for necessário validar outro arquivo de teste do bridge que tenha sido
+realmente alterado pela Task 1, execute também esse arquivo diretamente com
+`python3 -m pytest <arquivo> -q`.
+
+Somente depois dos testes focados passarem, e apenas se o runner estiver estável,
+pode-se executar uma suíte mais ampla. **Não fique bloqueado tentando fazer
+`make test-robot`, `make test-quick` ou `make test` funcionar no Antigravity.**
+Se um wrapper `make` travar, interrompa, registre a limitação do runner e use o
+comando Python direto equivalente.
+
+Não execute `make test-ai` e não regenere o modelo de IA nesta task.
+
+Teste manual recomendado no Gazebo:
+
+```text
+SPRAY plot-02
+-> Nav2 chega em plot-02
+-> robô permanece em plot-02
+```
+
+Registre na documentação da task o comando executado, resultado real e qualquer teste não executado.
+
+### Evidência registrada
+
+Task concluída na `feat/e2e-demo` e consolidada na `main`.
+
+- commit de implementação: `f4456ed refactor(bridge): remove automatic dock mission lifecycle`;
+- documentação de supersessão: `e79e070 docs(bridge): mark automatic docking lifecycle as superseded`;
+- teste focado de `mission_cycle`: `15 passed`;
+- suíte do bridge na validação da task: `19 passed`;
+- smoke no Gazebo: `SPRAY` com robô dockado foi rejeitado sem undock automático; após `Undock` manual pelo HMI, comando por voz `pulverizar o talhão 2` + confirmação foi aceito, Nav2 chegou ao `plot-02` e não houve retorno automático à doca.
+
+## Documentação
+
+Atualize a spec/arquitetura que ainda descreva o dock automático. Se a evidência da implementação merecer um registro específico, crie ou atualize um arquivo em `docs/tasks/` seguindo o padrão existente.
+
+## Commit sugerido
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-timeout 2m python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+git commit -m "refactor(bridge): remove automatic dock mission lifecycle"
 ```
-
-Resultado observado na validação da task: `19 passed`.
-
-Evidência manual no Gazebo:
-
-```text
-1. robô dockado
-2. SPRAY -> rejeitado com "robot unavailable: robot is docked"
-3. Undock manual pelo HMI (`turtlebot1`)
-4. voz/ASR: "pulverizar o talhão 2"
-5. confirmação por voz: "sim"
-6. bridge: "navigation goal queued"
-7. Nav2 chega ao plot-02
-8. nenhum return-to-dock/dock automático é iniciado
-```
-
-Commits de referência já presentes na linha de integração:
-
-```text
-f4456ed refactor(bridge): remove automatic dock mission lifecycle
-e79e070 docs(bridge): mark automatic docking lifecycle as superseded
-```
-
-## Regra para regressões
-
-Qualquer task posterior que faça `SPRAY` voltar a causar undock ou dock implícito deve falhar revisão/teste.
 
 ---
 
 # Task 2 — Adicionar `DOCK` e `UNDOCK` ao contrato do backend
 
-Status: `TODO`
+Status: `TODO — PRÓXIMA`
 
 ## Objetivo
 
@@ -299,25 +335,32 @@ O schema final pode representar ausência de target de outra forma se isso for n
 
 ## Testes e evidência
 
-Execute primeiro os testes focados, sem depender de wrappers `make`:
+Execute primeiro os testes focados do contrato/core, sem depender de wrappers `make`:
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
 PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-timeout 2m python3 -m pytest \
+python3 -m pytest \
   robot_ws/src/maestro_robot_bridge/test/test_contract.py \
   robot_ws/src/maestro_robot_bridge/test/test_bridge_core.py -q
 ```
 
-Depois, se os testes focados passarem:
+Depois que os testes focados passarem, execute a suíte do bridge diretamente quando útil:
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
 PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-timeout 2m python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
 ```
 
-`make test-robot`/`make test-quick` podem ser usados como gate adicional no terminal normal quando estiverem estáveis, mas não são a primeira opção no Antigravity/Gemini.
+Os gates históricos continuam disponíveis no terminal normal quando estiverem estáveis:
+
+```bash
+make test-robot
+make test-quick
+```
+
+No Antigravity/Gemini, porém, os comandos Python diretos acima são a primeira opção por causa dos hangs já observados em wrappers `make`.
 
 ## Documentação
 
@@ -377,12 +420,10 @@ WebSocket intent=UNDOCK
 
 ## Testes e evidência
 
-Execute primeiro os arquivos de teste do bridge realmente alterados pela task. Depois rode:
+Execute:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-timeout 2m python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+make test-robot
 ```
 
 Depois, com Gazebo disponível, faça um smoke test manual enviando um payload `UNDOCK` direto ao bridge antes de integrar Android/IA.
@@ -474,12 +515,10 @@ Checklist:
 
 ## Testes e evidência
 
-Execute primeiro os testes focados da sequência de docking e depois:
+Execute no mínimo:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-timeout 2m python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+make test-robot
 ```
 
 Se o ambiente permitir, valide no Gazebo:
@@ -577,49 +616,17 @@ git commit -m "feat(android): transport dock and undock intents"
 
 ---
 
-# Task 6 — Reavaliar e evoluir a IA local
+# Task 6 — Tornar a IA local robusta a `DOCK`, `UNDOCK` e variações naturais
 
 Status: `TODO`
 
-## Motivo da mudança de plano
+## Objetivo
 
-O classificador atual cumpriu o papel de provar o MVP local/offline, mas o uso real mostrou generalização insuficiente para pequenas variações de linguagem. Uma frase conhecida pode funcionar enquanto uma paráfrase simples falha ou vira `UNKNOWN`.
+Estender e avaliar a IA local para reconhecer comandos explícitos de dock e undock sem regredir `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`, além de reduzir a fragilidade observada com paráfrases simples de comandos válidos.
 
-A decisão de modelo não será tomada apenas pelo tamanho do artefato ou pela métrica do dataset atual. A IA será tratada como um componente substituível atrás do mesmo contrato seguro.
+O classificador atual continua sendo o baseline do MVP. Esta task não assume previamente que ele será mantido nem que será substituído: a decisão deve vir de corpus, benchmark reproduzível e medições no aparelho real.
 
-## Invariante de segurança da IA
-
-Nenhum modelo — atual ou futuro — pode gerar livremente comandos ROS.
-
-A saída de compreensão deve continuar restrita a uma estrutura validável, por exemplo:
-
-```json
-{
-  "intent": "SPRAY",
-  "target": "plot-02",
-  "confidence": 0.94
-}
-```
-
-ou:
-
-```json
-{
-  "intent": "DOCK",
-  "confidence": 0.96
-}
-```
-
-A camada determinística continua responsável por:
-
-- schema/versionamento;
-- target permitido;
-- estado do robô;
-- confirmação explícita;
-- expiração/deduplicação;
-- rejeição fail-closed.
-
-As intents-alvo permanecem:
+## Intents finais desta etapa
 
 - `SPRAY`
 - `DOCK`
@@ -628,54 +635,32 @@ As intents-alvo permanecem:
 - `CANCEL`
 - `UNKNOWN`
 
----
+## Escopo principal
 
-## Task 6A — Construir corpus real de comandos e ASR
+Inspecione:
 
-Status: `TODO`
+- `shared/ai/dataset/intents.tsv`
+- dataset de avaliação existente
+- `tools/train_intent_model.py`
+- `tools/intent_model.py`
+- `shared/ai/intent_model.json`
+- fixtures/paridade compartilhada, se afetadas
+- `tests/test_intent_model.py`
+- testes de paridade Python/Kotlin
 
-### Objetivo
+## Exemplos desejados
 
-Criar um conjunto de avaliação que represente como pessoas realmente falam e como o ASR realmente transcreve no Android.
-
-### Requisitos
-
-- Reusar a estrutura de dataset já existente quando ela for adequada; não criar formato paralelo sem necessidade.
-- Coletar frases faladas, não apenas exemplos escritos.
-- Para cada caso, registrar no mínimo:
-  - frase pretendida;
-  - transcrição produzida pelo ASR;
-  - intent esperada;
-  - target esperado quando aplicável;
-  - resultado observado;
-  - origem (`real`, `paráfrase`, `ruído`, etc.) se o formato permitir.
-- Incluir números em formas diferentes: `2`, `02`, `dois`, `talhão dois`, `plot dois`.
-- Incluir português natural e um conjunto menor em inglês quando fizer sentido para a demo.
-- Incluir negativos/ambíguos para testar `UNKNOWN`.
-- Não coletar/persistir áudio bruto por padrão.
-
-### Casos mínimos de `SPRAY`
-
-```text
-pulverizar o plot 02
-pulverizar o talhão 2
-pulverize o plot dois
-vá pulverizar o talhão dois
-pulverização no plot 2
-pode pulverizar a área dois
-```
-
-### Casos mínimos futuros de `DOCK`
+### DOCK
 
 ```text
 voltar para a doca
-vá para a dock
 retornar para a base
+vá para a doca
 dock the robot
 return to dock
 ```
 
-### Casos mínimos futuros de `UNDOCK`
+### UNDOCK
 
 ```text
 sair da doca
@@ -685,225 +670,144 @@ undock
 leave the dock
 ```
 
-### Critérios de aceite
+### SPRAY / paráfrases observadas
 
-- [ ] Corpus real/parafraseado versionado.
-- [ ] Há exemplos vindos de transcrição ASR real.
-- [ ] Há positivos, negativos e ambiguidades.
-- [ ] Há cobertura de `SPRAY`, `DOCK`, `UNDOCK`, confirmação, cancelamento e `UNKNOWN`.
-- [ ] O dataset separa claramente texto pretendido de transcrição ASR quando ambos existirem.
+O conjunto de avaliação também deve cobrir variações simples do mesmo comando, por exemplo:
 
-### Commit sugerido
-
-```bash
-git commit -m "test(ai): add real command and asr corpus"
+```text
+pulverizar o plot 02
+pulverizar o talhão 2
+pulverize o plot 02
+vá pulverizar o talhão dois
+pulverização no plot 2
 ```
 
----
+## Invariante de segurança da IA
 
-## Task 6B — Criar benchmark reproduzível da IA atual
+Mesmo se um modelo mais capaz for adotado, a IA não deve gerar comandos ROS livres. A saída continua estruturada, por exemplo `intent`, `target` e `confidence`; schema, target conhecido, estado do robô, expiração e confirmação são validados deterministicamente antes de qualquer movimento.
 
-Status: `TODO`
+## Plano de execução — 6A a 6F
 
-### Objetivo
+### Task 6A — Construir corpus real de fala/ASR
 
-Medir o baseline atual antes de trocar arquitetura.
+- Registrar `frase pretendida | transcrição ASR | intent esperada | target esperado | resultado`.
+- Incluir números por extenso/dígitos, pequenas hesitações, português e um conjunto menor em inglês.
+- Incluir negativos e ambíguos suficientes para medir falsos positivos e `UNKNOWN`.
+- Não usar somente paráfrases artificiais como prova de robustez.
 
-### Métricas mínimas
+### Task 6B — Benchmark reproduzível do baseline atual
 
-- accuracy global;
-- macro F1;
-- recall por intent;
-- falsos positivos por intent;
-- falsos `UNKNOWN`;
-- `UNKNOWN` aceito indevidamente;
-- `unsafe accepts`;
-- acerto de target para `SPRAY`;
-- latência de inferência;
-- tamanho do artefato.
+No mesmo conjunto congelado, medir pelo menos accuracy por intent, macro F1, recall de `SPRAY`/`DOCK`/`UNDOCK`, falsos positivos/unsafe accepts, `UNKNOWN` correto e, quando mensurável, latência/cold start. Registre o resultado antes de alterar a arquitetura do modelo.
 
-### Requisitos
+### Task 6C — Melhorar o baseline atual
 
-- Separar treino de avaliação.
-- Não medir apenas exemplos que já fazem parte do treino.
-- Reportar resultado em corpus escrito e em transcrições ASR.
-- Preservar o `--check` read-only dos artefatos.
-- Não considerar ruído de ponto flutuante abaixo da tolerância canônica como alteração real de modelo.
-- Registrar erros concretos, não apenas uma média agregada.
+Ajustar dataset/regras de alta precisão apenas quando justificadas e reavaliar no mesmo benchmark. Não criar regras amplas baseadas somente em palavras como `voltar` ou `sair`.
 
-### Critérios de aceite
+### Task 6D — Benchmark de alternativas locais
 
-- [ ] Benchmark roda por comando reproduzível.
-- [ ] Baseline fica versionado.
-- [ ] Falhas por paráfrase ficam visíveis.
-- [ ] Métricas do conjunto antigo e do conjunto real não são misturadas silenciosamente.
+Se o baseline continuar frágil, avaliar alternativas locais compatíveis com Android. Cada alternativa deve produzir a mesma representação estruturada de intent/entidades e ser comparada no mesmo corpus. Dependência nova exige justificativa, revisão de privacidade e aprovação humana.
 
-### Commit sugerido
+### Task 6E — Benchmark no celular alvo de 6/8 GB
+
+Quando o aparelho real estiver disponível, registrar modelo/SoC e medir RAM de pico, latência de inferência, cold start, estabilidade em execuções repetidas, tamanho do artefato e aquecimento/impacto prático quando observável. A quantidade nominal de RAM sozinha não decide o modelo.
+
+### Task 6F — Escolher e integrar o vencedor
+
+Escolher com base em qualidade, segurança e custo de execução no dispositivo. Só então atualizar Android, artefatos, paridade e documentação para o backend/modelo vencedor.
+
+## Requisitos
+
+- Adicionar exemplos naturais em português e um conjunto menor em inglês.
+- Manter o pipeline canônico/determinístico já existente.
+- Atualizar regras de alta precisão apenas quando necessário.
+- Não criar regra ampla baseada somente em palavras como `voltar` ou `sair`.
+- Manter distinção clara:
+  - `voltar para a doca` -> `DOCK`
+  - `sair da doca` -> `UNDOCK`
+- Regenerar o artefato canônico com as ferramentas do projeto.
+- Atualizar fixtures/paridade caso o formato atual exija isso.
+- Medir regressão nas intents existentes.
+- Construir corpus com fala/transcrição ASR real antes da decisão final de modelo.
+- Comparar baseline e alternativas no mesmo conjunto de avaliação.
+- Manter processamento local no caminho crítico do MVP.
+- Preservar saída estruturada e validação determinística antes de ROS/Nav2/actions.
+- O checker de artefatos deve manter a correção versionada em `a55fa0d fix(ai): tolerate platform float noise in artifact checks`.
+
+## Não fazer
+
+- Não adicionar LLM/modelo novo ou serviço externo sem benchmark, justificativa e aprovação humana; serviço externo não faz parte do caminho crítico do MVP.
+- Não enviar transcrições para API externa.
+- Não permitir linguagem natural irrestrita na saída de controle: toda interpretação deve terminar em intent/entidades estruturadas e validadas.
+- Não alterar ROS para compensar erro de classificação; Android só deve mudar quando a etapa 6F escolher/integrar o backend final ou quando a paridade exigir.
+
+## Critérios de aceite
+
+- [ ] `"voltar para a doca"` -> `DOCK`.
+- [ ] `"retornar para a base"` -> `DOCK`.
+- [ ] `"sair da doca"` -> `UNDOCK`.
+- [ ] `"undock"` -> `UNDOCK`.
+- [ ] `SPRAY`, `CONFIRM` e `CANCEL` não sofrem regressão perigosa.
+- [ ] Casos desconhecidos continuam falhando de forma segura.
+- [ ] Artefato versionado está em dia.
+- [ ] Avaliação e testes passam dentro dos critérios documentados.
+- [ ] Variações simples de `SPRAY` têm desempenho documentado no corpus de avaliação.
+- [ ] Benchmark antes/depois do baseline está registrado.
+- [ ] Se houver troca de backend/modelo, a decisão está sustentada por comparação reproduzível.
+- [ ] Quando o celular alvo estiver disponível, RAM/latência/cold start são medidos no aparelho real.
+
+## Testes e evidência
+
+Use o pipeline existente, incluindo:
 
 ```bash
-git commit -m "test(ai): benchmark local intent baseline"
+python3 tools/train_intent_model.py
+python3 tools/train_intent_model.py --check
+make test-ai
 ```
 
----
-
-## Task 6C — Melhorar o baseline atual antes de trocar modelo
-
-Status: `TODO`
-
-### Objetivo
-
-Descobrir até onde o pipeline leve atual consegue chegar com normalização, features/regras de alta precisão e dataset melhor.
-
-### Requisitos
-
-- Corrigir casos comuns de ASR e variações simples sem criar regras excessivamente amplas.
-- Normalizar variações de números/IDs de plot de forma determinística quando seguro.
-- Preservar `UNKNOWN` e comportamento fail-closed.
-- Não criar regra ampla baseada somente em palavras genéricas como `voltar`, `sair`, `ir` ou `fazer`.
-- Regenerar artefato somente se a mudança pertence à task e depois revisar o diff.
-- Comparar métricas antes/depois no benchmark da Task 6B.
-
-### Critério de decisão
-
-Se o baseline atingir a meta de qualidade e latência definida pela equipe, ele continua candidato. Caso contrário, seguir para benchmark de modelos alternativos sem esconder a limitação.
-
-### Commit sugerido
+Para testes portáteis no host em que plugins do ROS interferirem com o `pytest`, prefira também o gate direto:
 
 ```bash
-git commit -m "feat(ai): improve local intent baseline"
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+python3 -m pytest \
+  tests/test_intent_model.py \
+  tests/test_intent_parity.py \
+  tests/test_train_intent_model.py -q
 ```
 
----
+Não regenere o artefato apenas para silenciar um checker fora de escopo. Se dataset/modelo for alterado nesta task, regenere intencionalmente, revise o diff e execute novamente o `--check`.
 
-## Task 6D — Benchmarkar modelos locais alternativos
+Se a paridade Android fizer parte do gate atual, execute ou atualize o fixture e registre explicitamente quando o teste Kotlin não puder ser executado.
 
-Status: `TODO`
+Relate:
 
-### Objetivo
+- exemplos adicionados;
+- comando de regeneração;
+- métricas antes/depois quando disponíveis;
+- falsos positivos/negativos observados;
+- arquivos alterados.
+- transcrições ASR coletadas;
+- latência/RAM no aparelho alvo quando disponível;
+- motivo da escolha final do backend/modelo.
 
-Comparar o baseline com pelo menos uma alternativa semântica local mais robusta, sem acoplar o produto ao primeiro modelo testado.
+## Documentação
 
-### Candidatos
+Atualize `docs/architecture.md` na seção de IA local, números de classes/dataset/métricas e qualquer task de avaliação/paridade afetada.
 
-Escolher os candidatos somente no momento desta task, considerando suporte real ao Android/hardware disponível. Podem incluir:
-
-- classificador semântico pequeno quantizado;
-- encoder de embeddings + classificador;
-- LLM on-device pequeno com saída estruturada restrita.
-
-Não escolher um modelo apenas porque é popular ou novo.
-
-### Requisitos
-
-Todos os candidatos devem usar o **mesmo corpus e benchmark**.
-
-Medir:
-
-- qualidade por intent;
-- `UNKNOWN`/falsos positivos;
-- latência p50/p95;
-- cold start;
-- RAM de pico;
-- tamanho em disco;
-- consumo/temperatura quando mensurável;
-- execução offline;
-- facilidade de integração Android;
-- licença/distribuição compatível com o projeto.
-
-### Segurança
-
-Mesmo um LLM local só pode produzir uma representação intermediária validada. Ele não recebe autoridade para criar pose, action ROS ou target inexistente.
-
-### Critérios de aceite
-
-- [ ] Pelo menos baseline + alternativa comparados com o mesmo conjunto.
-- [ ] Não há escolha baseada apenas em impressão subjetiva.
-- [ ] Trade-offs de qualidade, RAM e latência registrados.
-
-### Commit sugerido
+## Commit sugerido
 
 ```bash
-git commit -m "test(ai): compare on-device intent models"
+git commit -m "feat(ai): classify dock and undock commands"
 ```
 
----
+Como a Task 6 agora possui etapas de corpus, benchmark e possível seleção de backend, commits adicionais podem ser separados quando forem logicamente independentes, por exemplo:
 
-## Task 6E — Benchmark no smartphone-alvo de 6/8 GB
-
-Status: `BLOCKED_ON_HARDWARE`
-
-### Objetivo
-
-Testar no aparelho que será usado com os óculos, porque RAM nominal sozinha não determina desempenho de inferência.
-
-### Registrar hardware
-
-- modelo exato do aparelho;
-- RAM;
-- SoC;
-- GPU/NPU quando disponível;
-- versão do Android;
-- backend/acelerador realmente utilizado.
-
-### Testes mínimos
-
-- 20+ inferências consecutivas;
-- cold start;
-- latência p50/p95;
-- RAM de pico;
-- aquecimento/throttling observável;
-- execução junto com ASR e fluxo do app;
-- câmera/DAT + microfone + IA quando o hardware dos óculos estiver disponível;
-- comportamento offline.
-
-### Critérios de aceite
-
-- [ ] O modelo cabe com margem junto do app/ASR/DAT.
-- [ ] A latência é aceitável para confirmação por voz.
-- [ ] Não há crash/OOM em sequência.
-- [ ] Resultado é comparado ao baseline, não avaliado isoladamente.
-
-### Commit sugerido
-
-```bash
-git commit -m "test(ai): benchmark intent model on target phone"
-```
-
----
-
-## Task 6F — Escolher e integrar o backend de IA vencedor
-
-Status: `TODO`
-
-### Objetivo
-
-Escolher o backend com base nas Tasks 6A–6E e integrá-lo no Android sem quebrar o contrato do restante do sistema.
-
-### Requisitos
-
-- Documentar a decisão e os números que a justificam.
-- Preservar interface de classificação pequena e substituível.
-- Preservar confirmação explícita.
-- Preservar saída estruturada/validada.
-- Preservar fallback seguro para baixa confiança/ambiguidade.
-- `UNKNOWN` nunca movimenta o robô.
-- Se confiança for insuficiente, pedir esclarecimento ou rejeitar; não adivinhar target.
-- Atualizar paridade/testes Android quando aplicável.
-- Não misturar integração de modelo com mudanças ROS.
-
-### Critérios de aceite
-
-- [ ] Modelo escolhido por benchmark reproduzível.
-- [ ] App funciona offline.
-- [ ] `SPRAY`/`DOCK`/`UNDOCK` robustos nas variações definidas.
-- [ ] `CONFIRM`/`CANCEL` continuam seguros.
-- [ ] Baixa confiança não gera ação.
-- [ ] Testes/paridade aplicáveis passam.
-
-### Commit sugerido
-
-```bash
-git commit -m "feat(ai): integrate selected on-device intent backend"
+```text
+test(ai): add real command evaluation corpus
+test(ai): benchmark current intent baseline
+feat(ai): improve local intent robustness
+feat(ai): integrate selected on-device intent backend
+docs(ai): record device benchmark and model decision
 ```
 
 ---
@@ -914,9 +818,9 @@ Status: `TODO`
 
 ## Objetivo
 
-Atualizar demos, testes de integração e documentação para a arquitetura final em que dock/undock são comandos explícitos e a IA escolhida nas Tasks 6A–6F é exercitada pelo caminho de voz/ASR.
+Atualizar demos, testes de integração e documentação para a arquitetura final em que dock/undock são comandos explícitos.
 
-Esta task não adiciona comportamento novo; ela prova e documenta o sistema integrado.
+Esta task não adiciona comportamento novo.
 
 ## Arquitetura final esperada
 
@@ -946,25 +850,28 @@ DOCK
 -> robot docks
 ```
 
-### Cenário D — jornada completa por voz
+### Cenário D — jornada completa
 
 ```text
-"saia da doca"
--> confirmação
--> UNDOCK
-
-"pulverizar o plot 01"
--> confirmação
+UNDOCK
 -> SPRAY plot-01
-
-"pulverizar o talhão três"
--> confirmação
 -> SPRAY plot-03
-
-"voltar para a doca"
--> confirmação
 -> DOCK
 ```
+
+### Cenário E — jornada por voz/ASR
+
+```text
+fala do operador
+-> ASR
+-> IA local
+-> confirmação por voz
+-> JSON/WebSocket
+-> bridge ROS
+-> ação correspondente no TurtleBot
+```
+
+O E2E final deve registrar a frase pretendida e a transcrição efetiva do ASR para separar falhas de reconhecimento de fala de falhas do classificador.
 
 ## Escopo provável
 
@@ -1001,6 +908,7 @@ Inspecione:
 - [ ] Mensagens de demo refletem exatamente o que foi comprovado.
 - [ ] Documentação e código descrevem o mesmo lifecycle.
 - [ ] Suíte prática mais ampla passa.
+- [ ] Fluxo por voz/ASR é validado para `SPRAY`, confirmação e, quando integradas, `DOCK`/`UNDOCK`.
 
 ## Testes e evidência
 
@@ -1051,16 +959,131 @@ Não crie um commit extra apenas para “arrumar documentação esquecida” se 
 
 ---
 
+# Fase 2 — Meta Wearables / Device Access Toolkit
+
+Status geral: `PLANNED`
+
+Pré-requisito: concluir e estabilizar as Tasks 2–7. Esta fase não deve ser usada para compensar bugs pendentes de contrato, bridge, Android, IA ou E2E.
+
+A implementação detalhada deve ser refinada quando o celular e os óculos reais estiverem disponíveis e depois de confirmar a versão do DAT em uso. Não assumir APIs/capacidades que não foram verificadas no SDK e sample oficiais.
+
+---
+
+## Task 8 — Validar ambiente DAT no celular real
+
+Status: `PLANNED`
+
+### Objetivo
+
+Provar que o flavor `datDebug`, toolchain, permissões e dependências necessárias funcionam no aparelho real usado com os Meta Wearables.
+
+### Critérios iniciais
+
+- [ ] modelo/Android/SoC do aparelho registrados;
+- [ ] versão do DAT confirmada antes de alterar dependências/APIs;
+- [ ] `datDebug` compila e instala no aparelho;
+- [ ] permissões necessárias podem ser concedidas sem workaround inseguro;
+- [ ] nenhuma chave/token é versionado.
+
+---
+
+## Task 9 — Validar primeiro o sample oficial `CameraAccess`
+
+Status: `PLANNED`
+
+### Objetivo
+
+Antes de integrar câmera real no Maestro, provar pareamento/sessão/captura no sample correspondente à versão do DAT.
+
+### Critérios iniciais
+
+- [ ] óculos pareiam com o aparelho;
+- [ ] sample oficial abre a sessão necessária;
+- [ ] pelo menos um frame real é recebido/visualizado;
+- [ ] reconexão/encerramento básico são observados;
+- [ ] limitações reais do SDK/hardware são registradas.
+
+Não editar o pipeline do Maestro para mascarar falha do sample oficial.
+
+---
+
+## Task 10 — Integrar frames DAT ao Maestro
+
+Status: `PLANNED`
+
+### Objetivo
+
+Conectar o frame real do DAT à abstração de câmera/visão existente sem quebrar o flavor mock.
+
+### Critérios iniciais
+
+- [ ] adaptador DAT permanece isolado atrás da interface existente;
+- [ ] frame real chega ao resolvedor/detector visual;
+- [ ] marcador/talhão pode ser identificado a partir de frame real;
+- [ ] imagens continuam processadas em memória e não são persistidas por padrão;
+- [ ] mock continua funcional para testes sem hardware.
+
+---
+
+## Task 11 — Validar câmera + voz/ASR com os óculos conectados
+
+Status: `PLANNED`
+
+### Objetivo
+
+Provar o caminho de voz usado na demo enquanto a sessão/câmera dos Meta Wearables está ativa.
+
+### Critérios iniciais
+
+- [ ] identificar/documentar qual dispositivo/rota fornece o áudio usado;
+- [ ] não assumir que o DAT expõe um microfone específico sem evidência;
+- [ ] ASR funciona com sessão DAT/câmera ativa;
+- [ ] `pulverizar o plot 02` + `sim` funciona pelo caminho de voz;
+- [ ] transcrição ASR e resultado da IA são registrados separadamente;
+- [ ] latência/falhas relevantes são registradas.
+
+---
+
+## Task 12 — E2E físico com Meta Wearables
+
+Status: `PLANNED`
+
+### Objetivo
+
+Executar a jornada física completa usando os óculos reais e o celular alvo, mantendo robô/simulador atrás do mesmo contrato versionado.
+
+### Jornada alvo
+
+```text
+Meta Wearables / câmera real
+-> alvo visual
+-> fala/ASR
+-> IA local
+-> confirmação
+-> JSON/WebSocket
+-> ROS 2/Nav2
+-> TurtleBot/Gazebo ou plataforma de teste disponível
+```
+
+### Critérios iniciais
+
+- [ ] visão real + voz funcionam na mesma sessão;
+- [ ] nenhum movimento ocorre sem confirmação;
+- [ ] `SPRAY` chega ao target e não docka automaticamente;
+- [ ] `UNDOCK`/`DOCK` explícitos funcionam quando fizerem parte do cenário;
+- [ ] jornada é repetida múltiplas vezes e falhas/latência são registradas;
+- [ ] documentação/pitch distinguem o que foi provado em hardware real do que permaneceu simulado.
+
+---
+
 # Ordem de execução
 
 ```text
-Task 0 — roadmap                                      ✅ DONE
+Task 0 — versionar TASKS.md ✅
   ↓
-Task 1 — remover dock/undock automático              ✅ DONE
+Task 1 — remover dock/undock automático ✅
   ↓
-baseline docs/checker da IA                          ✅ DONE
-  ↓
-Task 2 — contrato DOCK/UNDOCK                        ← PRÓXIMA
+Task 2 — contrato DOCK/UNDOCK  ← PRÓXIMA
   ↓
 Task 3 — UNDOCK explícito
   ↓
@@ -1070,30 +1093,31 @@ REVISÃO HUMANA + teste Gazebo
   ↓
 Task 5 — Android transporta novas intents
   ↓
-PAUSA: backend/ROS/Android estruturais prontos
+Task 6A–6F — corpus, benchmark e evolução da IA local
   ↓
-Task 6A — corpus real de comandos + ASR
+Task 7 — E2E, demos e documentação final
   ↓
-Task 6B — benchmark do baseline
+REVISÃO HUMANA — pipeline base estabilizado
   ↓
-Task 6C — melhorar baseline atual
+Task 8 — ambiente DAT no celular real
   ↓
-Task 6D — comparar modelos locais alternativos
+Task 9 — sample oficial CameraAccess
   ↓
-Task 6E — benchmark no smartphone-alvo
+Task 10 — frames DAT no Maestro
   ↓
-Task 6F — escolher e integrar backend de IA
+Task 11 — câmera + voz/ASR com óculos
   ↓
-Task 7 — E2E final, demos e documentação final
+Task 12 — E2E físico Meta Wearables
 ```
 
 ## Pontos obrigatórios de revisão humana
 
 Revisar com atenção antes de seguir depois de:
 
+- **Task 1:** concluída; mudou o lifecycle base das missões e foi validada no Gazebo.
 - **Task 4:** controla sequência de aproximação + docking físico/simulado.
-- **Task 5:** fecha o contrato ponta a ponta antes da troca/avaliação de IA.
-- **Task 6D/6E:** define candidatos e mede custo real no hardware.
+- **Task 7:** antes de iniciar a fase Meta, confirmar que o pipeline base e os E2E estão coerentes.
+- **Task 9:** confirmar que o sample oficial funciona no hardware antes de integrar o DAT ao Maestro.
 - qualquer mudança em `contracts/`, segurança ou confirmação.
 
 ---
@@ -1159,23 +1183,21 @@ Depois de concluir a Task <TASK>, PARE. Não comece a próxima task.
 
 # Prompt inicial recomendado
 
-Para continuar a partir da `main` atual:
+Para continuar agora:
 
 ```text
 Leia AGENTS.md, CONTRIBUTING.md, docs/README.md e TASKS.md.
 Execute SOMENTE a Task 2.
 
-A Task 1 já está concluída e validada. Não reintroduza undock/dock automático
-para SPRAY e não altere Android nem o modelo de IA nesta task.
+A Task 1 já está concluída e não deve ser reimplementada. Preserve a regra:
+SPRAY nunca causa undock, retorno à doca ou dock automaticamente.
 
-Antes de editar, inspecione o contrato/backend atual e explique brevemente:
-- como SPRAY é validado hoje;
-- como representar DOCK/UNDOCK sem target fictício;
-- quais arquivos serão alterados;
-- quais testes focados serão executados.
+Siga integralmente o protocolo de execução e commits definido em TASKS.md.
+Antes de editar, inspecione o contrato/backend atual e explique brevemente os
+arquivos que pretende alterar, ambiguidades e critérios de aceite.
 
-Depois implemente somente o contrato de DOCK/UNDOCK, atualize testes e
-documentação necessária, rode os testes focados, revise o diff e crie apenas
+Depois implemente somente o suporte de contrato para DOCK/UNDOCK, atualize
+testes e documentação, rode os testes focados, revise o diff e crie apenas
 commit(s) atômico(s) da Task 2.
 
 Ao terminar, reporte evidências, hashes dos commits e pare.

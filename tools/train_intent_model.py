@@ -202,6 +202,7 @@ def build_artifacts() -> tuple[dict, dict]:
 
 
 def artifacts_equal(current: object, expected: object) -> bool:
+    """Compare generated artifacts while tolerating irrelevant float noise."""
     if isinstance(current, float) and isinstance(expected, float):
         return math.isclose(
             current,
@@ -209,15 +210,19 @@ def artifacts_equal(current: object, expected: object) -> bool:
             rel_tol=0.0,
             abs_tol=ARTIFACT_FLOAT_TOLERANCE,
         )
+
     if isinstance(current, dict) and isinstance(expected, dict):
         return current.keys() == expected.keys() and all(
-            artifacts_equal(current[key], expected[key]) for key in current
+            artifacts_equal(current[key], expected[key])
+            for key in current
         )
+
     if isinstance(current, list) and isinstance(expected, list):
         return len(current) == len(expected) and all(
             artifacts_equal(current_item, expected_item)
             for current_item, expected_item in zip(current, expected)
         )
+
     return current == expected
 
 
