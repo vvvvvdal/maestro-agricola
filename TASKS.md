@@ -8,8 +8,148 @@
 - Task 3 --- Implementar comando explícito UNDOCK: DONE
 - Task 4 --- Implementar comando explícito DOCK: DONE
 - Task 5 --- Android transportar intents: DONE
-- Task 6 --- Evolução da IA local: PRÓXIMA
-- Task 7 --- E2E final: TODO
+- Task 6 --- Evolução da IA local: EM AVALIAÇÃO (não é foco da entrega atual)
+- Task 7 --- E2E final e preparação da demonstração: EM ANDAMENTO
+
+---
+
+# Prioridades até a entrega de sábado
+
+O objetivo principal agora é fechar uma demonstração vertical estável do MVP.
+
+A prioridade não é trocar o modelo de IA neste momento.
+
+O sistema atual já possui:
+
+```text
+voz
+ -> reconhecimento de fala Android
+ -> IntentClassifier local
+ -> InteractionEngine
+ -> confirmação por áudio
+ -> JSON/WebSocket
+ -> ROS 2 Bridge
+ -> Nav2/Gazebo
+```
+
+A entrega deve priorizar:
+
+## 1. Meta Wearables / DAT
+
+Status:
+
+```text
+PENDENTE
+```
+
+Objetivo:
+
+Validar o caminho real dos óculos até o aplicativo.
+
+Próximos passos:
+
+- executar o sample oficial do DAT;
+- validar sessão/captura de câmera;
+- integrar o frame real ao fluxo existente;
+- substituir o mock somente onde for necessário;
+- manter o mock como fallback de demonstração.
+
+A integração DAT não deve quebrar o pipeline já funcional.
+
+---
+
+## 2. Melhorias da interface Android
+
+Status:
+
+```text
+EM ANDAMENTO
+```
+
+Objetivo:
+
+Transformar a tela atual de diagnóstico em uma interface mais próxima de demonstração.
+
+Melhorias prioritárias:
+
+- melhorar apresentação visual da jornada;
+- destacar:
+  - alvo detectado;
+  - intenção reconhecida;
+  - confirmação pendente;
+  - comando enviado;
+  - estado do robô;
+- melhorar mensagens de voz;
+- remover elementos exclusivamente de debug quando possível;
+- deixar o fluxo claro para avaliadores.
+
+---
+
+## 3. Demonstração completa Gazebo + Android
+
+Status:
+
+```text
+EM VALIDAÇÃO
+```
+
+Fluxo esperado:
+
+### UNDOCK
+
+```text
+READY
+ -> UNDOCK explícito
+ -> confirmação
+ -> robô sai da doca
+```
+
+### SPRAY
+
+```text
+READY
+ -> SPRAY plot-XX
+ -> confirmação
+ -> Nav2
+ -> robô chega ao destino
+ -> permanece no destino
+```
+
+### DOCK
+
+```text
+READY
+ -> DOCK explícito
+ -> aproximação
+ -> docking
+ -> DOCKED
+```
+
+Critério principal:
+
+Nenhuma ação automática deve acontecer.
+
+O operador sempre inicia a ação.
+
+---
+
+## 4. Pitch e documentação
+
+Status:
+
+```text
+PENDENTE
+```
+
+Prioridades:
+
+- gravar vídeo/pitch;
+- preparar narrativa da solução;
+- explicar diferencial:
+  - comando hands-free;
+  - segurança por confirmação;
+  - integração visão + voz + robótica;
+  - uso de TurtleBot 4/Nav2/Gazebo como validação antecipada.
 
 ---
 
@@ -32,7 +172,7 @@ Regras:
 - DOCK e UNDOCK rejeitam `target`.
 - O bridge continua validando o contrato antes de qualquer execução ROS.
 
-Evidências registradas durante a implementação:
+Evidências:
 
 - suíte do bridge passando;
 - suíte geral passando;
@@ -46,15 +186,7 @@ Status: DONE
 
 Objetivo:
 
-Executar Undock somente via comando explícito:
-
-```json
-{
-  "intent": "UNDOCK",
-  "target": null,
-  "confirmed": true
-}
-```
+Executar Undock somente via comando explícito.
 
 Fluxo:
 
@@ -66,20 +198,19 @@ WebSocket
  -> /turtlebot1/undock action
 ```
 
-Regras implementadas:
+Regras:
 
-- UNDOCK é solicitado somente por intent explícita.
+- UNDOCK somente por intent explícita.
 - SPRAY nunca chama Undock implicitamente.
-- O comando é rejeitado quando o lifecycle não está em estado seguro para undock.
-- Falhas deixam a missão em estado seguro/fail-closed.
-- O estado dockado é confirmado por `dock_status`.
-- O lifecycle retorna a `READY` após undock confirmado.
+- Falhas deixam missão em estado seguro.
+- Estado dockado confirmado por `dock_status`.
+- Lifecycle retorna a estado seguro após sucesso.
 
 Evidências:
 
-- comando WebSocket UNDOCK foi aceito pelo bridge em estado válido;
-- callback `_request_undock` está conectado ao `BridgeCore`;
-- lifecycle explícito e testes do bridge foram validados durante a Task 3.
+- comando WebSocket UNDOCK aceito em estado válido;
+- callback `_request_undock` conectado;
+- testes do bridge validados.
 
 ---
 
@@ -89,33 +220,31 @@ Status: DONE
 
 Objetivo:
 
-Executar docking somente via comando explícito.
+Executar docking somente por comando explícito.
 
 Fluxo:
 
 ```text
 DOCK
  -> MissionCycle
- -> Nav2 para dock approach configurado
+ -> Nav2 para aproximação
  -> Dock action
- -> confirmação por dock_status
+ -> dock_status
  -> DOCKED
 ```
 
-Regras implementadas:
+Regras:
 
 - DOCK não é disparado após SPRAY.
-- DOCK só é aceito em estado seguro do lifecycle.
-- Navegação ativa não é interrompida implicitamente por DOCK.
-- O robô navega primeiro até a pose de aproximação da doca.
-- A action de Dock só é iniciada depois da aproximação.
-- Falhas deixam a missão em estado seguro/fail-closed.
+- Navegação ativa não é interrompida implicitamente.
+- Aproximação acontece antes da action de Dock.
+- Falhas deixam sistema fail-closed.
 
 Evidências:
 
-- comando WebSocket DOCK foi aceito pelo bridge em estado válido;
-- callback `_request_dock` está conectado ao `BridgeCore`;
-- contrato, lifecycle e bridge estão alinhados com docking explícito.
+- comando DOCK aceito pelo bridge;
+- callback `_request_dock` conectado;
+- lifecycle alinhado.
 
 ---
 
@@ -123,27 +252,21 @@ Evidências:
 
 Status: DONE
 
-Branch de implementação:
-
-```text
-feat/android-transport-intents
-```
-
 Objetivo:
 
-Permitir que o Android transporte corretamente os intents operacionais:
+Transportar:
 
 - SPRAY
 - DOCK
 - UNDOCK
 
-sem acoplar o transporte a SPRAY.
+sem acoplamento ao SPRAY.
 
-## Alterações principais
+Alterações:
 
-### InteractionEngine
+## InteractionEngine
 
-`Command` passou a carregar explicitamente:
+Command possui:
 
 ```text
 commandId
@@ -154,18 +277,14 @@ targetId opcional
 
 Regras:
 
-- SPRAY exige alvo resolvido.
+- SPRAY exige alvo.
 - DOCK não exige alvo.
 - UNDOCK não exige alvo.
-- Todos os três intents exigem confirmação antes de gerar `Command`.
-- Cancelamento e timeout continuam sem gerar comando.
-- O intent operacional pendente é preservado até a confirmação.
+- Todos exigem confirmação.
 
-### WebSocketCommandTransport
+## WebSocketCommandTransport
 
-O transporte deixou de enviar `"intent": "SPRAY"` de forma fixa.
-
-Agora serializa o intent real do comando.
+Agora envia o intent real:
 
 SPRAY:
 
@@ -197,149 +316,73 @@ UNDOCK:
 }
 ```
 
-O transporte continua validando `command_id` na resposta e evita completar o callback mais de uma vez.
+Testes:
 
-### Bridge WebSocket
-
-Foi corrigido o adaptador entre o servidor WebSocket e o `BridgeCore`:
-
-```text
-raw WebSocket message
- -> BridgeCore.handle(...)
- -> parse_command(...)
- -> handle_command(...)
- -> callback ROS
-```
-
-Erros de contrato retornam `REJECTED` em vez de quebrar o handler da conexão.
-
-## Testes/evidências
-
-Android:
-
-```bash
-cd mobile/android
-./gradlew test
-./gradlew assembleDatDebug
-```
-
-Resultados registrados:
-
-```text
-BUILD SUCCESSFUL
-BUILD SUCCESSFUL
-```
-
-Foram adicionados testes explícitos para:
-
-- DOCK gerar `Command(intent="DOCK", targetId=null)` somente após confirmação;
-- UNDOCK gerar `Command(intent="UNDOCK", targetId=null)` somente após confirmação.
-
-Teste físico Android:
-
-- APK `datDebug` instalado em tablet Samsung físico;
-- tablet conectado ao bridge via WebSocket na rede local;
-- SPRAY foi reconhecido, confirmado e retornou:
-
-```text
-ACCEPTED
-navigation goal queued
-```
-
-- Nav2 recebeu a meta e a odometria confirmou movimento do robô.
-
-Teste manual do protocolo:
-
-- DOCK foi aceito pelo bridge em estado válido;
-- UNDOCK foi aceito pelo bridge em estado válido;
-- rejeições observadas fora de `READY` são comportamento esperado do lifecycle fail-closed.
-
-## Limite da Task 5
-
-O classificador local atual ainda não reconhece de forma confiável frases naturais como:
-
-```text
-sair da doca
-voltar para a base
-```
-
-e pode retornar `UNKNOWN`.
-
-Isso não é falha do transporte da Task 5.
-
-A evolução do classificador e do entendimento de linguagem pertence à Task 6.
+- Android build passando;
+- intents DOCK/UNDOCK gerando comandos corretos;
+- teste manual em Android físico;
+- bridge aceitando comandos.
 
 ---
 
 # Task 6 --- Evolução da IA local
 
-Status: PRÓXIMA
+Status: EM AVALIAÇÃO (não é prioridade da entrega)
 
-Objetivo:
+Objetivo original:
 
-Evoluir a interpretação local de linguagem sem permitir que o modelo controle ROS diretamente.
+Avaliar evolução do classificador local sem permitir que a IA controle ROS diretamente.
 
-Arquitetura obrigatória:
+Arquitetura mantida:
 
 ```text
 fala/transcrição
  -> IntentClassifier
- -> IntentPrediction estruturado
+ -> IntentPrediction
  -> InteractionEngine
- -> validações e confirmação
+ -> confirmação
  -> Command
- -> WebSocket
  -> ROS
 ```
 
-A IA interpreta linguagem; ela não executa comandos livres.
+## Estado atual
 
-## Intents operacionais esperados
+O classificador atual já suporta:
 
 - SPRAY
 - DOCK
 - UNDOCK
-
-Intents de controle:
-
 - CONFIRM
 - CANCEL
 - UNKNOWN
 
-## Trabalho da Task 6
+O modelo atual foi validado no aplicativo.
 
-1. Construir corpus de frases reais e variações de ASR.
-2. Adicionar frases de DOCK e UNDOCK ao conjunto de avaliação.
-3. Medir:
-   - acurácia;
-   - macro F1;
-   - falsos accepts perigosos;
-   - latência;
-   - memória;
-   - tamanho do artefato.
-4. Testar no celular alvo de 6/8 GB de RAM.
-5. Comparar a solução atual com alternativas locais.
-6. Escolher a evolução com base em benchmark, não apenas em preferência de modelo.
-7. Preservar a interface `IntentClassifier` para que o restante do app não dependa da implementação do modelo.
-
-## Candidato para avaliação
-
-Um candidato para a fase de experimentação é:
+DOCK e UNDOCK passaram a ser reconhecidos após atualização do asset:
 
 ```text
-Qwen2.5 1.5B Instruct quantizado
+shared/ai/intent_model.json
 ```
 
-Mas a adoção não está decidida antes do benchmark.
+e rebuild do aplicativo.
 
-Se um modelo menor/classificador dedicado atingir qualidade suficiente com menor latência e memória, ele deve ser preferido.
+## Decisão atual
 
-## Segurança
+Não implementar Qwen2.5 1.5B antes da entrega.
 
-Mesmo com um LLM local:
+Motivos:
+
+- risco de integração;
+- tempo limitado;
+- necessidade de validar memória/latência no aparelho;
+- arquitetura atual já atende o fluxo principal.
+
+Qwen2.5 1.5B permanece como trabalho futuro de pesquisa.
+
+Possível evolução futura:
 
 ```text
-LLM/NLU
+Qwen/NLU
  -> saída estruturada
  -> validação
  -> confirmação
@@ -355,58 +398,29 @@ LLM
 
 ---
 
-# Task 7 --- E2E final
+# Task 7 --- E2E final e demonstração
 
-Status: TODO
+Status: EM ANDAMENTO
 
 Objetivo:
 
-Atualizar os testes e scripts E2E para o lifecycle explícito atual.
+Fechar o fluxo completo demonstrável.
 
-Fluxos mínimos:
+Pendências:
 
-### SPRAY
-
-```text
-READY
- -> SPRAY
- -> NAVIGATING
- -> READY
-```
-
-O robô permanece no destino.
-
-Não há retorno automático à doca.
-
-### UNDOCK
-
-```text
-READY
- -> UNDOCK explícito
- -> NEEDS_UNDOCK
- -> UNDOCKING
- -> READY
-```
-
-### DOCK
-
-```text
-READY
- -> DOCK explícito
- -> READY_TO_DOCK
- -> RETURNING_TO_DOCK
- -> READY_FOR_DOCK
- -> DOCKING
- -> DOCKED
-```
+- atualizar scripts E2E antigos;
+- validar Android -> WebSocket -> Bridge -> ROS -> Gazebo;
+- integrar DAT quando possível;
+- melhorar interface;
+- gravar demonstração.
 
 Critérios:
 
-- atualizar `make demo`, `make demo-route` e `make demo-visual` quando ainda tiverem expectativas do lifecycle antigo;
-- validar Android físico -> WebSocket -> bridge -> ROS -> Gazebo;
-- validar rejeições em estados inseguros;
-- nenhuma ação automática de dock/undock após SPRAY;
-- documentação final alinhada ao comportamento real.
+- nenhuma ação automática de dock/undock;
+- confirmação obrigatória;
+- comando seguro;
+- robô executando no Gazebo;
+- narrativa clara para avaliação.
 
 ---
 
@@ -416,9 +430,12 @@ Antes de editar:
 
 - Ler `AGENTS.md`.
 - Ler `CONTRIBUTING.md`.
-- Ler `docs/README.md`.
-- Verificar `git status --porcelain`.
-- Trabalhar uma task por vez.
+- Ler documentação relacionada.
+- Verificar:
+
+```bash
+git status --porcelain
+```
 
 Antes do commit:
 
@@ -436,12 +453,10 @@ Mudanças de contrato, lifecycle ou segurança devem continuar fail-closed e cob
 
 # Próximo passo
 
-Executar somente:
+Foco até sábado:
 
-```text
-Task 6 --- Evolução da IA local
-```
-
-Não antecipar DAT/Meta Wearables para compensar pendências da IA ou do pipeline atual.
-
-A integração Meta Wearables/DAT entra depois das Tasks 6 e 7, começando pela validação do sample oficial no aparelho real.
+1. Fechar demo Gazebo.
+2. Integrar/verificar DAT.
+3. Melhorar interface Android.
+4. Gravar pitch.
+5. Apenas depois avaliar Qwen ou mudanças maiores de IA.
