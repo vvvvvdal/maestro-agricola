@@ -124,20 +124,24 @@ class MaestroBridgeNode(Node):
 
     def _request_undock(self) -> tuple[bool, str]:
         with self._mission_lock:
-            if not self._mission.begin_undock():
+            previous = self._mission.phase
+
+            if not self._mission.request_undock():
                 return False, "robot unavailable for undock"
 
-            self._record_phase_change(MissionPhase.READY)
+            self._record_phase_change(previous)
 
         return True, "undock command accepted"
 
 
     def _request_dock(self) -> tuple[bool, str]:
         with self._mission_lock:
-            if not self._mission.begin_docking():
+            previous = self._mission.phase
+
+            if not self._mission.request_dock():
                 return False, "robot unavailable for dock"
 
-            self._record_phase_change(MissionPhase.READY_FOR_DOCK)
+            self._record_phase_change(previous)
 
         return True, "dock command accepted"
 
@@ -375,7 +379,7 @@ class MaestroBridgeNode(Node):
         if not self._transition(self._mission.begin_docking):
             return
         self._dock_attempts += 1
-        self.get_logger().info("Requesting dock after navigation queue completed")
+        self.get_logger().info("Requesting explicit dock action")
         try:
             future = self._dock_client.send_goal_async(Dock.Goal())
         except Exception as exc:

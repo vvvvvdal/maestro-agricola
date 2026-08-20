@@ -23,9 +23,10 @@ class MissionCycle:
     Fail-closed mission lifecycle.
 
     Normal navigation missions start in READY and return to READY when Nav2
-    finishes. Docking and undocking states are preserved as infrastructure for
-    explicit DOCK/UNDOCK commands, but they are not entered automatically by a
-    normal navigation command.
+    finishes.
+
+    Docking and undocking are explicit commands. They are never triggered by
+    normal navigation completion.
     """
 
     phase: MissionPhase = MissionPhase.READY
@@ -33,20 +34,35 @@ class MissionCycle:
 
     def command_queued(self) -> bool:
         """
-        Accept a navigation command only while the robot is available for
-        navigation or while another navigation command is already running.
+        Accept navigation commands only while the robot is available.
 
-        Queuing a command must never implicitly change docking state.
+        A navigation command never changes docking state implicitly.
         """
         return self.phase in (
             MissionPhase.READY,
             MissionPhase.NAVIGATING,
         )
 
+    # ------------------------------------------------------------------
+    # Explicit UNDOCK command
+    # ------------------------------------------------------------------
+
+    def request_undock(self) -> bool:
+        """
+        Register an explicit UNDOCK command.
+
+        This only changes lifecycle state. The ROS action is executed by the
+        bridge lifecycle loop.
+        """
+        if self.phase != MissionPhase.READY:
+            return False
+
+        self.phase = MissionPhase.NEEDS_UNDOCK
+        return True
+
     def begin_undock(self) -> bool:
         """
-        Begin an undock operation only when the lifecycle was explicitly placed
-        in NEEDS_UNDOCK.
+        Start the ROS undock action after an explicit UNDOCK request.
         """
         if self.phase != MissionPhase.NEEDS_UNDOCK:
             return False
@@ -54,7 +70,12 @@ class MissionCycle:
         self.phase = MissionPhase.UNDOCKING
         return True
 
-    def undock_completed(self, *, succeeded: bool, is_docked: bool) -> bool:
+    def undock_completed(
+        self,
+        *,
+        succeeded: bool,
+        is_docked: bool,
+    ) -> bool:
         if self.phase != MissionPhase.UNDOCKING:
             return False
 
@@ -72,6 +93,10 @@ class MissionCycle:
         self.phase = MissionPhase.NEEDS_UNDOCK
         return True
 
+    # ------------------------------------------------------------------
+    # Navigation
+    # ------------------------------------------------------------------
+
     def begin_navigation(self) -> bool:
         if self.phase != MissionPhase.READY:
             return False
@@ -79,13 +104,15 @@ class MissionCycle:
         self.phase = MissionPhase.NAVIGATING
         return True
 
-    def navigation_completed(self, *, has_pending: bool) -> bool:
+    def navigation_completed(
+        self,
+        *,
+        has_pending: bool,
+    ) -> bool:
         """
-        Complete the current navigation mission.
+        Finish navigation.
 
-        Navigation completion never starts a docking lifecycle. If another
-        command is pending, the bridge can start it from READY. If the queue is
-        empty, the robot simply remains at the current destination.
+        Never starts return-to-dock or docking automatically.
         """
         if self.phase != MissionPhase.NAVIGATING:
             return False
@@ -93,10 +120,26 @@ class MissionCycle:
         self.phase = MissionPhase.READY
         return True
 
+    # ------------------------------------------------------------------
+    # Explicit DOCK command
+    # ------------------------------------------------------------------
+
+    def request_dock(self) -> bool:
+        """
+        Register an explicit DOCK command.
+
+        The bridge will later execute the approach navigation and docking
+        action.
+        """
+        if self.phase != MissionPhase.READY:
+            return False
+
+        self.phase = MissionPhase.READY_TO_DOCK
+        return True
+
     def begin_return_to_dock(self) -> bool:
         """
-        Preserve the existing return-to-dock transition for future explicit
-        DOCK commands. Normal navigation does not enter READY_TO_DOCK.
+        Start navigation to the configured dock approach pose.
         """
         if self.phase != MissionPhase.READY_TO_DOCK:
             return False
@@ -117,17 +160,12 @@ class MissionCycle:
             self.fail("navigation to dock approach failed")
             return False
 
-        self.phase = (
-            MissionPhase.READY
-            if has_pending
-            else MissionPhase.READY_FOR_DOCK
-        )
+        self.phase = MissionPhase.READY_FOR_DOCK
         return True
 
     def begin_docking(self) -> bool:
         """
-        Preserve the existing docking transition for future explicit DOCK
-        commands. Normal navigation does not enter READY_FOR_DOCK.
+        Start the physical docking action after successful approach navigation.
         """
         if self.phase != MissionPhase.READY_FOR_DOCK:
             return False
@@ -154,6 +192,7 @@ class MissionCycle:
             if has_pending
             else MissionPhase.DOCKED
         )
+
         return True
 
     def retry_docking(self) -> bool:
@@ -162,6 +201,10 @@ class MissionCycle:
 
         self.phase = MissionPhase.READY_FOR_DOCK
         return True
+
+    # ------------------------------------------------------------------
+    # Failure
+    # ------------------------------------------------------------------
 
     def fail(self, reason: str) -> None:
         self.phase = MissionPhase.FAILED

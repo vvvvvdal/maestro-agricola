@@ -48,7 +48,6 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.reason, "navigation queued")
         self.assertEqual(len(calls), 1)
 
-
     def test_rejects_unknown_spray_plot(self):
         bridge = BridgeCore(
             target_map={},
@@ -70,7 +69,6 @@ class BridgeCoreTest(unittest.TestCase):
 
         self.assertEqual(response.status, "REJECTED")
         self.assertEqual(response.reason, "unknown target")
-
 
     def test_accepts_dock_contract(self):
         calls = []
@@ -95,7 +93,6 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.reason, "dock command accepted")
         self.assertEqual(len(calls), 1)
 
-
     def test_accepts_undock_contract(self):
         calls = []
 
@@ -118,6 +115,22 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.status, "ACCEPTED")
         self.assertEqual(response.reason, "undock command accepted")
         self.assertEqual(len(calls), 1)
+
+    def test_rejects_undock_without_callback(self):
+        bridge = BridgeCore(
+            target_map={},
+            navigation_callback=lambda *_: (
+                True,
+                "navigation queued",
+            ),
+        )
+
+        response = bridge.handle_command(
+            command("UNDOCK")
+        )
+
+        self.assertEqual(response.status, "REJECTED")
+        self.assertEqual(response.reason, "undock unavailable")
 
 
 if __name__ == "__main__":
