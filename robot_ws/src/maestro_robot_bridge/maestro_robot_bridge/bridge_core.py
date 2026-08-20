@@ -24,6 +24,29 @@ class BridgeCore:
         self._dock_callback = dock_callback
         self._undock_callback = undock_callback
 
+    def handle(self, raw_message: str) -> Response:
+        from .contract import ContractError, parse_command
+
+        try:
+            command = parse_command(raw_message)
+            return self.handle_command(command)
+
+        except ContractError as exc:
+            return Response(
+                schema_version="1.0",
+                command_id=exc.command_id,
+                status="REJECTED",
+                reason=exc.reason,
+            )
+
+        except Exception as exc:
+            return Response(
+                schema_version="1.0",
+                command_id="unknown",
+                status="REJECTED",
+                reason=str(exc),
+            )
+
     def handle_command(self, command: Command) -> Response:
         if command.intent == "SPRAY":
             return self._handle_spray(command)

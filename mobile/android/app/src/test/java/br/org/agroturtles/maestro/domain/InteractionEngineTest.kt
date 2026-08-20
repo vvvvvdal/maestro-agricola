@@ -116,4 +116,36 @@ class InteractionEngineTest {
         assertEquals(InteractionState.AMBIGUOUS, lateConfirmation.state)
         assertNull(lateConfirmation.command)
     }
+
+    @Test
+    fun dockCreatesCommandWithoutTarget() {
+        val labels = ArrayDeque(listOf("DOCK", "CONFIRM"))
+        val engine = InteractionEngine { IntentPrediction(labels.removeFirst(), 0.99) }
+
+        val requested = engine.handleTranscript("voltar para a base")
+        assertEquals(InteractionState.AWAITING_CONFIRMATION, requested.state)
+
+        val confirmed = engine.handleTranscript("confirmar")
+
+        assertEquals(InteractionState.SENDING, confirmed.state)
+        assertNotNull(confirmed.command)
+        assertEquals("DOCK", confirmed.command?.intent)
+        assertNull(confirmed.command?.targetId)
+    }
+
+    @Test
+    fun undockCreatesCommandWithoutTarget() {
+        val labels = ArrayDeque(listOf("UNDOCK", "CONFIRM"))
+        val engine = InteractionEngine { IntentPrediction(labels.removeFirst(), 0.99) }
+
+        val requested = engine.handleTranscript("sair da doca")
+        assertEquals(InteractionState.AWAITING_CONFIRMATION, requested.state)
+
+        val confirmed = engine.handleTranscript("confirmar")
+
+        assertEquals(InteractionState.SENDING, confirmed.state)
+        assertNotNull(confirmed.command)
+        assertEquals("UNDOCK", confirmed.command?.intent)
+        assertNull(confirmed.command?.targetId)
+    }
 }

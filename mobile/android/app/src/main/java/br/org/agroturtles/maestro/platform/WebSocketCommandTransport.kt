@@ -43,19 +43,33 @@ class WebSocketCommandTransport(
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 completeOnce(false, t.message ?: "Falha de conexão")
+                webSocket.close(1001, null)
             }
         })
     }
 
-    private fun Command.toJson(): String = JSONObject()
-        .put("schema_version", "1.0")
-        .put("command_id", commandId)
-        .put("created_at", createdAt)
-        .put("expires_in_ms", 5000)
-        .put("intent", "SPRAY")
-        .put("target", JSONObject().put("type", "MAPPED_PLOT").put("id", targetId))
-        .put("confirmed", true)
-        .toString()
+    private fun Command.toJson(): String {
+        val payload = JSONObject()
+            .put("schema_version", "1.0")
+            .put("command_id", commandId)
+            .put("created_at", createdAt)
+            .put("expires_in_ms", 5000)
+            .put("intent", intent)
+            .put("confirmed", true)
+
+        if (targetId != null) {
+            payload.put(
+                "target",
+                JSONObject()
+                    .put("type", "MAPPED_PLOT")
+                    .put("id", targetId)
+            )
+        } else {
+            payload.put("target", JSONObject.NULL)
+        }
+
+        return payload.toString()
+    }
 
     companion object {
         private val sharedClient = OkHttpClient()
