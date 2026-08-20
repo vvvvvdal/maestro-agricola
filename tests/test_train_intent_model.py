@@ -20,18 +20,26 @@ class IntentModelArtifactComparisonTest(unittest.TestCase):
         self.artifact = {
             "schema_version": "1.0",
             "labels": ["CANCEL", "CONFIRM", "SPRAY", "UNKNOWN"],
-            "weights": {"CONFIRM": {"u:confirmar": 1.25}},
+            "weights": {
+                "CONFIRM": {
+                    "u:confirmar": 1.25,
+                }
+            },
         }
 
     def test_accepts_platform_float_noise(self) -> None:
         current = copy.deepcopy(self.artifact)
-        current["weights"]["CONFIRM"]["u:confirmar"] += ARTIFACT_FLOAT_TOLERANCE / 10
+        current["weights"]["CONFIRM"]["u:confirmar"] += (
+            ARTIFACT_FLOAT_TOLERANCE / 10
+        )
 
         self.assertTrue(artifacts_equal(current, self.artifact))
 
-    def test_rejects_relevant_model_change(self) -> None:
+    def test_rejects_relevant_float_change(self) -> None:
         current = copy.deepcopy(self.artifact)
-        current["weights"]["CONFIRM"]["u:confirmar"] += ARTIFACT_FLOAT_TOLERANCE * 10
+        current["weights"]["CONFIRM"]["u:confirmar"] += (
+            ARTIFACT_FLOAT_TOLERANCE * 10
+        )
 
         self.assertFalse(artifacts_equal(current, self.artifact))
 
