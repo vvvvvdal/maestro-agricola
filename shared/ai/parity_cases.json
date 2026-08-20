@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd",
+  "model_sha256": "a456c00f590152157a7f625c10955aed7f610398f2493155537a466f7f1fa243",
   "confidence_threshold": 0.4,
   "confidence_tolerance": 1e-09,
   "cases": [
@@ -43,7 +43,7 @@
       "id": "confirm_synonym",
       "text": "confirmo a ordem",
       "expected_label": "CONFIRM",
-      "expected_confidence": 0.9981738276557648,
+      "expected_confidence": 0.9992142110179179,
       "expected_source": "MODEL"
     },
     {
@@ -92,28 +92,28 @@
       "id": "unknown_target_only",
       "text": "talhão três",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.9822715236025311,
+      "expected_confidence": 0.9818309074950848,
       "expected_source": "MODEL"
     },
     {
       "id": "unknown_domain",
       "text": "qual é a cotação do dólar",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.9592001300030367,
+      "expected_confidence": 0.952039486356465,
       "expected_source": "MODEL"
     },
     {
       "id": "unknown_request",
       "text": "conte uma história",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.9764838490221197,
+      "expected_confidence": 0.9829742525232977,
       "expected_source": "MODEL"
     },
     {
       "id": "threshold_rejection",
       "text": "onde está meu celular",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.9976879200837183,
+      "expected_confidence": 0.9981566750707168,
       "expected_source": "MODEL"
     },
     {
@@ -127,7 +127,7 @@
       "id": "unknown_vocabulary",
       "text": "xyzzy quux",
       "expected_label": "UNKNOWN",
-      "expected_confidence": 0.5695690725269129,
+      "expected_confidence": 0.5114425735763464,
       "expected_source": "MODEL"
     }
   ]
