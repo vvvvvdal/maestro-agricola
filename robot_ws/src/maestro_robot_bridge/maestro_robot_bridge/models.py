@@ -16,7 +16,7 @@ class Command:
     created_at: str
     expires_in_ms: int
     intent: str
-    target: Target
+    target: Target | None
     confirmed: bool
 
 

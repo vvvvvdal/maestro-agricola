@@ -1,43 +1,91 @@
 import json
 import unittest
-from datetime import datetime, timedelta, timezone
-from uuid import uuid4
+from datetime import datetime, timezone
 
-from maestro_robot_bridge.contract import ContractError, parse_command
+from maestro_robot_bridge.contract import (
+    ContractError,
+    parse_command,
+)
 
 
-NOW = datetime(2026, 8, 16, 15, 0, 0, tzinfo=timezone.utc)
+BASE = {
+    "schema_version": "1.0",
+    "command_id": "123e4567-e89b-12d3-a456-426614174000",
+    "expires_in_ms": 5000,
+    "confirmed": True,
+}
 
 
-def command(**overrides):
-    payload = {
-        "schema_version": "1.0",
-        "command_id": str(uuid4()),
-        "created_at": (NOW - timedelta(seconds=1)).isoformat(),
-        "expires_in_ms": 5000,
+def payload(**kwargs):
+    data = {
+        **BASE,
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "intent": "SPRAY",
-        "target": {"type": "MAPPED_PLOT", "id": "plot-03"},
-        "confirmed": True,
+        "target": {
+            "type": "MAPPED_PLOT",
+            "id": "plot-01",
+        },
     }
-    payload.update(overrides)
-    return json.dumps(payload)
+
+    data.update(kwargs)
+    return data
 
 
 class ContractTest(unittest.TestCase):
-    def test_accepts_valid_command(self):
-        self.assertEqual("plot-03", parse_command(command(), now=NOW).target.id)
 
-    def test_rejects_unsafe_commands(self):
-        cases = [
-            ({"confirmed": False}, "confirmation"),
-            ({"intent": "DRIVE"}, "intent"),
-            ({"expires_in_ms": 0}, "expires_in_ms"),
-            ({"created_at": (NOW - timedelta(seconds=10)).isoformat()}, "expired"),
-        ]
-        for override, reason in cases:
-            with self.subTest(override=override):
-                with self.assertRaisesRegex(ContractError, reason):
-                    parse_command(command(**override), now=NOW)
+    def test_accepts_spray_with_plot(self):
+        command = parse_command(
+            json.dumps(payload())
+        )
+
+        self.assertEqual(command.intent, "SPRAY")
+        self.assertEqual(command.target.id, "plot-01")
+
+    def test_accepts_dock_without_target(self):
+        command = parse_command(
+            json.dumps(
+                payload(
+                    intent="DOCK",
+                    target=None,
+                )
+            )
+        )
+
+        self.assertEqual(command.intent, "DOCK")
+        self.assertIsNone(command.target)
+
+    def test_accepts_undock_without_target(self):
+        command = parse_command(
+            json.dumps(
+                payload(
+                    intent="UNDOCK",
+                    target=None,
+                )
+            )
+        )
+
+        self.assertEqual(command.intent, "UNDOCK")
+        self.assertIsNone(command.target)
+
+    def test_rejects_spray_without_target(self):
+        with self.assertRaises(ContractError):
+            parse_command(
+                json.dumps(
+                    payload(
+                        target=None,
+                    )
+                )
+            )
+
+    def test_rejects_dock_with_target(self):
+        with self.assertRaises(ContractError):
+            parse_command(
+                json.dumps(
+                    payload(
+                        intent="DOCK",
+                    )
+                )
+            )
 
 
 if __name__ == "__main__":

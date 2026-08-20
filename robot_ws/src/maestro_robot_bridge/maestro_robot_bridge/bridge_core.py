@@ -1,51 +1,66 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-from datetime import datetime
-from threading import Lock
-
-from .contract import ContractError, parse_command
-from .models import PoseTarget, Response
-from .target_map import TargetMap
-
-
-Dispatch = Callable[[PoseTarget, str], tuple[bool, str]]
+from .models import Command, Response
 
 
 class BridgeCore:
-    def __init__(self, target_map: TargetMap, dispatch: Dispatch):
-        self._target_map = target_map
-        self._dispatch = dispatch
-        self._responses: dict[str, Response] = {}
-        self._lock = Lock()
+    """
+    Contract-level command dispatcher.
 
-    def handle(self, raw: str | bytes, now: datetime | None = None) -> Response:
-        try:
-            command = parse_command(raw, now=now)
-        except ContractError as exc:
-            return Response("1.0", exc.command_id, "REJECTED", exc.reason)
+    This layer validates whether a command can enter the bridge lifecycle.
+    Physical DOCK/UNDOCK execution is intentionally handled later.
+    """
 
-        with self._lock:
-            previous = self._responses.get(command.command_id)
-            if previous is not None:
-                return previous
+    def __init__(self, target_map: dict[str, dict] | None = None):
+        self._target_map = target_map or {}
 
-            pose = self._target_map.get(command.target.id)
-            if pose is None:
-                response = Response("1.0", command.command_id, "REJECTED", "target is not mapped")
-                self._responses[command.command_id] = response
-                return response
+    def handle_command(self, command: Command) -> Response:
+        if command.intent == "SPRAY":
+            return self._handle_spray(command)
 
-            try:
-                accepted, reason = self._dispatch(pose, command.command_id)
-            except Exception:
-                response = Response("1.0", command.command_id, "FAILED", "navigation dispatch failed")
-            else:
-                response = Response(
-                    "1.0",
-                    command.command_id,
-                    "ACCEPTED" if accepted else "REJECTED",
-                    reason,
-                )
-            self._responses[command.command_id] = response
-            return response
+        if command.intent == "DOCK":
+            return Response(
+                schema_version="1.0",
+                command_id=command.command_id,
+                status="ACCEPTED",
+                reason="dock command accepted",
+            )
+
+        if command.intent == "UNDOCK":
+            return Response(
+                schema_version="1.0",
+                command_id=command.command_id,
+                status="ACCEPTED",
+                reason="undock command accepted",
+            )
+
+        return Response(
+            schema_version="1.0",
+            command_id=command.command_id,
+            status="REJECTED",
+            reason="unsupported intent",
+        )
+
+    def _handle_spray(self, command: Command) -> Response:
+        if command.target is None:
+            return Response(
+                schema_version="1.0",
+                command_id=command.command_id,
+                status="REJECTED",
+                reason="SPRAY requires target",
+            )
+
+        if command.target.id not in self._target_map:
+            return Response(
+                schema_version="1.0",
+                command_id=command.command_id,
+                status="REJECTED",
+                reason="unknown target",
+            )
+
+        return Response(
+            schema_version="1.0",
+            command_id=command.command_id,
+            status="ACCEPTED",
+            reason=f"spray target {command.target.id} accepted",
+        )

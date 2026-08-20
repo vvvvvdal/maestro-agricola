@@ -1,52 +1,80 @@
-import json
 import unittest
-from datetime import datetime, timedelta, timezone
-from uuid import uuid4
 
 from maestro_robot_bridge.bridge_core import BridgeCore
-from maestro_robot_bridge.models import PoseTarget
-from maestro_robot_bridge.target_map import TargetMap
-
-
-NOW = datetime(2026, 8, 16, 15, 0, 0, tzinfo=timezone.utc)
-
-
-def payload(command_id=None, target_id="plot-03"):
-    return json.dumps({
-        "schema_version": "1.0",
-        "command_id": command_id or str(uuid4()),
-        "created_at": (NOW - timedelta(seconds=1)).isoformat(),
-        "expires_in_ms": 5000,
-        "intent": "SPRAY",
-        "target": {"type": "MAPPED_PLOT", "id": target_id},
-        "confirmed": True,
-    })
+from maestro_robot_bridge.models import Command, Target
 
 
 class BridgeCoreTest(unittest.TestCase):
-    def setUp(self):
-        self.target_map = TargetMap({"plot-03": PoseTarget("plot-03", 1.5, 1.0, 0.0)})
 
-    def test_dispatches_mapped_target_once(self):
-        calls = []
+    def command(
+        self,
+        intent: str,
+        target=None,
+    ):
+        return Command(
+            schema_version="1.0",
+            command_id="123e4567-e89b-12d3-a456-426614174000",
+            created_at="2026-08-20T12:00:00Z",
+            expires_in_ms=5000,
+            intent=intent,
+            target=target,
+            confirmed=True,
+        )
 
-        def dispatch(pose, command_id):
-            calls.append((pose, command_id))
-            return True, "queued"
+    def test_accepts_spray_known_plot(self):
+        bridge = BridgeCore(
+            target_map={
+                "plot-01": {
+                    "x": 1.0,
+                    "y": 2.0,
+                }
+            }
+        )
 
-        bridge = BridgeCore(self.target_map, dispatch)
-        command_id = str(uuid4())
-        first = bridge.handle(payload(command_id), now=NOW)
-        second = bridge.handle(payload(command_id), now=NOW)
-        self.assertEqual("ACCEPTED", first.status)
-        self.assertEqual(first, second)
-        self.assertEqual(1, len(calls))
+        response = bridge.handle_command(
+            self.command(
+                "SPRAY",
+                Target(
+                    type="MAPPED_PLOT",
+                    id="plot-01",
+                ),
+            )
+        )
 
-    def test_rejects_unknown_target_without_dispatch(self):
-        bridge = BridgeCore(self.target_map, lambda pose, command_id: (True, "queued"))
-        response = bridge.handle(payload(target_id="plot-99"), now=NOW)
-        self.assertEqual("REJECTED", response.status)
-        self.assertEqual("target is not mapped", response.reason)
+        self.assertEqual(response.status, "ACCEPTED")
+
+    def test_rejects_unknown_spray_plot(self):
+        bridge = BridgeCore()
+
+        response = bridge.handle_command(
+            self.command(
+                "SPRAY",
+                Target(
+                    type="MAPPED_PLOT",
+                    id="plot-99",
+                ),
+            )
+        )
+
+        self.assertEqual(response.status, "REJECTED")
+
+    def test_accepts_dock_contract(self):
+        bridge = BridgeCore()
+
+        response = bridge.handle_command(
+            self.command("DOCK")
+        )
+
+        self.assertEqual(response.status, "ACCEPTED")
+
+    def test_accepts_undock_contract(self):
+        bridge = BridgeCore()
+
+        response = bridge.handle_command(
+            self.command("UNDOCK")
+        )
+
+        self.assertEqual(response.status, "ACCEPTED")
 
 
 if __name__ == "__main__":
