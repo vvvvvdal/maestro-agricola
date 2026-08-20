@@ -12,7 +12,7 @@ No sol, na poeira e com luvas, um notebook ou tablet adiciona atrito justamente 
 
 ## Slide 3 — Olhar, falar e confirmar (0:42–1:22) — Felipe
 
-A jornada tem três ações. Olhar: uma placa legível e seu QR identificam o plot três, associado a uma pose segura. Falar: o reconhecimento nativo transcreve a voz; depois, um classificador softmax de 65 kilobytes, treinado com 96 frases, roda no celular e retorna pulverizar, confirmar, cancelar ou desconhecido. Se o operador disser “no plot três”, o ID falado também é validado. Confirmar: o Maestro repete o alvo. Abaixo de 40% de confiança, ou se voz e câmera discordarem, nada é enviado.
+A jornada tem três ações. Olhar: uma placa legível e seu QR identificam o plot três, associado a uma pose segura. Falar: o reconhecimento nativo transcreve a voz; depois, uma cascata local combina regras de segurança com um classificador treinado e retorna pulverizar, confirmar, cancelar ou desconhecido. São 144 frases de treino, 64 de avaliação separada e um artefato de apenas 367 KiB. Se o operador disser “no plot três”, o ID falado também é validado. Confirmar: o Maestro repete o alvo. Abaixo de 40% de confiança, ou se voz e câmera discordarem, nada é enviado.
 
 ## Slide 4 — Arquitetura (1:22–1:59) — Rafael
 
@@ -20,7 +20,7 @@ Por dentro, a câmera entra pelo DAT. Voz e TTS usam recursos nativos do celular
 
 ## Slide 5 — Evidência e próximo teste (1:59–2:34) — Rafael
 
-Hoje já provamos três sinais: a placa completa foi decodificada como plot três; a política local obteve 15 de 16 acertos operacionais; e o cliente recebeu ACCEPTED, ativou o Nav2 e mudou a odometria do TurtleBot. “Cancelar” foi recusado sem movimento. O desenho cobre IA, câmera e voz, áudio, privacidade e captura sob demanda. O próximo gate é compilar no Android e validar DAT, latência, bateria e rota Bluetooth com os óculos reais.
+Hoje já provamos três sinais: a placa completa foi decodificada como plot três; a política local classificou os 64 casos controlados e não aceitou nenhum caso perigoso; e o cliente recebeu ACCEPTED, ativou o Nav2 e mudou a odometria do TurtleBot. Isso não substitui o teste de campo. “Cancelar” foi recusado sem movimento. O próximo gate é validar no Android físico o DAT, latência, bateria e rota Bluetooth com os óculos reais.
 
 ## Slide 6 — Fechamento (2:34–2:52) — Rafael
 
@@ -32,7 +32,7 @@ O Maestro conecta interface multimodal e robótica com protocolo aberto, confirm
 - Falar como conversa, não como leitura. Pausar após “É a forma como o humano conversa com ela”.
 - No slide 5, mostrar brevemente a placa detectada, `ACCEPTED`, o TurtleBot em movimento e a recusa de `cancelar`.
 - Cronometrar três vezes. Se passar de 2min55s, cortar exemplos da fala; não acelerar o fechamento.
-- Não dizer que DAT, Motorola ou áudio Bluetooth já foram validados fisicamente.
+- Não dizer que DAT, Meta Wearables ou áudio Bluetooth já foram validados fisicamente antes do teste real.
 
 ## Plano B sem captura de tela
 

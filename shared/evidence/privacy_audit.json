@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-08-19T19:36:55-03:00",
+  "updated_at": "2026-08-19T22:57:12-03:00",
   "status": "PARTIAL",
   "scope": "Auditoria estática e plano de coleta Android sem mídia bruta",
   "data_processors": [
@@ -78,21 +78,21 @@
   "runtime_collection": {
     "status": "PARTIAL",
     "collector_path": "tools/collect_android_runtime_evidence.py",
-    "before_snapshot": "shared/evidence/android_runtime_qa03_before.json",
-    "after_snapshot": "shared/evidence/android_runtime_qa03_after.json",
-    "comparison": "shared/evidence/android_runtime_qa03_comparison.json",
+    "before_snapshot": "shared/evidence/android_runtime_qa04_before.json",
+    "after_snapshot": "shared/evidence/android_runtime_qa04_after.json",
+    "comparison": "shared/evidence/android_runtime_qa04_comparison.json",
     "captures_logcat": false,
     "reads_file_contents": false,
     "stores_device_serial": false,
-    "summary": "Cinco ciclos mock no Edge 40 Neo: nenhum caminho suspeito, térmico NONE, PSS final de 102585 KB e TTS ouvido pelo alto-falante do telefone",
-    "limitation": "Bateria inconclusiva porque o estado mudou de FULL para CHARGING; armazenamento externo e áudio físico permanecem pendentes"
+    "summary": "Cinco ciclos mock no Edge 40 Neo: todos expiraram sem confirmação, nenhum caminho suspeito, térmico NONE e PSS de 160140 KB para 149754 KB",
+    "limitation": "Bateria inconclusiva porque o aparelho permaneceu em CHARGING; armazenamento externo, DAT e microfone permanecem pendentes"
   },
   "open_items": [
     "Repetir o protocolo de bateria com alimentação desconectada e estado inicial estável",
     "Executar jornada física com câmera DAT e microfone",
     "Confirmar provedor de reconhecimento e futura rota Bluetooth dos óculos",
     "Confirmar versão atual do DAT e suporte aos opt-outs",
-    "Revisar bateria, temperatura, armazenamento e encerramento de recursos"
+    "Revisar bateria sem carregamento, armazenamento externo e encerramento de recursos"
   ],
   "limitations": [
     "Análise estática não comprova o comportamento interno do Android ou DAT",

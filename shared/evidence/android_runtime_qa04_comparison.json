@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-08-19T22:57:12-03:00",
+  "status": "PARTIAL",
+  "scope": "Comparação sanitizada do protocolo físico QA-04 no flavor mockDebug",
+  "protocol": {
+    "device_model": "motorola edge 40 neo",
+    "android_release": "15",
+    "android_api": 35,
+    "variant": "mockDebug",
+    "package": "br.org.agroturtles.maestro.mock",
+    "cycles": 5,
+    "interaction": "alvo mock, intenção fixa pulverizar e expiração da confirmação",
+    "uses_microphone": false,
+    "uses_dat": false,
+    "uses_bridge": false,
+    "confirmed_commands": 0,
+    "snapshot_interval_seconds": 314,
+    "before_path": "shared/evidence/android_runtime_qa04_before.json",
+    "after_path": "shared/evidence/android_runtime_qa04_after.json"
+  },
+  "cycle_results": [
+    {
+      "cycle": 1,
+      "terminal_state": "CANCELLED",
+      "terminal_message": "Confirmação expirada",
+      "confirmed_command": false
+    },
+    {
+      "cycle": 2,
+      "terminal_state": "CANCELLED",
+      "terminal_message": "Confirmação expirada",
+      "confirmed_command": false
+    },
+    {
+      "cycle": 3,
+      "terminal_state": "CANCELLED",
+      "terminal_message": "Confirmação expirada",
+      "confirmed_command": false
+    },
+    {
+      "cycle": 4,
+      "terminal_state": "CANCELLED",
+      "terminal_message": "Confirmação expirada",
+      "confirmed_command": false
+    },
+    {
+      "cycle": 5,
+      "terminal_state": "CANCELLED",
+      "terminal_message": "Confirmação expirada",
+      "confirmed_command": false
+    }
+  ],
+  "traceability": {
+    "apk_sha256": "6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b",
+    "model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd"
+  },
+  "comparison": {
+    "battery_level_percentage_points": 0,
+    "battery_temperature_c": {
+      "before": 37.9,
+      "after": 37.0,
+      "delta": -0.9
+    },
+    "battery_voltage_mv": {
+      "before": 4368,
+      "after": 4373,
+      "delta": 5
+    },
+    "battery_status": {
+      "before_code": 2,
+      "before_name": "CHARGING",
+      "after_code": 2,
+      "after_name": "CHARGING"
+    },
+    "thermal_status": {
+      "before": "NONE",
+      "after": "NONE"
+    },
+    "memory_total_pss_kb": {
+      "before": 160140,
+      "after": 149754,
+      "delta": -10386
+    },
+    "internal_file_count": {
+      "before": 1,
+      "after": 1
+    },
+    "suspicious_internal_file_count": {
+      "before": 0,
+      "after": 0
+    },
+    "external_storage_scanned": {
+      "before": false,
+      "after": false
+    }
+  },
+  "findings": [
+    {
+      "id": "SAFE_CONFIRMATION_TIMEOUT",
+      "status": "PASS",
+      "summary": "Os cinco ciclos terminaram em CANCELLED por expiração e nenhum comando foi confirmado"
+    },
+    {
+      "id": "NO_SUSPICIOUS_APP_FILES",
+      "status": "PASS",
+      "summary": "A contagem interna permaneceu em um arquivo e nenhum caminho com nome ou extensão de foto, áudio ou transcrição foi encontrado"
+    },
+    {
+      "id": "THERMAL_CONDITION",
+      "status": "PASS",
+      "summary": "O estado térmico permaneceu NONE e a temperatura de bateria variou de 37,9 °C para 37,0 °C"
+    },
+    {
+      "id": "MEMORY_COMPARISON",
+      "status": "PASS",
+      "summary": "Com o app ativo nos dois snapshots, o PSS variou de 160140 KB para 149754 KB; não foi definido limiar de aprovação de consumo"
+    },
+    {
+      "id": "BATTERY_CONSUMPTION",
+      "status": "PARTIAL",
+      "summary": "A carga permaneceu em 95%, mas o aparelho estava em CHARGING antes e depois; o consumo não pode ser concluído conectado à energia"
+    }
+  ],
+  "privacy": {
+    "captures_logcat": false,
+    "reads_file_contents": false,
+    "captures_audio": false,
+    "captures_images": false,
+    "captures_transcripts": false,
+    "stores_device_serial": false
+  },
+  "limitations": [
+    "Protocolo executado com alvo e intenção mock; DAT e microfone não foram usados",
+    "Nenhum comando foi confirmado e o bridge não foi acionado",
+    "O armazenamento externo do app não pôde ser auditado",
+    "A bateria precisa ser medida novamente com alimentação desconectada e estado inicial estável",
+    "A jornada completa com câmera e microfone simultâneos ainda depende das integrações dos responsáveis",
+    "A auditoria inspecionou somente caminhos e contagens, sem ler conteúdo de arquivo nem coletar logcat"
+  ]
+}

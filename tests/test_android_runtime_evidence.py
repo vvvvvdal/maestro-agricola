@@ -169,7 +169,49 @@ class AndroidRuntimeEvidenceTest(unittest.TestCase):
         self.assertNotIn("adb_serial", serialized)
         self.assertNotIn("captured_frame", serialized)
 
-    def test_privacy_audit_points_to_qa03_pair(self) -> None:
+    def test_qa04_pair_and_comparison_are_traceable_and_sanitized(self) -> None:
+        evidence_dir = ROOT / "shared" / "evidence"
+        before = json.loads(
+            (evidence_dir / "android_runtime_qa04_before.json").read_text(encoding="utf-8")
+        )
+        after = json.loads(
+            (evidence_dir / "android_runtime_qa04_after.json").read_text(encoding="utf-8")
+        )
+        comparison = json.loads(
+            (evidence_dir / "android_runtime_qa04_comparison.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual("qa04_before", before["phase"])
+        self.assertEqual("qa04_after", after["phase"])
+        self.assertEqual(before["build"], after["build"])
+        self.assertEqual(before["build"]["apk_sha256"], comparison["traceability"]["apk_sha256"])
+        self.assertEqual(before["build"]["model_sha256"], comparison["traceability"]["model_sha256"])
+        self.assertEqual(5, comparison["protocol"]["cycles"])
+        self.assertEqual(314, comparison["protocol"]["snapshot_interval_seconds"])
+        self.assertEqual(0, comparison["protocol"]["confirmed_commands"])
+        self.assertFalse(comparison["protocol"]["uses_microphone"])
+        self.assertFalse(comparison["protocol"]["uses_dat"])
+        self.assertFalse(comparison["protocol"]["uses_bridge"])
+        self.assertEqual(5, len(comparison["cycle_results"]))
+        self.assertTrue(
+            all(result["terminal_state"] == "CANCELLED" for result in comparison["cycle_results"])
+        )
+        self.assertTrue(
+            all(result["confirmed_command"] is False for result in comparison["cycle_results"])
+        )
+        self.assertEqual(-10386, comparison["comparison"]["memory_total_pss_kb"]["delta"])
+        self.assertEqual(0, comparison["comparison"]["suspicious_internal_file_count"]["after"])
+        self.assertEqual("CHARGING", comparison["comparison"]["battery_status"]["after_name"])
+        self.assertEqual("PARTIAL", comparison["status"])
+        self.assertTrue(all(value is False for value in comparison["privacy"].values()))
+
+        serialized = json.dumps({"before": before, "after": after, "comparison": comparison})
+        self.assertNotIn("adb_serial", serialized)
+        self.assertNotIn("pulverize o talhão", serialized)
+
+    def test_privacy_audit_points_to_qa04_pair(self) -> None:
         audit = json.loads(
             (ROOT / "shared" / "evidence" / "privacy_audit.json").read_text(
                 encoding="utf-8"
@@ -177,13 +219,13 @@ class AndroidRuntimeEvidenceTest(unittest.TestCase):
         )
         runtime = audit["runtime_collection"]
         self.assertEqual(
-            "shared/evidence/android_runtime_qa03_before.json", runtime["before_snapshot"]
+            "shared/evidence/android_runtime_qa04_before.json", runtime["before_snapshot"]
         )
         self.assertEqual(
-            "shared/evidence/android_runtime_qa03_after.json", runtime["after_snapshot"]
+            "shared/evidence/android_runtime_qa04_after.json", runtime["after_snapshot"]
         )
         self.assertEqual(
-            "shared/evidence/android_runtime_qa03_comparison.json", runtime["comparison"]
+            "shared/evidence/android_runtime_qa04_comparison.json", runtime["comparison"]
         )
 
 
