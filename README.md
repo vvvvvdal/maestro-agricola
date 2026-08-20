@@ -40,6 +40,7 @@ Para manter a demonstração verificável, o alvo do MVP será um marcador visua
 - classificador de intenção executado localmente no Android;
 - app Android com flavors `mock` (API 26+) e `dat` (API 31+);
 - bridge WebSocket/ROS 2 com rejeição de comando inseguro e deduplicação;
+- lifecycle atual de navegação sem dock/undock implícito: `SPRAY` navega e permanece no destino;
 - cenário do Gazebo com três placas bifaciais (`plot-01` a `plot-03`), Nav2 e TurtleBot 4;
 - resolvedor compartilhado que aceita alvo visual, ID falado ou concordância entre os dois e recusa conflitos;
 - Dockerfile e Compose para reproduzir o simulador;
@@ -63,35 +64,49 @@ O adaptador do DAT real está isolado e ainda precisa receber o ciclo oficial de
 └── docs/                # spec, arquitetura, tarefas, proposta e pitch
 ```
 
-## Teste em 5 minutos
+## Validação rápida do estado atual
 
-### Resposta curta: como saber se funciona
+O projeto está em uma fase de transição: a **Task 1 já removeu o dock/undock automático do bridge**, enquanto os comandos explícitos `DOCK` e `UNDOCK` ainda serão implementados nas próximas tasks.
 
-Na branch integrada, execute somente:
-
-```bash
-make test-quick
-make demo
-```
-
-O segundo comando já inicia o contêiner, tira o robô da doca, envia o comando simulado, verifica Gazebo/Nav2 e espera o retorno à doca. **Não abra `127.0.0.1:18765` no navegador**: essa é uma porta WebSocket, não uma página. Também não é necessário executar `make simulation-logs` quando a demo passa.
-
-A execução completa passou somente quando o final do terminal mostrar:
+O comportamento canônico atual é:
 
 ```text
-DEMO APROVADA: undock, WebSocket, Nav2, movimento e dock verificados.
+SPRAY
+-> validação
+-> Nav2 até o plot
+-> completion
+-> READY / idle
+-> robô permanece no destino
 ```
 
-Depois, encerre com `make simulation-down`.
+Se o bridge sabe que o robô está dockado, `SPRAY` deve ser rejeitado. Ele não pode executar `Undock` implicitamente.
+
+### Importante sobre os wrappers antigos de demo
+
+Alguns wrappers/scripts `make demo*` ainda foram escritos para o lifecycle antigo:
+
+```text
+undock automático -> missão -> retorno automático -> dock
+```
+
+Enquanto a Task 7 não atualizar esses gates, **não use a mensagem final de `make demo`, `make demo-route` ou `make demo-visual` como fonte de verdade do lifecycle atual**. O gate canônico desta fase é a suíte focada + o smoke test manual descrito abaixo.
 
 ### Pré-requisitos
 
 - Linux com Python 3.10 ou superior;
 - Docker Engine ativo e acessível pelo usuário;
 - Docker Compose v2 ou superior;
-- GNU Make.
+- GNU Make;
+- para o modo visual NVIDIA: driver NVIDIA, NVIDIA Container Toolkit e sessão X11.
 
-Não é necessário instalar ROS 2 ou Gazebo no computador: ambos ficam dentro do contêiner.
+ROS 2 e Gazebo rodam dentro do contêiner.
+
+Prepare o ambiente Python local sem instalar pacotes globalmente:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r tools/requirements-dev.txt
+```
 
 ### 1. Verifique o ambiente
 
@@ -99,17 +114,41 @@ Não é necessário instalar ROS 2 ou Gazebo no computador: ambos ficam dentro d
 make doctor
 ```
 
-Todos os itens obrigatórios devem aparecer como `[OK]`. É normal o bridge aparecer como `[INFO]` antes da primeira demo.
+Todos os itens obrigatórios devem aparecer como `[OK]`.
 
-### 2. Execute os testes rápidos
+### 2. Verifique o artefato da IA sem regenerá-lo
 
 ```bash
-make test-quick
+timeout 2m .venv/bin/python tools/train_intent_model.py --check
 ```
 
-Esse comando verifica o modelo sem regravá-lo, executa as suítes portáteis e do bridge e valida o Compose. Ele não inicia o Gazebo.
+O comando deve terminar com status zero e indicar que os artefatos estão em dia.
 
-Confira também a placa completa sem abrir o Gazebo:
+O checker tolera apenas ruído irrelevante de ponto flutuante. **Não execute `make model` apenas para eliminar diferenças numéricas microscópicas.**
+
+### 3. Execute as suítes Python portáteis
+
+Execute os testes portáteis com o runner nativo e as dependências da `.venv`:
+
+```bash
+timeout 2m .venv/bin/python -m unittest discover -s tests -p 'test_*.py'
+```
+
+Para o bridge, use o `pytest` do host. Se o ambiente carregar plugins ROS externos (`launch_pytest`) e falhar antes da coleta, desative o autoload somente para essa suíte unitária:
+
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=robot_ws/src/maestro_robot_bridge \
+timeout 2m python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+```
+
+O teste específico que protege a comparação determinística dos artefatos da IA é:
+
+```bash
+timeout 2m .venv/bin/python -m unittest tests/test_train_intent_model.py
+```
+
+### 4. Confira a visão estática
 
 ```bash
 make vision-smoke
@@ -117,89 +156,99 @@ make vision-smoke
 
 A saída esperada contém três resultados `"status": "DETECTED"`, um para cada ID de `plot-01` a `plot-03`.
 
-### 3. Execute a jornada completa
+### 5. Abra a simulação visual
 
 ```bash
-make demo
+make gazebo
 ```
 
-Na primeira execução, o download e a construção da imagem podem levar vários minutos. Depois disso, o Gazebo costuma precisar de 1 a 2 minutos para inicializar em máquinas sem GPU. O cliente espera o bridge automaticamente.
+Na primeira execução, aguarde o mundo, sensores, Nav2 e TurtleBot terminarem de inicializar.
 
-O teste passou quando termina com uma resposta semelhante a:
+Antes de testar movimento:
 
-```json
-{
-  "schema_version": "1.0",
-  "command_id": "...",
-  "status": "ACCEPTED",
-  "reason": "navigation goal queued"
-}
-```
-
-`ACCEPTED` significa que o mock classificou a intenção localmente, confirmou a ação, enviou o JSON e o bridge validou e enfileirou a meta do `plot-03`. O comando continua verificando Gazebo, Nav2, deslocamento real depois do aceite e o ciclo `undock → meta → dock`. A prova completa termina com `DEMO APROVADA`.
-
-Para testar todos os pontos em uma única rota limpa, headless e acelerada pela NVIDIA:
+1. confirme que o Gazebo está em **Play** e não pausado;
+2. confirme que o serviço está ativo:
 
 ```bash
-make demo-route
+docker compose --profile visual ps
 ```
 
-Esse comando exige o mesmo driver/runtime NVIDIA do modo visual, encerra uma instância anterior, visita `plot-01`, `plot-02` e `plot-03` nessa ordem e só aprova quando o retorno à doca for confirmado. `make demo` permanece como teste portátil por software de um único plot.
+3. confirme que o bridge escuta a porta:
 
-> A execução padrão é **headless**: nenhuma janela do Gazebo será aberta. O resultado aparece no terminal e nos logs. Isso é esperado.
+```bash
+ss -ltnp | grep 18765
+```
 
-### 4. Consulte estado e logs
+Esperado:
+
+```text
+0.0.0.0:18765
+```
+
+No HMI do TurtleBot use o namespace:
+
+```text
+turtlebot1
+```
+
+Enquanto `UNDOCK` ainda não estiver integrado ao app, faça `Undock` manualmente no HMI antes de enviar `SPRAY`.
+
+### 6. Rode o smoke test Android/voz
+
+No dispositivo físico, configure o WebSocket para o IP LAN do computador e use o caso principal:
+
+```text
+"pulverizar o plot 02"
+-> IA: SPRAY
+-> confirmação: "sim"
+-> bridge: navigation goal queued
+-> Nav2 chega ao plot-02
+-> robô permanece no plot-02
+```
+
+A seção [Smoke tests Android → IA → ROS → TurtleBot](#smoke-tests-android--ia--ros--turtlebot) detalha os casos.
+
+### 7. Consulte logs quando necessário
 
 ```bash
 make status
 make logs
 ```
 
-Os logs não fazem parte do teste normal. Consulte-os somente se `make demo` terminar sem `DEMO APROVADA`. Para acompanhar continuamente, use `make simulation-logs`. Pressionar `Ctrl+C` nesse comando interrompe apenas a visualização dos logs; o contêiner continua rodando.
-
-### 5. Encerre
+Para acompanhar a simulação continuamente:
 
 ```bash
-make simulation-down
+make simulation-logs
 ```
 
-Durante o encerramento, ROS e Gazebo podem registrar `SIGINT`, `SIGTERM`, `process has died` ou código `-15`. Depois que você pediu `simulation-down`, essas mensagens descrevem a finalização dos processos e não invalidam uma demo anteriormente aprovada.
-
-O guia completo, incluindo reinício limpo, erros conhecidos e testes mobile, está em [`docs/testing.md`](docs/testing.md).
-
-## Comandos separados
-
-Como alternativa, execute `make simulation-up` e depois `make demo-client`. Não interrompa o simulador com `Ctrl+C` antes de executar o cliente. Em celular físico, configure no app `ws://IP_DO_COMPUTADOR:18765`. A porta `18765` evita o conflito observado entre a `8765` e serviços do simulador.
-
-O Compose executa Gazebo e sensores em uma tela virtual interna, portanto não exige liberar o monitor do computador para o contêiner. Em máquinas sem GPU, comandos recebidos enquanto o Nav2 termina de iniciar ficam na fila até ele estar realmente ativo.
-
-## Ver o Gazebo e o RViz2 com a NVIDIA
-
-O modo visual segue o fluxo que já funcionava no `pluginbot-turtlebot4`: Gazebo, ROS 2 e RViz rodam dentro do mesmo contêiner, com a sessão X11 do host e `gpus: all`. Ele exige driver NVIDIA, NVIDIA Container Toolkit e uma sessão Linux X11.
-
-Primeiro abra uma simulação visual limpa:
+Ou filtre os eventos relevantes:
 
 ```bash
-make gazebo
+docker compose --profile visual logs -f simulation-gui | \
+grep --line-buffered -E "Nav2|dock|Dock|Undock|return|maestro_robot_bridge"
 ```
 
-Na primeira execução, aguarde o mundo terminar de baixar e carregar. O cache do Gazebo Fuel é preservado nas próximas aberturas. Quando o cenário aparecer, acompanhe uma jornada em outro terminal:
+Depois de um `SPRAY` normal, não deve aparecer retorno automático para a doca iniciado pelo bridge.
 
-```bash
-make demo-visual
-```
+### 8. RViz2 opcional
 
-Para ver mapa, robô, LiDAR, costmap e planos, abra em um terceiro terminal:
+Com a simulação visual ativa:
 
 ```bash
 make rviz
 ```
 
-`make gazebo` encerra uma instância anterior do projeto antes de iniciar a visual; não execute `make demo` enquanto ela estiver aberta, porque o teste padrão troca para o serviço headless. `make rviz` permanece no terminal até a janela ser fechada. Ao terminar, execute `make simulation-down`; além de remover o contêiner, o comando revoga a permissão X11 concedida ao usuário `root` do contêiner.
+O RViz mostra mapa, pose estimada, LiDAR, costmaps e planos. O cenário 3D atual usa o mundo `warehouse` do simulador do TurtleBot 4 com as placas `PLOT-01`, `PLOT-02` e `PLOT-03` adicionadas pelo Maestro.
 
-O Gazebo mostra o mundo 3D `warehouse`, o TurtleBot 4 e três placas bifaciais distribuídas: `PLOT-01` e `PLOT-02` em lados opostos da área central e `PLOT-03` no ponto original. O RViz mostra o mapa salvo, a pose estimada pelo AMCL, modelo do robô, LiDAR, costmap e planos global/local. Com as janelas abertas, `make demo-visual` envia e verifica o comando para acompanhar o movimento.
+### 9. Encerre
 
-O cenário atual não é uma fazenda própria. `warehouse` e seu mapa de ocupação salvo vêm do simulador oficial do TurtleBot 4; o Maestro acrescenta as placas e usa AMCL com pose inicial na doca. As três poses seguras ficam no catálogo versionado do bridge. Esses são três artefatos diferentes: mundo 3D, mapa de ocupação e mapa lógico de alvos.
+```bash
+make simulation-down
+```
+
+Durante o encerramento, mensagens de `SIGINT`, `SIGTERM`, `process has died` ou código `-15` podem representar apenas a finalização normal dos processos.
+
+O guia mais detalhado continua em [`docs/testing.md`](docs/testing.md).
 
 ## Estado visual dos apps
 
@@ -227,6 +276,223 @@ Se voz e câmera divergirem, a saída é `CONFLICT`, sem `target_id`, e o proces
 python3 tools/target_resolver.py "pulverize no plot quatro" --visual-target plot-03
 ```
 
+## Testando o aplicativo Android com o simulador
+
+O aplicativo Android envia comandos para o `maestro_robot_bridge` por WebSocket na porta `18765`.
+
+### Endereço do WebSocket
+
+O endereço depende de onde o aplicativo está sendo executado.
+
+**Emulador Android:**
+
+```text
+ws://10.0.2.2:18765
+```
+
+No emulador, `10.0.2.2` é o endereço especial usado para acessar a máquina host.
+
+**Celular ou tablet físico:**
+
+Use o endereço IPv4 do computador Ubuntu na mesma rede Wi-Fi.
+
+Descubra o IP do computador com:
+
+```bash
+hostname -I
+```
+
+Exemplo:
+
+```text
+192.168.1.9
+```
+
+No aplicativo:
+
+```text
+ws://192.168.1.9:18765
+```
+
+Não use `10.0.2.2` em um dispositivo Android físico.
+
+Confirme que o bridge está escutando:
+
+```bash
+ss -ltnp | grep 18765
+```
+
+Esperado:
+
+```text
+0.0.0.0:18765
+```
+
+Confirme também que a simulação está ativa:
+
+```bash
+docker compose --profile visual ps
+```
+
+### Antes dos testes
+
+1. Inicie/recompile a simulação quando houver alterações no código ROS do container.
+2. Aguarde Nav2 e o TurtleBot terminarem a inicialização.
+3. Confirme que o Gazebo não está pausado.
+4. No HMI do TurtleBot, use o namespace:
+
+```text
+turtlebot1
+```
+
+5. Se o robô estiver dockado, comandos normais de navegação são rejeitados. Faça `Undock` explicitamente/manualmente até a intent `UNDOCK` estar integrada ao aplicativo.
+
+---
+
+## Smoke tests Android → IA → ROS → TurtleBot
+
+### Caso 1 — Pulverizar plot 02
+
+Fale ou digite:
+
+```text
+pulverizar o plot 02
+```
+
+Esperado:
+
+```text
+IA: SPRAY
+Estado: AWAITING_CONFIRMATION
+```
+
+Confirme falando ou digitando:
+
+```text
+sim
+```
+
+Esperado no aplicativo:
+
+```text
+Estado: ACCEPTED
+navigation goal queued
+```
+
+Esperado no bridge:
+
+```text
+Nav2 accepted command ... for target plot-02
+...
+Nav2 completed command ... for target plot-02
+```
+
+O robô deve chegar ao `plot-02` e permanecer no destino.
+
+Ele NÃO deve retornar automaticamente para a doca.
+
+### Caso 2 — Variação de linguagem
+
+Teste também frases semanticamente equivalentes, por exemplo:
+
+```text
+pulverizar o talhão 2
+pulverize o plot 02
+vá pulverizar o talhão dois
+pulverização no plot 2
+```
+
+Registre quais frases foram reconhecidas corretamente e quais resultaram em `UNKNOWN` ou classificação incorreta.
+
+Para testes por voz, registre também a **transcrição produzida pelo ASR**. O dado útil para a evolução da IA é:
+
+```text
+frase pretendida | transcrição ASR | intent esperada | target | resultado
+```
+
+Essas variações e transcrições reais devem alimentar o corpus/benchmark definido nas Tasks 6A–6F. A métrica perfeita do conjunto atual não deve ser tratada como prova de robustez para paráfrases reais.
+
+### Caso 3 — Confirmação por voz
+
+Com uma ação aguardando confirmação, fale:
+
+```text
+sim
+```
+
+Esperado:
+
+```text
+CONFIRM
+```
+
+e somente então o comando pode ser enviado ao robô.
+
+### Caso 4 — Cancelamento
+
+Inicie uma ação e, durante a confirmação, fale:
+
+```text
+cancelar
+```
+
+Esperado:
+
+```text
+CANCEL
+```
+
+Nenhuma navegação deve ser enviada ao robô.
+
+### Caso 5 — Robô dockado
+
+Com `dock_status=true`, tente:
+
+```text
+pulverizar o plot 02
+```
+
+e confirme.
+
+Esperado:
+
+```text
+robot unavailable: robot is docked
+```
+
+O bridge não deve executar `Undock` automaticamente.
+
+### Comandos de doca ainda não são gate desta fase
+
+Até as Tasks 2–6 estarem concluídas, frases como:
+
+```text
+voltar para a doca
+vá para a dock
+dock the robot
+sair da doca
+undock
+```
+
+não devem ser usadas como evidência de E2E concluído. O roadmap em [`TASKS.md`](TASKS.md) separa contrato, bridge ROS, transporte Android e evolução da IA para esses comandos.
+
+### Logs úteis
+
+Para acompanhar a missão:
+
+```bash
+docker compose --profile visual logs -f simulation-gui | \
+grep --line-buffered -E "Nav2|dock|Dock|Undock|return|maestro_robot_bridge"
+```
+
+Para uma missão `SPRAY` normal, após:
+
+```text
+Nav2 completed command ... for target plot-XX
+```
+
+não deve aparecer um retorno automático para a doca.
+
 ## Ambiente mobile da demonstração
 
 | Ambiente | Papel | Evidência do MVP/pitch |
@@ -236,12 +502,17 @@ python3 tools/target_resolver.py "pulverize no plot quatro" --visual-target plot
 
 ## Próximas tarefas críticas
 
-1. Consultar o quadro executável em [`docs/tasks/mvp-week.md`](docs/tasks/mvp-week.md).
-2. Compilar e rodar `datDebug` em um Android físico compatível com o DAT.
-3. Parear os Meta Wearables e validar o sample `CameraAccess` no mesmo aparelho.
-4. Conectar a leitura real do QR ao frame recebido pelo DAT; o resolvedor visual/falado e a prova estática já estão implementados.
-5. Rodar a jornada cinco vezes e registrar latência/falhas.
-6. Ensaiar a demo e o pitch de até 3 minutos.
+A ordem executável está em [`TASKS.md`](TASKS.md). O estado atual é:
+
+1. **Task 1 — concluída:** remover dock/undock automático.
+2. **Task 2 — próxima:** adicionar `DOCK`/`UNDOCK` ao contrato sem executar actions.
+3. **Task 3:** executar `UNDOCK` explícito no bridge.
+4. **Task 4:** executar `DOCK` explícito com Nav2 até a aproximação da doca e depois action `Dock`.
+5. **Task 5:** transportar as intents reais no Android sem target fictício e mantendo confirmação.
+6. **Tasks 6A–6F:** construir corpus real de fala/ASR, medir o baseline, comparar alternativas locais e testar no smartphone-alvo de 6/8 GB antes de escolher o backend de IA.
+7. **Task 7:** E2E final por voz, atualização dos wrappers de demo e documentação final.
+
+A IA atual continua sendo o baseline funcional, mas pequenas paráfrases já mostraram que o conjunto de avaliação existente não mede toda a robustez necessária. A troca de modelo só deve acontecer depois de benchmark reproduzível no mesmo corpus e no hardware-alvo.
 
 Comece pelo índice em [`docs/README.md`](docs/README.md).
 
