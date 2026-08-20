@@ -20,6 +20,7 @@ EPOCHS = 350
 LEARNING_RATE = 0.04
 L2 = 0.0005
 CONFIDENCE_THRESHOLD = 0.40
+ARTIFACT_FLOAT_TOLERANCE = 1e-12
 DETERMINISTIC_RULES = [
     {
         "label": "CANCEL",
@@ -200,6 +201,31 @@ def build_artifacts() -> tuple[dict, dict]:
     return payload, report
 
 
+def artifacts_equal(current: object, expected: object) -> bool:
+    """Compare generated artifacts while tolerating irrelevant float noise."""
+    if isinstance(current, float) and isinstance(expected, float):
+        return math.isclose(
+            current,
+            expected,
+            rel_tol=0.0,
+            abs_tol=ARTIFACT_FLOAT_TOLERANCE,
+        )
+
+    if isinstance(current, dict) and isinstance(expected, dict):
+        return current.keys() == expected.keys() and all(
+            artifacts_equal(current[key], expected[key])
+            for key in current
+        )
+
+    if isinstance(current, list) and isinstance(expected, list):
+        return len(current) == len(expected) and all(
+            artifacts_equal(current_item, expected_item)
+            for current_item, expected_item in zip(current, expected)
+        )
+
+    return current == expected
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Treina ou verifica o classificador local.")
     parser.add_argument(
@@ -218,9 +244,9 @@ def main() -> None:
         current_model = json.loads(MODEL.read_text(encoding="utf-8"))
         current_report = json.loads(REPORT.read_text(encoding="utf-8"))
         stale = []
-        if current_model != payload:
+        if not artifacts_equal(current_model, payload):
             stale.append(str(MODEL.relative_to(ROOT)))
-        if current_report != report:
+        if not artifacts_equal(current_report, report):
             stale.append(str(REPORT.relative_to(ROOT)))
         if stale:
             print("artefatos desatualizados: " + ", ".join(stale), file=sys.stderr)
