@@ -30,9 +30,13 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 - Uma tarefa por vez; mudanças pequenas, revisáveis e verificáveis.
 - Antes de implementar, listar ambiguidades e critérios de aceite.
 - Depois de implementar, comparar código, testes e spec.
-- `SPRAY` não pode causar `Undock`, return-to-dock ou `Dock` implicitamente; a Task 1 já removeu esse lifecycle automático.
-- `DOCK` e `UNDOCK` devem permanecer comandos explícitos, confirmados e validados pelo contrato.
-- A IA nunca recebe autoridade para gerar pose/action ROS livremente; ela produz somente intenção/entidades estruturadas que passam por validação determinística.
+- Desde a conclusão da Task 1, `SPRAY` nunca deve causar `Undock`, retorno à doca ou `Dock` implicitamente.
+- `DOCK` e `UNDOCK` são comandos operacionais explícitos; não inventar lifecycle automático para compensar uma task ainda não implementada.
+- A IA pode interpretar linguagem natural, mas a saída de controle deve continuar estruturada e validada; nenhum modelo deve gerar comandos ROS livres diretamente.
+- Mudanças de modelo de IA devem ser comparadas em corpus/benchmark reproduzível antes da escolha final e, quando houver o aparelho alvo, medidas também em latência e memória no dispositivo.
+- A fase Meta Wearables/DAT começa somente depois das Tasks 2–7, salvo pedido humano explícito para investigação isolada.
+- Antes de integrar o DAT ao Maestro, validar no mesmo aparelho e com os mesmos óculos o sample oficial de câmera/sessão aplicável à versão do SDK em uso.
+- Não assumir de antemão qual microfone/rota de áudio estará disponível com os óculos conectados; validar câmera e ASR/áudio simultaneamente no hardware real.
 
 ## Protocolo obrigatório para agentes de código
 
@@ -81,57 +85,48 @@ timeout 2m python3 -m pytest \
 
 ### Regra específica para wrappers `make` no Antigravity/Gemini
 
-O runner do Antigravity já apresentou hangs em comandos `make` mesmo quando o comando subjacente funciona normalmente no terminal do usuário.
+O runner do Antigravity já apresentou hangs em comandos `make` mesmo quando o
+comando subjacente funciona normalmente no terminal do usuário.
 
 Portanto:
 
 - não use `make` como primeira opção quando o comando direto equivalente for conhecido;
-- execute primeiro `python3 -m pytest <arquivos-da-task> -q`;
-- se um wrapper `make` ficar sem progresso, interrompa e não repita sem hipótese nova;
-- um hang do wrapper é limitação do runner, não motivo para alterar código do produto;
-- não rode `make model` ou regenere artefatos de IA em tasks de contrato/bridge/Android que não alteram a IA.
-
-### Pytest do host e plugins ROS externos
-
-No host de desenvolvimento já ocorreu a combinação:
-
-```text
-Conda/Python
--> pytest auto-carrega launch_pytest do workspace ROS
--> import de dependência ROS externa falha antes da coleta
-```
-
-Para **testes unitários/portáteis que não dependem de `launch_pytest`**, pode-se usar:
+- para a Task 1 de lifecycle do bridge, use obrigatoriamente primeiro:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-python3 -m pytest <arquivo-ou-diretório> -q
+python3 -m pytest \
+  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
 ```
 
-Para a suíte Python unitária do bridge:
+- se um wrapper `make` ficar sem progresso, interrompa e não repita;
+- execute diretamente `python3 -m pytest <arquivo> -q` para os testes focados;
+- um hang do wrapper `make` é uma limitação do runner, não motivo para alterar
+  código do produto;
+- não rode `make test-ai`, `make model` ou suites de outros domínios para validar
+  uma task exclusiva do bridge ROS.
+
+Ajuste o timeout quando a própria documentação do projeto justificar uma duração maior.
+
+### Pytest no host com ambiente ROS carregado
+
+Neste host, o `pytest` do Python/Anaconda pode descobrir automaticamente plugins do ROS 2, como `launch_pytest`, mesmo em testes portáteis que não precisam deles. Se isso causar erro de import de dependência do ROS (por exemplo `lark`), execute os testes unitários/portáteis com:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-PYTHONPATH=robot_ws/src/maestro_robot_bridge \
-python3 -m pytest robot_ws/src/maestro_robot_bridge/test -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest <arquivo-ou-diretório> -q
 ```
 
-Não use `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` cegamente em testes que realmente dependam de plugins pytest/ROS; nesses casos, corrija/ative o ambiente apropriado.
+Use essa variável apenas quando o teste não depender intencionalmente de plugins externos do pytest. Não instale dependências aleatórias nem altere código do produto para corrigir um conflito de plugin do ambiente local.
 
 ### 3. Estratégia de testes
 
 - Rode primeiro o menor teste capaz de validar a mudança.
 - Prefira invocar `pytest` diretamente em arquivos específicos em vez de passar
   por `make`, especialmente dentro do Antigravity.
-- A Task 1 já está concluída; não volte a tratá-la como task ativa.
-- Para a Task 2, o gate inicial esperado é o contrato/core:
+- Na Task 1, o gate inicial canônico é:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-PYTHONPATH=robot_ws/src/maestro_robot_bridge \
 python3 -m pytest \
-  robot_ws/src/maestro_robot_bridge/test/test_contract.py \
-  robot_ws/src/maestro_robot_bridge/test/test_bridge_core.py -q
+  robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q
 ```
 
 - Não rode `make test` ou outra suíte global por padrão se a task possui um gate mais focado.
@@ -144,12 +139,12 @@ python3 -m pytest \
 Exemplo:
 
 ```text
-Task atual: contrato DOCK/UNDOCK
-pytest focado de contract/core: PASS
+Task atual: lifecycle ROS
+python3 -m pytest robot_ws/src/maestro_robot_bridge/test/test_mission_cycle.py -q: PASS
 make test: FAIL ou trava por motivo fora do escopo/runner
 
 Ação correta:
-- considerar o pytest focado como evidência primária da task;
+- considerar o pytest focado como evidência primária da Task 1;
 - registrar a falha/hang global como fora do escopo ou limitação do ambiente;
 - NÃO executar `make model`;
 - NÃO alterar dataset/modelo;
@@ -191,8 +186,21 @@ Não afirme que uma falha é preexistente sem evidência. Quando necessário, co
   - pertencem ao escopo da task; e
   - a task/documentação manda regenerá-los.
 - Exemplo: `shared/ai/intent_model.json` não deve ser regenerado durante uma task exclusiva do bridge ROS.
-- Antes de regenerar o modelo, prefira `python3 tools/train_intent_model.py --check`.
-- O checker canônico já tolera ruído irrelevante de ponto flutuante; se `--check` passa, não regenere o artefato apenas para obter bytes numericamente diferentes.
+
+### 6.1. IA local e seleção de modelo
+
+- Preserve uma interface de saída pequena e estruturada, por exemplo intent, target e confidence; validação de schema, target, estado do robô e confirmação continua determinística.
+- Não escolha um modelo novo apenas por impressão subjetiva em algumas frases. Compare o baseline e alternativas no mesmo conjunto de avaliação.
+- O corpus deve incluir variações reais de fala e, quando disponível, a transcrição produzida pelo ASR.
+- `UNKNOWN` e recusa segura são comportamentos válidos; reduzir falso negativo não justifica aumentar aceitações inseguras.
+- Não envie transcrições para serviços externos apenas para melhorar o classificador local sem decisão humana explícita e revisão de privacidade.
+
+### 6.2. Fase Meta Wearables / DAT
+
+- Tasks 8–12 são fase planejada posterior às Tasks 2–7. Não antecipá-las dentro de uma task de contrato, bridge, Android, IA ou E2E atual.
+- Primeiro prove sessão/câmera no sample oficial correspondente à versão do DAT; depois integre ao adaptador do Maestro.
+- Preserve o flavor/mock e interfaces existentes para que falhas do hardware não contaminem o pipeline já validado.
+- Não declarar DAT, câmera dos óculos, áudio dos óculos ou E2E físico como aprovados sem evidência no hardware real.
 
 ### 7. Documentação
 
@@ -226,9 +234,7 @@ feat(contract): add dock and undock intents
 feat(bridge): add explicit undock command
 feat(bridge): add explicit dock command
 feat(android): transport dock and undock intents
-test(ai): benchmark local intent baseline
-feat(ai): improve local intent baseline
-feat(ai): integrate selected on-device intent backend
+feat(ai): classify dock and undock commands
 test(e2e): validate explicit docking lifecycle
 ```
 
