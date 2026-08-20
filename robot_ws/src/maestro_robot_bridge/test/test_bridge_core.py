@@ -48,6 +48,7 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.reason, "navigation queued")
         self.assertEqual(len(calls), 1)
 
+
     def test_rejects_unknown_spray_plot(self):
         bridge = BridgeCore(
             target_map={},
@@ -70,6 +71,7 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.status, "REJECTED")
         self.assertEqual(response.reason, "unknown target")
 
+
     def test_accepts_dock_contract(self):
         calls = []
 
@@ -85,15 +87,14 @@ class BridgeCoreTest(unittest.TestCase):
             ),
         )
 
-        response = bridge.handle_command(
-            command("DOCK")
-        )
+        response = bridge.handle_command(command("DOCK"))
 
         self.assertEqual(response.status, "ACCEPTED")
         self.assertEqual(response.reason, "dock command accepted")
         self.assertEqual(len(calls), 1)
 
-    def test_accepts_undock_contract(self):
+
+    def test_accepts_explicit_undock_contract(self):
         calls = []
 
         bridge = BridgeCore(
@@ -108,13 +109,45 @@ class BridgeCoreTest(unittest.TestCase):
             ),
         )
 
-        response = bridge.handle_command(
-            command("UNDOCK")
-        )
+        response = bridge.handle_command(command("UNDOCK"))
 
         self.assertEqual(response.status, "ACCEPTED")
         self.assertEqual(response.reason, "undock command accepted")
         self.assertEqual(len(calls), 1)
+
+
+    def test_spray_never_calls_undock(self):
+        calls = []
+
+        bridge = BridgeCore(
+            target_map={
+                "plot-01": {
+                    "x": 1.0,
+                    "y": 2.0,
+                }
+            },
+            navigation_callback=lambda pose, command_id: (
+                (True, "navigation queued")
+            ),
+            undock_callback=lambda: (
+                calls.append(True)
+                or (True, "should not happen")
+            ),
+        )
+
+        response = bridge.handle_command(
+            command(
+                "SPRAY",
+                Target(
+                    type="MAPPED_PLOT",
+                    id="plot-01",
+                ),
+            )
+        )
+
+        self.assertEqual(response.status, "ACCEPTED")
+        self.assertEqual(len(calls), 0)
+
 
     def test_rejects_undock_without_callback(self):
         bridge = BridgeCore(
@@ -125,9 +158,7 @@ class BridgeCoreTest(unittest.TestCase):
             ),
         )
 
-        response = bridge.handle_command(
-            command("UNDOCK")
-        )
+        response = bridge.handle_command(command("UNDOCK"))
 
         self.assertEqual(response.status, "REJECTED")
         self.assertEqual(response.reason, "undock unavailable")
