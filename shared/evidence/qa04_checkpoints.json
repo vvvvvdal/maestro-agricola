@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-08-19T22:21:39-03:00",
+  "updated_at": "2026-08-19T22:57:12-03:00",
   "overall_status": "PARTIAL",
   "status_policy": {
     "allowed": [
@@ -199,11 +199,11 @@
           "summary": "Controles estáticos registrados; execução física permanece pendente"
         },
         {
-          "id": "android-runtime-qa03-privacy",
+          "id": "android-runtime-qa04-privacy",
           "status": "PARTIAL",
           "type": "structured_result",
-          "path": "shared/evidence/android_runtime_qa03_comparison.json",
-          "summary": "Cinco ciclos mock no Edge 40 Neo sem caminhos suspeitos; armazenamento externo, DAT e microfone permanecem pendentes"
+          "path": "shared/evidence/android_runtime_qa04_comparison.json",
+          "summary": "Cinco ciclos mock no Edge 40 Neo, todos cancelados por timeout, sem caminhos suspeitos; armazenamento externo, DAT e microfone permanecem pendentes"
         }
       ],
       "pending": [
@@ -236,7 +236,7 @@
           "status": "PASS",
           "type": "structured_result",
           "path": "shared/ai/device_evaluation.json",
-          "summary": "Mediana 446 us, p95 675 us e pico de heap 13256176 bytes"
+          "summary": "Mediana 229 us, p95 1013 us e pico de heap 19254032 bytes em 540 inferências no Edge 40 Neo"
         },
         {
           "id": "resource-lifecycle-design",
@@ -260,16 +260,15 @@
           "summary": "Coletor sanitizado preparado para bateria, condição térmica, memória e armazenamento"
         },
         {
-          "id": "android-runtime-qa03-efficiency",
+          "id": "android-runtime-qa04-efficiency",
           "status": "PARTIAL",
           "type": "structured_result",
-          "path": "shared/evidence/android_runtime_qa03_comparison.json",
-          "summary": "Após cinco ciclos mock: térmico NONE, temperatura +1,9 °C e PSS final 102585 KB; bateria inconclusiva porque o aparelho passou a CHARGING"
+          "path": "shared/evidence/android_runtime_qa04_comparison.json",
+          "summary": "Em 314 segundos e cinco ciclos mock: térmico NONE, temperatura -0,9 °C e PSS de 160140 KB para 149754 KB; bateria inconclusiva porque o aparelho permaneceu em CHARGING"
         }
       ],
       "pending": [
         "Repetir o protocolo físico com o aparelho desconectado da energia e carga inicial estável",
-        "Medir memória com o app ativo antes e depois para obter uma comparação válida",
         "Comprovar encerramento da sessão e câmera DAT",
         "Executar a jornada completa com câmera e áudio simultâneos"
       ],

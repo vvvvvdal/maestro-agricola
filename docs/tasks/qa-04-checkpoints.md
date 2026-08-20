@@ -120,6 +120,14 @@ Não existe limiar numérico inventado nesta spec. A matriz registra o resultado
 7. Atualizar a matriz com caminhos de evidência, responsável e horário.
 8. Marcar `PASS` somente após revisão dos critérios do checkpoint.
 
+### Execução física parcial de 19 de agosto de 2026
+
+Foi executado no Edge 40 Neo um protocolo sanitizado de 314 segundos com o APK `mockDebug` e o modelo canônico v2. Em cada um dos cinco ciclos, o alvo foi simulado, a intenção fixa de pulverização foi interpretada e a confirmação foi deixada expirar. Todos terminaram em `CANCELLED`, nenhum comando foi confirmado e o bridge não foi acionado.
+
+O estado térmico permaneceu `NONE`, a temperatura de bateria variou de 37,9 °C para 37,0 °C e, com o app ativo nos dois snapshots, o PSS variou de 160140 KB para 149754 KB. A auditoria de caminhos internos continuou com zero nomes suspeitos de foto, áudio ou transcrição. A coleta não leu conteúdos, não capturou logcat, mídia, transcrição nem identificador do dispositivo.
+
+A bateria permaneceu em 95%, porém o celular estava em `CHARGING` antes e depois por causa da conexão USB. Por isso consumo de bateria, armazenamento externo e jornada real com DAT/microfone continuam `PARTIAL`; esses dados não autorizam promover os checkpoints de privacidade ou eficiência para `PASS`.
+
 ## Privacidade da própria evidência
 
 - Preferir JSON, hashes, contagens, logs sanitizados e checklist assinado.
