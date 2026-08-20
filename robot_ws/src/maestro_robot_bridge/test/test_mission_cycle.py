@@ -146,6 +146,79 @@ class MissionCycleTest(unittest.TestCase):
                 self.assertFalse(cycle.command_queued())
                 self.assertEqual(phase, cycle.phase)
 
+    def test_explicit_dock_request_moves_to_dock_queue(self):
+        cycle = MissionCycle()
+
+        self.assertTrue(
+            cycle.request_dock()
+        )
+
+        self.assertEqual(
+            MissionPhase.READY_TO_DOCK,
+            cycle.phase,
+        )
+
+
+    def test_dock_request_cannot_start_from_unavailable_state(self):
+        cycle = MissionCycle(
+            phase=MissionPhase.NAVIGATING
+        )
+
+        self.assertFalse(
+            cycle.request_dock()
+        )
+
+        self.assertEqual(
+            MissionPhase.NAVIGATING,
+            cycle.phase,
+        )
+
+
+    def test_explicit_dock_flow_reaches_docked_state(self):
+        cycle = MissionCycle()
+
+        self.assertTrue(
+            cycle.request_dock()
+        )
+
+        self.assertTrue(
+            cycle.begin_return_to_dock()
+        )
+
+        self.assertEqual(
+            MissionPhase.RETURNING_TO_DOCK,
+            cycle.phase,
+        )
+
+        self.assertTrue(
+            cycle.return_to_dock_completed(
+                succeeded=True,
+                has_pending=False,
+            )
+        )
+
+        self.assertEqual(
+            MissionPhase.READY_FOR_DOCK,
+            cycle.phase,
+        )
+
+        self.assertTrue(
+            cycle.begin_docking()
+        )
+
+        self.assertTrue(
+            cycle.docking_completed(
+                succeeded=True,
+                is_docked=True,
+                has_pending=False,
+            )
+        )
+
+        self.assertEqual(
+            MissionPhase.DOCKED,
+            cycle.phase,
+        )
+
     def test_manual_dock_utility_transitions(self):
         cycle = MissionCycle(phase=MissionPhase.READY_TO_DOCK)
 

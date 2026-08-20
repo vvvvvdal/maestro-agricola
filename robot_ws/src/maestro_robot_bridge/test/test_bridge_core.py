@@ -115,6 +115,38 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.reason, "undock command accepted")
         self.assertEqual(len(calls), 1)
 
+    def test_dock_never_calls_undock(self):
+        calls = []
+
+        bridge = BridgeCore(
+            target_map={},
+            navigation_callback=lambda *_: (
+                True,
+                "navigation queued",
+            ),
+            dock_callback=lambda: (
+                True,
+                "dock accepted",
+            ),
+            undock_callback=lambda: (
+                calls.append(True)
+                or (True, "should not happen")
+            ),
+        )
+
+        response = bridge.handle_command(
+            command("DOCK")
+        )
+
+        self.assertEqual(
+            response.status,
+            "ACCEPTED",
+        )
+
+        self.assertEqual(
+            len(calls),
+            0,
+        )
 
     def test_spray_never_calls_undock(self):
         calls = []
