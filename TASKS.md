@@ -108,4 +108,6 @@ Usar Conventional Commits.
 
 Executar somente:
 
-Task 3 --- Implementar comando explícito UNDOCK
+Task 3 --- Implementar comando explícito UNDOCK: DONE
+Task 4 --- Implementar comando explícito DOCK: DONE
+Task 5 --- Android transportar intents: PRÓXIMA
