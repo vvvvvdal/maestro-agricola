@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-19T19:36:55-03:00",
+  "overall_status": "PARTIAL",
+  "status_policy": {
+    "allowed": [
+      "NOT_STARTED",
+      "PARTIAL",
+      "PASS",
+      "FAIL",
+      "BLOCKED"
+    ],
+    "pass_rule": "overall_status só pode ser PASS quando os cinco checkpoints forem PASS"
+  },
+  "build_traceability": {
+    "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960",
+    "device_benchmarked_apk_sha256": "9746ed29133a424d96850fe7e8d961b573ceeb7a992f7f2a1216db2da36788ee",
+    "current_candidate_apk_sha256": "1f8d931b5bea848dc2d89ba7892b16f1226580d1cc33424741e1510cd86c2416",
+    "final_build_benchmark_pending": true
+  },
+  "checkpoints": [
+    {
+      "id": "AI",
+      "name": "Inteligência artificial",
+      "owner": "Rafael",
+      "contributors": [
+        "Átila"
+      ],
+      "status": "PARTIAL",
+      "acceptance_criteria": [
+        "Modelo canônico executado localmente no Android sem servidor de inferência",
+        "Paridade Python/Kotlin aprovada nos 13 casos compartilhados",
+        "Latência e memória medidas no aparelho físico",
+        "APK usado pela evidência final identificado por SHA-256"
+      ],
+      "evidence": [
+        {
+          "id": "ai-offline-evaluation",
+          "status": "PASS",
+          "type": "structured_result",
+          "path": "shared/ai/evaluation.json",
+          "summary": "15 de 16 acertos operacionais com limiar 0,40"
+        },
+        {
+          "id": "ai-device-benchmark",
+          "status": "PASS",
+          "type": "structured_result",
+          "path": "shared/ai/device_evaluation.json",
+          "summary": "390 inferências no Edge 40 Neo, zero divergências, mediana 446 us e p95 675 us"
+        },
+        {
+          "id": "ai-parity-fixture",
+          "status": "PASS",
+          "type": "versioned_fixture",
+          "path": "shared/ai/parity_cases.json",
+          "summary": "13 casos compartilhados e hash do modelo canônico"
+        }
+      ],
+      "pending": [
+        "Repetir ou renovar a evidência de integração no APK final após o congelamento de features"
+      ],
+      "contains_raw_media": false,
+      "pitch_claim": "O classificador local foi validado no Edge 40 Neo; a coleta do APK final ainda será renovada"
+    },
+    {
+      "id": "GLASSES_INPUT",
+      "name": "Câmera ou microfone",
+      "owner": "Átila",
+      "contributors": [
+        "Felipe",
+        "Rafael"
+      ],
+      "status": "BLOCKED",
+      "acceptance_criteria": [
+        "Entrada dos óculos demonstrada em hardware e aceita pelo programa",
+        "Versão atual do DAT, aparelho, Android e rota registrados",
+        "Frame produz target_id ou microfone produz transcrição curta",
+        "Nenhuma mídia é persistida pelo Maestro"
+      ],
+      "evidence": [
+        {
+          "id": "static-vision-proof",
+          "status": "PARTIAL",
+          "type": "task_record",
+          "path": "docs/tasks/vision-qr.md",
+          "summary": "Detecção estática e falhas conhecidas validadas sem frame DAT real"
+        },
+        {
+          "id": "dat-adapter-boundary",
+          "status": "BLOCKED",
+          "type": "source_code",
+          "path": "mobile/android/app/src/dat/java/br/org/agroturtles/maestro/platform/PlatformFrameSource.kt",
+          "summary": "Fronteira existe, mas o ciclo oficial CameraAccess ainda não está conectado"
+        }
+      ],
+      "pending": [
+        "Confirmar a versão atual do DAT em fonte oficial",
+        "Executar o sample CameraAccess no aparelho da demonstração",
+        "Conectar um frame real ao detector e registrar target_id",
+        "Confirmar com avaliadores se algum fallback atende ao checkpoint"
+      ],
+      "contains_raw_media": false,
+      "pitch_claim": "A entrada visual está comprovada apenas com mock e imagem estática; DAT real permanece pendente"
+    },
+    {
+      "id": "AUDIO_OUTPUT",
+      "name": "Output por áudio",
+      "owner": "Átila",
+      "contributors": [
+        "Rafael"
+      ],
+      "status": "PARTIAL",
+      "acceptance_criteria": [
+        "TTS reproduz confirmação e um resultado terminal",
+        "Rota de áudio efetivamente usada é registrada",
+        "Saída é compreensível no aparelho da demonstração",
+        "TTS é encerrado ao destruir a atividade"
+      ],
+      "evidence": [
+        {
+          "id": "android-voice-implementation",
+          "status": "PARTIAL",
+          "type": "source_code",
+          "path": "mobile/android/app/src/main/java/br/org/agroturtles/maestro/platform/VoiceIO.kt",
+          "summary": "SpeechRecognizer e TextToSpeech nativos implementados com fechamento de recursos"
+        },
+        {
+          "id": "interaction-speech-calls",
+          "status": "PARTIAL",
+          "type": "source_code",
+          "path": "mobile/android/app/src/main/java/br/org/agroturtles/maestro/MainActivity.kt",
+          "summary": "Resultados da máquina de estados são encaminhados ao TTS"
+        },
+        {
+          "id": "edge40neo-phone-speaker-observation",
+          "status": "PASS",
+          "type": "structured_result",
+          "path": "shared/evidence/android_runtime_qa03_comparison.json",
+          "summary": "Rafael ouviu as frases do TTS pelo alto-falante inferior do Edge 40 Neo durante os ciclos mock, sem gravação de áudio"
+        }
+      ],
+      "pending": [
+        "Comprovar em runtime que o TTS é encerrado ao destruir a atividade",
+        "Validar rota Bluetooth dos óculos quando o hardware estiver disponível"
+      ],
+      "contains_raw_media": false,
+      "pitch_claim": "O TTS foi ouvido no alto-falante do Edge 40 Neo; a rota dos óculos e o encerramento em runtime ainda não foram validados"
+    },
+    {
+      "id": "PRIVACY",
+      "name": "Privacidade e dados",
+      "owner": "Equipe",
+      "contributors": [
+        "Rafael",
+        "Átila"
+      ],
+      "status": "PARTIAL",
+      "acceptance_criteria": [
+        "App não cria foto, áudio ou transcrição persistente por padrão",
+        "Logs não contêm mídia bruta nem transcrição de usuário",
+        "Permissões e dados de Maestro, Android, DAT e externos são documentados",
+        "Backup e analytics opcionais estão configurados de forma segura"
+      ],
+      "evidence": [
+        {
+          "id": "android-privacy-config",
+          "status": "PARTIAL",
+          "type": "source_code",
+          "path": "mobile/android/app/src/main/AndroidManifest.xml",
+          "summary": "Backup desabilitado e opt-outs de analytics e crash reporting declarados"
+        },
+        {
+          "id": "ai-benchmark-privacy",
+          "status": "PASS",
+          "type": "structured_result",
+          "path": "shared/ai/device_evaluation.json",
+          "summary": "Benchmark fixo sem áudio, transcrição de usuário ou rede"
+        },
+        {
+          "id": "privacy-design",
+          "status": "PARTIAL",
+          "type": "documentation",
+          "path": "docs/proposta/versao-tecnica.md",
+          "summary": "Fluxos e compromissos de privacidade descritos em nível de arquitetura"
+        },
+        {
+          "id": "privacy-data-inventory",
+          "status": "PASS",
+          "type": "documentation",
+          "path": "docs/privacy-data-flow.md",
+          "summary": "Maestro, Android, DAT/Meta e bridge documentados separadamente"
+        },
+        {
+          "id": "privacy-static-audit",
+          "status": "PARTIAL",
+          "type": "structured_result",
+          "path": "shared/evidence/privacy_audit.json",
+          "summary": "Controles estáticos registrados; execução física permanece pendente"
+        },
+        {
+          "id": "android-runtime-qa03-privacy",
+          "status": "PARTIAL",
+          "type": "structured_result",
+          "path": "shared/evidence/android_runtime_qa03_comparison.json",
+          "summary": "Cinco ciclos mock no Edge 40 Neo sem caminhos suspeitos; armazenamento externo, DAT e microfone permanecem pendentes"
+        }
+      ],
+      "pending": [
+        "Executar auditoria depois de uma jornada real com DAT e microfone",
+        "Concluir a auditoria do armazenamento externo do app",
+        "Confirmar opt-outs contra a versão atual do DAT",
+        "Confirmar a rota física de áudio sem registrar fala do usuário"
+      ],
+      "contains_raw_media": false,
+      "pitch_claim": "O código não persiste mídia por padrão; a auditoria física completa ainda será executada"
+    },
+    {
+      "id": "EFFICIENCY",
+      "name": "Eficiência de bateria",
+      "owner": "Equipe",
+      "contributors": [
+        "Rafael",
+        "Átila"
+      ],
+      "status": "PARTIAL",
+      "acceptance_criteria": [
+        "Captura ocorre sob demanda ou em taxa reduzida justificada",
+        "Câmera, reconhecimento e TTS são encerrados ao final",
+        "Latência, memória e tamanho do modelo são registrados",
+        "Bateria e temperatura são medidas em protocolo físico reproduzível"
+      ],
+      "evidence": [
+        {
+          "id": "ai-resource-benchmark",
+          "status": "PASS",
+          "type": "structured_result",
+          "path": "shared/ai/device_evaluation.json",
+          "summary": "Mediana 446 us, p95 675 us e pico de heap 13256176 bytes"
+        },
+        {
+          "id": "resource-lifecycle-design",
+          "status": "PARTIAL",
+          "type": "documentation",
+          "path": "docs/proposta/versao-tecnica.md",
+          "summary": "Captura sob demanda, baixa taxa e encerramento de recursos definidos"
+        },
+        {
+          "id": "voice-resource-close",
+          "status": "PARTIAL",
+          "type": "source_code",
+          "path": "mobile/android/app/src/main/java/br/org/agroturtles/maestro/platform/VoiceIO.kt",
+          "summary": "SpeechRecognizer e TTS são destruídos no fechamento"
+        },
+        {
+          "id": "android-runtime-collector",
+          "status": "PARTIAL",
+          "type": "source_code",
+          "path": "tools/collect_android_runtime_evidence.py",
+          "summary": "Coletor sanitizado preparado para bateria, condição térmica, memória e armazenamento"
+        },
+        {
+          "id": "android-runtime-qa03-efficiency",
+          "status": "PARTIAL",
+          "type": "structured_result",
+          "path": "shared/evidence/android_runtime_qa03_comparison.json",
+          "summary": "Após cinco ciclos mock: térmico NONE, temperatura +1,9 °C e PSS final 102585 KB; bateria inconclusiva porque o aparelho passou a CHARGING"
+        }
+      ],
+      "pending": [
+        "Repetir o protocolo físico com o aparelho desconectado da energia e carga inicial estável",
+        "Medir memória com o app ativo antes e depois para obter uma comparação válida",
+        "Comprovar encerramento da sessão e câmera DAT",
+        "Executar a jornada completa com câmera e áudio simultâneos"
+      ],
+      "contains_raw_media": false,
+      "pitch_claim": "A IA é pequena e rápida; o mock permaneceu sem pressão térmica, mas o consumo da jornada completa ainda exige medição sem carregamento"
+    }
+  ]
+}

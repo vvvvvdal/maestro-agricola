@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-08-19T19:29:02-03:00",
+  "status": "PARTIAL",
+  "scope": "Comparação sanitizada do protocolo físico QA-03 no flavor mockDebug",
+  "protocol": {
+    "device_model": "motorola edge 40 neo",
+    "variant": "mockDebug",
+    "package": "br.org.agroturtles.maestro.mock",
+    "cycles": 5,
+    "interaction": "alvo mock, intenção fixa pulverizar, cancelamento fixo e reinício",
+    "uses_microphone": false,
+    "confirmed_commands": 0,
+    "snapshot_interval_seconds": 596,
+    "before_path": "shared/evidence/android_runtime_qa03_before.json",
+    "after_path": "shared/evidence/android_runtime_qa03_after.json"
+  },
+  "traceability": {
+    "apk_sha256": "1f8d931b5bea848dc2d89ba7892b16f1226580d1cc33424741e1510cd86c2416",
+    "model_sha256": "4ff906a157c86184134b16bcb86c0315dc2d3415e10583fecaa7d029b5780960"
+  },
+  "comparison": {
+    "battery_level_percentage_points": 0,
+    "battery_temperature_c": {
+      "before": 36.0,
+      "after": 37.9,
+      "delta": 1.9
+    },
+    "battery_voltage_mv": {
+      "before": 4428,
+      "after": 4447,
+      "delta": 19
+    },
+    "battery_status": {
+      "before_code": 5,
+      "before_name": "FULL",
+      "after_code": 2,
+      "after_name": "CHARGING"
+    },
+    "thermal_status": {
+      "before": "NONE",
+      "after": "NONE"
+    },
+    "memory_total_pss_kb": {
+      "before": null,
+      "after": 102585,
+      "delta": null
+    },
+    "internal_file_count": {
+      "before": 0,
+      "after": 1
+    },
+    "suspicious_internal_file_count": {
+      "before": 0,
+      "after": 0
+    },
+    "external_storage_scanned": {
+      "before": false,
+      "after": false
+    }
+  },
+  "findings": [
+    {
+      "id": "NO_SUSPICIOUS_APP_FILES",
+      "status": "PASS",
+      "summary": "Nenhum caminho com nome ou extensão de foto, áudio ou transcrição foi encontrado no sandbox interno"
+    },
+    {
+      "id": "ANDROIDX_PROFILE_MARKER",
+      "status": "PASS",
+      "summary": "O único caminho interno criado foi ./files/profileInstalled, marcador técnico do AndroidX Profile Installer; somente o caminho foi inspecionado"
+    },
+    {
+      "id": "THERMAL_CONDITION",
+      "status": "PASS",
+      "summary": "O estado térmico permaneceu NONE; a temperatura de bateria variou de 36,0 °C para 37,9 °C"
+    },
+    {
+      "id": "BATTERY_CONSUMPTION",
+      "status": "PARTIAL",
+      "summary": "A carga permaneceu em 100%, mas o status mudou de FULL para CHARGING; o consumo não pode ser concluído com o aparelho conectado à energia"
+    },
+    {
+      "id": "AUDIO_AUDIBILITY",
+      "status": "PASS",
+      "summary": "Rafael confirmou que ouviu as frases do TTS pelo alto-falante inferior do telefone"
+    }
+  ],
+  "human_observation": {
+    "observed_at": "2026-08-19T19:36:55-03:00",
+    "observer": "Rafael",
+    "tts_audible": true,
+    "output_route": "alto-falante inferior do telefone",
+    "device_model": "motorola edge 40 neo",
+    "audio_recording_created": false,
+    "scope": "Confirmação humana da audibilidade e rota; nenhuma gravação foi produzida"
+  },
+  "privacy": {
+    "captures_logcat": false,
+    "reads_file_contents": false,
+    "captures_audio": false,
+    "captures_images": false,
+    "captures_transcripts": false,
+    "stores_device_serial": false
+  },
+  "limitations": [
+    "Protocolo executado com fonte, intenção e cancelamento mock; DAT e microfone não foram usados",
+    "O intervalo entre snapshots inclui preparação e inspeção além dos cinco ciclos de interação",
+    "O app não estava em execução no snapshot inicial, portanto não há PSS comparável",
+    "O armazenamento externo do app não pôde ser auditado",
+    "A rota Bluetooth dos óculos e o encerramento do TTS em runtime ainda não foram validados",
+    "A bateria precisa ser medida novamente com estado de alimentação controlado"
+  ]
+}

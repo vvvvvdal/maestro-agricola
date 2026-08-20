@@ -14,7 +14,6 @@ import sys
 
 
 REQUIRED_JAVA = 17
-MAXIMUM_JAVA = 24
 REQUIRED_PLATFORM = 36
 
 
@@ -34,10 +33,6 @@ def parse_java_major(output: str) -> int | None:
         legacy = re.search(r'version\s+"1\.(\d+)', output)
         return int(legacy.group(1)) if legacy else None
     return major
-
-
-def is_supported_java_major(major: int | None) -> bool:
-    return major is not None and REQUIRED_JAVA <= major <= MAXIMUM_JAVA
 
 
 def read_sdk_dir(local_properties: Path) -> Path | None:
@@ -64,8 +59,8 @@ def command_output(command: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(command, capture_output=True, text=True, check=False)
 
 
-def resolve_java(explicit_java_home: Path | None = None) -> Path | None:
-    java_home = str(explicit_java_home) if explicit_java_home else os.environ.get("JAVA_HOME")
+def resolve_java() -> Path | None:
+    java_home = os.environ.get("JAVA_HOME")
     if java_home:
         candidate = Path(java_home) / "bin" / "java"
         if candidate.is_file():
@@ -74,9 +69,7 @@ def resolve_java(explicit_java_home: Path | None = None) -> Path | None:
     return Path(executable) if executable else None
 
 
-def resolve_sdk(project_dir: Path, explicit_sdk_dir: Path | None = None) -> Path | None:
-    if explicit_sdk_dir:
-        return explicit_sdk_dir.expanduser()
+def resolve_sdk(project_dir: Path) -> Path | None:
     for variable in ("ANDROID_SDK_ROOT", "ANDROID_HOME"):
         value = os.environ.get(variable)
         if value:
@@ -84,15 +77,10 @@ def resolve_sdk(project_dir: Path, explicit_sdk_dir: Path | None = None) -> Path
     return read_sdk_dir(project_dir / "local.properties")
 
 
-def collect_checks(
-    project_dir: Path,
-    require_device: bool = False,
-    java_home: Path | None = None,
-    sdk_dir: Path | None = None,
-) -> list[Check]:
+def collect_checks(project_dir: Path, require_device: bool = False) -> list[Check]:
     checks: list[Check] = []
 
-    java = resolve_java(java_home)
+    java = resolve_java()
     if java is None:
         checks.append(Check("JDK", False, "Java não encontrado; instale JDK 17 e configure JAVA_HOME"))
     else:
@@ -101,12 +89,11 @@ def collect_checks(
         major = parse_java_major(version_text)
         checks.append(Check(
             "JDK",
-            result.returncode == 0
-            and is_supported_java_major(major),
-            f"{java} (versão {major or 'desconhecida'}; suportado {REQUIRED_JAVA}–{MAXIMUM_JAVA})",
+            result.returncode == 0 and major is not None and major >= REQUIRED_JAVA,
+            f"{java} (versão {major or 'desconhecida'}; mínimo {REQUIRED_JAVA})",
         ))
 
-    sdk = resolve_sdk(project_dir, sdk_dir)
+    sdk = resolve_sdk(project_dir)
     if sdk is None:
         checks.append(Check(
             "Android SDK",
@@ -134,8 +121,6 @@ def collect_checks(
         "league_spartan_semibold.ttf", "league_spartan_bold.ttf",
     )]
     checks.append(Check("Ícones da marca", all(path.is_file() for path in icons), str(icons[0].parent)))
-    header_logo = resources / "drawable-nodpi" / "maestro_logo_horizontal.png"
-    checks.append(Check("Lockup v2", header_logo.is_file(), str(header_logo)))
     checks.append(Check("League Spartan", all(path.is_file() for path in fonts), str(fonts[0].parent)))
 
     if require_device:
@@ -163,16 +148,9 @@ def main() -> int:
         help="Diretório mobile/android",
     )
     parser.add_argument("--require-device", action="store_true", help="Exige ao menos um aparelho autorizado no adb")
-    parser.add_argument("--java-home", type=Path, help="JDK desta execução, sem alterar JAVA_HOME")
-    parser.add_argument("--sdk-dir", type=Path, help="Android SDK desta execução, sem criar local.properties")
     args = parser.parse_args()
 
-    checks = collect_checks(
-        args.project_dir.resolve(),
-        args.require_device,
-        args.java_home.expanduser().resolve() if args.java_home else None,
-        args.sdk_dir.expanduser().resolve() if args.sdk_dir else None,
-    )
+    checks = collect_checks(args.project_dir.resolve(), args.require_device)
     print("Preflight Android mock")
     for check in checks:
         marker = "OK" if check.ok else "ERRO"
@@ -186,7 +164,7 @@ def main() -> int:
     print("  cd mobile/android")
     print("  ./gradlew testMockDebugUnitTest assembleMockDebug")
     if not args.require_device:
-        print("  python3 tools/preflight.py --require-device  # antes de instalar no Android físico")
+        print("  python3 tools/preflight.py --require-device  # antes de instalar no Motorola")
     return 0
 
 

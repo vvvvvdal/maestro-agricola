@@ -69,15 +69,13 @@ class InteractionEngine(
         if (state != InteractionState.AWAITING_CONFIRMATION) {
             return InteractionResult(state, "Nenhuma confirmação pendente")
         }
-        targetId = null
-        visualTargetId = null
+        clearTargetContext()
         state = InteractionState.CANCELLED
         return InteractionResult(state, "Confirmação expirada", "Tempo esgotado. Operação cancelada")
     }
 
     fun reset(): InteractionResult {
-        targetId = null
-        visualTargetId = null
+        clearTargetContext()
         state = InteractionState.IDLE
         return InteractionResult(state, "Pronto para iniciar")
     }
@@ -86,7 +84,7 @@ class InteractionEngine(
         if (prediction.label != "SPRAY") return ambiguous("Intenção não reconhecida", prediction)
         val resolution = targetResolver.resolve(visualTargetId, text)
         if (resolution.status != TargetResolutionStatus.RESOLVED) {
-            targetId = null
+            clearTargetContext()
             state = InteractionState.AMBIGUOUS
             val message = when (resolution.status) {
                 TargetResolutionStatus.CONFLICT -> "Alvo falado e visual não conferem"
@@ -119,6 +117,7 @@ class InteractionEngine(
             )
         }
         "CANCEL" -> {
+            clearTargetContext()
             state = InteractionState.CANCELLED
             InteractionResult(state, "Operação cancelada", "Operação cancelada", prediction = prediction)
         }
@@ -127,5 +126,10 @@ class InteractionEngine(
 
     private fun ambiguous(message: String, prediction: IntentPrediction): InteractionResult {
         return InteractionResult(state, message, "Não entendi. Tente novamente", prediction = prediction)
+    }
+
+    private fun clearTargetContext() {
+        targetId = null
+        visualTargetId = null
     }
 }
