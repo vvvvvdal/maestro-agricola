@@ -5,7 +5,7 @@
   "confidence_threshold": 0.4,
   "operational_correct": 64,
   "operational_accuracy": 1.0,
-  "macro_f1": 1.0,
+  "macro_f1": 0.6666666666666666,
   "per_label": {
     "CANCEL": {
       "precision": 1.0,
@@ -17,10 +17,20 @@
       "recall": 1.0,
       "f1": 1.0
     },
+    "DOCK": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
     "SPRAY": {
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0
+    },
+    "UNDOCK": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
     },
     "UNKNOWN": {
       "precision": 1.0,
@@ -38,30 +48,54 @@
     "CANCEL": {
       "CANCEL": 16,
       "CONFIRM": 0,
+      "DOCK": 0,
       "SPRAY": 0,
+      "UNDOCK": 0,
       "UNKNOWN": 0
     },
     "CONFIRM": {
       "CANCEL": 0,
       "CONFIRM": 16,
+      "DOCK": 0,
       "SPRAY": 0,
+      "UNDOCK": 0,
+      "UNKNOWN": 0
+    },
+    "DOCK": {
+      "CANCEL": 0,
+      "CONFIRM": 0,
+      "DOCK": 0,
+      "SPRAY": 0,
+      "UNDOCK": 0,
       "UNKNOWN": 0
     },
     "SPRAY": {
       "CANCEL": 0,
       "CONFIRM": 0,
+      "DOCK": 0,
       "SPRAY": 16,
+      "UNDOCK": 0,
+      "UNKNOWN": 0
+    },
+    "UNDOCK": {
+      "CANCEL": 0,
+      "CONFIRM": 0,
+      "DOCK": 0,
+      "SPRAY": 0,
+      "UNDOCK": 0,
       "UNKNOWN": 0
     },
     "UNKNOWN": {
       "CANCEL": 0,
       "CONFIRM": 0,
+      "DOCK": 0,
       "SPRAY": 0,
+      "UNDOCK": 0,
       "UNKNOWN": 16
     }
   },
   "errors": [],
-  "train_examples": 144,
+  "train_examples": 213,
   "evaluation_examples": 64,
   "evaluation_dataset": "shared/ai/dataset/evaluation.tsv"
 }

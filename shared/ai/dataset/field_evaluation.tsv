@@ -1,0 +1,49 @@
+label	text
+SPRAY	faça a aplicação nesse canto
+SPRAY	coloque defensivo nessa área marcada
+SPRAY	trate aquele pedaço do campo
+SPRAY	jogue o produto naquele ponto
+SPRAY	inicie o tratamento dessa região
+SPRAY	aplique insumo naquele setor
+SPRAY	pulverização naquele local indicado
+SPRAY	faça o tratamento no alvo visual
+CONFIRM	está liberado
+CONFIRM	pode seguir com a operação
+CONFIRM	autorizo agora
+CONFIRM	está tudo certo
+CONFIRM	execute essa ação
+CONFIRM	pode continuar a missão
+CONFIRM	prossiga com isso
+CONFIRM	ordem aprovada
+CANCEL	não faça isso
+CANCEL	cancele essa ação
+CANCEL	pode parar
+CANCEL	interrompa agora
+CANCEL	não continue
+CANCEL	rejeite essa operação
+CANCEL	abandone esse comando
+CANCEL	não quero mais
+DOCK	retorne ao estacionamento
+DOCK	encoste novamente na doca
+DOCK	faça o retorno para carregamento
+DOCK	volte ao ponto inicial
+DOCK	guarde o robô na base
+DOCK	estacione o equipamento
+DOCK	inicie o acoplamento
+DOCK	aproxime da doca
+UNDOCK	deixe a doca
+UNDOCK	solte o acoplamento
+UNDOCK	libere a saída do robô
+UNDOCK	comece a saída da base
+UNDOCK	afaste da estação
+UNDOCK	retire da estação de carga
+UNDOCK	inicie a saída
+UNDOCK	libere o equipamento
+UNKNOWN	me informe o clima
+UNKNOWN	qual o estado do solo
+UNKNOWN	mostre informações do campo
+UNKNOWN	quanto tempo falta
+UNKNOWN	qual a situação da bateria
+UNKNOWN	preciso de ajuda
+UNKNOWN	abra o sistema
+UNKNOWN	onde está outro equipamento

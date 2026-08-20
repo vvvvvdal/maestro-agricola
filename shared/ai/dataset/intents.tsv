@@ -143,3 +143,85 @@ UNKNOWN	explique como pulverizar
 UNKNOWN	quero aprender sobre aplicacao
 UNKNOWN	onde fica o plot zero tres
 UNKNOWN	qual produto devo usar
+
+DOCK	volta para a base
+DOCK	vai para a doca
+DOCK	acopla na doca
+DOCK	retorna para a base
+DOCK	estaciona na base
+DOCK	leva o robo para a base
+DOCK	faz o docking
+DOCK	pode ir para a doca
+
+UNDOCK	sai da doca
+UNDOCK	sair da doca
+UNDOCK	desacopla da base
+UNDOCK	tira o robo da doca
+UNDOCK	pode sair da base
+UNDOCK	libera o robo da doca
+UNDOCK	faz o undock
+UNDOCK	desencaixa da doca
+
+SPRAY	bota produto aqui
+SPRAY	joga defensivo nesse pedaço
+SPRAY	passa produto nessa area
+SPRAY	faz a aplicacao nesse lote ai
+SPRAY	pode tratar ali
+SPRAY	coloca o insumo nessa regiao
+SPRAY	aplica naquele ponto marcado
+SPRAY	pulveriza la naquele local
+
+CONFIRM	ok faz
+CONFIRM	ok pode fazer
+CONFIRM	pode fazer
+CANCEL	para isso
+CANCEL	para essa operacaoCONFIRM	pode autorizar
+CONFIRM	confirme a execução
+CONFIRM	autorizado prossiga
+CONFIRM	execute agora
+CONFIRM	pode realizar
+
+DOCK	voltar para a doca
+DOCK	retornar ao carregador
+DOCK	fazer retorno automático
+DOCK	acoplar novamente
+DOCK	estacionar o robô na doca
+DOCK	levar até a estação
+
+UNDOCK	sair da estação
+UNDOCK	deixar o carregador
+UNDOCK	afastar da doca
+UNDOCK	desacoplar o robô
+UNDOCK	retirar da base
+UNDOCK	iniciar movimento de saída
+
+UNKNOWN	preciso de ajuda
+UNKNOWN	preciso de informação
+UNKNOWN	quero saber algo
+
+CONFIRM	está liberado
+CONFIRM	execute essa ação
+CONFIRM	ordem aprovada
+CONFIRM	pode executar essa ação
+CONFIRM	autorização confirmada
+
+DOCK	volte ao ponto inicial
+DOCK	guarde o robô na base
+DOCK	aproxime da doca
+DOCK	retorne e acople
+
+UNDOCK	deixe a doca
+UNDOCK	solte o acoplamento
+UNDOCK	libere o equipamento
+UNDOCK	saia da doca agora
+
+DOCK	estacione o equipamento
+DOCK	inicie o acoplamento
+DOCK	aproxime da doca
+
+UNDOCK	inicie a saida
+UNDOCK	deixe a doca
+UNDOCK	solte o acoplamento
+UNDOCK	libere o equipamento
+
+UNKNOWN	onde está outro equipamento

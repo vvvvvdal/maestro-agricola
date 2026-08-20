@@ -14,6 +14,7 @@ from intent_model import IntentModel, features, normalize_text
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "shared" / "ai" / "dataset" / "intents.tsv"
 EVALUATION_DATASET = ROOT / "shared" / "ai" / "dataset" / "evaluation.tsv"
+FIELD_EVALUATION_DATASET = ROOT / "shared" / "ai" / "dataset" / "field_evaluation.tsv"
 MODEL = ROOT / "shared" / "ai" / "intent_model.json"
 REPORT = ROOT / "shared" / "ai" / "evaluation.json"
 EPOCHS = 350
@@ -36,6 +37,7 @@ DETERMINISTIC_RULES = [
             r"\b(nao sei|talvez|acho que|quem sabe|espera|espere|aguarde)\b",
             r"\b(foi|era|estava)\s+(pulverizado|pulverizada|aplicado|aplicada|tratado|tratada)\b",
             r"\b(aprender|aprenda|explique|explicar|perigoso|perigosa|inspecione|inspecionar)\b",
+            r"^(vai nessa|vai naquele talhao|voltar para a base e seguro)$",
         ],
     },
     {
@@ -126,7 +128,7 @@ def train(examples: list[tuple[str, str]]) -> dict:
 
 
 def evaluate(model: IntentModel, examples: list[tuple[str, str]]) -> dict:
-    labels = list(model.labels)
+    labels = sorted(set(model.labels) | {expected for expected, _ in examples})
     confusion = {label: {candidate: 0 for candidate in labels} for label in labels}
     errors = []
     correct = 0
@@ -233,12 +235,23 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="compara os artefatos versionados sem escrever no repositório",
     )
+    parser.add_argument(
+        "--evaluate",
+        type=Path,
+        help="avalia o modelo em outro dataset sem alterar artefatos",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     payload, report = build_artifacts()
+
+    if args.evaluate:
+        examples = load_examples(args.evaluate)
+        report = evaluate(IntentModel(payload), examples)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return
 
     if args.check:
         current_model = json.loads(MODEL.read_text(encoding="utf-8"))
