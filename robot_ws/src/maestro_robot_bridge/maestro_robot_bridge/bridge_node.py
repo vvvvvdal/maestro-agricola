@@ -85,7 +85,12 @@ class MaestroBridgeNode(Node):
         self._nav_state_future = None
         self._nav_active = False
         target_map = TargetMap.load(str(self.get_parameter("targets_path").value))
-        self._core = BridgeCore(target_map, self._queue_navigation)
+        self._core = BridgeCore(
+            target_map,
+            self._queue_navigation,
+            self._request_dock,
+            self._request_undock,
+        )
         self._server = BridgeWebSocketServer(
             self._core,
             str(self.get_parameter("host").value),
@@ -116,6 +121,25 @@ class MaestroBridgeNode(Node):
             self._pending.put_nowait((pose, command_id))
             self._record_phase_change(previous)
         return True, "navigation goal queued"
+
+    def _request_undock(self) -> tuple[bool, str]:
+        with self._mission_lock:
+            if not self._mission.begin_undock():
+                return False, "robot unavailable for undock"
+
+            self._record_phase_change(MissionPhase.READY)
+
+        return True, "undock command accepted"
+
+
+    def _request_dock(self) -> tuple[bool, str]:
+        with self._mission_lock:
+            if not self._mission.begin_docking():
+                return False, "robot unavailable for dock"
+
+            self._record_phase_change(MissionPhase.READY_FOR_DOCK)
+
+        return True, "dock command accepted"
 
     def _advance_mission(self) -> None:
         phase = self._phase()
