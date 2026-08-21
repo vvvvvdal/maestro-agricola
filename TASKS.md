@@ -63,25 +63,32 @@ A integração DAT não deve quebrar o pipeline já funcional.
 Status:
 
 ```text
-EM ANDAMENTO
+CONCLUÍDA
 ```
 
 Objetivo:
 
 Transformar a tela atual de diagnóstico em uma interface mais próxima de demonstração.
 
-Melhorias prioritárias:
+Entregue:
 
-- melhorar apresentação visual da jornada;
-- destacar:
-  - alvo detectado;
-  - intenção reconhecida;
-  - confirmação pendente;
+- jornada apresentada como trilha de quatro passos: `Alvo`, `Intenção`, `Confirmar`, `Executar`;
+- destaque próprio para:
+  - alvo detectado, com origem (câmera, voz ou concordância);
+  - intenção reconhecida, com confiança e origem da classificação;
+  - confirmação pendente, com contagem regressiva e a frase esperada;
   - comando enviado;
-  - estado do robô;
-- melhorar mensagens de voz;
-- remover elementos exclusivamente de debug quando possível;
-- deixar o fluxo claro para avaliadores.
+  - estado do robô, rotulado como último comando aceito pelo bridge;
+- mensagens de voz em português natural (`talhão 3`, não `plot-03`), com anúncio por intent e recusa sem ler motivo técnico em inglês;
+- endpoint WebSocket e transcrição digitada recolhidos em "Ajustes de teste", fechado por padrão;
+- cancelamento, ambiguidade e recusa nunca aparecem como execução.
+
+Regras preservadas:
+
+- confirmação continua exigindo áudio; nenhum botão de toque confirma comando;
+- contrato, bridge, lifecycle e modelo de IA não foram alterados.
+
+Detalhes, evidências e limitações: [`docs/tasks/android-demo-ui.md`](docs/tasks/android-demo-ui.md).
 
 ---
 

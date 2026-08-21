@@ -14,6 +14,18 @@ val MaestroYellow = Color(0xFFFCC931)
 val MaestroGreen = Color(0xFF3C4C1E)
 val MaestroBlue = Color(0xFF0F3C65)
 
+// Tints de apoio derivados da paleta oficial, usados apenas como fundo de
+// cartão. Não substituem nem recolorem os ativos da marca.
+val MaestroSand = Color(0xFFF6F4E8)
+val MaestroGreenSoft = Color(0xFFE7EEDA)
+val MaestroYellowSoft = Color(0xFFFFF1CC)
+val MaestroBlueSoft = Color(0xFFDDEAF5)
+val MaestroOutline = Color(0xFFD9D6C4)
+
+// Sinal de falha. Cor semântica de erro do Material 3, não cor de marca.
+val MaestroRed = Color(0xFFB3261E)
+val MaestroRedSoft = Color(0xFFF9DEDC)
+
 private val LeagueSpartan = FontFamily(
     Font(R.font.league_spartan_regular, FontWeight.Normal),
     Font(R.font.league_spartan_medium, FontWeight.Medium),
@@ -55,9 +67,13 @@ private val MaestroColors = lightColorScheme(
     onBackground = MaestroGreen,
     surface = Color.White,
     onSurface = MaestroGreen,
-    surfaceVariant = Color(0xFFF6F4E8),
+    surfaceVariant = MaestroSand,
     onSurfaceVariant = MaestroBlue,
     outline = Color(0xFF708054),
+    error = MaestroRed,
+    onError = Color.White,
+    errorContainer = MaestroRedSoft,
+    onErrorContainer = MaestroRed,
 )
 
 @Composable
