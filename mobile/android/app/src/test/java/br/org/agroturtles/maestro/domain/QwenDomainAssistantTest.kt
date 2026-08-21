@@ -10,10 +10,10 @@ class QwenDomainAssistantTest {
     @Test
     fun validDomainReplyBecomesChat() {
         val assistant = QwenDomainAssistant(
-            QwenEngine { _, completion ->
+            QwenEngine { _, _, completion ->
                 completion(
                     Result.success(
-                        """{"type":"CHAT","response":"O Maestro permite comandar o robô por voz."}"""
+                        """{"type":"CHAT","response":"O Maestro é um sistema da AgroTurtles."}"""
                     )
                 )
             }
@@ -24,28 +24,98 @@ class QwenDomainAssistantTest {
 
             assertEquals(AssistantReplyType.CHAT, reply.type)
             assertEquals(
-                "O Maestro permite comandar o robô por voz.",
+                "O Maestro é um sistema da AgroTurtles.",
                 reply.response,
             )
         }
     }
 
     @Test
-    fun outOfScopeReplyRemainsOutOfScope() {
+    fun systemAndUserPromptsArePassedSeparately() {
+        var capturedSystemPrompt: String? = null
+        var capturedUserPrompt: String? = null
+
         val assistant = QwenDomainAssistant(
-            QwenEngine { _, completion ->
+            QwenEngine { systemPrompt, userPrompt, completion ->
+                capturedSystemPrompt = systemPrompt
+                capturedUserPrompt = userPrompt
+
                 completion(
                     Result.success(
-                        """{"type":"OUT_OF_SCOPE","response":"Posso ajudar apenas com assuntos relacionados ao Maestro Agrícola."}"""
+                        """{"type":"CHAT","response":"Resposta."}"""
                     )
                 )
             }
         )
 
-        assistant.respond("me ensina uma receita") { result ->
+        assistant.respond("Como funciona o Maestro?") { result ->
+            result.getOrThrow()
+        }
+
+        assertEquals(
+            MaestroKnowledge.systemPrompt,
+            capturedSystemPrompt,
+        )
+        assertEquals(
+            "Como funciona o Maestro?",
+            capturedUserPrompt,
+        )
+    }
+
+    @Test
+    fun canonicalKnowledgeIdentifiesAgroTurtles() {
+        assertTrue(
+            MaestroKnowledge.systemPrompt.contains(
+                "desenvolvido pela equipe AgroTurtles"
+            )
+        )
+    }
+
+    @Test
+    fun canonicalKnowledgeContainsSafetyRules() {
+        val prompt = MaestroKnowledge.systemPrompt
+
+        assertTrue(prompt.contains("ROS 2"))
+        assertTrue(prompt.contains("Nav2"))
+        assertTrue(prompt.contains("SPRAY, DOCK e UNDOCK"))
+        assertTrue(prompt.contains("confirmação explícita"))
+        assertTrue(prompt.contains("Nunca envie comandos ROS"))
+        assertTrue(prompt.contains("Nunca envie mensagens WebSocket"))
+        assertTrue(prompt.contains("Nunca altere o estado do robô"))
+    }
+
+    @Test
+    fun canonicalKnowledgeDefinesOutOfScopeExamples() {
+        val prompt = MaestroKnowledge.systemPrompt
+
+        assertTrue(prompt.contains("Como fazer bolo de chocolate?"))
+        assertTrue(prompt.contains("Faça dock agora."))
+        assertTrue(prompt.contains("OUT_OF_SCOPE"))
+        assertFalse(prompt.contains("\"type\":\"COMMAND\""))
+    }
+
+    @Test
+    fun outOfScopeResponseIsNormalized() {
+        val assistant = QwenDomainAssistant(
+            QwenEngine { _, _, completion ->
+                completion(
+                    Result.success(
+                        """{"type":"OUT_OF_SCOPE","response":"Qualquer texto inventado pelo modelo."}"""
+                    )
+                )
+            }
+        )
+
+        assistant.respond("como fazer bolo?") { result ->
+            val reply = result.getOrThrow()
+
             assertEquals(
                 AssistantReplyType.OUT_OF_SCOPE,
-                result.getOrThrow().type,
+                reply.type,
+            )
+            assertEquals(
+                QwenDomainAssistant.OUT_OF_SCOPE_MESSAGE,
+                reply.response,
             )
         }
     }
@@ -53,7 +123,7 @@ class QwenDomainAssistantTest {
     @Test
     fun inventedCommandTypeFailsClosed() {
         val assistant = QwenDomainAssistant(
-            QwenEngine { _, completion ->
+            QwenEngine { _, _, completion ->
                 completion(
                     Result.success(
                         """{"type":"COMMAND","response":"Dock iniciado."}"""
@@ -79,32 +149,22 @@ class QwenDomainAssistantTest {
     @Test
     fun malformedOutputFailsClosed() {
         val assistant = QwenDomainAssistant(
-            QwenEngine { _, completion ->
+            QwenEngine { _, _, completion ->
                 completion(Result.success("DOCK"))
             }
         )
 
         assistant.respond("qualquer coisa") { result ->
+            val reply = result.getOrThrow()
+
             assertEquals(
                 AssistantReplyType.OUT_OF_SCOPE,
-                result.getOrThrow().type,
+                reply.type,
+            )
+            assertEquals(
+                QwenDomainAssistant.OUT_OF_SCOPE_MESSAGE,
+                reply.response,
             )
         }
-    }
-
-    @Test
-    fun promptExplicitlyForbidsRobotExecution() {
-        val assistant = QwenDomainAssistant(
-            QwenEngine { _, _ -> }
-        )
-
-        val prompt = assistant.buildPrompt(
-            "como funciona a pulverização?"
-        )
-
-        assertTrue(prompt.contains("Não gere comandos ROS"))
-        assertTrue(prompt.contains("Não altere o estado do robô"))
-        assertTrue(prompt.contains("OUT_OF_SCOPE"))
-        assertFalse(prompt.contains("\"type\":\"COMMAND\""))
     }
 }

@@ -2,7 +2,8 @@ package br.org.agroturtles.maestro.domain
 
 fun interface QwenEngine {
     fun generate(
-        prompt: String,
+        systemPrompt: String,
+        userPrompt: String,
         completion: (Result<String>) -> Unit,
     )
 }
