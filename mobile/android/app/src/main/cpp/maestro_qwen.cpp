@@ -34,6 +34,7 @@ std::mutex g_mutex;
 llama_model * g_model = nullptr;
 llama_context * g_context = nullptr;
 const llama_vocab * g_vocab = nullptr;
+llama_sampler * g_grammar_template = nullptr;
 
 bool g_backend_initialized = false;
 
@@ -329,7 +330,8 @@ void cache_system_prompt(
     if (
         g_model == nullptr ||
         g_context == nullptr ||
-        g_vocab == nullptr
+        g_vocab == nullptr ||
+        g_grammar_template == nullptr
     ) {
         throw std::runtime_error(
             "Qwen model is not initialized"
@@ -383,6 +385,11 @@ void cache_system_prompt(
 }
 
 void unload_locked() {
+    if (g_grammar_template != nullptr) {
+        llama_sampler_free(g_grammar_template);
+        g_grammar_template = nullptr;
+    }
+
     if (g_context != nullptr) {
         llama_free(g_context);
         g_context = nullptr;
@@ -443,6 +450,25 @@ void load_locked(
             "failed to obtain Qwen vocabulary"
         );
     }
+
+    g_grammar_template =
+        llama_sampler_init_grammar(
+            g_vocab,
+            RESPONSE_GRAMMAR,
+            "root"
+        );
+
+    if (g_grammar_template == nullptr) {
+        unload_locked();
+
+        throw std::runtime_error(
+            "failed to initialize Maestro grammar at model load"
+        );
+    }
+
+    log_info(
+        "response grammar initialized at model load"
+    );
 
     const char * chat_template =
         llama_model_chat_template(
@@ -513,7 +539,8 @@ std::string generate_locked(
     if (
         g_model == nullptr ||
         g_context == nullptr ||
-        g_vocab == nullptr
+        g_vocab == nullptr ||
+        g_grammar_template == nullptr
     ) {
         throw std::runtime_error(
             "Qwen model has not been loaded"
@@ -608,10 +635,8 @@ std::string generate_locked(
     }
 
     llama_sampler * grammar =
-        llama_sampler_init_grammar(
-            g_vocab,
-            RESPONSE_GRAMMAR,
-            "root"
+        llama_sampler_clone(
+            g_grammar_template
         );
 
     if (grammar == nullptr) {
@@ -619,7 +644,7 @@ std::string generate_locked(
         clear_turn_keep_system();
 
         throw std::runtime_error(
-            "failed to initialize Maestro response grammar"
+            "failed to clone Maestro response grammar"
         );
     }
 
