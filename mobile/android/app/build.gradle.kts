@@ -21,6 +21,12 @@ android {
         manifestPlaceholders["mwdat_application_id"] = ""
         manifestPlaceholders["mwdat_client_token"] = ""
 
+        externalNativeBuild {
+            cmake {
+                arguments += "-DCMAKE_BUILD_TYPE=Release"
+            }
+        }
+
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
