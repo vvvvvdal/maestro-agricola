@@ -27,6 +27,9 @@ data class InteractionResult(
     val speech: String? = null,
     val command: Command? = null,
     val prediction: IntentPrediction? = null,
+    val intent: String? = null,
+    val targetId: String? = null,
+    val targetSource: String? = null,
 )
 
 class InteractionEngine(
@@ -41,6 +44,7 @@ class InteractionEngine(
 
     private var visualTargetId: String? = null
     private var targetId: String? = null
+    private var targetSource: String? = null
     private var pendingIntent: String? = null
 
     var state: InteractionState = InteractionState.IDLE
@@ -50,13 +54,24 @@ class InteractionEngine(
     fun observeTarget(id: String): InteractionResult {
         visualTargetId = id
         targetId = null
+        targetSource = VISUAL_SOURCE
 
         state = InteractionState.TARGET_READY
 
-        return InteractionResult(
-            state,
+        return result(
             "Alvo $id identificado",
-            "Alvo $id identificado"
+            "Alvo ${plotLabel(id)}. Diga a ação desejada."
+        )
+    }
+
+
+    fun targetCaptureFailed(message: String): InteractionResult {
+        clearTargetContext()
+        state = InteractionState.ERROR
+
+        return result(
+            message,
+            "Não foi possível identificar o alvo. Nada foi enviado ao robô."
         )
     }
 
@@ -72,6 +87,7 @@ class InteractionEngine(
 
             else -> ambiguous(
                 "Inicie uma nova interação",
+                "Reinicie para começar outra jornada.",
                 prediction
             )
         }
@@ -89,13 +105,12 @@ class InteractionEngine(
             InteractionState.ERROR
         }
 
-        return InteractionResult(
-            state,
+        return result(
             reason,
             if (accepted) {
-                "Comando enviado"
+                acceptedSpeech()
             } else {
-                "Comando recusado"
+                "Comando recusado pelo robô. Nada foi executado."
             }
         )
     }
@@ -104,19 +119,15 @@ class InteractionEngine(
     fun confirmationTimedOut(): InteractionResult {
 
         if (state != InteractionState.AWAITING_CONFIRMATION) {
-            return InteractionResult(
-                state,
-                "Nenhuma confirmação pendente"
-            )
+            return result("Nenhuma confirmação pendente")
         }
 
         clearTargetContext()
         state = InteractionState.CANCELLED
 
-        return InteractionResult(
-            state,
+        return result(
             "Confirmação expirada",
-            "Tempo esgotado. Operação cancelada"
+            "Tempo esgotado. Operação cancelada e nada foi enviado."
         )
     }
 
@@ -126,10 +137,7 @@ class InteractionEngine(
         clearTargetContext()
         state = InteractionState.IDLE
 
-        return InteractionResult(
-            state,
-            "Pronto para iniciar"
-        )
+        return result("Pronto para iniciar")
     }
 
 
@@ -140,9 +148,10 @@ class InteractionEngine(
 
         val intent = prediction.label
 
-        if (intent !in setOf("SPRAY", "DOCK", "UNDOCK")) {
+        if (intent !in SUPPORTED_INTENTS) {
             return ambiguous(
                 "Intenção não reconhecida",
+                "Não entendi. Diga pulverizar, sair da doca ou retornar à doca.",
                 prediction
             )
         }
@@ -154,10 +163,9 @@ class InteractionEngine(
 
             state = InteractionState.AWAITING_CONFIRMATION
 
-            return InteractionResult(
-                state,
-                "$intent?",
-                "${intent.lowercase().replaceFirstChar { it.uppercase() }}, confirmar?",
+            return result(
+                "${actionLabel(intent)}?",
+                "${actionLabel(intent)}. Confirmar?",
                 prediction = prediction
             )
         }
@@ -184,30 +192,29 @@ class InteractionEngine(
                     "Alvo não cadastrado"
 
                 TargetResolutionStatus.NEEDS_VISUAL ->
-                    "Olhe para a placa ou diga o ID do plot"
+                    "Olhe para a placa ou diga o ID do talhão"
 
                 TargetResolutionStatus.RESOLVED ->
                     error("estado impossível")
             }
 
-            return InteractionResult(
-                state,
+            return result(
                 message,
-                "$message. Operação cancelada",
+                "$message. Operação cancelada.",
                 prediction = prediction
             )
         }
 
 
         targetId = resolution.targetId
+        targetSource = resolution.source
 
         state = InteractionState.AWAITING_CONFIRMATION
 
 
-        return InteractionResult(
-            state,
+        return result(
             "Pulverizar $targetId?",
-            "Pulverizar ${targetId?.replace("plot-", "talhão ")}, confirmar?",
+            "Pulverizar ${plotLabel(targetId)}. Confirmar?",
             prediction = prediction
         )
     }
@@ -227,8 +234,7 @@ class InteractionEngine(
                 state = InteractionState.SENDING
 
 
-                InteractionResult(
-                    state,
+                result(
                     "Enviando comando",
 
                     command = Command(
@@ -254,10 +260,9 @@ class InteractionEngine(
                 state = InteractionState.CANCELLED
 
 
-                InteractionResult(
-                    state,
+                result(
                     "Operação cancelada",
-                    "Operação cancelada",
+                    "Operação cancelada. Nada foi enviado ao robô.",
                     prediction = prediction
                 )
             }
@@ -265,6 +270,7 @@ class InteractionEngine(
 
             else -> ambiguous(
                 "Confirmação ambígua",
+                "Não entendi. Diga sim para confirmar ou cancelar para abortar.",
                 prediction
             )
         }
@@ -273,14 +279,46 @@ class InteractionEngine(
 
     private fun ambiguous(
         message: String,
+        speech: String,
         prediction: IntentPrediction
     ): InteractionResult {
 
-        return InteractionResult(
-            state,
+        return result(
             message,
-            "Não entendi. Tente novamente",
+            speech,
             prediction = prediction
+        )
+    }
+
+
+    private fun acceptedSpeech(): String = when (pendingIntent) {
+        "SPRAY" -> "Comando aceito. Indo pulverizar o ${plotLabel(targetId)}."
+        "DOCK" -> "Comando aceito. Retornando à doca."
+        "UNDOCK" -> "Comando aceito. Saindo da doca."
+        else -> "Comando aceito pelo robô."
+    }
+
+
+    /**
+     * Cada resultado carrega o retrato completo da jornada, para a interface
+     * destacar alvo, intenção e confirmação pendente sem consultar o motor.
+     */
+    private fun result(
+        message: String,
+        speech: String? = null,
+        command: Command? = null,
+        prediction: IntentPrediction? = null,
+    ): InteractionResult {
+
+        return InteractionResult(
+            state = state,
+            message = message,
+            speech = speech,
+            command = command,
+            prediction = prediction,
+            intent = pendingIntent,
+            targetId = targetId ?: visualTargetId,
+            targetSource = targetSource,
         )
     }
 
@@ -288,6 +326,7 @@ class InteractionEngine(
     private fun clearTargetContext() {
         visualTargetId = null
         targetId = null
+        targetSource = null
         pendingIntent = null
     }
 
@@ -296,5 +335,13 @@ class InteractionEngine(
         intent: String
     ): Boolean {
         return intent == "SPRAY"
+    }
+
+
+    companion object {
+        const val CONFIRMATION_TIMEOUT_SECONDS = 10
+
+        private const val VISUAL_SOURCE = "VISUAL"
+        private val SUPPORTED_INTENTS = setOf("SPRAY", "DOCK", "UNDOCK")
     }
 }

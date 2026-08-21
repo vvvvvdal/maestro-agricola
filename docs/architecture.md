@@ -61,13 +61,21 @@ Poeira e obstrução continuam sendo riscos do marcador. Uma evolução posterio
 
 ## Interfaces para integração antecipada
 
-- `FrameSource`: `DatFrameSource` na demonstração e `MockFrameSource` nos testes de desenvolvimento. A API é assíncrona para acomodar sessão e captura.
-- `TargetDetector`: recebe um frame e retorna `target_id`, confiança e timestamp.
+- `FrameSource`: `PlatformFrameSource` selecionado pelo flavor. A API é assíncrona, entrega somente `TargetObservation` e permite cancelar/encerrar a captura.
+- `TargetDetector`: recebe uma foto em memória (`Bitmap` ou HEIC), decodifica o QR e retorna `target_id` e timestamp. Como o leitor de QR não produz probabilidade calibrada, essa fronteira não inventa confiança.
 - `TargetResolver`: combina alvo visual e ID falado com estados `RESOLVED`, `NEEDS_VISUAL`, `CONFLICT` ou `UNKNOWN`.
 - `IntentClassifier`: recebe a transcrição e retorna rótulo e confiança.
 - `CommandTransport`: envia o JSON e correlaciona a resposta por `command_id`.
 
 Essas fronteiras permitem desenvolver mobile, IA, visão e ROS 2 em paralelo sem esperar pelos óculos.
+
+No flavor `dat`, o ciclo compatível com DAT 0.9.0 é: permissões Android,
+`Wearables.initialize()`, seleção do dispositivo, criação da `DeviceSession`,
+`DeviceSession.addCamera()`, início do stream, `capturePhoto()` e encerramento da
+câmera e da sessão. A propriedade de build `maestroDatMockDevice=true` prepara
+explicitamente um dispositivo simulado com o MockDeviceKit. Sem a propriedade,
+o mesmo flavor permanece no caminho de registro e hardware real; não existe
+fallback silencioso para simulação.
 
 ## Contrato de comando
 
@@ -137,7 +145,7 @@ O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando
 | Mock Android | Implementado |
 | Modelo local Android | Implementado; build nativo pendente |
 | WebSocket Android | Implementado; teste em aparelho pendente |
-| DAT Android | Dependência e fronteira de integração presentes; adaptador real e ciclo no hardware pendentes |
+| DAT Android | Ciclo 0.9.0, MockDeviceKit e detector QR local com ZXing validados no emulador; sessão, câmera e áudio no hardware real permanecem pendentes |
 | Voz e TTS Android | Implementados com APIs nativas; builds físicos e rota Bluetooth pendentes |
 | ROS 2/Nav2 | Jornada headless validada no Gazebo; Nav2 aceitou a meta e o robô iniciou movimento |
 
@@ -153,3 +161,4 @@ O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando
 | Latência de IA | Modelo local pequeno, feedback sonoro e timeout |
 | Comando duplicado | UUID, expiração e deduplicação no bridge |
 | Hardware disponível apenas no evento | Mock Device Kit e testes com vídeo H.265 |
+| Simulação confundida com câmera real | Label `dat-mockdevice`, ativação explícita por propriedade e evidência pré-hardware separada |

@@ -232,6 +232,32 @@ Na pasta `mobile/android`:
 ./gradlew :app:assembleMockDebug
 ```
 
+Para compilar o caminho DAT com o MockDeviceKit de forma explícita:
+
+```bash
+./gradlew -PmaestroDatMockDevice=true :app:assembleDatDebug
+```
+
+Esse comando exige acesso de leitura ao GitHub Packages para resolver os AARs
+do DAT 0.9.0. Defina `GITHUB_TOKEN` no ambiente ou `github_token` no
+`local.properties`; não registre nem compartilhe o valor. O APK deve mostrar
+`câmera: dat-mockdevice:success`. O modo simulado reutiliza a fixture `plot-03.png`,
+transmitida em memória por um provider interno, e não comprova o funcionamento
+dos óculos.
+
+Troque `-PmaestroDatMockScenario=success` por `permission-denied`, `timeout` ou
+`disconnect` para os casos negativos. O valor do cenário fica visível na mesma
+label da fonte de câmera.
+
+O roteiro e os casos de sucesso, recusa, timeout e desconexão estão em
+[`tasks/dat-prehardware.md`](tasks/dat-prehardware.md). ZXing 3.5.4 foi aprovado
+e os quatro cenários passaram no emulador em 21 de agosto de 2026. O teste
+Espresso do sample oficial não inicia na imagem Android 16/API 36.1 por uma
+incompatibilidade com `InputManager.getInstance`; o mesmo sample foi validado
+manualmente até `Stream: streaming` e `Captured photo`, sem modificação do
+código oficial. `mockDebug` continua sendo o gate de regressão independente do
+SDK Meta.
+
 No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da demonstração, use `ws://IP_DO_COMPUTADOR:18765`; aparelho e computador precisam alcançar a mesma rede local. O `mockDebug` serve para desenvolvimento. A evidência principal do MVP usa `datDebug`, um Android compatível e os Meta Wearables pareados.
 
 ## Evidência mínima para a entrega

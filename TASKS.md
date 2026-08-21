@@ -39,7 +39,7 @@ A entrega deve priorizar:
 Status:
 
 ```text
-PENDENTE
+APROVADO — PRÉ-HARDWARE COM MOCKDEVICEKIT
 ```
 
 Objetivo:
@@ -48,11 +48,29 @@ Validar o caminho real dos óculos até o aplicativo.
 
 Próximos passos:
 
-- executar o sample oficial do DAT;
-- validar sessão/captura de câmera;
-- integrar o frame real ao fluxo existente;
-- substituir o mock somente onde for necessário;
+- repetir o sample oficial no hardware real quando os óculos chegarem;
+- validar sessão/captura de câmera física;
+- validar o mesmo adaptador com o frame real;
+- substituir o MockDeviceKit somente no ensaio físico;
 - manter o mock como fallback de demonstração.
+
+Plano pré-hardware:
+
+- [x] confirmar DAT 0.9.0 e o ciclo oficial `addCamera()`;
+- [x] registrar a spec e separar validação simulada da validação física;
+- [x] compilar e instalar `datDebug` com autenticação local `read:packages`;
+- [x] implementar sessão, câmera, captura sob demanda e encerramento;
+- [x] executar o sample oficial `CameraAccess` com MockDeviceKit;
+- [x] conectar a foto ao detector QR Android com ZXing 3.5.4 aprovado;
+- [x] executar sucesso, permissão recusada, timeout e desconexão no
+  MockDeviceKit;
+- [x] repetir testes/build de `mockDebug` e registrar a evidência sanitizada;
+
+Detalhes e critérios: [`docs/tasks/dat-prehardware.md`](docs/tasks/dat-prehardware.md).
+
+Validação em hardware real permanece bloqueada até a disponibilidade dos
+óculos. Resultado com MockDeviceKit não deve ser apresentado como captura dos
+Meta Wearables físicos.
 
 A integração DAT não deve quebrar o pipeline já funcional.
 
@@ -63,25 +81,32 @@ A integração DAT não deve quebrar o pipeline já funcional.
 Status:
 
 ```text
-EM ANDAMENTO
+CONCLUÍDA
 ```
 
 Objetivo:
 
 Transformar a tela atual de diagnóstico em uma interface mais próxima de demonstração.
 
-Melhorias prioritárias:
+Entregue:
 
-- melhorar apresentação visual da jornada;
-- destacar:
-  - alvo detectado;
-  - intenção reconhecida;
-  - confirmação pendente;
+- jornada apresentada como trilha de quatro passos: `Alvo`, `Intenção`, `Confirmar`, `Executar`;
+- destaque próprio para:
+  - alvo detectado, com origem (câmera, voz ou concordância);
+  - intenção reconhecida, com confiança e origem da classificação;
+  - confirmação pendente, com contagem regressiva e a frase esperada;
   - comando enviado;
-  - estado do robô;
-- melhorar mensagens de voz;
-- remover elementos exclusivamente de debug quando possível;
-- deixar o fluxo claro para avaliadores.
+  - estado do robô, rotulado como último comando aceito pelo bridge;
+- mensagens de voz em português natural (`talhão 3`, não `plot-03`), com anúncio por intent e recusa sem ler motivo técnico em inglês;
+- endpoint WebSocket e transcrição digitada recolhidos em "Ajustes de teste", fechado por padrão;
+- cancelamento, ambiguidade e recusa nunca aparecem como execução.
+
+Regras preservadas:
+
+- confirmação continua exigindo áudio; nenhum botão de toque confirma comando;
+- contrato, bridge, lifecycle e modelo de IA não foram alterados.
+
+Detalhes, evidências e limitações: [`docs/tasks/android-demo-ui.md`](docs/tasks/android-demo-ui.md).
 
 ---
 
