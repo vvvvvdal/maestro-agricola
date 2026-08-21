@@ -1,84 +1,137 @@
-# Tarefas do MVP - 16 a 22 de agosto de 2026
+# Tarefas do MVP — 16 a 22 de agosto de 2026
 
-## Corte obrigatório
+> Este quadro começou como o plano da primeira semana. Os checkboxes abaixo foram atualizados para refletir o estado real ao final de 21/08/2026. A ordem canônica das Tasks de evolução está em `../../TASKS.md`.
 
-O MVP demonstra uma única jornada: reconhecer o QR de `plot-03`, classificar a intenção `SPRAY`, pedir confirmação e enviar um comando idempotente para o TurtleBot 4 simulado no Gazebo.
+## Corte atual
 
-Não entram nesta semana: React Native, múltiplas ações agrícolas, linguagem aberta, localização sem marcador, robô físico ou pulverização real. O app Android/Kotlin compartilha contrato e modelo com os componentes Python/ROS 2.
+A jornada operacional é:
 
-## Estado em 16 de agosto
+```text
+alvo mapeado
+-> intenção operacional local
+-> resolução/validação
+-> confirmação explícita
+-> Command JSON
+-> WebSocket
+-> ROS 2/Nav2/Gazebo
+```
 
-- [x] Contratos JSON 1.0 e fixtures criados.
-- [x] Modelo local treinado e avaliado: 15/16 acertos operacionais.
-- [x] Núcleo seguro do bridge ROS 2 testado, incluindo expiração e deduplicação.
-- [x] QR `plot-03`, modelo do Gazebo, mapa de pose e launch integrado criados.
-- [x] Esqueleto nativo Kotlin com IA, confirmação, timeout e WebSocket implementado.
-- [ ] Build `datDebug` executado em Android compatível e conectado aos Meta Wearables.
-- [x] Imagem Docker construída e jornada headless validada: comando aceito pelo Nav2 e odometria alterada.
-- [ ] Detector de QR real conectado ao frame.
-- [ ] Adaptador DAT real conectado ao ciclo oficial de sessão/captura.
+`SPRAY` navega para o alvo e permanece lá. `DOCK` e `UNDOCK` são comandos explícitos. O assistente Qwen não participa do controle do robô.
 
-## Dia 1 - contrato e esqueletos
+## Estado consolidado
 
-- [x] **ARC-01 - Congelar o contrato JSON** - Felipe + Átila. Evidência: schemas, fixtures e testes de expiração/deduplicação.
-- [ ] **MOB-01 - Criar o app Android/Kotlin** - Átila. Evidência: projeto compila e possui módulos ou interfaces para câmera, áudio, IA e transporte.
-- [x] **ROS-01 - Criar o pacote do bridge ROS 2** - Felipe. Evidência: núcleo recebe JSON e enfileira uma meta; teste ROS completo depende do container.
-- [x] **AI-01 - Congelar rótulos e frases de avaliação** - Rafael. Evidência: 96 frases e split determinístico para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
-- [x] **VIS-01 - Congelar o alvo visual** - Felipe. Evidência: QR `plot-03`, textura e mapa para pose no cenário.
+- [x] Contratos JSON 1.0 e fixtures.
+- [x] Classificador operacional local.
+- [x] Rótulos `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL`, `UNKNOWN`.
+- [x] Bridge ROS 2 com expiração/deduplicação.
+- [x] Lifecycle sem dock/undock implícito após `SPRAY`.
+- [x] `DOCK` e `UNDOCK` explícitos.
+- [x] Transporte Android das intenções operacionais.
+- [x] UI Compose de demonstração.
+- [x] DAT 0.9.0 pré-hardware + MockDeviceKit.
+- [x] Visão/QR e `TargetResolver`.
+- [x] Runtime Qwen local via `llama.cpp` e smoke físico no SM-X510.
+- [ ] Wiring `UNKNOWN -> QwenDomainAssistant` na `MainActivity`.
+- [ ] E2E final atualizado para o lifecycle explícito.
+- [ ] DAT/câmera/áudio provados nos Meta Wearables reais.
+- [ ] Jornada física final repetida e registrada.
 
-## Dia 2 - provas isoladas
+## Android / DAT
 
-- [ ] **MOB-02 - Rodar CameraAccess com os Meta Wearables** - Átila. Evidência: frame real recebido no Android e versão do DAT registrada. O Mock Device Kit é apoio de desenvolvimento, não a evidência final.
-- [ ] **MOB-03 - Provar voz e TTS no Android** - Átila. Evidência: transcrição curta entra no app e resposta falada é reproduzida.
-- [x] **AI-02 - Treinar ou adaptar classificador local leve** - Rafael. Evidência: JSON de aproximadamente 65 KB, relatório e limiar 0,40.
-- [x] **VIS-02 - Detectar o QR em imagem estática** - Felipe. Evidência: textura `plot-03` detectada; imagem vazia e QR fora do mapa retornam `UNKNOWN`; dois QRs retornam `AMBIGUOUS` em oito testes automatizados.
-- [x] **ROS-02 - Mover o TurtleBot 4 simulado** - Felipe. Evidência: `plot-03` virou pose, Nav2 aceitou a meta e a odometria saiu de zero no Gazebo.
+### Concluído
 
-## Dia 3 - adaptadores e primeiro gate
+- [x] `mockDebug` compilável e instalável.
+- [x] `datDebug` compilável.
+- [x] UI com alvo, intenção, confirmação, countdown e estado do último comando aceito.
+- [x] voz/TTS por APIs Android.
+- [x] adaptador DAT 0.9.0.
+- [x] cenários MockDeviceKit de sucesso, permissão recusada, timeout e desconexão.
+- [x] detector QR local no caminho DAT.
+- [x] builds combinados após sincronização Qwen + UI/DAT:
+  - `:app:testMockDebugUnitTest`;
+  - `:app:assembleMockDebug`;
+  - `:app:assembleDatDebug`.
 
-- [ ] **MOB-04 - Implementar máquina de estados** - Átila. Evidência: caminho feliz, recusa e timeout testados sem SDK real.
-- [-] **AI-03 - Entregar adaptador de inferência** - Rafael + Átila. Paridade de 11 casos compartilhados preparada para Kotlin; falta executar os testes na toolchain Android e medir no aparelho.
-- [ ] **VIS-03 - Entregar adaptador de visão** - Felipe + Átila. Evidência: frame retorna `target_id`, confiança e timestamp no app.
-- [x] **ROS-03 - Validar segurança do bridge** - Felipe. Evidência: testes rejeitam comando vencido/não confirmado e deduplicam UUID.
+### Pendente
 
-### Gate do fim do Dia 3
+- [ ] pareamento e sample oficial no hardware real;
+- [ ] frame real dos Meta Wearables;
+- [ ] validar rota real de microfone/TTS;
+- [ ] medir câmera + voz + app simultaneamente.
 
-Só continuar adicionando componentes se estes quatro sinais estiverem verdes:
+## IA operacional
 
-1. O app recebe um frame do mock.
-2. O classificador retorna uma intenção local.
-3. A visão resolve `plot-03` em uma imagem conhecida.
-4. Um fixture JSON move o robô simulado.
+### Concluído
 
-Se algum sinal estiver vermelho, cortar complexidade e preservar a jornada vertical.
+- [x] classificador local compartilhado e assets Android;
+- [x] seis rótulos operacionais/interativos;
+- [x] paridade e testes de segurança;
+- [x] corpus de campo de 48 casos para os seis rótulos;
+- [x] baseline local 48/48 no gate usado na Task 6.
 
-## Dia 4 - integração ponta a ponta
+### Regra
 
-- [ ] **INT-01 - Conectar app ao bridge por WebSocket** - Átila + Felipe. Evidência: ACK correlacionado pelo mesmo `command_id`.
-- [ ] **INT-02 - Executar caminho feliz completo** - equipe. Evidência: olhar, falar, confirmar, enviar e mover o robô no Gazebo.
-- [ ] **INT-03 - Exibir estados de diagnóstico** - Átila. Evidência: logs mostram estado, latência, intenção e alvo sem mídia bruta.
+`UNKNOWN` é seguro. Um falso negativo pode impedir uma ação; um falso positivo perigoso pode mover o robô. Por isso a prioridade continua sendo evitar aceites indevidos.
 
-## Dia 5 - checkpoints e falhas
+## Assistente Qwen
 
-- [ ] **QA-01 - Testar recusa, ambiguidade e timeout** - Rafael + Átila. Evidência: nenhum dos casos envia movimento.
-- [ ] **QA-02 - Testar desconexão, expiração e duplicata** - Felipe. Evidência: nenhum comando tardio ou repetido move o robô.
-- [ ] **QA-03 - Revisar privacidade e bateria** - equipe. Evidência: mídia não persistida, sessão encerrada e captura sob demanda.
-- [ ] **QA-04 - Montar evidência 5/5 checkpoints** - Rafael. Evidência: IA, câmera ou microfone, áudio, privacidade e eficiência demonstráveis.
+### Concluído
 
-## Dia 6 - congelamento e gravação
+- [x] benchmark Qwen2.5-1.5B Q4_K_M como classificador;
+- [x] rejeição do Qwen como autoridade operacional após 36/48 e 3 aceites perigosos;
+- [x] `LanguageRouter`, `QwenDomainAssistant` e saída `CHAT | OUT_OF_SCOPE`;
+- [x] system prompt canônico sem RAG;
+- [x] `llama.cpp` pinado e compilado no Android ARM64;
+- [x] JNI/CMake + `NativeQwenEngine`;
+- [x] GBNF estruturada;
+- [x] smoke físico 5/5 no SM-X510;
+- [x] load ~33,3 s; warm ~5,7–5,9 s; PSS ~1,38 GB; Swap PSS 273 KB.
 
-- [ ] **REL-01 - Congelar features** - equipe. Depois desta tarefa, somente correções.
-- [ ] **REL-02 - Rodar a jornada cinco vezes** - Felipe. Evidência: cinco execuções completas, uma recusa e uma ambiguidade.
-- [ ] **PIT-01 - Gravar a demonstração** - Felipe + Átila. Evidência: clipes de app, JSON, Gazebo e falha segura.
-- [ ] **PIT-02 - Ensaiar o pitch** - Felipe + Rafael. Evidência: três ensaios entre 2min40s e 2min55s.
+### Pendente
 
-## Dia 7 - entrega
+- [ ] conectar somente `UNKNOWN` ao assistente na `MainActivity`;
+- [ ] adicionar feedback de processamento;
+- [ ] medir convivência com DAT/câmera/áudio;
+- [ ] decidir preload antes da demo.
 
-- [ ] **REL-03 - Conferir build reproduzível** - Átila. Evidência: clone limpo compila e executa com mock.
-- [ ] **DOC-01 - Revisar proposta, slides e vídeo** - equipe. Evidência: nenhuma afirmação contradiz o MVP real.
-- [ ] **PIT-03 - Editar e exportar o pitch** - Felipe + Rafael. Evidência: vídeo final com até 3 minutos.
-- [ ] **REL-04 - Conferir pacote de submissão** - equipe. Evidência: arquivos abrem, áudio está claro e links funcionam.
+## Visão e alvo
 
-## Critério de sucesso da semana
+- [x] QR/placas de plots mapeados.
+- [x] detector retorna target conhecido ou falha segura.
+- [x] política compartilhada visual + voz.
+- [x] conflito entre IDs cancela a resolução.
+- [x] `TargetResolver` permanece fora do Qwen.
 
-O MVP da semana está pronto quando o build `datDebug` executa em um Android físico compatível, recebe o frame dos Meta Wearables pelo DAT, usa voz e IA local, exige confirmação e move o TurtleBot 4 no Gazebo. O `mockDebug` deve continuar passando como teste de desenvolvimento, mas não substitui essa evidência.
+## Robótica e lifecycle
+
+- [x] bridge WebSocket/ROS 2.
+- [x] Nav2/Gazebo/TurtleBot 4.
+- [x] `SPRAY` sem undock automático.
+- [x] `SPRAY` sem retorno automático à doca.
+- [x] `UNDOCK` explícito.
+- [x] `DOCK` explícito.
+- [x] Android transporta as três operações.
+- [ ] scripts E2E antigos atualizados para parar de exigir lifecycle automático.
+
+## Segurança
+
+Nenhum movimento deve ocorrer sem:
+
+1. intenção operacional suportada;
+2. target válido quando a intenção exigir;
+3. estado compatível;
+4. confirmação explícita;
+5. comando dentro da validade;
+6. aceitação pelo bridge.
+
+Qwen não satisfaz nenhuma dessas condições e não pode criar `Command`.
+
+## Gate de fechamento
+
+O MVP está pronto para congelamento quando:
+
+- `mockDebug` e `datDebug` compilam;
+- regressões unitárias passam;
+- o E2E atualizado demonstra `UNDOCK`/`SPRAY`/`DOCK` apenas quando explícitos;
+- a jornada física com Meta Wearables reais foi executada ou a pendência foi declarada com clareza;
+- se Qwen aparecer na demo, o wiring está isolado e a jornada operacional continua funcionando sem ele.

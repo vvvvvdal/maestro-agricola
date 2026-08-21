@@ -1,93 +1,109 @@
-# Plano do hackathon presencial - 18 de setembro de 2026
+# Plano do hackathon presencial — 18 de setembro de 2026
 
-## Tempo real disponível
+## Objetivo do dia
 
-O edital reserva o dia inteiro e a janela bruta entre início e congelamento vai de 11h00 a 17h30. Porém, o cronograma inclui almoço das 12h00 às 14h00, checkpoint às 15h00, coffee break às 15h30, outro checkpoint às 16h00 e reta final das 16h45 às 17h30. A equipe deve planejar aproximadamente 2h45 a 3h de programação previsível, além do tempo de validação nos checkpoints.
-
-O evento não é o momento de criar a solução. É o momento de substituir mocks pelo hardware, medir, corrigir e demonstrar.
+O evento não é o momento de criar a solução. O software deve chegar com mock, DAT pré-hardware, bridge, simulação e gates já preparados. O dia serve para substituir mocks pelo hardware real, medir, corrigir incompatibilidades curtas e demonstrar.
 
 ## Pré-condições para viajar
 
-- APK Kotlin compilando e instalável sem depender da internet.
-- Jornada completa funcionando com Mock Device Kit.
-- Versão do DAT fixada e sample oficial já compreendido.
-- Modelo local e fixtures empacotados no repositório.
-- Bridge ROS 2, cenário Gazebo e mapa de alvos reproduzíveis.
-- Cabos, notebooks próprios e cópias locais das dependências permitidas.
-- Vídeo de contingência claramente identificado, sem substituir a validação ao vivo.
+- `mockDebug` e `datDebug` compilando.
+- Jornada Android -> WebSocket -> ROS 2/Nav2/Gazebo aprovada com lifecycle explícito.
+- DAT 0.9.0/MockDeviceKit já validado.
+- Versão do DAT e dependências disponíveis localmente.
+- Bridge, mundo Gazebo, targets e fixtures reproduzíveis.
+- Cabos, carregadores, notebooks e cópias locais de dependências permitidas.
+- Credenciais fora do Git.
+- Vídeo de contingência claramente identificado.
+- Se Qwen fizer parte da demo, wiring seguro concluído e teste de memória com câmera/áudio já executado; caso contrário, deixá-lo fora da jornada operacional.
 
-## Distribuição no evento
+## Distribuição
 
-- **Átila:** pareamento, permissões, DAT, câmera, áudio e build Kotlin.
-- **Felipe:** feed visual, detector, bridge ROS 2, Gazebo e execução ponta a ponta.
-- **Rafael:** inferência local, métricas, evidências dos checkpoints e materiais do pitch.
+- **Átila:** pareamento, permissões, DAT, câmera, áudio e build Android.
+- **Felipe:** visão, target, bridge ROS 2, Gazebo/Nav2 e integração E2E.
+- **Rafael:** IA local, métricas, checkpoints e materiais do pitch.
 
-## Roteiro operacional
+## Roteiro
 
-### 09h30-10h30 - onboarding
+### Onboarding / hardware
 
-- [ ] Registrar modelo do smartphone, versão do sistema, firmware e versão liberada do DAT.
-- [ ] Parear os óculos e executar o sample oficial sem modificar o projeto principal.
-- [ ] Confirmar permissões, câmera e rota de saída de áudio.
+- [ ] registrar modelo do Android e versão do sistema;
+- [ ] registrar firmware dos Meta Wearables;
+- [ ] confirmar versão DAT efetivamente instalada;
+- [ ] executar o sample oficial;
+- [ ] parear os óculos;
+- [ ] confirmar permissões;
+- [ ] confirmar frame real;
+- [ ] observar rota real de microfone e TTS.
 
-### 10h30-11h00 - checkpoints
+### Integração mínima
 
-- [ ] Anotar exatamente qual evidência os avaliadores esperam em cada checkpoint.
-- [ ] Ajustar a ordem da demonstração, sem ampliar o escopo.
+- [ ] instalar `datDebug`;
+- [ ] confirmar que a UI mostra fonte DAT, não mock;
+- [ ] olhar para uma placa/target conhecido e capturar sob demanda;
+- [ ] confirmar que `TargetResolver` recebe o mesmo ID esperado;
+- [ ] executar uma transcrição curta;
+- [ ] ouvir a resposta/confirmação pela rota disponível.
 
-### 11h00-12h00 - integração mínima
+### Jornada operacional
 
-- [ ] Escolher o aparelho mais estável e trocar `MockFrameSource` por `DatFrameSource` somente nele.
-- [ ] Receber um frame real e resolver o QR `plot-03`.
-- [ ] Reproduzir TTS na rota de áudio disponível.
-- [ ] Fazer smoke test da intenção local com uma transcrição curta.
+Executar pelo menos:
 
-### 14h00-15h00 - jornada completa
+1. `UNDOCK` explícito, se o robô iniciar dockado;
+2. `SPRAY` para target válido;
+3. confirmar que o robô permanece no target;
+4. `DOCK` explícito, se fizer parte da demo;
+5. `CANCEL` ou timeout sem movimento;
+6. conflito de target sem movimento.
 
-- [ ] Executar olhar, falar, confirmar e mover o robô simulado.
-- [ ] Medir latência e verificar descarte de frame e áudio.
-- [ ] Ensaiar a evidência de IA, entrada dos óculos e saída por áudio.
+### Medição
 
-### 15h00 - checkpoint técnico 1
+- [ ] latência de captura;
+- [ ] latência de STT/ação operacional;
+- [ ] uso de memória;
+- [ ] temperatura;
+- [ ] bateria inicial/final;
+- [ ] estabilidade de câmera e áudio simultâneos.
 
-- [ ] Demonstrar IA funcional.
-- [ ] Demonstrar câmera ou microfone dos óculos como entrada.
-- [ ] Demonstrar output por áudio.
+Se o Qwen estiver ativo na experiência final:
 
-### 15h30-16h00 - correções curtas
+- [ ] medir cold/warm no aparelho real da demo;
+- [ ] confirmar que operações críticas continuam instantâneas e não passam pelo Qwen;
+- [ ] confirmar que `UNKNOWN` é o único caminho conversacional;
+- [ ] observar memória com DAT/câmera/áudio simultâneos.
 
-- [ ] Corrigir somente o que bloqueia checkpoint ou jornada crítica.
-- [ ] Se câmera e áudio simultâneos estiverem instáveis, coordenar captura sequencial.
+## Checkpoints
 
-### 16h00 - checkpoint técnico 2
+Nos checkpoints, mostrar somente evidência que realmente ocorreu:
 
-- [ ] Demonstrar que o app não persiste mídia bruta.
-- [ ] Mostrar captura sob demanda, liberação de recursos e evidência de consumo.
+- IA operacional local;
+- frame dos óculos, se já validado;
+- áudio na rota observada;
+- confirmação antes de movimento;
+- não persistência de mídia bruta;
+- falha segura;
+- consumo/latência medidos, não estimados.
 
-### 16h45-17h30 - congelamento
+## Contingências
 
-- [ ] Parar novas features.
-- [ ] Rodar a jornada cinco vezes, incluindo recusa.
-- [ ] Salvar o build final e gravar uma execução limpa.
-- [ ] Conferir os slides e o tempo de Felipe e Rafael.
-
-### 18h00 - pitch
-
-- [ ] Felipe apresenta slides 1 a 3.
-- [ ] Rafael apresenta slides 4 a 6.
-- [ ] Átila mantém a demo pronta e responde questões sobre mobile/DAT.
-
-## Planos de contingência
-
-| Falha | Resposta sem mudar o produto |
+| Falha | Resposta |
 |---|---|
-| Stream real instável | Reduzir qualidade/taxa e capturar um frame por comando |
-| Microfone dos óculos indisponível | Manter câmera dos óculos como entrada obrigatória e usar o microfone do smartphone para a voz |
-| Saída de áudio não roteia | Reconfigurar o dispositivo de comunicação antes de reiniciar a sessão |
-| IA lenta | Usar o modelo local menor já empacotado e reduzir o vocabulário |
-| Bridge sem rede | Rodar app e bridge na mesma rede local ou usar o endpoint local preparado |
-| Detector falha no ambiente | Aumentar o QR e melhorar iluminação; não trocar de técnica durante o evento |
+| Stream real instável | reduzir taxa/qualidade e capturar sob demanda |
+| Microfone dos óculos indisponível | usar microfone do telefone e declarar a rota real |
+| TTS não roteia para os óculos | usar saída disponível e registrar a limitação |
+| Qwen pressiona memória/latência | desabilitar assistente; manter classificador operacional |
+| Bridge sem rede | corrigir rede local/endpoint, sem alterar contrato |
+| Detector falha | melhorar enquadramento/iluminação; não trocar de técnica |
+| `SPRAY` rejeitado porque está dockado | executar `UNDOCK` explícito; nunca adicionar undock automático |
 
-## Regra de decisão
+## Congelamento
 
-Depois das 16h45, uma mudança só entra se corrigir um bloqueio dos cinco checkpoints ou impedir um comando indevido. Todo o restante fica para depois do pitch.
+Depois que a jornada física estiver estável:
+
+- [ ] parar novas features;
+- [ ] executar a jornada cinco vezes;
+- [ ] incluir pelo menos uma recusa segura;
+- [ ] salvar logs/evidências sem mídia sensível;
+- [ ] gravar uma execução limpa;
+- [ ] conferir slides, roteiro e afirmações técnicas.
+
+Mudança posterior só entra se corrigir um bloqueio da demonstração ou impedir um comando indevido.

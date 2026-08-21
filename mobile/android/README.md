@@ -93,3 +93,24 @@ No emulador de desenvolvimento, o endpoint padrão é `ws://10.0.2.2:18765`. No 
 Gerar o APK não comprova câmera dos óculos, voz, TTS nem conexão com o bridge. Esses itens devem ser executados com `datDebug` no Android conectado aos Meta Wearables e registrados separadamente.
 
 O roteiro completo para o Galaxy A17, incluindo JDK portátil, USB/ADB, mock físico, DAT e diagnóstico por camada, está em [`../../docs/testing/galaxy-a17-e2e.md`](../../docs/testing/galaxy-a17-e2e.md).
+
+## Qwen local no Android
+
+O projeto contém um runtime local opcional para Qwen2.5-1.5B-Instruct Q4_K_M. Ele não substitui `LocalIntentClassifier`: comandos operacionais continuam no caminho determinístico/classificador + `InteractionEngine`. O Qwen é restrito a conversa de domínio e sua interface só permite `CHAT` ou `OUT_OF_SCOPE`.
+
+Implementação:
+
+- submodule `third_party/llama.cpp` pinado em `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`;
+- CMake/JNI ARM64 (`libmaestro-qwen.so`) compilado em Release mesmo no `mockDebug`;
+- 4 threads, contexto 2048, batch 512 e máximo de 64 tokens;
+- grammar GBNF carregada uma vez e clonada em cada geração;
+- `NativeQwenEngine` executa inferência em uma worker thread e devolve o callback na main thread;
+- o system prompt fica em cache; cada turno é limpo para não acumular histórico.
+
+O GGUF de aproximadamente 1,1 GB não é versionado e não é empacotado automaticamente no APK. A `QwenSmokeActivity`, disponível somente no flavor `mock`, espera `files/qwen2.5-1.5b-q4_k_m.gguf` no armazenamento privado do app de desenvolvimento.
+
+No SM-X510, o smoke final de 21/08/2026 passou 5/5. Load: 33,3 s; respostas warm: ~5,7–5,9 s; PSS: ~1,38 GB; Swap PSS: 273 KB. Esses números comprovam o runtime isolado, não a convivência com DAT/câmera/áudio.
+
+A `MainActivity` atual ainda instancia diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`. Antes de usar Qwen na interface principal, conectar somente o caminho `UNKNOWN -> LanguageRouter -> QwenDomainAssistant`, manter o caminho operacional independente e oferecer feedback de `Processando…`/áudio durante a latência.
+
+Detalhes e evidência: [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).

@@ -1,36 +1,60 @@
-# Modelo local de intenção
+# IA local
 
-O artefato canônico é `intent_model.json`. Ele é treinado a partir de `dataset/intents.tsv` e executado localmente no app Android.
+O Maestro mantém duas funções de IA local separadas por segurança: um classificador operacional que pode alimentar o `InteractionEngine` e um assistente Qwen que só pode responder `CHAT` ou `OUT_OF_SCOPE`.
 
-O MVP usa uma cascata híbrida local:
+## Classificador operacional
 
-1. regras de alta precisão reconhecem cancelamentos, bloqueiam hesitações e capturam ordens inequívocas;
-2. um classificador linear softmax resolve as demais frases usando unigramas, bigramas e n-gramas de caracteres de 3 a 5 posições;
-3. baixa confiança vira `UNKNOWN`.
+O artefato canônico é `intent_model.json`, treinado a partir de `dataset/intents.tsv` e interpretado diretamente no Android/Kotlin.
 
-O resultado inclui a origem `RULE` ou `MODEL`, o que deixa a demonstração e os logs auditáveis. Essa escolha é intencional:
+A cascata local usa:
 
-- inferência pequena e rápida em aparelhos antigos;
-- nenhuma chamada de rede;
-- o modelo pode ser interpretado em Kotlin sem runtime externo;
-- probabilidades e vocabulário podem ser auditados;
-- erros comuns de transcrição ainda compartilham n-gramas com palavras conhecidas;
-- o classificador continua sendo IA treinada, enquanto as regras cobrem apenas padrões inequívocos e segurança.
+1. regras de alta precisão para cancelamento, ambiguidade e ordens inequívocas;
+2. classificador linear softmax com unigramas, bigramas e n-gramas de caracteres;
+3. fallback para `UNKNOWN` quando a confiança é insuficiente.
 
-Rótulos:
+Rótulos atuais:
 
-- `SPRAY`: pedido operacional.
-- `CONFIRM`: confirmação explícita.
-- `CANCEL`: recusa ou cancelamento.
-- `UNKNOWN`: frase fora do vocabulário operacional.
+- `SPRAY`: pulverização/navegação para alvo resolvido;
+- `DOCK`: retorno explícito à doca;
+- `UNDOCK`: saída explícita da doca;
+- `CONFIRM`: confirmação de operação pendente;
+- `CANCEL`: cancelamento/recusa;
+- `UNKNOWN`: frase fora do caminho operacional seguro.
 
-Para regenerar:
+`UNKNOWN` não autoriza movimento. `SPRAY`, `DOCK` e `UNDOCK` ainda passam pelas validações e confirmação do `InteractionEngine` antes de existir `Command`.
+
+A avaliação histórica `evaluation.tsv` tem 64 frases das quatro classes originais. A avaliação de campo usada na evolução atual é `field_evaluation.tsv`, com 48 frases balanceadas entre os seis rótulos; o baseline local classificou 48/48 no gate da Task 6.
+
+Para regenerar o modelo quando a task exigir explicitamente:
 
 ```bash
 python3 tools/train_intent_model.py
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
-O treino usa `dataset/intents.tsv`; a avaliação independente usa `dataset/evaluation.tsv`. O relatório versionado contém métricas por classe e a taxa de aceite perigoso. O limiar de confiança é aplicado pelos apps. Abaixo dele, o resultado obrigatório é `UNKNOWN`.
+## Avaliação do Qwen
 
-Um LLM local não faz parte do MVP atual. Antes de considerar Qwen ou equivalente, o time deve medir no Galaxy A17 a RAM de pico, latência, consumo e convivência com DAT, câmera e áudio.
+`tools/qwen_intent_eval.py` e `qwen_evaluation.json` registram a tentativa de usar `Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M` como classificador dos mesmos seis rótulos. Resultado reproduzível:
+
+- 48 exemplos;
+- 36 corretos;
+- acurácia 0,75;
+- macro-F1 0,7384;
+- 3 aceites perigosos;
+- mediana de latência ~2,36 s no benchmark desktop e p95 ~10,78 s.
+
+Esse resultado rejeitou o Qwen como autoridade operacional.
+
+## Papel seguro do Qwen
+
+O modelo foi mantido apenas como assistente local de domínio:
+
+```text
+LocalIntentClassifier
+  -> rótulo operacional -> InteractionEngine
+  -> UNKNOWN -> LanguageRouter -> QwenDomainAssistant -> CHAT | OUT_OF_SCOPE
+```
+
+A GBNF do runtime Android restringe a estrutura da resposta. O parser Kotlin falha fechado para `OUT_OF_SCOPE` se a saída estiver malformada ou inventar outro tipo. Qwen não conhece `Command`, WebSocket, ROS ou `TargetResolver`.
+
+O runtime Android via `llama.cpp` foi validado em smoke físico no SM-X510, mas a `MainActivity` ainda não usa esse fallback. Veja [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).

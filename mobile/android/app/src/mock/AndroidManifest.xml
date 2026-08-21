@@ -2,10 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <activity
-            android:name=".benchmark.IntentBenchmarkActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:name="br.org.agroturtles.maestro.platform.QwenSmokeActivity"
+            android:exported="true" />
     </application>
 </manifest>

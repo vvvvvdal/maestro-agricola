@@ -1,56 +1,72 @@
 # Equipe e responsabilidades
 
+As responsabilidades abaixo indicam liderança técnica e contexto de revisão. Elas não criam exclusividade de arquivos: qualquer integrante pode contribuir em outra frente desde que preserve contratos, registre a evidência e peça revisão quando a mudança atravessar domínios.
+
 ## Átila Capozzoli Ribeiro Rodrigues
 
 Desenvolvedor Fullstack Pleno com experiência em aplicativos Kotlin e React Native.
 
-**Responsabilidade principal:** aplicativo companion nativo.
+**Responsabilidade principal:** aplicativo companion Android e integração Meta Wearables.
 
-- Android/Kotlin, com flavors separados para mock e DAT.
-- Integração com o Meta Wearables DAT.
+- Android/Kotlin e UI Compose.
+- Flavors `mock` e `dat`.
+- Meta Wearables Device Access Toolkit (DAT).
 - Permissões, sessão, câmera e ciclo de vida.
 - Captura de voz, transcrição e resposta por áudio.
-- Máquina de estados e integração dos componentes no app.
+- Estados de interação e integração dos componentes no app.
+- Evidência pré-hardware via MockDeviceKit e preparação do gate com hardware real.
 
-**Decisão de escopo:** o MVP terá somente um app Android nativo em Kotlin. React Native não será usado. A demo principal roda em um Android físico compatível com o DAT e conectado aos Meta Wearables; o emulador permanece apenas como ferramenta de desenvolvimento.
+**Decisão de escopo:** o MVP usa somente Android nativo em Kotlin. React Native não faz parte da implementação atual.
 
 ## Felipe Gonçalves Vidal
 
 Estudante de Ciência da Computação no INF/UFG e integrante do Núcleo de Robótica Pequi Mecânico, com atuação em ROS 2, Gazebo, TurtleBot 4 e visão computacional.
 
-**Responsabilidade principal:** percepção visual e robótica.
+**Responsabilidade principal:** percepção visual, robótica e integração ponta a ponta.
 
 - Definição e detecção do alvo visual mapeado.
 - Mapa `target_id -> pose` do cenário.
 - Bridge WebSocket/ROS 2.
 - Integração com Nav2, Gazebo e TurtleBot 4.
-- Testes de comando, expiração e deduplicação no simulador.
-- Integração ponta a ponta com Átila.
+- Lifecycle explícito `SPRAY`/`DOCK`/`UNDOCK`.
+- Testes de comando, expiração, deduplicação e estado.
+- Integração E2E com Android.
 
 ## Rafael José de Souza Marques
 
 Estudante de Ciência da Computação no INF/UFG e voluntário no CEIA.
 
-**Responsabilidade principal:** inteligência artificial local.
+**Responsabilidade principal:** IA local, métricas e evidências.
 
-- Definição das intenções `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
-- Conjunto pequeno de frases em português para treino e teste.
-- Treino ou adaptação de um classificador leve e exportação para execução local.
-- Limiar de confiança, tratamento de ambiguidade e métricas.
-- Interface e exemplos para integração do mesmo modelo em Kotlin.
-- Evidências do checkpoint de IA funcional.
+- Corpus e avaliação do classificador operacional.
+- Intenções `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
+- Limiar de confiança e tratamento de ambiguidade.
+- Paridade entre implementação de referência e Kotlin.
+- Benchmark e evidências de seleção de modelo.
+- Apoio à documentação e aos checkpoints de IA.
+
+## Fronteiras atuais de IA
+
+O projeto possui duas funções distintas:
+
+1. `LocalIntentClassifier`: autoridade operacional. Seus rótulos ainda passam por `InteractionEngine`, resolução de alvo, estado e confirmação antes de existir `Command`.
+2. Qwen2.5-1.5B local: assistente de domínio. O runtime Android foi validado no SM-X510, mas o wiring na `MainActivity` ainda está pendente. Quando integrado, receberá apenas `UNKNOWN` e retornará `CHAT` ou `OUT_OF_SCOPE`.
+
+Nenhum integrante deve conectar o Qwen diretamente a ROS, WebSocket, target ou estado do robô.
 
 ## Pitch e demonstração
 
 - Felipe apresenta problema, jornada e aplicação em robótica.
 - Rafael apresenta arquitetura, IA, checkpoints e fechamento.
-- Átila prepara o build, apoia a demonstração e responde questões de mobile/DAT.
-- Deve haver apenas uma troca de apresentador no vídeo, entre os slides 3 e 4.
+- Átila prepara o build, apoia a demonstração e responde questões sobre mobile/DAT.
+- A divisão pode ser ajustada no ensaio final, desde que o tempo total e a narrativa continuem coerentes com o produto real.
 
 ## Acordos de integração
 
 - O contrato JSON é a fronteira entre app e ROS 2.
-- O classificador de Rafael é consumido por uma interface pequena no app.
-- O detector de Felipe retorna somente `target_id`, confiança e timestamp.
-- Cada domínio deve oferecer um fake ou fixture para que os demais não fiquem bloqueados.
-- Mudança no contrato compartilhado exige revisão de Átila e Felipe.
+- `InteractionEngine` continua sendo a fronteira de confirmação e validação antes do envio.
+- O detector retorna somente `target_id`, confiança e timestamp.
+- `TargetResolver` combina alvo visual/falado e recusa conflito.
+- DAT real e MockDeviceKit devem permanecer distinguíveis nos logs e na documentação.
+- O assistente Qwen nunca substitui o classificador operacional.
+- Mudança em contrato, safety ou fluxo de confirmação exige revisão cruzada.

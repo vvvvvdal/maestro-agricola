@@ -47,3 +47,4 @@ Thumbs.db
 *.db3
 recordings/
 captures/
+mobile/android/app/.cxx/

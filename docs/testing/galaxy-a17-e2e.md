@@ -1,59 +1,60 @@
 # Teste integrado no Galaxy A17
 
-Este é o roteiro de bancada para provar `Android → IA local → WebSocket → ROS 2/Nav2/Gazebo` e, depois, substituir a câmera mock pela captura real dos Meta Wearables via DAT.
+Este roteiro é o gate planejado para provar a jornada `Android -> IA operacional -> WebSocket -> ROS 2/Nav2/Gazebo` no Galaxy A17 e, em seguida, validar a câmera/áudio com os Meta Wearables reais via DAT.
+
+O runtime Qwen foi medido separadamente no Samsung SM-X510. Não use esses números como benchmark do Galaxy A17.
 
 ## Estado real antes do teste
 
-- `mockDebug` está implementado e retorna `plot-03` ao tocar em **Simular olhar**.
-- IA local, confirmação, contrato e transporte WebSocket estão implementados.
-- `datDebug` implementa o ciclo DAT 0.9.0 e foi validado com MockDeviceKit nos
-  cenários de sucesso, permissão recusada, timeout e desconexão. Essa evidência
-  pré-hardware não aprova a câmera real.
-- Voz e TTS usam Android; é preciso validar separadamente se o microfone e o áudio são roteados pelos óculos. O telefone é o fallback.
+- `mockDebug` e a UI Compose estão implementados.
+- A `MainActivity` usa `InteractionEngine(LocalIntentClassifier, TargetResolver)`.
+- O classificador operacional reconhece `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
+- `datDebug` implementa o ciclo DAT 0.9.0 e passou pelos cenários pré-hardware do MockDeviceKit.
+- O caminho DAT pré-hardware não comprova câmera dos óculos reais.
+- Voz e TTS usam APIs Android; a rota real de microfone/áudio com os óculos ainda precisa ser observada.
+- O runtime Qwen existe e passou em smoke no SM-X510, mas ainda não está conectado à `MainActivity`.
 
 ## Portabilidade da instalação
 
-Não versione caminhos pessoais. O Android Studio do Felipe está em `~/Downloads/android-studio`, mas Átila e Rafael podem instalá-lo em qualquer lugar. Pela interface, use **File → Settings → Build Tools → Gradle → Gradle JDK** e selecione JDK 17 a 24. O JDK 25 embutido nesta instalação foi rejeitado pelo Gradle 8.14.1; no computador do Felipe, use `~/.jdks/jbr-21.0.11`.
-
-No terminal, cada integrante pode configurar somente a sessão atual. Exemplo do Felipe:
-
-```bash
-export JAVA_HOME="$HOME/.jdks/jbr-21.0.11"
-export PATH="$JAVA_HOME/bin:$PATH"
-```
-
-Ou, sem alterar o ambiente do terminal, informe os caminhos diretamente:
-
-```bash
-python3 mobile/android/tools/preflight.py \
-  --java-home "$HOME/.jdks/jbr-21.0.11" \
-  --sdk-dir "$HOME/Android/Sdk"
-```
-
-Átila e Rafael substituem somente esses dois argumentos pelos caminhos das próprias máquinas.
-
-O SDK deve ser apontado em `mobile/android/local.properties`, que não deve ser commitado:
+Não versione caminhos pessoais. Use JDK compatível com o Gradle do projeto e configure o Android SDK em `mobile/android/local.properties`:
 
 ```properties
 sdk.dir=/caminho/individual/Android/Sdk
 ```
 
+Antes do aparelho:
+
+```bash
+cd mobile/android
+./gradlew :app:testMockDebugUnitTest --no-daemon
+./gradlew :app:assembleMockDebug --no-daemon
+./gradlew :app:assembleDatDebug --no-daemon
+```
+
+Os três comandos devem terminar com `BUILD SUCCESSFUL`.
+
 ## Gate 1 — preparar o Galaxy A17
 
-1. Ative **Opções do desenvolvedor** tocando sete vezes em **Número da versão**.
+1. Ative **Opções do desenvolvedor**.
 2. Ative **Depuração USB**.
-3. Conecte com cabo de dados, desbloqueie o aparelho e aceite a chave RSA.
-4. Na raiz do repositório, execute:
+3. Conecte com cabo de dados e aceite a chave RSA.
+4. Confirme:
+
+```bash
+adb devices
+```
+
+Se o projeto ainda usar o preflight nesta máquina:
 
 ```bash
 python3 mobile/android/tools/preflight.py --require-device
 ```
 
-Todos os itens devem aparecer como `[OK]`. Se o aparelho estiver `unauthorized`, desbloqueie-o e aceite novamente; se não aparecer, troque cabo/porta USB e confirme que o modo USB permite dados.
+Não prossiga enquanto o aparelho estiver `unauthorized`.
 
-## Gate 2 — app físico com câmera mock
+## Gate 2 — app físico com flavor mock
 
-Este gate valida o telefone, a IA e o robô sem atribuir o resultado aos óculos.
+Este gate valida o Android, a lógica operacional e o transporte sem atribuir o resultado aos óculos.
 
 No computador:
 
@@ -63,57 +64,100 @@ make simulation-up
 hostname -I
 ```
 
-Use no app um IP da rede local do computador, nunca `127.0.0.1` nem `10.0.2.2`. Computador e Galaxy devem estar na mesma rede e a porta TCP `18765` precisa estar liberada no firewall.
+Computador e Galaxy devem estar na mesma rede. No telefone, use `ws://IP_DO_COMPUTADOR:18765`, nunca `127.0.0.1` ou `10.0.2.2`.
 
-No Android Studio, selecione a variante `mockDebug`, escolha o Galaxy A17 e pressione **Run**. Alternativamente:
+Instale o mock:
 
 ```bash
 cd mobile/android
-./gradlew :app:installMockDebug
+./gradlew :app:installMockDebug --no-daemon
 ```
 
-No app:
+Na UI:
 
-1. confirme `Fonte: mock`;
-2. informe `ws://IP_DO_COMPUTADOR:18765`;
-3. toque **Simular olhar** — deve aparecer `plot-03`;
-4. escreva ou fale “pulverize aqui” e toque **Interpretar**;
-5. confira `IA: SPRAY (..., RULE)` e o estado de confirmação;
-6. escreva ou fale “sim” e interprete em até 10 segundos;
-7. confira aceite do transporte e movimento no Gazebo;
-8. repita com “cancelar” e confirme que nenhum novo comando é enviado.
+1. confira o chip `câmera: mock`;
+2. abra **Ajustes de teste** e configure o endpoint WebSocket;
+3. toque **Olhar para o alvo**;
+4. fale a operação ou use **Transcrição digitada** como contingência;
+5. confira os cards **ALVO DETECTADO** e **INTENÇÃO**;
+6. antes de qualquer movimento, confira a tela de confirmação e o countdown;
+7. diga `sim` para confirmar ou `cancelar` para abortar;
+8. confirme no Gazebo e nos logs que somente comandos confirmados chegam ao bridge.
 
-Evidência mínima: uma captura da tela do app, `make logs` mostrando o comando aceito e a recusa sem movimento.
+### Lifecycle que deve ser observado
 
-## Gate 3 — DAT e óculos reais
+`SPRAY` não retorna automaticamente à doca.
 
-Execute quando os óculos estiverem disponíveis. O adaptador já segue o ciclo
-oficial de sessão/câmera do `CameraAccess` 0.9.0, mas precisa ser provado no
-mesmo Galaxy A17 e nos mesmos Meta Wearables do evento.
+Se o robô estiver dockado:
 
-1. Configure credenciais apenas em `local.properties` ou variável de ambiente; nunca versione tokens.
-2. Compile e instale `datDebug`.
+```text
+UNDOCK explícito + confirmação
+-> SPRAY + confirmação
+-> robô permanece no alvo
+-> DOCK explícito + confirmação, somente se desejado
+```
+
+Não trate scripts antigos que esperam dock automático como gate do comportamento atual.
+
+## Gate 3 — comandos e recusas
+
+No mock físico, cubra pelo menos:
+
+- `SPRAY` com alvo válido;
+- `DOCK` explícito;
+- `UNDOCK` explícito;
+- `CANCEL` durante confirmação;
+- timeout de confirmação;
+- alvo ausente;
+- conflito entre alvo visual e alvo falado;
+- `UNKNOWN`;
+- tentativa incompatível com o estado atual do robô.
+
+Resultado esperado para falhas: nenhum `Command` de movimento enviado.
+
+## Gate 4 — DAT e Meta Wearables reais
+
+Execute somente quando os óculos estiverem disponíveis.
+
+1. Configure credenciais fora do Git.
+2. Instale `datDebug`.
 3. Pareie os Meta Wearables pelo fluxo oficial.
-4. Centralize uma única placa e capture um frame sob demanda.
-5. Confirme que o ID visual chegou ao mesmo `InteractionEngine` usado pelo mock.
-6. Faça a jornada “olhar → falar → ouvir confirmação → confirmar → robô”.
-7. Teste desconexão, QR ilegível, conflito entre QR e ID falado, cancelamento e timeout.
-8. Registre latência, temperatura, bateria inicial/final e rota real de microfone/TTS.
+4. Confirme no app que a fonte não é `mock`.
+5. Capture um frame sob demanda dos óculos.
+6. Confirme que o target visual chega ao mesmo `InteractionEngine`.
+7. Faça a jornada olhar -> falar -> ouvir operação entendida -> confirmar -> robô.
+8. Teste permissão recusada, timeout, desconexão, QR ilegível e conflito de alvo.
+9. Registre modelo do Android, versão do sistema, firmware dos óculos, versão DAT, rota de microfone/TTS, temperatura, bateria e latência.
 
-O gate só passa se a imagem vier dos óculos. Digitar `plot-03`, usar a câmera do telefone ou executar `mockDebug` não comprova DAT.
+O gate só passa se a imagem observada vier dos óculos. MockDeviceKit, câmera do telefone ou ID digitado não comprovam DAT físico.
+
+## Gate opcional — Qwen
+
+O Qwen não faz parte do caminho operacional atual da `MainActivity`. Só execute este gate no Galaxy A17 depois que o wiring seguro `UNKNOWN -> LanguageRouter -> QwenDomainAssistant` estiver implementado.
+
+Antes disso, qualquer teste com `QwenSmokeActivity` prova apenas o runtime isolado.
+
+Quando o wiring existir, validar:
+
+1. `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM` e `CANCEL` não esperam pelo Qwen;
+2. somente `UNKNOWN` chega ao assistente;
+3. pedido como `Faça dock agora.` não vira ação pelo assistente;
+4. resposta inválida falha para `OUT_OF_SCOPE`;
+5. câmera DAT + STT/TTS + Qwen cabem na memória sem swap/temperatura inaceitáveis.
 
 ## Localização rápida de falhas
 
 | Sintoma | Camada provável | Primeira verificação |
 |---|---|---|
 | Galaxy não aparece | USB/ADB | `adb devices` e autorização RSA |
-| App não compila | JDK/SDK | `preflight.py --require-device` |
-| “Conclua o registro no Meta AI” | registro DAT | app Meta AI, deep link e cadastro da aplicação |
-| Voz não transcreve | permissão/rota de áudio | permissão de microfone e teste pelo telefone |
-| `UNKNOWN` | IA local | frase, confiança e origem `RULE/MODEL` na tela |
-| WebSocket falha | rede/firewall | IP do computador, mesma rede e porta `18765` |
-| `ACCEPTED`, mas não move | ROS/Nav2 | `make status` e `make logs` |
-| QR e voz discordam | regra de segurança | esperado: cancelar sem enviar comando |
+| App não compila | JDK/SDK/Gradle | gates de build Android |
+| Falha de registro Meta | DAT/configuração | app Meta AI, credenciais e manifesto |
+| Voz não transcreve | permissão/rota | `RECORD_AUDIO` e teste local |
+| `UNKNOWN` operacional | IA local | frase, confiança e origem RULE/MODEL |
+| WebSocket falha | rede/firewall | IP do computador e porta 18765 |
+| `ACCEPTED`, mas não move | ROS/Nav2/estado | logs do bridge e lifecycle |
+| QR e voz discordam | `TargetResolver` | esperado: conflito, sem comando |
+| Qwen lento | runtime local | só relevante após wiring; medir cold/warm e memória |
 
 ## Encerramento
 
@@ -121,4 +165,4 @@ O gate só passa se a imagem vier dos óculos. Digitar `plot-03`, usar a câmera
 make simulation-down
 ```
 
-Não declare DAT, áudio Bluetooth ou consumo como validados até o Gate 3 passar no hardware real.
+Não declare DAT físico, áudio dos óculos ou benchmark Qwen no Galaxy A17 como aprovados até os respectivos gates ocorrerem nesse hardware.

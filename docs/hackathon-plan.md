@@ -2,87 +2,86 @@
 
 ## Diagnóstico de viabilidade
 
-O MVP cabe em sete dias se a equipe preservar um único corte vertical e trabalhar em paralelo por interfaces estáveis. O objetivo da semana não é suportar toda a agricultura de precisão; é provar uma interação completa, segura e demonstrável.
+O MVP já possui a maior parte do caminho pré-hardware: Android nativo, UI, classificador operacional, contrato, bridge ROS 2, Nav2/Gazebo, visão mapeada, lifecycle explícito e adaptador DAT 0.9.0 validado com MockDeviceKit.
 
-O aplicativo será Android nativo em Kotlin, com flavors `mock` e `dat` que compartilham contrato, modelo local e máquina de estados. React Native fica fora do projeto. O `mock` antecipa o desenvolvimento, mas o MVP e o pitch demonstram `datDebug` em um Android físico conectado aos Meta Wearables.
+O trabalho até o evento não deve ampliar o produto. O foco é fechar a integração, atualizar o E2E para o lifecycle atual, validar hardware real e congelar a demonstração.
 
-## Escopo congelado da semana
+## Escopo congelado
 
-- Um alvo visual: QR `plot-03`, previamente mapeado.
-- Uma ação operacional: `SPRAY` como pedido demonstrativo.
-- Três respostas de controle: `CONFIRM`, `CANCEL` e `UNKNOWN`.
-- Um app companion Android nativo, com uma única regra de negócio e um único modelo.
-- Um bridge WebSocket/ROS 2.
-- Um TurtleBot 4 simulado no Gazebo.
-- Captura sob demanda e nenhuma mídia bruta persistida.
+- Android nativo em Kotlin.
+- Câmera via Meta Wearables DAT; mock permanece como ferramenta de desenvolvimento.
+- Alvos previamente mapeados/allowlisted.
+- Tarefa agrícola demonstrativa `SPRAY`.
+- `DOCK` e `UNDOCK` como comandos explícitos de lifecycle.
+- `CONFIRM`, `CANCEL` e `UNKNOWN` como controles de interação.
+- Bridge WebSocket/JSON -> ROS 2/Nav2/Gazebo.
+- Captura sob demanda e nenhuma mídia bruta persistida por padrão.
+- Qwen local somente como assistente de domínio, caso o wiring seguro esteja concluído; nunca como autoridade operacional.
 
-## Cronograma de sete dias
+## Estado técnico atual
 
-### Dia 1 - especificar e criar esqueletos
+- Tasks 1–5: concluídas.
+- Task 6: runtime Qwen/llama.cpp e smoke físico concluídos; wiring na `MainActivity` pendente.
+- DAT: fluxo pré-hardware e MockDeviceKit concluídos; Meta Wearables reais pendentes.
+- UI: jornada Compose integrada à `main`.
+- Task 7: E2E final precisa substituir expectativas históricas de dock/undock automático.
 
-- Congelar jornada, contratos e critérios de aceite.
-- Criar app Kotlin, pacote ROS 2, rótulos de IA e QR do cenário.
-- Garantir que cada domínio possua fixture ou fake.
+## Trabalho até o evento
 
-### Dia 2 - provar componentes isolados
+### 1. Fechar software antes do hardware
 
-- Átila: CameraAccess, Mock Device Kit, voz e TTS.
-- Felipe: detector do QR e movimento do TurtleBot 4 no Gazebo.
-- Rafael: primeiro classificador local e conjunto de avaliação.
+- integrar o fallback `UNKNOWN -> Qwen` somente se ele não colocar a jornada operacional em risco;
+- reescrever o E2E para `SPRAY` permanecer no alvo;
+- validar `DOCK` e `UNDOCK` explícitos;
+- executar os gates `mockDebug` e `datDebug`;
+- congelar contrato e assets.
 
-### Dia 3 - estabilizar adaptadores
+### 2. Preparar evidência offline
 
-- Integrar classificador e detector por interfaces pequenas.
-- Validar schema, expiração, confirmação e deduplicação no bridge.
-- Aplicar o gate técnico descrito em [`tasks/mvp-week.md`](tasks/mvp-week.md).
+- APKs/builds reproduzíveis;
+- dependências necessárias disponíveis localmente;
+- logs e comandos de diagnóstico documentados;
+- vídeo de contingência identificado como contingência, não como substituto de validação física.
 
-### Dia 4 - fechar o caminho feliz
+### 3. Validar hardware no evento
 
-- Conectar app e ROS 2 por WebSocket.
-- Executar a jornada ponta a ponta com mocks.
-- Registrar telemetria sem mídia bruta.
-
-### Dia 5 - falhas e checkpoints
-
-- Testar recusa, ambiguidade, timeout, desconexão e duplicata.
-- Demonstrar IA, entrada por câmera, áudio, privacidade e eficiência.
-
-### Dia 6 - congelar e gravar
-
-- Não adicionar features.
-- Rodar a jornada cinco vezes.
-- Gravar app, intenção, JSON, Gazebo e falha segura.
-- Felipe e Rafael ensaiam o pitch.
-
-### Dia 7 - entregar
-
-- Verificar build reproduzível e materiais finais.
-- Editar o vídeo de até 3 minutos.
-- Conferir proposta, pitch e demonstração antes do envio.
+- sample oficial e pareamento;
+- sessão/câmera DAT real;
+- target visual real;
+- STT/TTS e rota de áudio;
+- jornada completa Android -> bridge -> ROS 2/Nav2/Gazebo;
+- memória, latência, temperatura e bateria.
 
 ## Papéis
 
-- **Átila:** aplicativo Kotlin, DAT, áudio e orquestração mobile.
-- **Felipe:** visão computacional, ROS 2, Gazebo, TurtleBot 4 e integração do simulador.
-- **Rafael:** IA local, classificação de intenção, métricas e evidências do checkpoint.
-- **Felipe e Rafael:** apresentação do pitch.
+- **Átila:** Android, DAT, câmera, áudio, permissões e build.
+- **Felipe:** visão, bridge ROS 2, Gazebo/Nav2 e integração E2E.
+- **Rafael:** IA local, métricas, checkpoints e apoio ao pitch.
+- **Equipe:** segurança, evidência física e congelamento final.
 
-Os detalhes e fronteiras estão em [`team.md`](team.md).
+Detalhes: [`team.md`](team.md).
 
-## Tempo do hackathon presencial
+## Hackathon presencial — 18 de setembro de 2026
 
-O hackathon está previsto para 18 de setembro de 2026. A janela bruta vai das 11h00 às 17h30, mas o edital reserva 12h00-14h00 para almoço, 15h00 e 16h00 para checkpoints, 15h30 para coffee break e 16h45-17h30 para a reta final. A equipe deve planejar cerca de 2h45 a 3h de programação previsível, além do tempo usado para demonstrar e receber feedback nos checkpoints.
+O evento não é o momento de criar arquitetura nova. A janela deve ser usada para substituir mocks pelo hardware, medir, corrigir incompatibilidades curtas e demonstrar.
 
-Nesse período, a equipe deve apenas:
+Prioridade:
 
-1. parear o hardware e executar o sample oficial;
-2. trocar o mock pelo `DatFrameSource`;
-3. validar câmera, voz e output por áudio;
-4. medir e ajustar estabilidade;
-5. passar nos checkpoints e congelar a demo.
+1. confirmar versão DAT/firmware e pareamento;
+2. receber frame real;
+3. validar áudio;
+4. executar a jornada completa;
+5. medir estabilidade;
+6. passar checkpoints;
+7. congelar.
 
-O roteiro detalhado está em [`tasks/hackathon-day.md`](tasks/hackathon-day.md).
+Roteiro detalhado: [`tasks/hackathon-day.md`](tasks/hackathon-day.md).
 
-## Regra diária
+## Regras de corte
 
-Uma tarefa por vez, teste antes ou junto e nenhuma mudança silenciosa de contrato. Ao fim do dia, comparar a spec com a implementação e registrar divergências.
+- Se Qwen competir por memória/latência com DAT, câmera ou áudio, a jornada operacional tem prioridade.
+- Se o microfone dos óculos não estiver disponível, documentar a rota usada; não inventar suporte.
+- Se o stream real estiver instável, reduzir frequência/qualidade ou capturar sob demanda.
+- Não trocar QR/target mapeado por localização aberta durante o evento.
+- Não alterar contrato ROS para acomodar comportamento de UI.
+- Depois do congelamento, entram somente correções que desbloqueiam a demonstração ou impedem comando indevido.

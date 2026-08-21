@@ -29,7 +29,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 
 - Câmera dos Meta Wearables entrega o frame ao Android pelo DAT. O Mock Device Kit testa a mesma interface antes da gravação, mas não satisfaz sozinho este critério.
 - Voz é capturada e transcrita pelas APIs nativas do companion app; nos óculos reais, a rota Bluetooth deve ser validada e o telefone permanece como fallback.
-- Classificador local retorna `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN` com confiança.
+- Classificador operacional local retorna `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` ou `UNKNOWN` com confiança.
 - Intenção e alvo viram JSON válido.
 - WebSocket entrega o comando ao bridge.
 - ROS 2/Gazebo reage ao destino.
@@ -42,7 +42,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 - Precisão centimétrica ou RTK-GPS.
 - Operação real de pulverização.
 - Múltiplos robôs simultâneos.
-- Linguagem natural aberta para qualquer tarefa.
+- Linguagem natural aberta para qualquer tarefa. O assistente Qwen, quando integrado à UI, permanece restrito ao domínio do Maestro e nunca executa ações.
 - Estimativa de waypoint baseada em IMU dos óculos.
 - Operação sem smartphone companion.
 - Reconhecimento visual livre de objetos ou talhões sem marcador no MVP da semana.
@@ -52,7 +52,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 ## Plataformas do MVP
 
 - Android/Kotlin: `datDebug` em um aparelho físico que cumpra os requisitos da versão fixada do DAT; `mockDebug` existe somente para desenvolvimento e testes automatizados.
-- O app Android consome o `intent_model.json` canônico e o contrato JSON 1.0.
+- O app Android consome o `intent_model.json` canônico e o contrato JSON 1.0. O runtime Qwen existe como componente opcional de conversa, mas não substitui o classificador operacional nem participa da geração de `Command`.
 - A demo ao vivo usa o build `datDebug` conectado aos Meta Wearables; `mockDebug` deve continuar saudável como contingência e teste da lógica compartilhada.
 - A fonte simulada antecipa o desenvolvimento. A captura DAT real é parte obrigatória da definição do MVP demonstrado.
 

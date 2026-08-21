@@ -21,6 +21,7 @@ plugins {
 android {
     namespace = "br.org.agroturtles.maestro"
     compileSdk = 36
+    ndkVersion = "29.0.13113456"
 
     defaultConfig {
         applicationId = "br.org.agroturtles.maestro"
@@ -31,9 +32,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["mwdat_application_id"] = ""
         manifestPlaceholders["mwdat_client_token"] = ""
+
+        externalNativeBuild {
+            cmake {
+                arguments += "-DCMAKE_BUILD_TYPE=Release"
+            }
+        }
+
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     flavorDimensions += "frameSource"
+
     productFlavors {
         create("mock") {
             dimension = "frameSource"
@@ -44,6 +56,7 @@ android {
             buildConfigField("boolean", "DAT_MOCK_DEVICE", "false")
             buildConfigField("String", "DAT_MOCK_SCENARIO", "\"not-applicable\"")
         }
+
         create("dat") {
             dimension = "frameSource"
             minSdk = 31
@@ -62,10 +75,19 @@ android {
         compose = true
         buildConfig = true
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.31.6"
+        }
+    }
+
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 
     sourceSets {

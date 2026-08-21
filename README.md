@@ -37,16 +37,26 @@ Para manter a demonstração verificável, o alvo do MVP será um marcador visua
 ## O que já existe
 
 - contrato JSON 1.0 com confirmação, expiração e UUID;
-- classificador de intenção executado localmente no Android;
+- classificador operacional local no Android com `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`;
 - app Android com flavors `mock` (API 26+) e `dat` (API 31+);
 - bridge WebSocket/ROS 2 com rejeição de comando inseguro e deduplicação;
-- lifecycle de missão sem `undock`, retorno à doca ou `dock` implícitos após um `SPRAY`;
-- cenário do Gazebo com três placas bifaciais (`plot-01` a `plot-03`), Nav2 e TurtleBot 4;
-- resolvedor compartilhado que aceita alvo visual, ID falado ou concordância entre os dois e recusa conflitos;
-- Dockerfile e Compose para reproduzir o simulador;
-- simulador de óculos por terminal para testar sem hardware.
+- lifecycle sem `undock`, retorno à doca ou `dock` implícitos após `SPRAY`; `DOCK` e `UNDOCK` são comandos explícitos;
+- cenário Gazebo com três placas (`plot-01` a `plot-03`), Nav2 e TurtleBot 4;
+- resolvedor compartilhado que combina alvo visual e ID falado e recusa conflitos;
+- integração DAT 0.9.0 pré-hardware com ciclo de sessão/câmera, MockDeviceKit e QR local via ZXing;
+- interface Android/Compose de demonstração com alvo, intenção, confirmação e execução;
+- runtime local Qwen2.5-1.5B Q4_K_M via `llama.cpp`, validado em smoke físico no SM-X510;
+- Dockerfile e Compose para reproduzir o simulador e cliente mock para testes sem hardware.
 
-O adaptador do DAT real está isolado e ainda precisa receber o ciclo oficial de sessão e captura do sample `CameraAccess`. A jornada da semana usa o mock; a troca pelo hardware acontece depois que o sample funcionar no aparelho do evento.
+O caminho DAT pré-hardware está implementado e foi validado com MockDeviceKit. A sessão e a câmera dos Meta Wearables físicos, além da rota real de áudio com os óculos, continuam pendentes do ensaio com hardware. Resultado com MockDeviceKit não deve ser apresentado como captura física.
+
+### IA operacional e assistente local
+
+O Qwen não substitui o classificador operacional. O benchmark versionado mostrou que o Qwen2.5-1.5B não é seguro o suficiente para decidir comandos críticos: 36/48 acertos e 3 aceites perigosos no corpus de seis rótulos. Por isso, `LocalIntentClassifier` continua responsável por `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM` e `CANCEL`.
+
+A infraestrutura de assistente local já existe: `LanguageRouter` envia somente `UNKNOWN` para `QwenDomainAssistant`, cuja saída é limitada por GBNF a `CHAT` ou `OUT_OF_SCOPE`; saída malformada falha para `OUT_OF_SCOPE`. O runtime Android nativo foi validado fisicamente, mas esse roteamento ainda não está conectado à `MainActivity`. Portanto, a interface principal atual continua usando apenas o classificador operacional.
+
+Detalhes e evidências: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-android-runtime.md).
 
 ## Estrutura
 
@@ -296,7 +306,7 @@ docker compose --profile visual ps
 turtlebot1
 ```
 
-5. Se o robô estiver dockado, comandos normais de navegação são rejeitados. Faça `Undock` explicitamente/manualmente até a intent `UNDOCK` estar integrada ao aplicativo.
+5. Se o robô estiver dockado, comandos normais de navegação são rejeitados. Envie `UNDOCK` explicitamente pelo app/HMI e confirme antes de iniciar uma navegação.
 
 ---
 
@@ -359,7 +369,7 @@ Registre quais frases foram reconhecidas corretamente e quais resultaram em `UNK
 frase pretendida | transcrição ASR | intent esperada | target esperado | resultado
 ```
 
-Essas variações devem fazer parte do conjunto de avaliação da IA e alimentar a Task 6.
+Essas variações devem permanecer no corpus de regressão do classificador operacional. Frases que terminarem em `UNKNOWN` são candidatas ao assistente apenas depois do wiring seguro da Task 6.
 
 ### Caso 3 — Confirmação por voz
 
@@ -437,20 +447,17 @@ não deve aparecer um retorno automático para a doca.
 
 ## Próximas tarefas críticas
 
-A ordem executável está em [`TASKS.md`](TASKS.md). A Task 1 já foi concluída e validada; a próxima implementação é a Task 2.
+A ordem executável está em [`TASKS.md`](TASKS.md). Tasks 1–5 estão concluídas; a Task 6 tem benchmark e runtime Qwen aprovados, mas ainda precisa do wiring seguro no fluxo principal; a Task 7 concentra o fechamento E2E.
 
-1. Task 2 — adicionar `DOCK` e `UNDOCK` ao contrato do backend.
-2. Task 3 — implementar `UNDOCK` explícito no bridge.
-3. Task 4 — implementar `DOCK` explícito com aproximação Nav2 antes da action de docking.
-4. Task 5 — transportar `DOCK` e `UNDOCK` corretamente no Android.
-5. Task 6 — construir corpus/benchmark e escolher a evolução da IA local com base em qualidade, latência e memória no aparelho real.
-6. Task 7 — atualizar E2E, demos e documentação para o lifecycle explícito.
+1. Conectar `LanguageRouter`/`QwenDomainAssistant` à UI sem dar ao Qwen acesso a `Command`, WebSocket ou estado do robô.
+2. Reescrever os scripts E2E legados para o lifecycle explícito: `SPRAY` termina no alvo e permanece lá; `DOCK`/`UNDOCK` só ocorrem por comando confirmado.
+3. Executar o gate físico do DAT com os Meta Wearables e validar câmera + STT/TTS/rota de áudio no aparelho da demonstração.
+4. Repetir a jornada Android → WebSocket → ROS 2/Nav2/Gazebo e registrar evidência final sem mídia bruta.
+5. Atualizar pitch/formulário final somente depois que o comportamento demonstrado estiver congelado.
 
-### Fase seguinte — Meta Wearables / DAT
+### Meta Wearables / DAT
 
-Depois das Tasks 2–7, o projeto entra na fase de hardware Meta. Essa fase já está registrada no roadmap, mas não deve ser antecipada para compensar pendências do pipeline atual.
-
-A sequência planejada é: validar o ambiente `datDebug` no celular real, validar primeiro o sample oficial `CameraAccess`, integrar frames reais ao Maestro, validar câmera e ASR/áudio simultaneamente e então executar o E2E físico com os Meta Wearables. O adaptador do Maestro só deve ser considerado validado depois que o sample oficial funcionar no mesmo aparelho e com os mesmos óculos.
+O caminho pré-hardware já está implementado com DAT 0.9.0 e MockDeviceKit. O próximo passo é validar o mesmo adaptador no hardware real; não existe fallback silencioso do flavor `dat` para simulação. O mock permanece como contingência e teste da lógica compartilhada.
 
 Comece pelo índice em [`docs/README.md`](docs/README.md).
 
