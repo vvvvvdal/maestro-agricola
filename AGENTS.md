@@ -33,9 +33,12 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 - Desde a conclusão da Task 1, `SPRAY` nunca deve causar `Undock`, retorno à doca ou `Dock` implicitamente.
 - `DOCK` e `UNDOCK` são comandos operacionais explícitos; não inventar lifecycle automático para compensar uma task ainda não implementada.
 - A IA pode interpretar linguagem natural, mas a saída de controle deve continuar estruturada e validada; nenhum modelo deve gerar comandos ROS livres diretamente.
+- `LocalIntentClassifier` continua sendo a autoridade operacional para `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
+- Qwen é somente assistente de domínio: recebe apenas o caminho `UNKNOWN`, produz somente `CHAT` ou `OUT_OF_SCOPE` e nunca recebe acesso a `Command`, WebSocket, ROS, estado do robô ou resolução de alvo.
+- `TargetResolver` continua separado do assistente; Qwen não inventa target, pose ou ação.
 - Mudanças de modelo de IA devem ser comparadas em corpus/benchmark reproduzível antes da escolha final e, quando houver o aparelho alvo, medidas também em latência e memória no dispositivo.
-- A fase Meta Wearables/DAT começa somente depois das Tasks 2–7, salvo pedido humano explícito para investigação isolada.
-- Antes de integrar o DAT ao Maestro, validar no mesmo aparelho e com os mesmos óculos o sample oficial de câmera/sessão aplicável à versão do SDK em uso.
+- O caminho DAT 0.9.0 pré-hardware já existe com MockDeviceKit; a pendência é validar sessão/câmera e áudio nos Meta Wearables reais, sem confundir mock com evidência física.
+- Antes de declarar DAT aprovado, validar no mesmo aparelho e com os mesmos óculos o sample oficial de câmera/sessão aplicável à versão do SDK em uso.
 - Não assumir de antemão qual microfone/rota de áudio estará disponível com os óculos conectados; validar câmera e ASR/áudio simultaneamente no hardware real.
 
 ## Protocolo obrigatório para agentes de código
@@ -195,11 +198,21 @@ Não afirme que uma falha é preexistente sem evidência. Quando necessário, co
 - `UNKNOWN` e recusa segura são comportamentos válidos; reduzir falso negativo não justifica aumentar aceitações inseguras.
 - Não envie transcrições para serviços externos apenas para melhorar o classificador local sem decisão humana explícita e revisão de privacidade.
 
-### 6.2. Fase Meta Wearables / DAT
+### 6.1.1. Assistente Qwen
 
-- Tasks 8–12 são fase planejada posterior às Tasks 2–7. Não antecipá-las dentro de uma task de contrato, bridge, Android, IA ou E2E atual.
-- Primeiro prove sessão/câmera no sample oficial correspondente à versão do DAT; depois integre ao adaptador do Maestro.
-- Preserve o flavor/mock e interfaces existentes para que falhas do hardware não contaminem o pipeline já validado.
+- O benchmark de seis rótulos rejeitou Qwen como classificador operacional; não reabrir essa decisão sem novo benchmark reproduzível.
+- O runtime Android local via `llama.cpp` é infraestrutura de conversa, não de controle.
+- O GGUF não deve ser commitado nem empacotado silenciosamente no APK.
+- Integração na `MainActivity` deve ocorrer somente no caminho `UNKNOWN -> LanguageRouter -> QwenDomainAssistant`.
+- Operações críticas não podem esperar pelo Qwen nem depender de cold start/warm-up.
+- Saída inválida do assistente deve continuar falhando para `OUT_OF_SCOPE`.
+- Mudança no system prompt, grammar, quantização, número de threads ou limite de tokens exige repetir o smoke físico e registrar latência/memória.
+
+### 6.2. Meta Wearables / DAT
+
+- O adaptador DAT 0.9.0 e o fluxo pré-hardware com MockDeviceKit já foram integrados; preserve essa fronteira em vez de reescrevê-la durante tasks de IA/bridge.
+- O próximo gate é hardware real: sessão, câmera, permissões e rota de áudio no mesmo Android e nos mesmos Meta Wearables da demonstração.
+- Preserve o flavor `mock` e as interfaces existentes para que falhas do hardware não contaminem o pipeline já validado.
 - Não declarar DAT, câmera dos óculos, áudio dos óculos ou E2E físico como aprovados sem evidência no hardware real.
 
 ### 7. Documentação

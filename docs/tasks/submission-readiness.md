@@ -1,5 +1,7 @@
 # Plano de prontidão para entrega - 18 a 22 de agosto de 2026
 
+> **Registro histórico.** Este documento preserva a prontidão registrada em 18/08/2026. Desde então, `DOCK`/`UNDOCK` explícitos, UI Compose, DAT pré-hardware e runtime Qwen foram adicionados. Execuções antigas de `make demo` que pressupõem lifecycle automático não representam o comportamento normativo atual. Para o estado corrente, consulte `../../TASKS.md`, `../testing.md` e `qwen-android-runtime.md`.
+
 ## Objetivo
 
 Deixar o MVP reproduzível por uma pessoa que acabou de clonar o repositório e preparar os artefatos exigidos pelo formulário final do Programa AI Glasses Brasil, mantendo o pitch entre 2 e 3 minutos.

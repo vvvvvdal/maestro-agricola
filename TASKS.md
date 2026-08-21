@@ -8,7 +8,7 @@
 - Task 3 --- Implementar comando explícito UNDOCK: DONE
 - Task 4 --- Implementar comando explícito DOCK: DONE
 - Task 5 --- Android transportar intents: DONE
-- Task 6 --- Evolução da IA local: EM AVALIAÇÃO (não é foco da entrega atual)
+- Task 6 --- Evolução da IA local: EM ANDAMENTO (runtime Qwen validado; integração na MainActivity pendente)
 - Task 7 --- E2E final e preparação da demonstração: EM ANDAMENTO
 
 ---
@@ -17,7 +17,7 @@
 
 O objetivo principal agora é fechar uma demonstração vertical estável do MVP.
 
-A prioridade não é trocar o modelo de IA neste momento.
+A prioridade é preservar o classificador operacional já validado e integrar o assistente Qwen apenas como fallback conversacional, sem autoridade sobre comandos.
 
 O sistema atual já possui:
 
@@ -352,76 +352,82 @@ Testes:
 
 # Task 6 --- Evolução da IA local
 
-Status: EM AVALIAÇÃO (não é prioridade da entrega)
+Status: EM ANDAMENTO — benchmark, isolamento de segurança e runtime Android concluídos; integração no fluxo principal pendente.
 
-Objetivo original:
+Objetivo:
 
-Avaliar evolução do classificador local sem permitir que a IA controle ROS diretamente.
+Adicionar um assistente local de domínio sem substituir o classificador operacional e sem permitir que um LLM controle ROS, WebSocket ou estado do robô.
 
-Arquitetura mantida:
+Arquitetura decidida:
 
 ```text
 fala/transcrição
- -> IntentClassifier
- -> IntentPrediction
- -> InteractionEngine
- -> confirmação
- -> Command
- -> ROS
+ -> LocalIntentClassifier
+ -> rótulo operacional? -> InteractionEngine -> confirmação -> Command -> WebSocket -> ROS
+ -> UNKNOWN?            -> LanguageRouter -> QwenDomainAssistant -> CHAT | OUT_OF_SCOPE
 ```
 
-## Estado atual
+Regras obrigatórias:
 
-O classificador atual já suporta:
+- `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM` e `CANCEL` nunca esperam pelo Qwen;
+- Qwen recebe somente o caminho que o classificador operacional marcou como `UNKNOWN`;
+- Qwen nunca produz `Command`, pose ROS, payload WebSocket ou mudança de estado;
+- saída do assistente é limitada a `CHAT` ou `OUT_OF_SCOPE` e falha fechada para `OUT_OF_SCOPE`;
+- `TargetResolver` continua sendo a única fronteira de resolução de alvo; Qwen não duplica esse papel;
+- confirmação de movimento permanece no `InteractionEngine`.
 
-- SPRAY
-- DOCK
-- UNDOCK
-- CONFIRM
-- CANCEL
-- UNKNOWN
+## Evidência de seleção do papel do Qwen
 
-O modelo atual foi validado no aplicativo.
+O benchmark reproduzível em `shared/ai/qwen_evaluation.json` testou Qwen2.5-1.5B-Instruct Q4_K_M como classificador dos seis rótulos operacionais:
 
-DOCK e UNDOCK passaram a ser reconhecidos após atualização do asset:
+- 48 exemplos;
+- 36 corretos;
+- acurácia 0,75;
+- macro-F1 0,7384;
+- 3 aceites perigosos (`CANCEL/UNKNOWN` virando intenção positiva).
 
-```text
-shared/ai/intent_model.json
-```
+Conclusão: Qwen foi rejeitado como classificador operacional. O `LocalIntentClassifier` continua sendo a autoridade de controle.
 
-e rebuild do aplicativo.
+## Runtime Android concluído
 
-## Decisão atual
+Implementado:
 
-Não implementar Qwen2.5 1.5B antes da entrega.
+- submodule `llama.cpp` pinado no commit `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`;
+- CMake/JNI ARM64 integrado ao app Android;
+- Qwen2.5-1.5B-Instruct-GGUF `Q4_K_M` carregado localmente;
+- contexto 2048, batch 512, 4 threads e máximo de 64 tokens por resposta;
+- system prompt canônico reduzido para 603 tokens no smoke final;
+- GBNF restringindo a saída a JSON com `CHAT` ou `OUT_OF_SCOPE`;
+- grammar parseada uma vez no carregamento e clonada por geração;
+- cache do system prompt preservado entre perguntas sem acumular histórico de conversa;
+- Activity de smoke exclusiva do flavor `mock`.
 
-Motivos:
+## Smoke físico no SM-X510
 
-- risco de integração;
-- tempo limitado;
-- necessidade de validar memória/latência no aparelho;
-- arquitetura atual já atende o fluxo principal.
+Em 21/08/2026, no Samsung SM-X510 (Android API 36, ARM64), o smoke final passou 5/5:
 
-Qwen2.5 1.5B permanece como trabalho futuro de pesquisa.
+- carregamento do modelo + cache do prompt: 33.291,911 ms;
+- primeira resposta, incluindo cold start: 42.084 ms;
+- respostas warm: 5.909 ms, 5.755 ms, 5.780 ms e 5.714 ms;
+- PSS após o smoke: 1.377.044 KB;
+- RSS: 1.451.773 KB;
+- Swap PSS: 273 KB;
+- os pedidos `Faça dock agora.` e `Como fazer bolo de chocolate?` retornaram `OUT_OF_SCOPE`;
+- perguntas de domínio sobre Maestro, AgroTurtles e confirmação retornaram `CHAT`.
 
-Possível evolução futura:
+Limitações:
 
-```text
-Qwen/NLU
- -> saída estruturada
- -> validação
- -> confirmação
- -> Command
-```
+- cold start de ~33 s exige preload/background se o assistente entrar na jornada principal;
+- warm latency de ~5,7–5,9 s exige feedback visual/sonoro de processamento;
+- o GGUF de ~1,1 GB não é versionado nem empacotado no APK atual;
+- convivência com DAT, câmera e áudio simultâneos ainda não foi medida;
+- `MainActivity` ainda instancia diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`, portanto o assistente não está acessível na UI principal.
 
-Nunca:
+Critério restante da Task 6:
 
-```text
-LLM
- -> comando ROS livre
-```
+- integrar o `LanguageRouter` e o `QwenDomainAssistant` na interface principal sem alterar o caminho operacional rápido e repetir testes/builds/smoke após o wiring.
 
----
+Evidência detalhada: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-android-runtime.md).
 
 # Task 7 --- E2E final e demonstração
 
@@ -478,10 +484,10 @@ Mudanças de contrato, lifecycle ou segurança devem continuar fail-closed e cob
 
 # Próximo passo
 
-Foco até sábado:
+Foco até a entrega:
 
-1. Fechar demo Gazebo.
-2. Integrar/verificar DAT.
-3. Melhorar interface Android.
-4. Gravar pitch.
-5. Apenas depois avaliar Qwen ou mudanças maiores de IA.
+1. Integrar o fallback conversacional Qwen à `MainActivity` sem tocar na autoridade operacional do `InteractionEngine`.
+2. Atualizar e executar o E2E do lifecycle explícito no Gazebo.
+3. Validar DAT/câmera/áudio com os Meta Wearables físicos quando disponíveis.
+4. Registrar evidência final Android → WebSocket → ROS 2/Nav2/Gazebo.
+5. Congelar documentação, formulário e pitch a partir do comportamento realmente demonstrado.

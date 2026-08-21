@@ -12,30 +12,59 @@ Operadores rurais precisam interromper o trabalho e recorrer a telas para orient
 
 ## Proposta de valor
 
-O Maestro Agrícola transforma os óculos em uma interface operacional: o usuário olha para um alvo, fala a ação e confirma por áudio. A autonomia continua no robô; o Maestro simplifica a interação humana.
+O Maestro Agrícola transforma os óculos em uma interface operacional: o usuário olha para um alvo previamente mapeado, fala a ação e confirma por áudio. A autonomia continua no robô; o Maestro reduz a fricção da interação humana e mantém as decisões críticas explícitas.
 
 ## Por que os óculos importam
 
 - A câmera compartilha o ponto de vista do operador.
-- Os microfones permitem comando sem ocupar as mãos.
-- Os alto-falantes fecham o ciclo sem exigir display.
-- O celular companion concentra IA, regras de segurança e conectividade.
+- O fluxo pode ser iniciado sem ocupar as mãos.
+- A resposta por áudio fecha o ciclo sem exigir atenção contínua a uma tela.
+- O Android companion concentra percepção, IA local, regras de segurança e conectividade.
+
+A câmera via DAT já possui caminho pré-hardware validado com MockDeviceKit. Câmera e rota de áudio nos Meta Wearables reais ainda precisam do gate físico.
 
 ## Diferencial
 
-A maioria das experiências de AI Glasses informa ou descreve. O Maestro Agrícola usa visão e voz para iniciar uma ação física segura e confirmada em maquinário já autônomo.
+A maioria das experiências de AI Glasses informa ou descreve. O Maestro usa visão e voz para iniciar uma ação física segura e confirmada em maquinário que já possui sua própria autonomia.
+
+A arquitetura separa interpretação de linguagem e autoridade de controle:
+
+- o classificador operacional reconhece somente intenções versionadas;
+- `InteractionEngine` valida estado e exige confirmação;
+- `TargetResolver` aceita apenas alvos conhecidos;
+- o assistente Qwen, quando ligado à interface principal, fica restrito a `CHAT` ou `OUT_OF_SCOPE` e não controla o robô.
+
+## Jornada demonstrável
+
+```text
+olhar para alvo mapeado
+-> falar ação
+-> classificar intenção
+-> resolver alvo
+-> repetir operação entendida
+-> confirmação explícita
+-> Command JSON
+-> WebSocket
+-> ROS 2 / Nav2
+-> robô simulado
+```
+
+`SPRAY` navega para o alvo e permanece lá. `DOCK` e `UNDOCK` são ações explícitas separadas; não existe retorno automático à doca depois de `SPRAY`.
 
 ## Hipótese de impacto
 
-Uma interação hands-free reduz a fricção operacional, mantém o trabalhador atento ao ambiente e torna sistemas autônomos mais acessíveis a quem não opera interfaces técnicas complexas.
+Uma interação hands-free pode reduzir a fricção operacional, manter o trabalhador atento ao ambiente e tornar sistemas autônomos mais acessíveis a quem não opera interfaces técnicas complexas.
 
-Não há, nesta fase, dados medidos de economia de tempo. A primeira validação deve comparar tempo, erros e carga de interação entre o fluxo com tela e o fluxo “olhar, falar, confirmar”.
+Não há, nesta fase, dados medidos de economia de tempo em campo. Uma validação futura deve comparar tempo, erros e carga de interação entre o fluxo com tela e o fluxo “olhar, falar, confirmar”.
 
 ## Limites do MVP
 
-- Um único tipo de ação: enviar o robô a um alvo de trabalho.
-- Um alvo visual mapeado por vez.
+- Uma tarefa agrícola demonstrativa: `SPRAY` em alvo previamente mapeado.
+- Comandos de lifecycle explícitos `DOCK` e `UNDOCK`.
+- Alvos controlados/allowlisted, hoje representados no cenário por plots mapeados.
 - Um robô simulado em ROS 2/Gazebo.
-- Terreno e cenário controlados.
-- Sem navegação autônoma implementada pelo Maestro.
-- Sem dependência de IMU ou pose dos óculos.
+- Sem pulverização física.
+- Sem navegação implementada pelo Maestro; planejamento e execução pertencem ao stack do robô/Nav2.
+- Sem dependência de IMU, GPS, pose da cabeça ou profundidade dos óculos.
+- Sem RAG e sem linguagem aberta com autoridade operacional.
+- Qwen local é opcional e conversacional; o classificador operacional continua independente dele.

@@ -4,81 +4,61 @@ Este guia separa os testes por nível para que um erro possa ser localizado ante
 
 ## Caminho simples: passou ou não passou
 
-Para a validação local normal, execute na raiz:
+Para regressão local alinhada ao lifecycle atual, execute na raiz:
 
 ```bash
 make test-quick
-make demo
 ```
 
-Não abra `127.0.0.1:18765` no navegador. A porta recebe conexões WebSocket dos apps e do cliente mock, não páginas HTTP. Não execute `make simulation-logs` a menos que `make demo` falhe.
+Na pasta `mobile/android`, os gates combinados usados após integrar Qwen + DAT/UI são:
 
-O resultado é aprovado quando a última parte da saída contém:
-
-```text
-SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados
-DEMO APROVADA: undock, WebSocket, Nav2, movimento e dock verificados.
+```bash
+./gradlew :app:testMockDebugUnitTest --no-daemon
+./gradlew :app:assembleMockDebug --no-daemon
+./gradlew :app:assembleDatDebug --no-daemon
 ```
 
-Qualquer aviso anterior pode ser ruído de inicialização do ROS/Gazebo. Se as duas linhas aparecem e o comando retorna ao terminal sem `make: ***`, o teste passou. Encerre depois com `make simulation-down`.
+Os três devem terminar com `BUILD SUCCESSFUL`.
+
+`make demo`, `make demo-route` e `make demo-visual` ainda são úteis para diagnóstico do WebSocket/Nav2/Gazebo, mas conservam expectativas históricas de lifecycle automático. Enquanto a Task 7 não reescrever esses scripts, eles não são gate final de segurança: `SPRAY` deve terminar no alvo e permanecer lá, e `DOCK`/`UNDOCK` só podem ocorrer por comandos explícitos e confirmados.
+
+Não abra `127.0.0.1:18765` no navegador; é uma porta WebSocket.
 
 ## Visão geral
 
-| Nível | Comando | O que prova | Precisa de Docker |
-|---|---|---|---:|
-| Ambiente | `make doctor` | ferramentas, daemon, arquivos e porta | Sim, apenas diagnóstico |
-| Portátil | `make test` | modelo, cliente e núcleo seguro do bridge | Não |
-| Configuração | `make test-quick` | testes portáteis + Compose válido | CLI apenas |
-| Integração | `make demo` | undock → mock/IA local → WebSocket → Nav2 → dock | Sim |
-| Rota completa | `make demo-route` | visita os três plots em ordem e retorna à doca | Sim + NVIDIA |
-| Visual NVIDIA | `make gazebo` + `make demo-visual` | mesma integração com a janela 3D na GPU | Sim + NVIDIA/X11 |
-| Mobile mock | Gradle/Android Studio | comportamento nativo no aparelho | Não para o build |
+| Nível | Comando | O que prova | Status como gate atual |
+|---|---|---|---|
+| Ambiente | `make doctor` | ferramentas, daemon, arquivos e porta | diagnóstico |
+| Portátil | `make test` | modelo, cliente e núcleo seguro do bridge | válido |
+| Configuração | `make test-quick` | testes portáteis + Compose válido | gate local |
+| Android mock | `:app:testMockDebugUnitTest` + `:app:assembleMockDebug` | regressão Kotlin, IA e JNI/CMake | gate |
+| Android DAT | `:app:assembleDatDebug` | compatibilidade de build Qwen + DAT/UI | gate de build, não hardware |
+| Qwen físico | `QwenSmokeActivity` no `mockDebug` | runtime local, GBNF, latência e memória | evidência da Task 6 |
+| Integração legada | `make demo` | protocolo/WebSocket/Nav2/movimento | diagnóstico até Task 7 |
+| Rota legada | `make demo-route` | três plots no cenário | diagnóstico; retorno automático é histórico |
+| Visual NVIDIA | `make gazebo` + `make demo-visual` | inspeção visual Gazebo/RViz | diagnóstico visual até Task 7 |
 
 ## Teste recomendado do zero
 
-Execute na raiz do repositório:
+Execute primeiro a regressão que não depende do lifecycle legado:
 
 ```bash
 make doctor
 make test-quick
-make demo
 ```
 
-O primeiro `make demo` baixa uma imagem ROS grande e pode demorar. Repetições aproveitam o cache. O comando deixa o contêiner em segundo plano para permitir novos testes com `make demo-client`.
-
-### Saída de sucesso
-
-O último JSON deve ter:
-
-- `schema_version: "1.0"`;
-- o mesmo `command_id` usado pelo cliente;
-- `status: "ACCEPTED"`;
-- `reason: "navigation goal queued"`.
-
-Depois do JSON, o verificador aguarda o Nav2, confirma que o processo do Gazebo continua vivo, encontra o aceite da meta, mede alteração da odometria a partir daquele momento e espera a confirmação do dock. O sucesso completo termina com:
-
-```text
-SIMULAÇÃO VERIFICADA: protocolo, Nav2 e movimento confirmados
-```
-
-Um JSON `ACCEPTED` sem `DEMO APROVADA` prova apenas o contrato e a fila; não é evidência suficiente de navegação ou retorno seguro.
-
-### Rota com os três plots
-
-Para reconstruir um contêiner headless limpo, visitar os três pontos e voltar à doca:
+Depois, para Android:
 
 ```bash
-make demo-route
+cd mobile/android
+./gradlew :app:testMockDebugUnitTest --no-daemon
+./gradlew :app:assembleMockDebug --no-daemon
+./gradlew :app:assembleDatDebug --no-daemon
 ```
 
-O comando fecha uma instância anterior para evitar disputa pela porta e pelos recursos. Ele usa a NVIDIA sem abrir a GUI, enfileira `plot-01`, `plot-02` e `plot-03`, exige a conclusão nessa ordem e termina com `ROTA APROVADA` somente após `Dock completed`. O teste portátil por software continua disponível em `make demo` para um único plot.
+Para testar movimento no Gazebo antes da Task 7, prefira um smoke manual compatível com o lifecycle explícito: se o robô estiver dockado, envie `UNDOCK` explicitamente; envie e confirme `SPRAY`; verifique que a navegação termina no plot sem retorno automático; envie `DOCK` explicitamente somente quando quiser retornar.
 
-Não espere uma janela: o Gazebo usa tela virtual e renderização por software. Consulte o processo com:
-
-```bash
-make status
-make logs
-```
+Os comandos `make demo*` continuam documentados abaixo como ferramentas de diagnóstico histórico. Não use a mensagem antiga `DEMO APROVADA: undock ... dock` como evidência do comportamento atual.
 
 ## Inspeção visual opcional
 
@@ -104,7 +84,7 @@ Em outro terminal, execute a prova ponta a ponta:
 make demo-visual
 ```
 
-O resultado aprovado termina com `DEMO VISUAL APROVADA`. Para abrir também o RViz no mesmo contêiner:
+O script pode terminar com `DEMO VISUAL APROVADA`, mas essa mensagem ainda usa o critério histórico. Use a janela para inspecionar o movimento; não trate dock/undock automático como comportamento aprovado. Para abrir também o RViz no mesmo contêiner:
 
 ```bash
 make rviz
@@ -211,7 +191,7 @@ O payload só deve ser criado depois que o WebSocket conectar. A versão atual j
 
 ### Comando recusado localmente
 
-Intenção diferente de `SPRAY`, confirmação diferente de `CONFIRM` ou confiança baixa resulta em recusa antes do envio. Isso é uma proteção, não uma falha do bridge.
+Intenção fora de `SPRAY`, `DOCK` e `UNDOCK`, confirmação ausente/inválida, estado incompatível ou confiança baixa resulta em recusa antes do envio. Isso é uma proteção, não uma falha do bridge.
 
 ## Encerramento
 
@@ -221,7 +201,7 @@ make simulation-down
 
 Use `make status` para confirmar que não há serviço ativo.
 
-Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da demo. Avalie a execução pela mensagem `DEMO APROVADA` emitida antes de encerrar.
+Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da execução. Enquanto a Task 7 não atualizar os scripts, não use a mensagem legada `DEMO APROVADA` como evidência do lifecycle atual.
 
 ## Android: desenvolvimento e demonstração com DAT
 
@@ -260,12 +240,31 @@ SDK Meta.
 
 No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da demonstração, use `ws://IP_DO_COMPUTADOR:18765`; aparelho e computador precisam alcançar a mesma rede local. O `mockDebug` serve para desenvolvimento. A evidência principal do MVP usa `datDebug`, um Android compatível e os Meta Wearables pareados.
 
+## Qwen local: smoke físico de desenvolvimento
+
+O smoke do Qwen existe somente no source set `mock` e não prova integração com a `MainActivity`, DAT ou Meta Wearables. O APK espera que o arquivo `qwen2.5-1.5b-q4_k_m.gguf` seja provisionado no diretório privado `files/` do app de desenvolvimento; o GGUF não faz parte do repositório nem do APK.
+
+Depois de instalar `app-mock-debug.apk` e provisionar o modelo, inicie:
+
+```bash
+adb shell am start \
+  -n br.org.agroturtles.maestro.mock/br.org.agroturtles.maestro.platform.QwenSmokeActivity
+
+adb logcat \
+  MaestroQwen:I MaestroQwenSmoke:I '*:S'
+```
+
+O gate registrado em 21/08/2026 no SM-X510 foi `SMOKE_RESULT passed=5 total=5`. Evidência final: 603 tokens de system prompt, load 33.291,911 ms, quatro respostas warm entre 5.714 e 5.909 ms, PSS 1.377.044 KB, RSS 1.451.773 KB e Swap PSS 273 KB.
+
+Detalhes: [`tasks/qwen-android-runtime.md`](tasks/qwen-android-runtime.md).
+
 ## Evidência mínima para a entrega
 
 Registre, sem mídia bruta:
 
 1. saída de `make test-quick`;
-2. JSON `ACCEPTED` do `make demo`;
-3. trecho de log mostrando a meta de navegação;
-4. uma recusa local por intenção ou confirmação inválida;
-5. versão do build `datDebug`, modelo do Android e Meta Wearables usados na jornada real.
+2. builds `mockDebug` e `datDebug` aprovados;
+3. E2E atualizado da Task 7 mostrando o lifecycle explícito;
+4. uma recusa local por intenção/confirmação inválida;
+5. versão do `datDebug`, modelo do Android e Meta Wearables usados na jornada real;
+6. se o Qwen fizer parte da demo final, evidência do wiring na `MainActivity` e de que comandos operacionais continuam sem depender dele.

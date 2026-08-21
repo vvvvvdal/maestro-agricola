@@ -1,81 +1,130 @@
 # Como colaborar no Maestro Agrícola
 
-O projeto usa `main` como linha integrada e sempre demonstrável. As branches são curtas e representam uma entrega verificável, não uma pessoa ou uma área permanente.
+O projeto usa `main` como linha integrada e demonstrável. Branches devem representar uma mudança lógica verificável, não uma pessoa ou uma área permanente.
 
-## Regra principal
+## Princípios
 
-- Uma branch por tarefa do quadro em `docs/tasks/mvp-week.md`.
-- Duração ideal: algumas horas; no máximo um dia de trabalho.
-- Qualquer integrante pode contribuir em qualquer branch.
-- Quem lidera a tarefa coordena a decisão e registra os trade-offs no PR.
-- Mudanças em `contracts/`, segurança ou privacidade precisam da revisão de dois integrantes.
-- Não manter branches `atila`, `felipe` ou `rafael`: elas criariam silos e integrações tardias.
+- Trabalhe uma task por vez e leia `TASKS.md` antes de começar.
+- Crie branches curtas a partir da `main` atualizada.
+- Preserve mudanças de outras frentes e evite refactors fora do escopo.
+- Contrato, segurança, privacidade e fronteiras de IA precisam de revisão cuidadosa.
+- Não versione segredos, mídia bruta, GGUF, APK/AAB, `.cxx/`, builds Gradle ou caches.
+- Atualize testes e documentação quando o comportamento mudar.
+- Antes de mergear, registre qual evidência foi executada e qual ainda depende de hardware.
 
-## Frentes iniciais
+## Estado atual das frentes
 
-| Branch | Tarefas | Liderança | Evidência para merge |
-|---|---|---|---|
-| `feat/android-mock-smoke` | MOB-01 e MOB-03 | Átila | `mockDebug` instalado no Motorola, voz/TTS demonstrados e log sem mídia bruta |
-| `feat/vision-qr` | VIS-02 e VIS-03 | Felipe | `plot-03` detectado em imagem conhecida e `UNKNOWN` sem marcador |
-| `feat/ai-device-eval` | AI-03 e apoio a QA-01 | Rafael | mesmos casos em Python e Kotlin, com confiança e limiar registrados |
+As frentes abaixo coexistem no mesmo app e devem continuar desacopladas:
 
-A integração INT-01/INT-02 deve nascer depois, em `feat/e2e-demo`, a partir da `main` já atualizada com as entregas acima. Não use uma branch de integração permanente.
+| Frente | Estado atual | Regra de integração |
+|---|---|---|
+| Android/UI | Compose com jornada operacional e diagnóstico | não esconder estados de confirmação/recusa |
+| DAT | fluxo 0.9.0 pré-hardware + MockDeviceKit | hardware real ainda é gate separado |
+| IA operacional | `LocalIntentClassifier` com seis rótulos | continua autoridade de controle |
+| Assistente Qwen | runtime JNI/llama.cpp validado no SM-X510 | somente `UNKNOWN -> CHAT/OUT_OF_SCOPE`; wiring principal ainda pendente |
+| Visão/alvo | QR/target previamente mapeado + `TargetResolver` | não inventar pose ou target via LLM |
+| Robótica | WebSocket JSON -> ROS 2/Nav2/Gazebo | `SPRAY`, `DOCK`, `UNDOCK` são explícitos e confirmados |
 
-## Fluxo diário
+## Fluxo de Git
 
-1. Escolha uma tarefa e escreva seus critérios de pronto antes de programar.
-2. Atualize a `main` e crie ou entre na branch da tarefa.
-3. Faça commits pequenos e executáveis.
-4. Atualize testes e documentação na mesma mudança.
-5. Abra PR ainda no mesmo dia, mesmo que inicialmente como rascunho.
-6. Outro integrante revisa e reproduz a evidência.
-7. Faça squash merge; apague a branch depois do merge.
-8. Atualize o checkbox no quadro somente quando a evidência existir.
-
-Exemplo:
+Atualize a `main` antes de iniciar:
 
 ```bash
 git switch main
-git pull --ff-only
-git switch -c feat/vision-qr
-
-# implementar e testar
-make test
-
-git add mobile shared tests docs
-git commit -m "feat(vision): detect mapped plot QR"
-git push -u origin feat/vision-qr
+git pull --ff-only origin main
+git switch -c feat/minha-task
 ```
 
-Se a branch já foi criada por outro integrante:
+Durante a task:
+
+```bash
+git status --short
+git --no-pager diff
+```
+
+Antes de cada commit:
+
+```bash
+git diff --check
+git --no-pager diff
+git status --short
+```
+
+Use Conventional Commits, por exemplo:
+
+```text
+feat(android): wire qwen assistant fallback
+test(e2e): validate explicit docking lifecycle
+docs(ai): record qwen Android benchmark
+fix(dat): handle camera session timeout
+```
+
+Ao sincronizar uma branch longa com mudanças recentes da `main`, prefira trazer a `main` para a feature, resolver e testar ali antes do merge final:
 
 ```bash
 git fetch origin
-git switch feat/vision-qr
-git pull --ff-only
+git switch feat/minha-task
+git merge origin/main
 ```
 
-## Limites de mudança
+Se houver conflito, resolva apenas os arquivos realmente conflitantes e execute novamente os gates relevantes.
 
-As pastas indicam a liderança de revisão, não exclusividade:
+## Gates por tipo de mudança
 
-- `mobile/android/`: Átila.
-- `robot_ws/` e visão: Felipe.
-- `shared/ai/`, dataset e métricas: Rafael.
-- `contracts/`: equipe; Felipe revisa o lado ROS e Átila o lado mobile.
-- `docs/pitch/`: Felipe e Rafael.
+### Android / integração
 
-Ao tocar a frente de outra pessoa, explique no PR o motivo e marque a liderança para revisão. Não copie modelo, schema ou constantes entre plataformas: a fonte compartilhada continua em `shared/` ou `contracts/`.
+Na pasta `mobile/android`:
 
-## Gate antes de merge
+```bash
+./gradlew :app:testMockDebugUnitTest --no-daemon
+./gradlew :app:assembleMockDebug --no-daemon
+./gradlew :app:assembleDatDebug --no-daemon
+```
 
-- `make test` passa.
-- `docker compose config --quiet` passa quando Compose mudar.
-- Nenhum segredo, mídia bruta ou arquivo de build foi adicionado.
-- O PR mostra como reproduzir a evidência.
-- Contrato, modelo e comportamento continuam coerentes entre Android e ROS.
-- Falhas de alvo, intenção ou confirmação continuam sem produzir movimento.
+Os três comandos foram usados como gate combinado após a sincronização de UI/DAT com o runtime Qwen.
 
-## Congelamento
+### IA operacional
 
-No Dia 6, criar a tag de release somente após cinco jornadas completas. Depois do congelamento entram apenas correções de defeito, documentação e evidências para o pitch.
+Use o corpus/fixtures versionados e preserve a regra de zero autoridade implícita. `UNKNOWN` é resultado válido e seguro.
+
+### Qwen
+
+Não avalie Qwen por algumas frases escolhidas. Mudanças em modelo, prompt, grammar ou runtime precisam de benchmark reproduzível e smoke físico. O Qwen não pode ganhar um tipo `COMMAND` nem acessar ROS/WebSocket.
+
+### ROS / E2E
+
+Os scripts antigos de demo ainda contêm expectativas históricas de retorno automático à doca. Até a Task 7 reescrevê-los, use-os como diagnóstico, não como fonte normativa. O lifecycle atual é:
+
+```text
+UNDOCK explícito -> navegação/SPRAY -> permanece no alvo -> DOCK explícito
+```
+
+Cada ação física continua exigindo confirmação.
+
+## Revisão
+
+Pastas indicam conhecimento predominante, não exclusividade:
+
+- `mobile/android/`: Android, UI, DAT, voz e runtime local.
+- `robot_ws/`: bridge ROS 2, Nav2, Gazebo e lifecycle.
+- `shared/ai/`: modelo operacional, datasets e benchmarks de IA.
+- `contracts/`: contrato versionado compartilhado.
+- `docs/`: decisões, evidências e estado do MVP.
+
+Ao tocar outra frente, explique o motivo no PR e preserve a interface pública existente sempre que possível.
+
+## Merge
+
+Antes do merge:
+
+1. `git diff --check` deve estar limpo.
+2. Testes focados da task devem passar.
+3. Gates transversais devem ser executados quando a mudança atravessa Android/IA/DAT/bridge.
+4. Não pode haver arquivo gerado ou segredo acidental.
+5. A documentação deve distinguir claramente:
+   - validado em mock;
+   - validado em aparelho físico;
+   - validado com Meta Wearables reais;
+   - ainda pendente.
+
+Não apague branches ou tags de evidência até confirmar que a `main` remota contém o resultado esperado.

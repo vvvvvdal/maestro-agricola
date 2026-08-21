@@ -8,14 +8,20 @@ AI Glasses
           |
           v
 App companion Android/Kotlin
-  DAT + voz local + IA local + confirmação
+  alvo + voz local
+          |
+          +-> LocalIntentClassifier
+          |      +-> intenção operacional -> InteractionEngine -> confirmação -> Command
+          |      +-> UNKNOWN -> LanguageRouter -> QwenDomainAssistant -> CHAT | OUT_OF_SCOPE
           |
           v
-WebSocket / JSON versionado
+WebSocket / JSON versionado (somente Command confirmado)
           |
           v
 Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
 ```
+
+A separação entre controle e conversa é uma restrição arquitetural. O Qwen não tem acesso a `CommandTransport`, ROS, WebSocket, pose, alvo resolvido nem estado do robô. No código atual, os componentes do assistente e o runtime nativo existem, mas o `MainActivity` ainda usa diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`; o wiring do fallback `UNKNOWN -> Qwen` permanece pendente.
 
 ## Componentes
 
@@ -65,7 +71,10 @@ Poeira e obstrução continuam sendo riscos do marcador. Uma evolução posterio
 - `TargetDetector`: recebe uma foto em memória (`Bitmap` ou HEIC), decodifica o QR e retorna `target_id` e timestamp. Como o leitor de QR não produz probabilidade calibrada, essa fronteira não inventa confiança.
 - `TargetResolver`: combina alvo visual e ID falado com estados `RESOLVED`, `NEEDS_VISUAL`, `CONFLICT` ou `UNKNOWN`.
 - `IntentClassifier`: recebe a transcrição e retorna rótulo e confiança.
-- `CommandTransport`: envia o JSON e correlaciona a resposta por `command_id`.
+- `LanguageRouter`: mantém qualquer rótulo diferente de `UNKNOWN` no caminho operacional e reserva somente `UNKNOWN` ao assistente.
+- `DomainAssistant`/`QwenDomainAssistant`: retorna somente `CHAT` ou `OUT_OF_SCOPE`; saída inválida falha para `OUT_OF_SCOPE`.
+- `QwenEngine`: fronteira assíncrona do runtime local; não conhece `Command` nem transporte do robô.
+- `CommandTransport`: envia somente o `Command` confirmado produzido pelo `InteractionEngine` e correlaciona a resposta por `command_id`.
 
 Essas fronteiras permitem desenvolver mobile, IA, visão e ROS 2 em paralelo sem esperar pelos óculos.
 
@@ -134,20 +143,33 @@ IDLE -> CAPTURING -> INTERPRETING -> AWAITING_CONFIRMATION
 
 ## IA local compartilhada
 
-O repositório treina um classificador softmax pequeno para `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`, precedido por regras de alta precisão em ordem segura. São 144 frases balanceadas para treino e 64 para avaliação independente; as features são palavras, bigramas e n-gramas de caracteres. O artefato JSON tem aproximadamente 367 KiB e é interpretado diretamente em Kotlin, sem servidor ou runtime externo. A suíte versionada obteve 64/64, macro-F1 1,00 e zero aceite perigoso; esses números validam somente os casos controlados e ainda exigem teste físico.
+### Caminho operacional
 
-O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando disponíveis. Ele é uma etapa diferente do classificador de intenção do Maestro.
+O classificador operacional continua pequeno, determinístico na borda e independente de LLM. O artefato `shared/ai/intent_model.json` contém seis rótulos: `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`. Regras de alta precisão tratam sinais inequívocos e o classificador linear softmax resolve os demais casos; baixa confiança falha para `UNKNOWN`.
+
+A avaliação histórica de 64 frases cobre as quatro classes originais e continua útil para regressão. Para a evolução com `DOCK`/`UNDOCK`, o corpus `field_evaluation.tsv` contém 48 frases balanceadas entre os seis rótulos e o baseline local classificou 48/48 no gate usado durante a Task 6.
+
+### Assistente Qwen isolado
+
+Qwen2.5-1.5B-Instruct Q4_K_M foi avaliado inicialmente como possível classificador operacional e rejeitado: 36/48, acurácia 0,75, macro-F1 0,7384 e 3 aceites perigosos. A decisão é não substituir `LocalIntentClassifier`.
+
+O modelo foi então restrito ao papel de assistente de domínio. `LanguageRouter` envia somente `UNKNOWN` para `QwenDomainAssistant`. O system prompt canônico limita o domínio ao Maestro Agrícola e a GBNF permite apenas JSON com `CHAT` ou `OUT_OF_SCOPE`. O parser Kotlin normaliza `OUT_OF_SCOPE` para uma mensagem fixa e qualquer JSON inválido ou tipo desconhecido também falha fechado.
+
+O runtime Android usa `llama.cpp` pinado em `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`, JNI/CMake ARM64, 4 threads, contexto 2048 e batch 512. No SM-X510, o smoke final passou 5/5; load ~33,3 s, respostas warm ~5,7–5,9 s, PSS ~1,38 GB e Swap PSS 273 KB. O GGUF não é versionado nem empacotado no APK atual. Integração na `MainActivity` e convivência com DAT/câmera/áudio ainda são pendências.
+
+O reconhecimento de fala usa os recursos nativos do Android. STT é uma etapa diferente tanto do classificador operacional quanto do Qwen.
 
 ## Estado dos adaptadores
 
 | Adaptador | Estado |
 |---|---|
-| Mock Android | Implementado |
-| Modelo local Android | Implementado; build nativo pendente |
-| WebSocket Android | Implementado; teste em aparelho pendente |
-| DAT Android | Ciclo 0.9.0, MockDeviceKit e detector QR local com ZXing validados no emulador; sessão, câmera e áudio no hardware real permanecem pendentes |
-| Voz e TTS Android | Implementados com APIs nativas; builds físicos e rota Bluetooth pendentes |
-| ROS 2/Nav2 | Jornada headless validada no Gazebo; Nav2 aceitou a meta e o robô iniciou movimento |
+| Mock Android | Implementado e usado nos testes automatizados |
+| Classificador operacional Android | Implementado; seis rótulos e caminho de confirmação ativo na `MainActivity` |
+| Qwen Android/llama.cpp | Runtime JNI implementado e smoke físico 5/5 no SM-X510; wiring na `MainActivity` pendente |
+| WebSocket Android | Implementado no fluxo principal |
+| DAT Android | Ciclo 0.9.0, MockDeviceKit e detector QR local com ZXing validados pré-hardware; sessão/câmera/áudio nos óculos reais pendentes |
+| Voz e TTS Android | Implementados com APIs nativas; rota de áudio com os óculos reais pendente |
+| ROS 2/Nav2 | Bridge e comandos explícitos implementados; E2E final do lifecycle atual ainda precisa substituir asserts legados de dock automático |
 
 ## Principais riscos
 
@@ -158,7 +180,7 @@ O reconhecimento de fala usa os recursos locais dos sistemas operacionais quando
 | DAT não fornece a interface de áudio do Maestro | STT/TTS nativos e fallback no telefone; validar rota Bluetooth no hardware |
 | Voz e câmera concorrendo por banda | Captura coordenada e qualidade reduzida |
 | Diferenças entre smartphones | Testar no aparelho do evento e manter perfis LOW/MEDIUM |
-| Latência de IA | Modelo local pequeno, feedback sonoro e timeout |
+| Latência de IA | Operacional permanece no classificador pequeno; Qwen é assíncrono, exige preload/feedback de processamento e não bloqueia comandos |
 | Comando duplicado | UUID, expiração e deduplicação no bridge |
 | Hardware disponível apenas no evento | Mock Device Kit e testes com vídeo H.265 |
 | Simulação confundida com câmera real | Label `dat-mockdevice`, ativação explícita por propriedade e evidência pré-hardware separada |

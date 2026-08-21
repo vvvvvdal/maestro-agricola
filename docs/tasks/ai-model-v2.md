@@ -1,5 +1,7 @@
 # Task: classificador local híbrido v2
 
+> **Registro histórico.** Esta task documenta a decisão tomada antes da avaliação do Qwen e antes da adição de `DOCK`/`UNDOCK` ao classificador. A decisão “não será incluído Qwen/LLM” foi superada pela Task 6: o classificador operacional continua sendo a autoridade de controle, enquanto um Qwen2.5-1.5B local foi implementado apenas como assistente `CHAT | OUT_OF_SCOPE`. O runtime foi validado no SM-X510, mas o wiring na `MainActivity` ainda está pendente. Veja [`qwen-android-runtime.md`](qwen-android-runtime.md).
+
 ## Objetivo
 
 Tornar a interpretação de voz do MVP mais robusta no Galaxy A17 sem depender de rede, runtime de LLM ou nova biblioteca. A decisão operacional continua limitada a `SPRAY`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
