@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -10,6 +9,7 @@ plugins {
 android {
     namespace = "br.org.agroturtles.maestro"
     compileSdk = 36
+    ndkVersion = "29.0.13113456"
 
     defaultConfig {
         applicationId = "br.org.agroturtles.maestro"
@@ -20,9 +20,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["mwdat_application_id"] = ""
         manifestPlaceholders["mwdat_client_token"] = ""
+
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     flavorDimensions += "frameSource"
+
     productFlavors {
         create("mock") {
             dimension = "frameSource"
@@ -31,6 +36,7 @@ android {
             versionNameSuffix = "-mock"
             buildConfigField("String", "FRAME_SOURCE", "\"mock\"")
         }
+
         create("dat") {
             dimension = "frameSource"
             minSdk = 31
@@ -42,10 +48,19 @@ android {
         compose = true
         buildConfig = true
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.31.6"
+        }
+    }
+
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 
     sourceSets {
