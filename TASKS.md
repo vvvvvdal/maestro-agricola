@@ -39,7 +39,7 @@ A entrega deve priorizar:
 Status:
 
 ```text
-PENDENTE
+APROVADO — PRÉ-HARDWARE COM MOCKDEVICEKIT
 ```
 
 Objetivo:
@@ -48,11 +48,29 @@ Validar o caminho real dos óculos até o aplicativo.
 
 Próximos passos:
 
-- executar o sample oficial do DAT;
-- validar sessão/captura de câmera;
-- integrar o frame real ao fluxo existente;
-- substituir o mock somente onde for necessário;
+- repetir o sample oficial no hardware real quando os óculos chegarem;
+- validar sessão/captura de câmera física;
+- validar o mesmo adaptador com o frame real;
+- substituir o MockDeviceKit somente no ensaio físico;
 - manter o mock como fallback de demonstração.
+
+Plano pré-hardware:
+
+- [x] confirmar DAT 0.9.0 e o ciclo oficial `addCamera()`;
+- [x] registrar a spec e separar validação simulada da validação física;
+- [x] compilar e instalar `datDebug` com autenticação local `read:packages`;
+- [x] implementar sessão, câmera, captura sob demanda e encerramento;
+- [x] executar o sample oficial `CameraAccess` com MockDeviceKit;
+- [x] conectar a foto ao detector QR Android com ZXing 3.5.4 aprovado;
+- [x] executar sucesso, permissão recusada, timeout e desconexão no
+  MockDeviceKit;
+- [x] repetir testes/build de `mockDebug` e registrar a evidência sanitizada;
+
+Detalhes e critérios: [`docs/tasks/dat-prehardware.md`](docs/tasks/dat-prehardware.md).
+
+Validação em hardware real permanece bloqueada até a disponibilidade dos
+óculos. Resultado com MockDeviceKit não deve ser apresentado como captura dos
+Meta Wearables físicos.
 
 A integração DAT não deve quebrar o pipeline já funcional.
 

@@ -31,6 +31,7 @@ private const val DEFAULT_ENDPOINT = "ws://10.0.2.2:18765"
 
 class MainActivity : ComponentActivity() {
     private lateinit var voice: VoiceIO
+    private lateinit var frameSource: PlatformFrameSource
     private var onMicrophoneGranted: (() -> Unit)? = null
     private val microphonePermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
             LocalIntentClassifier.fromJson(modelJson),
             TargetResolver.fromJson(targetMapJson),
         )
-        val frameSource = PlatformFrameSource()
+        frameSource = PlatformFrameSource(this, targetMapJson)
         setContent {
             var result by remember { mutableStateOf(engine.reset()) }
             var transcript by remember { mutableStateOf("") }
@@ -96,13 +97,11 @@ class MainActivity : ComponentActivity() {
                         frameSource.captureTarget { outcome ->
                             runOnUiThread {
                                 outcome
-                                    .onSuccess { apply(engine.observeTarget(it)) }
+                                    .onSuccess { apply(engine.observeTarget(it.targetId)) }
                                     .onFailure {
-                                        apply(
-                                            engine.reset().copy(
-                                                message = it.message ?: "Falha ao capturar o alvo",
-                                            )
-                                        )
+                                        apply(engine.targetCaptureFailed(
+                                            it.message ?: "Falha ao capturar o alvo"
+                                        ))
                                     }
                             }
                         }
@@ -128,14 +127,18 @@ class MainActivity : ComponentActivity() {
                         microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
                     },
                     onInterpret = { apply(engine.handleTranscript(transcript)) },
-                    onReset = { apply(engine.reset()) },
+                    onReset = {
+                        frameSource.cancelCapture()
+                        apply(engine.reset())
+                    },
                 )
             }
         }
     }
 
     override fun onDestroy() {
-        voice.close()
+        if (::frameSource.isInitialized) frameSource.close()
+        if (::voice.isInitialized) voice.close()
         super.onDestroy()
     }
 }

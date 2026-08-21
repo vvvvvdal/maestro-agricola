@@ -165,6 +165,22 @@ class InteractionFeedbackTest {
     }
 
     @Test
+    fun targetCaptureFailureIsFailClosedAndCanBeReset() {
+        val engine = InteractionEngine { IntentPrediction("SPRAY", 0.99) }
+
+        val failed = engine.targetCaptureFailed("Câmera indisponível")
+
+        assertEquals(InteractionState.ERROR, failed.state)
+        assertEquals("Câmera indisponível", failed.message)
+        assertNull(failed.command)
+        assertNull(failed.targetId)
+        assertTrue(failed.speech!!.contains("Nada foi enviado"))
+
+        val reset = engine.reset()
+        assertEquals(InteractionState.IDLE, reset.state)
+    }
+
+    @Test
     fun plotLabelReadsAsSpokenPortuguese() {
         assertEquals("talhão 3", plotLabel("plot-03"))
         assertEquals("talhão 12", plotLabel("plot-12"))

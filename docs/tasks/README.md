@@ -12,6 +12,7 @@
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
 - [`android-demo-ui.md`](android-demo-ui.md): transformação da tela diagnóstica Android em interface de demonstração.
+- [`dat-prehardware.md`](dat-prehardware.md): integração DAT 0.9.0 com MockDeviceKit antes da validação nos óculos reais.
 - [`testing-ux.md`](testing-ux.md): caminho de teste local sem ambiguidade e desligamento limpo do bridge.
 - [`visual-smoke.md`](visual-smoke.md): inspeção das telas mobile e visualização do Gazebo/RViz2.
 - [`plots-dock.md`](plots-dock.md): correção das placas, três plots próximos e ciclo automático dock → missão → dock.

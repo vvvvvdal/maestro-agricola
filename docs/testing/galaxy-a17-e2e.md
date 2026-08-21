@@ -6,7 +6,9 @@ Este é o roteiro de bancada para provar `Android → IA local → WebSocket →
 
 - `mockDebug` está implementado e retorna `plot-03` ao tocar em **Simular olhar**.
 - IA local, confirmação, contrato e transporte WebSocket estão implementados.
-- `datDebug` possui a dependência do DAT, mas `PlatformFrameSource` ainda é um adaptador provisório. Enquanto ele responder “Conecte aqui Wearables...”, a câmera real **não está integrada** e o teste DAT não pode ser marcado como aprovado.
+- `datDebug` implementa o ciclo DAT 0.9.0 e foi validado com MockDeviceKit nos
+  cenários de sucesso, permissão recusada, timeout e desconexão. Essa evidência
+  pré-hardware não aprova a câmera real.
 - Voz e TTS usam Android; é preciso validar separadamente se o microfone e o áudio são roteados pelos óculos. O telefone é o fallback.
 
 ## Portabilidade da instalação
@@ -85,7 +87,9 @@ Evidência mínima: uma captura da tela do app, `make logs` mostrando o comando 
 
 ## Gate 3 — DAT e óculos reais
 
-Execute somente depois de substituir o adaptador provisório pelo ciclo oficial de sessão/câmera do sample `CameraAccess` da versão fixada do DAT.
+Execute quando os óculos estiverem disponíveis. O adaptador já segue o ciclo
+oficial de sessão/câmera do `CameraAccess` 0.9.0, mas precisa ser provado no
+mesmo Galaxy A17 e nos mesmos Meta Wearables do evento.
 
 1. Configure credenciais apenas em `local.properties` ou variável de ambiente; nunca versione tokens.
 2. Compile e instale `datDebug`.
@@ -104,7 +108,7 @@ O gate só passa se a imagem vier dos óculos. Digitar `plot-03`, usar a câmera
 |---|---|---|
 | Galaxy não aparece | USB/ADB | `adb devices` e autorização RSA |
 | App não compila | JDK/SDK | `preflight.py --require-device` |
-| “Conecte aqui Wearables...” | adaptador DAT | implementação de `PlatformFrameSource` |
+| “Conclua o registro no Meta AI” | registro DAT | app Meta AI, deep link e cadastro da aplicação |
 | Voz não transcreve | permissão/rota de áudio | permissão de microfone e teste pelo telefone |
 | `UNKNOWN` | IA local | frase, confiança e origem `RULE/MODEL` na tela |
 | WebSocket falha | rede/firewall | IP do computador, mesma rede e porta `18765` |

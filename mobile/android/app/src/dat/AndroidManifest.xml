@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application>
+        <provider
+            android:name=".platform.DatMockAssetProvider"
+            android:authorities="${applicationId}.datmock"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>

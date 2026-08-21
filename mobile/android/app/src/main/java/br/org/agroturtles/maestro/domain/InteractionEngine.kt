@@ -65,6 +65,17 @@ class InteractionEngine(
     }
 
 
+    fun targetCaptureFailed(message: String): InteractionResult {
+        clearTargetContext()
+        state = InteractionState.ERROR
+
+        return result(
+            message,
+            "Não foi possível identificar o alvo. Nada foi enviado ao robô."
+        )
+    }
+
+
     fun handleTranscript(text: String): InteractionResult {
         val prediction = classifier.classify(text)
 

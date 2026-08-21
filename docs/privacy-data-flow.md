@@ -17,13 +17,13 @@ Documentar separadamente os dados tratados pelo Maestro Agrícola, pelo Android,
 
 | Responsável | Dados | Origem e finalidade | Tratamento e destino | Persistência do Maestro | Estado da evidência |
 |---|---|---|---|---|---|
-| Maestro — câmera | Frame sob demanda ou `target_id` simulado | DAT ou `MockFrameSource`; resolver um talhão conhecido | Frame deve ser reduzido a `target_id`, confiança e timestamp | Não prevista | Mock implementado; DAT real pendente |
+| Maestro — câmera | Foto sob demanda ou `target_id` simulado | DAT/MockDeviceKit ou `MockFrameSource`; resolver um talhão conhecido | ZXing local reduz a foto a `target_id` e timestamp; não inventa confiança | Não prevista | MockDeviceKit aprovado; DAT em óculos reais pendente |
 | Maestro — voz | Transcrição curta | `SpeechRecognizer`; classificar intenção | Texto permanece na memória da atividade e entra no classificador local | Não prevista | Código implementado; rota física pendente |
 | Maestro — IA | Texto, intenção, confiança e métricas | Classificador JSON local | Resultado alimenta a máquina de estados | Modelo e fixtures versionados; fala do usuário não é salva | Modelo e benchmark aprovados |
 | Maestro — comando | UUID, horário, intenção, alvo, confirmação e expiração | Máquina de estados após confirmação | JSON segue por WebSocket ao bridge | Não há banco local; bridge pode registrar telemetria técnica | Contrato e bridge implementados |
 | Maestro — áudio de saída | Frases curtas de confirmação, cancelamento, erro e sucesso | Máquina de estados | Texto é entregue ao TTS do Android | O app não grava a saída | TTS ouvido no alto-falante inferior do Edge 40 Neo; rota dos óculos pendente |
 | Android | Áudio do microfone, transcrição, síntese de voz, permissões e sandbox | APIs nativas e provedor configurado no aparelho | O sistema operacional ou o provedor de reconhecimento/TTS pode tratar dados conforme sua configuração | Governada pelo Android/provedor, não pelo código do Maestro | Saída TTS física confirmada; provedor STT ainda pendente |
-| DAT/Meta | Registro, sessão, permissões, câmera e possível telemetria do SDK | Óculos e SDK | Fluxo definido pelo DAT e pela configuração da conta/app | Fora do controle direto do Maestro | Adaptador real e versão atual pendentes |
+| DAT/Meta | Registro, sessão, permissões, câmera e possível telemetria do SDK | Óculos ou MockDeviceKit e SDK | Fluxo definido pelo DAT e pela configuração da conta/app | Fora do controle direto do Maestro; analytics e crash reporting opcionais desabilitados | Adaptador 0.9.0 aprovado no MockDeviceKit; hardware real pendente |
 | Bridge ROS 2 | JSON de comando e ACK, IDs, estados e erros | App Android e simulador | Validação, deduplicação e conversão em meta Nav2 | Logs técnicos podem existir no ambiente da demo | Testes do núcleo aprovados |
 | Serviços externos de IA | Nenhum dado de inferência do Maestro | Não aplicável | O classificador de intenção não usa servidor externo | Não aplicável | Comprovado pelo artefato local |
 
@@ -34,7 +34,12 @@ Documentar separadamente os dados tratados pelo Maestro Agrícola, pelo Android,
                                                    -> frame liberado
 ```
 
-O flavor mock retorna um alvo fixo e não representa captura real. O flavor DAT contém apenas a fronteira de integração; antes de alterar API ou dependência, a equipe deve confirmar a versão atual do DAT e executar o sample oficial `CameraAccess`.
+O flavor mock retorna um alvo fixo e não representa captura real. O flavor DAT
+0.9.0 implementa sessão, `DeviceSession.addCamera()`, stream e foto sob demanda.
+No modo de desenvolvimento explicitamente identificado como `dat-mockdevice`,
+uma fixture empacotada é transmitida por pipe de um provider não exportado para
+o MockDeviceKit. ZXing processa a foto em memória e libera o bitmap após reduzir
+o conteúdo a um alvo permitido.
 
 O Maestro não deve gravar o frame na galeria, armazenamento interno, cache ou logs. A auditoria em runtime verificará nomes e contagens de arquivos criados pelo app, mas essa verificação não substitui inspeção do ciclo real do SDK.
 
@@ -65,13 +70,19 @@ O payload contém metadados operacionais, não mídia. O endpoint mock usa WebSo
 | `RECORD_AUDIO` | Reconhecimento de fala | Solicitada em runtime | Confirmar provedor e rota usados |
 | `BLUETOOTH` até API 30 | Compatibilidade de áudio/dispositivo | Limitada por `maxSdkVersion` | Validar no hardware |
 | `BLUETOOTH_CONNECT` | Comunicação em Android recente | Declarada no manifesto | Confirmar solicitação e fluxo real |
+| `CAMERA` | Alimentar o stream com a câmera do telefone somente no ensaio MockDeviceKit | Declarada no flavor `dat`; solicitada pelo adaptador apenas quando `maestroDatMockDevice=true` | Não atribuir esse feed aos óculos e validar o caminho físico depois |
 | Backup | Evitar cópia de dados do app | `android:allowBackup="false"` | Confirmar manifesto mesclado do build final |
-| Analytics DAT | Reduzir telemetria opcional | Opt-out declarado no manifesto | Confirmar nomes e suporte na versão atual do DAT |
-| Crash reporting DAT | Reduzir telemetria opcional | Opt-out declarado no manifesto | Confirmar nomes e suporte na versão atual do DAT |
+| Analytics DAT | Reduzir telemetria opcional | `ANALYTICS_OPT_OUT=true`, confirmado no README oficial 0.9.0 | Revalidar ao atualizar o SDK |
+| Crash reporting DAT | Reduzir telemetria opcional | `CRASH_REPORTING_OPT_OUT=true`, confirmado no README/changelog oficial 0.9.0 | Revalidar ao atualizar o SDK |
 
 ## Persistência observada no código
 
-A busca estática atual encontrou leitura de assets empacotados, estado em memória, WebSocket, `SpeechRecognizer`, TTS e logs do benchmark mock com fixture fixa. Não encontrou chamadas do app para gravar foto, áudio, transcrição, banco ou preferências.
+A busca estática atual encontrou leitura de assets empacotados, pipe do provider
+interno, decodificação ZXing em memória, estado em memória, WebSocket,
+`SpeechRecognizer`, TTS e logs do benchmark mock com fixture fixa. Não encontrou
+chamadas do app para gravar foto, áudio, transcrição, banco ou preferências. A
+inspeção do sandbox depois da captura DAT simulada retornou
+`NO_PERSISTED_MEDIA_FILES`.
 
 Essa conclusão possui limites:
 
@@ -134,7 +145,7 @@ A comparação estruturada está em `shared/evidence/android_runtime_qa03_compar
 - [x] Par sanitizado before/after coletado para cinco ciclos mock.
 - [-] Nenhum caminho interno suspeito encontrado; armazenamento externo e componentes do sistema ainda não foram auditados.
 - [-] Rota TTS do telefone identificada; provedor de STT e rota Bluetooth dos óculos permanecem pendentes.
-- [ ] Opt-outs confirmados contra a versão atual do DAT.
+- [x] Opt-outs confirmados contra o README/changelog oficial do DAT 0.9.0.
 - [-] Temperatura e memória iniciais registradas; bateria e encerramento de recursos exigem protocolo controlado.
 
 ## Handoff
