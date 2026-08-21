@@ -1,0 +1,192 @@
+{
+  "backend": "llama.cpp",
+  "model": "Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M",
+  "examples": 48,
+  "correct": 36,
+  "accuracy": 0.75,
+  "macro_f1": 0.7384079542748273,
+  "per_label": {
+    "CANCEL": {
+      "precision": 0.5454545454545454,
+      "recall": 0.75,
+      "f1": 0.631578947368421
+    },
+    "CONFIRM": {
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1": 0.9411764705882353
+    },
+    "DOCK": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1": 0.75
+    },
+    "SPRAY": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "UNDOCK": {
+      "precision": 0.4,
+      "recall": 0.25,
+      "f1": 0.3076923076923077
+    },
+    "UNKNOWN": {
+      "precision": 0.8571428571428571,
+      "recall": 0.75,
+      "f1": 0.7999999999999999
+    }
+  },
+  "unsafe_accepts": [
+    {
+      "text": "interrompa agora",
+      "expected": "CANCEL",
+      "predicted": "UNDOCK",
+      "raw": "{ \"intent\": \"UNDOCK\"}"
+    },
+    {
+      "text": "mostre informações do campo",
+      "expected": "UNKNOWN",
+      "predicted": "CONFIRM",
+      "raw": "{\n  \"intent\": \"CONFIRM\"\n}"
+    },
+    {
+      "text": "abra o sistema",
+      "expected": "UNKNOWN",
+      "predicted": "DOCK",
+      "raw": "{\n  \"intent\": \"DOCK\"\n}"
+    }
+  ],
+  "unsafe_accept_rate": 0.0625,
+  "parse_failures": [],
+  "latency_ms": {
+    "mean": 4086.104935604149,
+    "median": 2360.2594119993228,
+    "p95": 10784.685198999796,
+    "max": 21513.585724999757
+  },
+  "confusion_matrix": {
+    "CANCEL": {
+      "CANCEL": 6,
+      "CONFIRM": 0,
+      "DOCK": 0,
+      "SPRAY": 0,
+      "UNDOCK": 1,
+      "UNKNOWN": 1
+    },
+    "CONFIRM": {
+      "CANCEL": 0,
+      "CONFIRM": 8,
+      "DOCK": 0,
+      "SPRAY": 0,
+      "UNDOCK": 0,
+      "UNKNOWN": 0
+    },
+    "DOCK": {
+      "CANCEL": 0,
+      "CONFIRM": 0,
+      "DOCK": 6,
+      "SPRAY": 0,
+      "UNDOCK": 2,
+      "UNKNOWN": 0
+    },
+    "SPRAY": {
+      "CANCEL": 0,
+      "CONFIRM": 0,
+      "DOCK": 0,
+      "SPRAY": 8,
+      "UNDOCK": 0,
+      "UNKNOWN": 0
+    },
+    "UNDOCK": {
+      "CANCEL": 5,
+      "CONFIRM": 0,
+      "DOCK": 1,
+      "SPRAY": 0,
+      "UNDOCK": 2,
+      "UNKNOWN": 0
+    },
+    "UNKNOWN": {
+      "CANCEL": 0,
+      "CONFIRM": 1,
+      "DOCK": 1,
+      "SPRAY": 0,
+      "UNDOCK": 0,
+      "UNKNOWN": 6
+    }
+  },
+  "errors": [
+    {
+      "text": "não faça isso",
+      "expected": "CANCEL",
+      "predicted": "UNKNOWN",
+      "raw": "{\n  \"intent\": \"UNKNOWN\"\n}"
+    },
+    {
+      "text": "interrompa agora",
+      "expected": "CANCEL",
+      "predicted": "UNDOCK",
+      "raw": "{ \"intent\": \"UNDOCK\"}"
+    },
+    {
+      "text": "volte ao ponto inicial",
+      "expected": "DOCK",
+      "predicted": "UNDOCK",
+      "raw": "{ \"intent\": \"UNDOCK\"}"
+    },
+    {
+      "text": "estacione o equipamento",
+      "expected": "DOCK",
+      "predicted": "UNDOCK",
+      "raw": "{ \"intent\": \"UNDOCK\"}"
+    },
+    {
+      "text": "deixe a doca",
+      "expected": "UNDOCK",
+      "predicted": "DOCK",
+      "raw": "{\n  \"intent\": \"DOCK\"\n}"
+    },
+    {
+      "text": "libere a saída do robô",
+      "expected": "UNDOCK",
+      "predicted": "CANCEL",
+      "raw": "{ \"intent\": \"CANCEL\"}"
+    },
+    {
+      "text": "comece a saída da base",
+      "expected": "UNDOCK",
+      "predicted": "CANCEL",
+      "raw": "{\n  \"intent\": \"CANCEL\"\n}"
+    },
+    {
+      "text": "afaste da estação",
+      "expected": "UNDOCK",
+      "predicted": "CANCEL",
+      "raw": "{\n  \"intent\": \"CANCEL\"\n}"
+    },
+    {
+      "text": "inicie a saída",
+      "expected": "UNDOCK",
+      "predicted": "CANCEL",
+      "raw": "{ \"intent\": \"CANCEL\"}"
+    },
+    {
+      "text": "libere o equipamento",
+      "expected": "UNDOCK",
+      "predicted": "CANCEL",
+      "raw": "{\n  \"intent\": \"CANCEL\"\n}"
+    },
+    {
+      "text": "mostre informações do campo",
+      "expected": "UNKNOWN",
+      "predicted": "CONFIRM",
+      "raw": "{\n  \"intent\": \"CONFIRM\"\n}"
+    },
+    {
+      "text": "abra o sistema",
+      "expected": "UNKNOWN",
+      "predicted": "DOCK",
+      "raw": "{\n  \"intent\": \"DOCK\"\n}"
+    }
+  ]
+}
