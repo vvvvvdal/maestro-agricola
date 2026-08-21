@@ -1,5 +1,17 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+
+val datMockDeviceEnabled = providers.gradleProperty("maestroDatMockDevice")
+    .map { it.toBooleanStrict() }
+    .getOrElse(false)
+val datMockScenario = providers.gradleProperty("maestroDatMockScenario")
+    .getOrElse("success")
+val allowedDatMockScenarios = setOf("success", "permission-denied", "timeout", "disconnect")
+require(datMockScenario in allowedDatMockScenarios) {
+    "maestroDatMockScenario deve ser um de: ${allowedDatMockScenarios.joinToString()}"
+}
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -41,12 +53,21 @@ android {
             applicationIdSuffix = ".mock"
             versionNameSuffix = "-mock"
             buildConfigField("String", "FRAME_SOURCE", "\"mock\"")
+            buildConfigField("boolean", "DAT_MOCK_DEVICE", "false")
+            buildConfigField("String", "DAT_MOCK_SCENARIO", "\"not-applicable\"")
         }
 
         create("dat") {
             dimension = "frameSource"
             minSdk = 31
-            buildConfigField("String", "FRAME_SOURCE", "\"dat\"")
+            val sourceLabel = if (datMockDeviceEnabled) {
+                "dat-mockdevice:$datMockScenario"
+            } else {
+                "dat"
+            }
+            buildConfigField("String", "FRAME_SOURCE", "\"$sourceLabel\"")
+            buildConfigField("boolean", "DAT_MOCK_DEVICE", datMockDeviceEnabled.toString())
+            buildConfigField("String", "DAT_MOCK_SCENARIO", "\"$datMockScenario\"")
         }
     }
 
@@ -74,6 +95,9 @@ android {
         getByName("main").assets.srcDir("../../../robot_ws/src/maestro_robot_bridge/config")
         getByName("test").resources.srcDir("../../../shared/ai")
         getByName("test").resources.srcDir("../../../shared/target")
+        getByName("dat").assets.srcDir(
+            "../../../robot_ws/src/maestro_simulation/models/plot_marker/materials/textures"
+        )
     }
 }
 
@@ -91,7 +115,9 @@ dependencies {
     "datImplementation"(libs.mwdat.core)
     "datImplementation"(libs.mwdat.camera)
     "datImplementation"(libs.mwdat.mockdevice)
+    "datImplementation"(libs.zxing.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.json)
+    testImplementation(libs.zxing.core)
 }

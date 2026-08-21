@@ -201,7 +201,9 @@ O cenário atual não é uma fazenda própria. `warehouse` e seu mapa de ocupaç
 
 ## Estado visual dos apps
 
-O app Android/Compose já possui uma tela diagnóstica com fonte de frame, estado da jornada, resposta da IA, transcrição, endpoint WebSocket e botões para simular olhar, interpretar, falar e reiniciar. A identidade AgroTurtles também já está aplicada. Ainda é uma tela de MVP para teste, não uma interface final de produto.
+O app Android/Compose apresenta a jornada como uma trilha de quatro passos — `Alvo`, `Intenção`, `Confirmar`, `Executar` — com cartões destacando alvo detectado e sua origem, intenção reconhecida com confiança, confirmação pendente com contagem regressiva e o último comando aceito pelo robô. A identidade AgroTurtles está aplicada. Endpoint WebSocket e transcrição digitada continuam disponíveis, recolhidos em "Ajustes de teste".
+
+A confirmação continua exigindo áudio: nenhum botão de toque confirma um comando. O detalhamento da tela está em [`docs/tasks/android-demo-ui.md`](docs/tasks/android-demo-ui.md).
 
 Para abrir o app, siga [`mobile/android/README.md`](mobile/android/README.md); é necessário JDK 17, Android SDK e Android Studio ou aparelho via `adb`.
 
