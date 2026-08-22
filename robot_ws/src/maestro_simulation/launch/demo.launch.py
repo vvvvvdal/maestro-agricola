@@ -31,7 +31,6 @@ def include(package: str, launch_file: str, arguments: dict):
 
 def configure_gazebo(context):
     world = LaunchConfiguration("world").perform(context)
-    model = LaunchConfiguration("model").perform(context)
     headless = LaunchConfiguration("headless").perform(context).lower() == "true"
     gz_args = f"{world}.sdf -r -v 4"
     if headless:
@@ -39,10 +38,10 @@ def configure_gazebo(context):
         # but omit the Gazebo GUI process itself.
         gz_args += " -s"
     else:
-        bringup_share = Path(
-            get_package_share_directory("turtlebot4_ignition_bringup")
+        simulation_share = Path(
+            get_package_share_directory("maestro_simulation")
         )
-        gui_config = bringup_share / "gui" / model / "gui.config"
+        gui_config = simulation_share / "config" / "gui.config"
         gz_args += f" --gui-config {gui_config}"
     return [SetLaunchConfiguration("gz_args", gz_args)]
 
