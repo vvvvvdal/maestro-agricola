@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-08-22T01:05:27-03:00",
+  "updated_at": "2026-08-22T18:00:00-03:00",
   "overall_status": "PARTIAL",
   "status_policy": {
     "allowed": [
@@ -71,7 +71,7 @@
         "Felipe",
         "Rafael"
       ],
-      "status": "BLOCKED",
+      "status": "PARTIAL",
       "acceptance_criteria": [
         "Entrada dos óculos demonstrada em hardware e aceita pelo programa",
         "Versão atual do DAT, aparelho, Android e rota registrados",
@@ -81,27 +81,33 @@
       "evidence": [
         {
           "id": "static-vision-proof",
-          "status": "PARTIAL",
+          "status": "PASS",
           "type": "task_record",
           "path": "docs/tasks/vision-qr.md",
-          "summary": "Detecção estática e falhas conhecidas validadas sem frame DAT real"
+          "summary": "Detecção estática e falhas conhecidas validadas; o mesmo QR foi integrado ao caminho DAT pré-hardware"
         },
         {
           "id": "dat-adapter-boundary",
-          "status": "BLOCKED",
+          "status": "PASS",
           "type": "source_code",
           "path": "mobile/android/app/src/dat/java/br/org/agroturtles/maestro/platform/PlatformFrameSource.kt",
-          "summary": "Fronteira existe, mas o ciclo oficial CameraAccess ainda não está conectado"
+          "summary": "Adaptador DAT 0.9.0 implementa permissões, sessão, addCamera, captura, timeout, cancelamento e QR em memória"
+        },
+        {
+          "id": "dat-prehardware-e2e",
+          "status": "PASS",
+          "type": "task_record",
+          "path": "docs/tasks/dat-prehardware.md",
+          "summary": "datDebug + MockDeviceKit produziu plot-03 repetível no Android físico e participou do E2E pré-hardware"
         }
       ],
       "pending": [
-        "Confirmar a versão atual do DAT em fonte oficial",
-        "Executar o sample CameraAccess no aparelho da demonstração",
-        "Conectar um frame real ao detector e registrar target_id",
-        "Confirmar com avaliadores se algum fallback atende ao checkpoint"
+        "Substituir o MockDeviceKit pelos Meta Wearables físicos quando o hardware estiver disponível",
+        "Registrar pareamento, câmera real, versão de firmware e rota de áudio no aparelho da demonstração",
+        "Executar o protocolo de não persistência com a câmera dos óculos reais"
       ],
       "contains_raw_media": false,
-      "pitch_claim": "A entrada visual está comprovada apenas com mock e imagem estática; DAT real permanece pendente"
+      "pitch_claim": "A entrada visual pré-hardware está comprovada com DAT 0.9.0 + MockDeviceKit no Android físico; câmera dos Meta Wearables reais permanece pendente"
     },
     {
       "id": "AUDIO_OUTPUT",
@@ -209,7 +215,7 @@
       "pending": [
         "Executar auditoria depois de uma jornada real com DAT e microfone",
         "Concluir a auditoria do armazenamento externo do app",
-        "Confirmar opt-outs contra a versão atual do DAT",
+        "Revalidar opt-outs em qualquer atualização futura do DAT",
         "Confirmar a rota física de áudio sem registrar fala do usuário"
       ],
       "contains_raw_media": false,
@@ -269,7 +275,7 @@
       ],
       "pending": [
         "Repetir o protocolo físico com o aparelho desconectado da energia e carga inicial estável",
-        "Comprovar encerramento da sessão e câmera DAT",
+        "Comprovar encerramento da sessão e câmera DAT em protocolo físico dedicado",
         "Executar a jornada completa com câmera e áudio simultâneos"
       ],
       "contains_raw_media": false,

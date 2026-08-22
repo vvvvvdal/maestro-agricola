@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-08-19T22:57:12-03:00",
+  "updated_at": "2026-08-22T18:00:00-03:00",
   "status": "PARTIAL",
   "scope": "Auditoria estática e plano de coleta Android sem mídia bruta",
   "data_processors": [
@@ -35,8 +35,8 @@
         "câmera",
         "telemetria opcional conforme SDK"
       ],
-      "persistence_by_maestro": "Nenhum frame DAT real é persistido pelo adaptador atual, que ainda é um stub",
-      "network": "Fluxos e opt-outs precisam ser confirmados contra a versão atual do DAT"
+      "persistence_by_maestro": "O adaptador DAT 0.9.0 processa PhotoData e QR somente em memória; o MockDeviceKit não cria cópia persistente no sandbox do app",
+      "network": "Os opt-outs de analytics e crash reporting estão declarados conforme a documentação oficial atual; o comportamento interno do SDK e o hardware Meta real ainda exigem auditoria física"
     },
     {
       "id": "BRIDGE_EXTERNAL",
@@ -64,9 +64,9 @@
     },
     {
       "id": "DAT_ANALYTICS_OPT_OUT_DECLARED",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence_path": "mobile/android/app/src/main/AndroidManifest.xml",
-      "summary": "Opt-outs estão declarados, mas precisam ser confirmados na versão atual do DAT"
+      "summary": "Opt-outs de analytics e crash reporting estão declarados e conferidos contra a documentação oficial do DAT em 22/08/2026"
     },
     {
       "id": "LOCAL_INTENT_INFERENCE",
@@ -85,13 +85,14 @@
     "reads_file_contents": false,
     "stores_device_serial": false,
     "summary": "Cinco ciclos mock no Edge 40 Neo: todos expiraram sem confirmação, nenhum caminho suspeito, térmico NONE e PSS de 160140 KB para 149754 KB",
-    "limitation": "Bateria inconclusiva porque o aparelho permaneceu em CHARGING; armazenamento externo, DAT e microfone permanecem pendentes"
+    "limitation": "Bateria inconclusiva porque o aparelho permaneceu em CHARGING; armazenamento externo, microfone e Meta Wearables físicos permanecem pendentes"
   },
   "open_items": [
     "Repetir o protocolo de bateria com alimentação desconectada e estado inicial estável",
-    "Executar jornada física com câmera DAT e microfone",
+    "Repetir a auditoria no E2E datDebug com microfone sem coletar mídia bruta",
+    "Executar a jornada com câmera dos Meta Wearables físicos quando o hardware estiver disponível",
     "Confirmar provedor de reconhecimento e futura rota Bluetooth dos óculos",
-    "Confirmar versão atual do DAT e suporte aos opt-outs",
+    "Revalidar os opt-outs em qualquer atualização futura do DAT",
     "Revisar bateria sem carregamento, armazenamento externo e encerramento de recursos"
   ],
   "limitations": [

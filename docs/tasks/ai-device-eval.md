@@ -1,5 +1,7 @@
 # Paridade e avaliação da IA local
 
+> **Atualização de 22/08/2026:** a coleta física abaixo continua válida somente para os hashes históricos registrados. O modelo atual foi ampliado para 213 exemplos e seis rótulos; a matriz QA-04 mantém `final_build_benchmark_pending=true` até nova coleta no candidato final. Consulte [`qa-04-checkpoints.md`](qa-04-checkpoints.md).
+
 Branch: `feat/ai-device-eval`
 
 ## Objetivo

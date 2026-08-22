@@ -1,5 +1,7 @@
 # Relatório de evolução do Maestro Agrícola
 
+> **Nota de atualização — 22/08/2026:** este relatório preserva o retrato histórico encerrado em 19/08. Desde então, o projeto concluiu o adaptador DAT 0.9.0 com MockDeviceKit, QR local por ZXing, comandos `DOCK`/`UNDOCK` explícitos, wiring seguro do Qwen, UI Compose e o E2E `datDebug → WebSocket → ROS 2/Nav2/Gazebo` no Android físico. O modelo atual tem 213 exemplos, seis rótulos e 729.056 bytes. Para o estado corrente, consulte [`../README.md`](../README.md), [`../TASKS.md`](../TASKS.md), [`tasks/mvp-week.md`](tasks/mvp-week.md) e [`submission/final-form.md`](submission/final-form.md). Menções abaixo a adaptador DAT stub, quatro classes, lifecycle automático ou E2E pendente são históricas e não descrevem a entrega atual.
+
 **Período coberto:** início dos registros disponíveis até 19 de agosto de 2026
 
 **Escopo:** produto, arquitetura, Android, IA local, visão, ROS 2/Gazebo, testes, documentação, pitch e ambiente de desenvolvimento

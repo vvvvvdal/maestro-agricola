@@ -172,18 +172,23 @@ Evidência final de 22/08/2026 no Samsung SM-X510 com `datDebug` + MockDeviceKit
 Status:
 
 ```text
-PENDENTE
+PARCIAL — DECK PRONTO; ROTEIRO E GRAVAÇÃO PENDENTES
 ```
 
-Prioridades:
+Concluído:
 
+- deck editorial de sete slides atualizado;
+- slide 2 com hipótese quantitativa de 20–30%, identificada como estimativa a validar;
+- slide separado para próximas etapas, expectativas e metas;
+- equipe em ordem alfabética e deck estruturado para um pitch inferior a três minutos;
+- narrativa alinhada ao `datDebug` + MockDeviceKit pré-hardware e aos guardrails reais.
+
+Pendências:
+
+- atualizar e fechar o roteiro para a estrutura final de sete slides;
 - gravar vídeo/pitch;
-- preparar narrativa da solução;
-- explicar diferencial:
-  - comando hands-free;
-  - segurança por confirmação;
-  - integração visão + voz + robótica;
-  - uso de TurtleBot 4/Nav2/Gazebo como validação antecipada.
+- cronometrar três ensaios e exportar o vídeo final;
+- inserir a captura curta do E2E no espaço reservado do slide 5.
 
 ---
 

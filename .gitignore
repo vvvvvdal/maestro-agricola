@@ -48,3 +48,17 @@ Thumbs.db
 recordings/
 captures/
 mobile/android/app/.cxx/
+
+# LaTeX
+docs/paper/*.aux
+docs/paper/*.bbl
+docs/paper/*.blg
+docs/paper/*.fdb_latexmk
+docs/paper/*.fls
+docs/paper/*.log
+docs/paper/*.out
+docs/paper/*.pdf
+docs/paper/*.synctex.gz
+
+# Arquivos temporários criados por LibreOffice/Word.
+.~lock.*#
