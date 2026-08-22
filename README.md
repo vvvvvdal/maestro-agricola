@@ -1,6 +1,16 @@
 # Maestro Agrícola
 
 <p align="center">
+  <img src="https://img.shields.io/badge/version-MVP%201.0-blue" alt="Version">
+  <a href="https://github.com/vvvvvdal/maestro-agricola/actions/workflows/ci-quick.yml">
+    <img src="https://github.com/vvvvvdal/maestro-agricola/actions/workflows/ci-quick.yml/badge.svg?branch=main" alt="CI Quick">
+  </a>
+  <a href="https://github.com/vvvvvdal/maestro-agricola/actions/workflows/android-full.yml">
+    <img src="https://github.com/vvvvvdal/maestro-agricola/actions/workflows/android-full.yml/badge.svg?branch=main" alt="Android Full">
+  </a>
+</p>
+
+<p align="center">
   <img src="assets/brand/logo-horizontal.png" alt="Maestro Agrícola por AgroTurtles" width="760">
 </p>
 
