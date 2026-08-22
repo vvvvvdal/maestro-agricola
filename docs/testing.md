@@ -15,10 +15,11 @@ Na pasta `mobile/android`, os gates combinados usados após integrar Qwen + DAT/
 ```bash
 ./gradlew :app:testMockDebugUnitTest --no-daemon
 ./gradlew :app:assembleMockDebug --no-daemon
+./gradlew :app:testDatDebugUnitTest --no-daemon
 ./gradlew :app:assembleDatDebug --no-daemon
 ```
 
-Os três devem terminar com `BUILD SUCCESSFUL`.
+Os quatro devem terminar com `BUILD SUCCESSFUL`.
 
 `make demo`, `make demo-route` e `make demo-visual` ainda são úteis para diagnóstico do WebSocket/Nav2/Gazebo, mas conservam expectativas históricas de lifecycle automático. Enquanto a Task 7 não reescrever esses scripts, eles não são gate final de segurança: `SPRAY` deve terminar no alvo e permanecer lá, e `DOCK`/`UNDOCK` só podem ocorrer por comandos explícitos e confirmados.
 
@@ -32,7 +33,7 @@ Não abra `127.0.0.1:18765` no navegador; é uma porta WebSocket.
 | Portátil | `make test` | modelo, cliente e núcleo seguro do bridge | válido |
 | Configuração | `make test-quick` | testes portáteis + Compose válido | gate local |
 | Android mock | `:app:testMockDebugUnitTest` + `:app:assembleMockDebug` | regressão Kotlin, IA e JNI/CMake | gate |
-| Android DAT | `:app:assembleDatDebug` | compatibilidade de build Qwen + DAT/UI | gate de build, não hardware |
+| Android DAT | `:app:testDatDebugUnitTest` + `:app:assembleDatDebug` | regressão Kotlin e compatibilidade de build Qwen + DAT/UI | gate de build, não hardware |
 | Qwen físico | `QwenSmokeActivity` no `mockDebug` | runtime local, GBNF, latência e memória | evidência da Task 6 |
 | Integração legada | `make demo` | protocolo/WebSocket/Nav2/movimento | diagnóstico até Task 7 |
 | Rota legada | `make demo-route` | três plots no cenário | diagnóstico; retorno automático é histórico |
@@ -53,6 +54,7 @@ Depois, para Android:
 cd mobile/android
 ./gradlew :app:testMockDebugUnitTest --no-daemon
 ./gradlew :app:assembleMockDebug --no-daemon
+./gradlew :app:testDatDebugUnitTest --no-daemon
 ./gradlew :app:assembleDatDebug --no-daemon
 ```
 
@@ -210,6 +212,7 @@ Na pasta `mobile/android`:
 ```bash
 ./gradlew :app:testMockDebugUnitTest
 ./gradlew :app:assembleMockDebug
+./gradlew :app:testDatDebugUnitTest
 ```
 
 Para compilar o caminho DAT com o MockDeviceKit de forma explícita:
