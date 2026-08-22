@@ -67,6 +67,48 @@ class ContractTest(unittest.TestCase):
         self.assertEqual(command.intent, "UNDOCK")
         self.assertIsNone(command.target)
 
+    def test_rejects_unconfirmed_command(self):
+        with self.assertRaises(ContractError) as caught:
+            parse_command(
+                json.dumps(
+                    payload(
+                        confirmed=False,
+                    )
+                )
+            )
+
+        self.assertEqual(
+            caught.exception.reason,
+            "explicit confirmation is required",
+        )
+
+    def test_rejects_expired_command(self):
+        now = datetime(
+            2026,
+            8,
+            22,
+            12,
+            0,
+            0,
+            tzinfo=timezone.utc,
+        )
+
+        with self.assertRaises(ContractError) as caught:
+            parse_command(
+                json.dumps(
+                    payload(
+                        created_at="2026-08-22T11:59:50+00:00",
+                        expires_in_ms=5000,
+                    )
+                ),
+                now=now,
+            )
+
+        self.assertEqual(
+            caught.exception.reason,
+            "command expired",
+        )
+
     def test_rejects_spray_without_target(self):
         with self.assertRaises(ContractError):
             parse_command(
