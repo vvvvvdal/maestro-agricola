@@ -172,20 +172,22 @@ Evidência final de 22/08/2026 no Samsung SM-X510 com `datDebug` + MockDeviceKit
 Status:
 
 ```text
-PARCIAL — DECK PRONTO; ROTEIRO E GRAVAÇÃO PENDENTES
+PENDENTE — BRANCH PREPARADA PARA RECEBER O DECK FINAL
 ```
 
-Concluído:
+Preparado:
 
-- deck editorial de sete slides atualizado;
-- slide 2 com hipótese quantitativa de 20–30%, identificada como estimativa a validar;
-- slide separado para próximas etapas, expectativas e metas;
-- equipe em ordem alfabética e deck estruturado para um pitch inferior a três minutos;
-- narrativa alinhada ao `datDebug` + MockDeviceKit pré-hardware e aos guardrails reais.
+- caminho canônico reservado em `docs/pitch/Maestro-Agricola-Pitch.pptx`;
+- storyboard final de sete slides definido em `docs/pitch/storyboard.md`;
+- gate de integração e validação documentado em `docs/pitch/README.md`;
+- hipótese quantitativa de 20–30% mantida como estimativa a validar em piloto;
+- slide exclusivo para próximas etapas e equipe em ordem alfabética especificados;
+- roteiro separado removido conforme decisão da equipe.
 
 Pendências:
 
-- atualizar e fechar o roteiro para a estrutura final de sete slides;
+- substituir o PPTX-base pelo deck final de sete slides;
+- renderizar e inspecionar todos os slides, notas, fontes e transições;
 - gravar vídeo/pitch;
 - cronometrar três ensaios e exportar o vídeo final;
 - inserir a captura curta do E2E no espaço reservado do slide 5.
