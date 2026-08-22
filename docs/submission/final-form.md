@@ -1,108 +1,119 @@
 # Entrega final — texto-base para o formulário
 
-Data de preparação: 18 de agosto de 2026. Prazo informado pelo CEIA: 22 de agosto de 2026.
+Data de preparação: 22 de agosto de 2026.
 
-Este arquivo é a fonte de verdade para o preenchimento. Antes de enviar, a equipe deve apenas adaptar o tamanho dos textos aos limites reais dos campos e substituir os itens marcados como **PENDENTE**.
+Este arquivo é a fonte de verdade para o preenchimento. Antes de enviar, adapte apenas o tamanho aos limites reais dos campos e substitua o link do vídeo. A evidência desta etapa é **pré-hardware com DAT 0.9.0 + MockDeviceKit em Android físico**; não afirmar que o frame veio dos Meta Wearables reais.
 
 ## Seção A — Documento estruturado
 
 ### A1. Problema
 
-Operadores de máquinas e robôs agrícolas trabalham com sol, poeira, luvas, ruído e as mãos ocupadas. Mesmo quando a máquina já navega de forma autônoma, selecionar um local e iniciar uma tarefa ainda pode exigir parar a operação, abrir um celular, tablet ou notebook e navegar por menus. O Maestro Agrícola reduz essa fricção: transforma olhar, voz e confirmação em um comando estruturado para a máquina, sem remover as proteções do próprio robô.
+Operadores de máquinas e robôs agrícolas trabalham com sol, poeira, luvas, ruído e as mãos ocupadas. Mesmo quando a máquina já navega autonomamente, selecionar um local e iniciar uma tarefa ainda pode exigir parar a operação, abrir um celular, tablet ou notebook e navegar por menus. O Maestro Agrícola reduz essa fricção: transforma olhar, voz e confirmação em um comando estruturado para a máquina sem remover as proteções do próprio robô.
 
 ### A2. Usuário-alvo
 
-O usuário inicial é o operador de campo que acompanha robôs ou máquinas agrícolas conectadas e precisa indicar rapidamente uma área de trabalho. No MVP, ele comanda um TurtleBot 4 simulado que representa uma plataforma agrícola. A mesma interface pode evoluir para técnicos de operação e supervisores de frota, mas o projeto não tenta atender todos esses perfis na primeira versão.
+O usuário inicial é o operador de campo que acompanha robôs ou máquinas agrícolas conectadas e precisa indicar rapidamente uma área de trabalho. No MVP, ele comanda um TurtleBot 4 simulado que representa uma plataforma agrícola.
 
 ### A3. Walkthrough — fluxo principal
 
-1. Durante uma sessão curta do companion app, o operador centraliza a placa legível `PLOT-03` e diz “pulverizar esta área” ou “pulverizar no plot-03”.
-2. A câmera dos óculos entrega ao app nativo um frame sob demanda pelo Meta Wearables DAT. No desenvolvimento sem hardware, a mesma interface recebe um frame simulado.
-3. O app identifica localmente o QR `plot-03`, extrai um ID explicitamente falado quando presente e exige concordância entre as duas fontes.
-4. O reconhecimento de fala nativo do celular produz a transcrição. O app pede processamento offline quando o sistema operacional oferece essa opção.
-5. Uma cascata local de regras de alta precisão e classificador softmax, empacotada em cerca de 367 KiB e executada no app, converte a frase na intenção restrita `SPRAY`.
-6. O app emite feedback sonoro inicial e fala: “Pulverizar talhão três. Confirmar?”. A meta é iniciar o feedback em menos de 1 segundo e concluir a resposta em até 3 segundos; esses tempos ainda precisam ser medidos nos aparelhos físicos.
-7. O operador diz “confirmar”. Uma resposta negativa ou o fim do tempo cancela a interação.
-8. Somente após a confirmação, o app envia um JSON versionado e com validade curta pela rede local.
-9. O bridge valida schema, validade e duplicidade, traduz `plot-03` para uma meta do ROS 2/Nav2 e responde `ACCEPTED`.
-10. O TurtleBot 4 inicia o deslocamento no Gazebo e o app informa “Comando enviado”.
+1. O operador inicia `datDebug` no Android físico com o MockDeviceKit explicitamente habilitado para a etapa pré-hardware.
+2. Em “Olhar para o alvo”, o DAT entrega uma captura simulada pela mesma fronteira usada pelo adaptador e o ZXing resolve localmente o QR `plot-03`.
+3. O operador diz “pulverizar esta área” ou informa um plot pela fala.
+4. O `TargetResolver` combina câmera e voz; divergência entre os IDs termina em ambiguidade sem comando.
+5. O `LocalIntentClassifier` classifica a frase em um conjunto operacional restrito.
+6. O app repete a operação e exige confirmação explícita por áudio.
+7. Somente após `confirmar`, um JSON versionado, expirável e com `command_id` único é enviado pela rede local.
+8. O bridge valida schema, confirmação, expiração, duplicidade e estado do robô.
+9. `SPRAY` entrega uma pose allowlisted ao Nav2 e termina no alvo sem retorno automático.
+10. `DOCK` e `UNDOCK` são operações independentes e só acontecem por comandos explícitos e confirmados.
 
-O MVP comprova a sequência completa com os Meta Wearables enviando o frame pelo DAT ao app Android, IA local, WebSocket, ROS 2, Nav2 e Gazebo. O mock permanece apenas como ferramenta de desenvolvimento e contingência técnica; não substitui a evidência principal com os óculos.
+### A4. Fluxos de exceção e segurança
 
-### A4. Walkthrough — fluxo de exceção principal
+- `SPRAY` enquanto dockado é recusado e não gera `UNDOCK` automático.
+- Se voz e câmera discordarem (`plot-01` × `plot-03`), a UI mostra `AMBÍGUO` e nada é enviado.
+- `CANCEL` durante a confirmação encerra a operação localmente.
+- `UNKNOWN` nunca cria comando operacional.
+- `confirmed=false` e comando expirado são rejeitados pelo contrato.
+- Repetição do mesmo `command_id` retorna a resposta anterior e não repete o callback ROS.
+- Qwen, quando disponível, só pode responder `CHAT` ou `OUT_OF_SCOPE`; nunca controla WebSocket/ROS.
 
-Se nenhum QR conhecido nem ID falado for encontrado, se houver mais de um alvo, se voz e câmera divergirem, se a intenção ficar abaixo do limiar, se o usuário não confirmar ou se a conexão cair, o app informa o motivo em uma frase curta, não envia comando e volta ao estado inicial. Mensagens repetidas usam `command_id`, prazo de validade e deduplicação para não causar movimento duplo. Na demonstração de falha segura, a equipe dirá “cancelar” e mostrará que nenhum comando chega ao robô.
+### A5. Decisões técnicas
 
-### A5. Decisões técnicas, justificativas e alternativas descartadas
+**Alvo mapeado em vez de pose/IMU.** O DAT público não fornece pose/IMU suficiente para transformar direção da cabeça em coordenada segura. O MVP usa QR/ID previamente mapeado e fail-closed em divergência.
 
-| Decisão do MVP | Por que foi escolhida | Alternativa descartada nesta etapa |
-|---|---|---|
-| Placa legível + QR, com fallback por ID falado | O DAT público oferece câmera, mas não uma pose/IMU que converta direção da cabeça em coordenadas. A placa torna a prova determinística; voz e câmera precisam concordar quando ambas fornecem ID. | Raycasting, GPS do operador como destino, RTK e localização visual completa. |
-| Agente estreito com quatro classes (`SPRAY`, `CONFIRM`, `CANCEL`, `UNKNOWN`) | Cabe no celular, é rápido, testável e transforma ambiguidades em `UNKNOWN` em vez de inventar ações. | LLM em nuvem e linguagem aberta para qualquer tarefa. |
-| Captura sob demanda, um frame por interação | Reduz uso de bateria, aquecimento, banda e exposição de terceiros. | Streaming contínuo durante toda a operação. |
-| Android/Kotlin nativo com contrato versionado | Os samples e o ciclo de vida do DAT são nativos; o app consome o modelo e o JSON canônicos sem depender de uma camada que esconda o SDK. | React Native no MVP. |
-| WebSocket/JSON versionado entre app e robô | Desacopla óculos, celular e ROS 2; facilita mock, validação, expiração e deduplicação. | Acoplar o app diretamente a tópicos ROS 2 ou a um fabricante de máquina. |
+**Classificador operacional pequeno em vez de LLM como autoridade.** O Qwen foi rejeitado como classificador de comandos críticos após apresentar aceites perigosos. O classificador operacional atual fez 64/64 no corpus final, com macro-F1 1,0 e 0 aceites perigosos.
 
-### A6. Concorrentes e diferenciação
+**Lifecycle explícito.** `SPRAY` não faz undock, retorno ou dock automaticamente. Isso torna a intenção física observável e confirmável.
 
-**Meta AI nos óculos.** É um assistente multimodal de uso geral, disponível nos AI glasses e voltado a perguntas, tradução e compreensão do ambiente. O Maestro não tenta substituí-lo: é um agente operacional estreito, com protocolo determinístico, confirmação obrigatória e integração com ROS 2 para controlar uma tarefa agrícola.
+**DAT/MockDeviceKit nesta etapa.** O `datDebug` exercita a integração do SDK sem fingir hardware real. Se selecionados para a fase presencial, o mesmo adaptador será revalidado com os Meta Wearables físicos.
 
-**John Deere Operations Center e soluções de autonomia.** A plataforma planeja, monitora e envia trabalhos para equipamentos por web, tablet e celular; as soluções autônomas usam o telefone para iniciar e supervisionar tarefas. O Maestro se diferencia como uma camada de interação mãos-livres, agnóstica de fabricante e aberta por contrato, pensada para selecionar um alvo visual e comandar robôs existentes.
+### A6. Evidência final reproduzida em 22/08/2026
 
-Fontes oficiais: [Meta AI](https://ai.meta.com/meta-ai/), [John Deere Operations Center](https://www.deere.com/en/technology-products/precision-ag-technology/operations-center/) e [John Deere Autonomous](https://www.deere.com/en/autonomous/).
+No Samsung SM-X510/API 36, usando `datDebug` + MockDeviceKit e bridge WebSocket local, foi observado:
 
-### A7. Cinco pilares técnicos obrigatórios
+```text
+UNDOCK explícito -> Undock Goal Succeeded
+Olhar para o alvo -> plot-03
+SPRAY confirmado -> Nav2 accepted/completed plot-03
+DOCK explícito -> Nav2 dock approach -> Dock Goal Succeeded
+novo UNDOCK explícito -> Undock Goal Succeeded
+```
 
-| Pilar | Implementação e evidência do MVP |
+Também passaram os guardrails `SPRAY` dockado sem movimento, conflito `plot-03` visual × `plot-01` falado, `CANCEL` sem envio e `UNKNOWN` sem movimento. A captura do MockDeviceKit foi repetida várias vezes na mesma execução após o rearm da câmera simulada.
+
+Gates automatizados finais:
+
+```text
+64/64 no corpus de avaliação
+macro-F1 1.000
+unsafe accepts: 0
+65 testes portáteis
+36 testes do bridge
+```
+
+### A7. Cinco pilares
+
+| Pilar | Implementação/evidência |
 |---|---|
-| Uso de IA | Cascata local de regras seguras e classificador softmax, treinado com 144 frases e executado em Kotlin. O artefato de cerca de 367 KiB retorna quatro intenções e a origem `RULE` ou `MODEL`; na avaliação independente versionada, classificou 64/64 casos com zero aceite perigoso. É uma suíte controlada, não benchmark de campo. STT é uma etapa nativa separada. |
-| Câmera/microfone | A câmera entra pelo DAT e é consumida sob demanda. A voz usa o reconhecimento nativo do celular; nos óculos reais, o roteamento do microfone por Bluetooth precisa ser validado. O telefone é o fallback explícito. |
-| Saída por áudio | TTS nativo do Android informa pergunta de confirmação, sucesso ou falha. O áudio pode sair pelos open-ear speakers quando a rota Bluetooth do sistema estiver disponível; o alto-falante do telefone é o fallback. |
-| Privacidade | Frame e áudio são efêmeros e não são gravados pelo Maestro. Logs guardam apenas IDs, estados, latências e erros. Há confirmação explícita, validade curta e nenhuma execução diante de ambiguidade. |
-| Eficiência de bateria | Sessão curta, captura sob demanda, um frame por ação, modelo pequeno local e encerramento de câmera/áudio ao fim da interação. Bateria e temperatura serão medidas no hardware real. |
-
-### Evidências que podem ser demonstradas agora
-
-- `make test-quick`: 26 testes automatizados, 4 testes do bridge e validação do Compose.
-- `make vision-smoke`: placa completa decodificada como `plot-03`.
-- `make demo`: bridge aceita o comando, Nav2 fica ativo e a odometria muda no Gazebo.
-- `make demo-visual`: a mesma jornada passa com Gazebo e RViz no contêiner usando a NVIDIA.
-- Comando positivo: resposta `ACCEPTED`.
-- Confirmação “cancelar”: rejeição local, sem envio de movimento.
-- Apps nativos, conexão DAT real e rota de áudio nos aparelhos: **PENDENTES de teste físico**; não declarar como validados antes do ensaio.
+| IA | Classificador local restrito, 64/64 no corpus final e 0 aceites perigosos; Qwen opcional sem autoridade operacional. |
+| Câmera/microfone | `datDebug` + DAT 0.9.0 + MockDeviceKit para captura pré-hardware; STT pelo Android. Hardware Meta real é gate posterior. |
+| Output por áudio | TTS Android para confirmação, cancelamento, erro e sucesso. |
+| Privacidade | Captura sob demanda, processamento local e nenhuma persistência de mídia bruta pelo Maestro por padrão. |
+| Eficiência | Classificador operacional pequeno e captura sob demanda; medições completas com hardware Meta ficam para a fase presencial. |
 
 ## Seção B — Diagrama de arquitetura
 
 - Código Mermaid: [`architecture.mmd`](architecture.mmd).
 - Imagem para upload: `architecture.svg` no mesmo diretório.
-- O diagrama separa óculos, app, rede/bridge e robô; a linha tracejada representa mídia efêmera e a linha sólida representa dados estruturados ou comandos.
-- Nota obrigatória: o DAT é a integração de câmera. Voz e TTS pertencem ao sistema mobile e usam a rota de áudio disponível; isso será validado com o hardware.
+- O diagrama deve separar DAT/MockDeviceKit, app Android, IA operacional, confirmação, WebSocket, bridge e ROS 2/Nav2/Gazebo.
+- A camada Qwen deve aparecer separada do caminho de `Command`.
 
 ## Seção C — Vídeo-pitch
 
-- Duração obrigatória: 2 a 3 minutos; roteiro-alvo: 2min45s.
+- Duração: 2 a 3 minutos; alvo de 2min40s–2min55s.
 - Apresentadores: Felipe (problema, usuário e jornada) e Rafael (arquitetura, evidência e fechamento).
-- Mostrar: comando aceito e uma recusa segura.
-- Hospedagem permitida pelo aviso recebido: YouTube não listado, Google Drive ou Vimeo.
+- Mostrar pelo menos: captura `plot-03`, confirmação, `UNDOCK` explícito, `SPRAY`/Nav2, `DOCK` explícito e uma falha segura.
+- Na tela ou fala, rotular a câmera como **DAT 0.9.0 + MockDeviceKit / pré-hardware**.
 - Link do vídeo: **PENDENTE — inserir após upload e testar em janela anônima**.
 
-Checklist antes de colar o link:
+Checklist:
 
 - [ ] duração entre 2:00 e 3:00;
-- [ ] áudio compreensível e slides legíveis em tela pequena;
-- [ ] permissão do link permite acesso sem conta da equipe;
+- [ ] áudio compreensível e telas legíveis;
+- [ ] link acessível sem conta da equipe;
 - [ ] deck, fala e formulário usam o mesmo fluxo;
-- [ ] não há promessa de pose/IMU, pulverização real ou hardware ainda não testado.
+- [ ] não há promessa de pose/IMU, pulverização real ou captura física dos Meta Wearables;
+- [ ] a evidência E2E mostrada corresponde ao lifecycle explícito atual.
 
 ## Seção D — Confirmações finais
 
 ### D1. Manutenção ou alteração de escopo
 
-O propósito foi mantido: permitir que um operador indique uma área, dê um comando por voz e confirme antes de acionar um robô. O mecanismo de localização foi refinado. Como o DAT público não expõe pose/IMU dos óculos, o MVP usa uma placa legível com QR previamente mapeado. O operador também pode dizer `plot-03`; se voz e câmera discordarem, nada é enviado. GPS do usuário não vira destino do robô. Essa alteração reduz risco e preserva a jornada “olhar, falar e confirmar”. Operação real de pulverização continua fora de escopo.
+O propósito foi mantido: permitir que um operador indique uma área, dê um comando por voz e confirme antes de acionar um robô. O mecanismo de localização foi refinado para um QR/ID previamente mapeado porque o DAT público não expõe pose/IMU suficiente para gerar um waypoint seguro. GPS do usuário não vira destino do robô. A operação real de pulverização continua fora de escopo.
 
 ### D2. Coerência entre os artefatos
 
-Confirmamos que documento, diagrama, vídeo, apresentação e protótipo descrevem o mesmo corte vertical: captura visual sob demanda, voz pelo sistema mobile, IA local restrita, confirmação obrigatória, comando JSON via rede local e execução em ROS 2/Nav2/Gazebo. Itens ainda dependentes do hardware são identificados como pendentes, sem serem apresentados como evidência concluída.
+Documento, diagrama, vídeo, apresentação e protótipo devem descrever o mesmo corte vertical: DAT pré-hardware com MockDeviceKit, captura visual sob demanda, voz pelo Android, IA operacional local, confirmação obrigatória, comando JSON pela rede local e execução em ROS 2/Nav2/Gazebo. Hardware Meta real é próximo gate, não evidência já concluída.
 
 ### D3. Autoria e uso de IA
 
@@ -111,7 +122,7 @@ A equipe AgroTurtles definiu o problema, escopo, arquitetura, decisões, critér
 ## Revisão humana obrigatória antes do envio
 
 - Felipe e Rafael: ensaiar o roteiro e confirmar que as falas refletem o vídeo gravado.
-- Átila: revisar as afirmações sobre Kotlin, DAT, reconhecimento de voz, TTS e aparelhos Android-alvo.
+- Átila: revisar as afirmações sobre Kotlin, DAT, reconhecimento de voz, TTS e Android.
 - Rafael: revisar classificador, métricas e limites da IA.
 - Felipe: revisar ROS 2, Nav2, Gazebo, QR e evidências da demo.
-- Todos: conferir limites de caracteres do formulário e as três caixas de confirmação da Seção D.
+- Todos: conferir limites de caracteres e caixas de confirmação do formulário.

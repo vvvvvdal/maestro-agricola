@@ -8,7 +8,7 @@ Interface hands-free para comandar maquinário agrícola autônomo com visão, v
 
 O Maestro Agrícola permite que o operador olhe para um alvo no campo, diga a ação desejada e confirme o comando sem interromper o trabalho para usar notebook ou tablet. O aplicativo companion interpreta a intenção, associa o alvo visual a uma posição conhecida e envia um comando estruturado ao robô.
 
-> Estado: primeira implementação do MVP para o Programa AI Glasses Brasil 2026.
+> Estado: MVP pré-hardware integrado e validado ponta a ponta em 22/08/2026 para o Programa AI Glasses Brasil 2026.
 
 ## Jornada principal
 
@@ -48,13 +48,13 @@ Para manter a demonstração verificável, o alvo do MVP será um marcador visua
 - runtime local Qwen2.5-1.5B Q4_K_M via `llama.cpp`, validado em smoke físico no SM-X510;
 - Dockerfile e Compose para reproduzir o simulador e cliente mock para testes sem hardware.
 
-O caminho DAT pré-hardware está implementado e foi validado com MockDeviceKit. A sessão e a câmera dos Meta Wearables físicos, além da rota real de áudio com os óculos, continuam pendentes do ensaio com hardware. Resultado com MockDeviceKit não deve ser apresentado como captura física.
+O caminho DAT pré-hardware está implementado e foi validado no Android físico com `datDebug` + MockDeviceKit. Essa é a evidência da etapa de seleção de 22/08/2026. Sessão/câmera e rota real de áudio nos Meta Wearables físicos são um gate posterior caso a equipe avance para a fase presencial. Resultado com MockDeviceKit nunca deve ser apresentado como captura física.
 
 ### IA operacional e assistente local
 
 O Qwen não substitui o classificador operacional. O benchmark versionado mostrou que o Qwen2.5-1.5B não é seguro o suficiente para decidir comandos críticos: 36/48 acertos e 3 aceites perigosos no corpus de seis rótulos. Por isso, `LocalIntentClassifier` continua responsável por `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM` e `CANCEL`.
 
-A infraestrutura de assistente local já existe: `LanguageRouter` envia somente `UNKNOWN` para `QwenDomainAssistant`, cuja saída é limitada por GBNF a `CHAT` ou `OUT_OF_SCOPE`; saída malformada falha para `OUT_OF_SCOPE`. O runtime Android nativo foi validado fisicamente, mas esse roteamento ainda não está conectado à `MainActivity`. Portanto, a interface principal atual continua usando apenas o classificador operacional.
+A infraestrutura de assistente local está conectada à `MainActivity`: `LanguageRouter` envia somente `UNKNOWN` para `QwenDomainAssistant`, cuja saída é limitada por GBNF a `CHAT` ou `OUT_OF_SCOPE`; saída malformada falha para `OUT_OF_SCOPE`. Operações continuam no `InteractionEngine`. O GGUF não é empacotado no APK, então o assistente só fica disponível quando o modelo é provisionado no diretório privado do app; sua ausência não afeta o caminho operacional.
 
 Detalhes e evidências: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-android-runtime.md).
 
@@ -84,9 +84,9 @@ Na `main`, o gate automatizado seguro que continua alinhado ao comportamento atu
 make test-quick
 ```
 
-A Task 1 removeu o lifecycle automático `undock -> missão -> retorno -> dock`. Portanto, enquanto a Task 7 não atualizar os scripts E2E antigos, `make demo`, `make demo-route` e `make demo-visual` **não devem ser usados como gate de aprovação do lifecycle atual**, pois ainda podem conter expectativas históricas de dock automático.
+A Task 7 validou o lifecycle explícito pelo Android físico. `make demo`, `make demo-route` e `make demo-visual` podem conservar expectativas históricas e permanecem apenas como diagnósticos; **não são o gate normativo do lifecycle atual**.
 
-Para validar o fluxo atual no Gazebo, use o smoke test Android descrito abaixo: faça `Undock` manualmente pelo HMI quando o robô estiver dockado, envie um `SPRAY`, confirme e verifique que o robô chega ao plot e permanece no destino.
+Para validar o fluxo atual no Gazebo, use o app: envie `UNDOCK` explicitamente quando o robô estiver dockado, confirme, depois envie `SPRAY`; o robô deve chegar ao plot e permanecer no destino. `DOCK` só acontece quando pedido. Não use os botões Dock/Undock do HMI como parte do E2E Maestro.
 
 **Não abra `127.0.0.1:18765` no navegador**: essa é uma porta WebSocket, não uma página. Para encerrar a simulação, use `make simulation-down`.
 
@@ -123,13 +123,13 @@ make vision-smoke
 
 A saída esperada contém três resultados `"status": "DETECTED"`, um para cada ID de `plot-01` a `plot-03`.
 
-### 3. Demo automatizada legada — pendente de atualização na Task 7
+### 3. Demo automatizada legada — diagnóstico, não gate normativo
 
 ```bash
 make demo
 ```
 
-O comando ainda é útil para diagnóstico do caminho WebSocket/Nav2, mas o critério histórico de sucesso do script pode divergir do lifecycle atual. A Task 7 é responsável por reescrever esse E2E para `SPRAY` terminar no destino sem retorno automático à doca.
+O comando continua útil para diagnóstico do caminho WebSocket/Nav2, mas seu critério histórico pode divergir do lifecycle atual. A evidência normativa da Task 7 é o E2E Android `datDebug` + MockDeviceKit com lifecycle explícito.
 
 Uma resposta do bridge semelhante à abaixo continua sendo evidência de que o comando foi aceito e enfileirado:
 
@@ -150,7 +150,7 @@ Para testar todos os pontos em uma única rota limpa, headless e acelerada pela 
 make demo-route
 ```
 
-Esse comando exige o mesmo driver/runtime NVIDIA do modo visual e visita `plot-01`, `plot-02` e `plot-03` nessa ordem. O assert histórico de retorno à doca ainda precisa ser removido/reescrito na Task 7; até lá, use esse comando como diagnóstico, não como gate final do lifecycle explícito.
+Esse comando exige o mesmo driver/runtime NVIDIA do modo visual e visita `plot-01`, `plot-02` e `plot-03` nessa ordem. Trate eventuais asserts históricos de retorno à doca como legado; use o fluxo Android da Task 7 como gate final do lifecycle explícito.
 
 > A execução padrão é **headless**: nenhuma janela do Gazebo será aberta. O resultado aparece no terminal e nos logs. Isso é esperado.
 
@@ -195,7 +195,7 @@ Na primeira execução, aguarde o mundo terminar de baixar e carregar. O cache d
 make demo-visual
 ```
 
-> Enquanto a Task 7 estiver pendente, `make demo-visual` pode conservar asserts do lifecycle antigo. Para validar a Task 1, prefira o fluxo manual/Android em que `SPRAY` termina no plot e o robô permanece lá.
+> `make demo-visual` pode conservar asserts do lifecycle antigo. Para validar o comportamento atual, prefira o fluxo Android em que `UNDOCK` é explícito, `SPRAY` termina no plot e `DOCK` só ocorre quando solicitado.
 
 Para ver mapa, robô, LiDAR, costmap e planos, abra em um terceiro terminal:
 
@@ -440,24 +440,26 @@ não deve aparecer um retorno automático para a doca.
 
 ## Ambiente mobile da demonstração
 
-| Ambiente | Papel | Evidência do MVP/pitch |
+| Ambiente | Papel | Evidência da entrega de 22/08 |
 |---|---|---:|
-| Android físico compatível com o DAT + Meta Wearables | `datDebug`, câmera dos óculos, áudio Android e IA local | Sim |
-| Emulador ou `mockDebug` | desenvolvimento, testes automatizados e contingência | Não substitui a demo com os óculos |
+| Samsung SM-X510 + `datDebug` + DAT 0.9.0 + MockDeviceKit | jornada pré-hardware completa | Sim |
+| `mockDebug` / emulador | desenvolvimento, testes automatizados e smoke | Apoio |
+| Meta Wearables físicos | gate de câmera/áudio na fase presencial, se selecionados | Futuro |
+
+## Estado final da Task 7
+
+Tasks 1–7 estão concluídas para o MVP pré-hardware. Em 22/08/2026 foram observados `UNDOCK -> SPRAY plot-03 -> DOCK -> UNDOCK`, captura repetível, bloqueio de `SPRAY` dockado, conflito visual/voz e `CANCEL` sem movimento. O gate final passou com 64/64 no corpus, 0 aceites perigosos, 65 testes portáteis e 36 testes do bridge.
 
 ## Próximas tarefas críticas
 
-A ordem executável está em [`TASKS.md`](TASKS.md). Tasks 1–5 estão concluídas; a Task 6 tem benchmark e runtime Qwen aprovados, mas ainda precisa do wiring seguro no fluxo principal; a Task 7 concentra o fechamento E2E.
-
-1. Conectar `LanguageRouter`/`QwenDomainAssistant` à UI sem dar ao Qwen acesso a `Command`, WebSocket ou estado do robô.
-2. Reescrever os scripts E2E legados para o lifecycle explícito: `SPRAY` termina no alvo e permanece lá; `DOCK`/`UNDOCK` só ocorrem por comando confirmado.
-3. Executar o gate físico do DAT com os Meta Wearables e validar câmera + STT/TTS/rota de áudio no aparelho da demonstração.
-4. Repetir a jornada Android → WebSocket → ROS 2/Nav2/Gazebo e registrar evidência final sem mídia bruta.
-5. Atualizar pitch/formulário final somente depois que o comportamento demonstrado estiver congelado.
+1. Congelar a `main`, fazer push e confirmar CI.
+2. Gravar o pitch usando a evidência real `datDebug` + MockDeviceKit e rotulá-la como pré-hardware.
+3. Provisionar o GGUF apenas se o assistente Qwen for mostrado; ele não é necessário para o controle do robô.
+4. Se a equipe avançar para a fase presencial, substituir o MockDeviceKit pelos Meta Wearables físicos e validar câmera/áudio/latência/bateria.
 
 ### Meta Wearables / DAT
 
-O caminho pré-hardware já está implementado com DAT 0.9.0 e MockDeviceKit. O próximo passo é validar o mesmo adaptador no hardware real; não existe fallback silencioso do flavor `dat` para simulação. O mock permanece como contingência e teste da lógica compartilhada.
+O caminho pré-hardware está implementado com DAT 0.9.0 e MockDeviceKit e já participou do E2E no Android físico. Sem `maestroDatMockDevice=true`, o flavor `dat` permanece no caminho de registro/hardware real; não existe fallback silencioso.
 
 Comece pelo índice em [`docs/README.md`](docs/README.md).
 

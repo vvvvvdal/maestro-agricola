@@ -2,78 +2,66 @@
 
 ## Diagnóstico de viabilidade
 
-O MVP já possui a maior parte do caminho pré-hardware: Android nativo, UI, classificador operacional, contrato, bridge ROS 2, Nav2/Gazebo, visão mapeada, lifecycle explícito e adaptador DAT 0.9.0 validado com MockDeviceKit.
+O MVP pré-hardware está fechado: Android nativo, UI, classificador operacional, contrato, bridge ROS 2, Nav2/Gazebo, visão mapeada, lifecycle explícito e adaptador DAT 0.9.0 com MockDeviceKit foram integrados no mesmo E2E.
 
-O trabalho até o evento não deve ampliar o produto. O foco é fechar a integração, atualizar o E2E para o lifecycle atual, validar hardware real e congelar a demonstração.
+A entrega de seleção de 22/08/2026 não depende dos Meta Wearables físicos. O hardware real vira o próximo gate caso a equipe seja selecionada para a fase presencial em São Paulo.
 
 ## Escopo congelado
 
 - Android nativo em Kotlin.
-- Câmera via Meta Wearables DAT; mock permanece como ferramenta de desenvolvimento.
+- `datDebug` + DAT 0.9.0 + MockDeviceKit no MVP pré-hardware.
+- Meta Wearables físicos somente na fase posterior de hardware.
 - Alvos previamente mapeados/allowlisted.
 - Tarefa agrícola demonstrativa `SPRAY`.
 - `DOCK` e `UNDOCK` como comandos explícitos de lifecycle.
 - `CONFIRM`, `CANCEL` e `UNKNOWN` como controles de interação.
 - Bridge WebSocket/JSON -> ROS 2/Nav2/Gazebo.
 - Captura sob demanda e nenhuma mídia bruta persistida por padrão.
-- Qwen local somente como assistente de domínio, caso o wiring seguro esteja concluído; nunca como autoridade operacional.
+- Qwen local somente como assistente de domínio; nunca como autoridade operacional.
 
-## Estado técnico atual
+## Estado técnico em 22/08/2026
 
-- Tasks 1–5: concluídas.
-- Task 6: runtime Qwen/llama.cpp, wiring seguro e smoke físico da `MainActivity` concluídos.
-- DAT: fluxo pré-hardware e MockDeviceKit concluídos; Meta Wearables reais pendentes.
-- UI: jornada Compose integrada à `main`.
-- Task 7: E2E final precisa substituir expectativas históricas de dock/undock automático.
+- Tasks 1–7: concluídas para o MVP pré-hardware.
+- Classificador operacional: 64/64, macro-F1 1,0 e 0 aceites perigosos.
+- Testes: 65 portáteis + 36 bridge, todos verdes.
+- DAT: `datDebug` + MockDeviceKit executado em Samsung SM-X510/API 36.
+- Captura: `Olhar para o alvo` repetível na mesma execução após rearm da câmera simulada.
+- E2E: `UNDOCK -> SPRAY plot-03 -> DOCK -> UNDOCK` observado no Gazebo via app.
+- Guardrails: `SPRAY` dockado, conflito visual/voz e `CANCEL` sem movimento.
+- Bridge: expiração, confirmação e deduplicação de `command_id` cobertas por teste.
+- Qwen: runtime/wiring seguro já validado em testes anteriores; o GGUF não é empacotado e precisa ser provisionado se o assistente for mostrado.
 
-## Trabalho até o evento
+## Trabalho restante até a entrega de seleção
 
-### 1. Fechar software antes do hardware
-
-- manter o fallback `UNKNOWN -> Qwen` fora de operações e confirmações e medir sua convivência com o hardware final;
-- reescrever o E2E para `SPRAY` permanecer no alvo;
-- validar `DOCK` e `UNDOCK` explícitos;
-- executar os gates `mockDebug` e `datDebug`;
-- congelar contrato e assets.
-
-### 2. Preparar evidência offline
-
-- APKs/builds reproduzíveis;
-- dependências necessárias disponíveis localmente;
-- logs e comandos de diagnóstico documentados;
-- vídeo de contingência identificado como contingência, não como substituto de validação física.
-
-### 3. Validar hardware no evento
-
-- sample oficial e pareamento;
-- sessão/câmera DAT real;
-- target visual real;
-- STT/TTS e rota de áudio;
-- jornada completa Android -> bridge -> ROS 2/Nav2/Gazebo;
-- memória, latência, temperatura e bateria.
+1. Congelar a `main`; somente correções bloqueantes.
+2. Fazer push e confirmar CI.
+3. Atualizar formulário, docs e roteiro com a evidência final.
+4. Gravar o vídeo/pitch usando a demonstração pré-hardware real observada.
+5. Rotular claramente `DAT + MockDeviceKit` e não sugerir que o frame veio dos óculos físicos.
+6. Manter uma gravação de contingência do E2E.
 
 ## Papéis
 
 - **Átila:** Android, DAT, câmera, áudio, permissões e build.
 - **Felipe:** visão, bridge ROS 2, Gazebo/Nav2 e integração E2E.
 - **Rafael:** IA local, métricas, checkpoints e apoio ao pitch.
-- **Equipe:** segurança, evidência física e congelamento final.
+- **Equipe:** segurança, evidência e congelamento final.
 
 Detalhes: [`team.md`](team.md).
 
-## Hackathon presencial — 18 de setembro de 2026
+## Fase presencial — se selecionados
 
-O evento não é o momento de criar arquitetura nova. A janela deve ser usada para substituir mocks pelo hardware, medir, corrigir incompatibilidades curtas e demonstrar.
+A fase com hardware não é o momento de redesenhar o produto. O objetivo será substituir o MockDeviceKit pelo dispositivo Meta real e medir o que o pré-hardware não pode provar.
 
 Prioridade:
 
 1. confirmar versão DAT/firmware e pareamento;
-2. receber frame real;
-3. validar áudio;
-4. executar a jornada completa;
-5. medir estabilidade;
-6. passar checkpoints;
-7. congelar.
+2. receber frame real dos óculos;
+3. validar rota de microfone/TTS;
+4. executar a mesma jornada Android -> bridge -> ROS 2/Nav2/Gazebo;
+5. medir estabilidade, memória, latência, temperatura e bateria;
+6. passar os checkpoints físicos;
+7. congelar novamente.
 
 Roteiro detalhado: [`tasks/hackathon-day.md`](tasks/hackathon-day.md).
 

@@ -6,8 +6,7 @@
 - Duração: até 3 minutos.
 - Seis slides, com baixa densidade de texto.
 - Paleta oficial: amarelo `#FCC931`, verde `#3C4C1E`, azul `#0F3C65` e branco.
-- Tipografia: League Spartan em toda a apresentação.
-- Marca completa na abertura e no fechamento; tartaruga verde sobre amarelo como assinatura nos slides 2 a 5.
+- Tipografia: League Spartan.
 
 ## Slide 1 — Capa
 
@@ -15,9 +14,7 @@
 
 **Texto:** Maestro Agrícola / Olhe. Fale. Confirme.
 
-**Visual:** operador usando óculos inteligentes diante de um robô agrícola em uma linha de cultivo.
-
-**Edição:** abrir com 1 segundo de imagem limpa; entrada suave do título.
+**Visual:** operador com óculos inteligentes diante de maquinário agrícola; tratar como visão de produto, não como evidência de hardware já testado.
 
 ## Slide 2 — Problema
 
@@ -25,9 +22,7 @@
 
 **Texto principal:** A máquina é autônoma. A interface ainda não.
 
-**Apoio:** parar, limpar as mãos, abrir uma tela, reprogramar.
-
-**Edição:** cortes rápidos de sol, poeira, luvas e tela; não usar números sem fonte.
+**Apoio:** sol, poeira, luvas, mãos ocupadas, telas que interrompem o fluxo.
 
 ## Slide 3 — Jornada
 
@@ -35,49 +30,67 @@
 
 **Texto:** Olhar → Falar → Confirmar.
 
-**Apoio:** Regras + softmax local · 367 KiB · 4 intenções · limiar 0,40. Voz ≠ câmera → nenhum comando.
+**Apoio:** `DAT 0.9.0 + MockDeviceKit · pré-hardware` / alvo mapeado / voz ≠ câmera → nenhum comando.
 
-**Edição:** destacar um passo por vez, sincronizado com a fala.
+**Edição:** mostrar a tela Android identificando `plot-03` e depois a confirmação.
 
 ## Slide 4 — Arquitetura e demo
 
 **Apresentador:** Rafael.
 
-**Texto:** câmera via DAT → app Kotlin + IA híbrida local → WebSocket → ROS 2/Nav2/Gazebo.
+**Texto:** DAT → Kotlin + IA operacional → confirmação → WebSocket → ROS 2/Nav2/Gazebo.
 
-**Edição:** animar o fluxo da esquerda para a direita. A fala explica que voz/TTS usam o sistema mobile, a rota Bluetooth será validada e o telefone é fallback. Inserir 3 a 5 segundos da simulação recebendo o comando.
+**Apoio:** `DOCK` e `UNDOCK` explícitos; Qwen isolado do caminho de controle.
 
-## Slide 5 — Evidência para a banca
+**Edição:** fluxo da esquerda para a direita e 3–5 segundos da simulação.
+
+## Slide 5 — Evidência
 
 **Apresentador:** Rafael.
 
-**Texto:** QR detectado · IA 64/64 controlados · 0 aceite perigoso · `ACCEPTED` + movimento.
+**Texto:** 64/64 · 0 aceite perigoso · 65 + 36 testes · E2E lifecycle completo.
 
-**Edição:** mostrar cada compromisso no momento em que for citado. Sobrepor primeiro o comando aceito e o movimento; depois mostrar “cancelar” sem comando. “0 mídia salva” significa comportamento do MVP, não auditoria externa.
+**Edição:** mostrar quatro evidências curtas:
+
+1. captura repetível `plot-03`;
+2. `Undock Goal Succeeded`;
+3. `Nav2 completed ... plot-03` / robô no alvo;
+4. uma falha segura (`AMBÍGUO` ou `CANCELADO`).
+
+Se houver espaço, incluir `Dock Goal Succeeded` para reforçar o lifecycle explícito.
 
 ## Slide 6 — Fechamento
 
 **Apresentador:** Rafael.
 
-**Texto:** O futuro do campo não precisa de mais telas.
+**Texto principal:** Interface segura entre linguagem natural e máquinas físicas.
 
 **Apoio:** Olhe. Fale. Confirme.
 
-**Edição:** manter 1 segundo de silêncio visual ao final para facilitar o corte do vídeo.
+**Fechamento:** “Se avançarmos, o próximo gate é trocar o MockDeviceKit pelos Meta Wearables reais.”
 
 ## Capturas que a equipe deve gravar
 
-1. Centralização da placa `PLOT-03` no feed recebido dos Meta Wearables pelo DAT.
-2. Transcrição e intenção reconhecida no app.
-3. Pergunta de confirmação pelo TTS do celular; registrar a rota usada na gravação.
-4. JSON aceito pelo bridge.
-5. Robô iniciando o deslocamento no Gazebo.
-6. Recusa ou ambiguidade sem movimento.
+1. Tela do `datDebug` com fonte MockDeviceKit identificando `plot-03`.
+2. Intenção reconhecida e tela de confirmação.
+3. Gazebo mostrando o `UNDOCK` completo e o robô fisicamente afastado da doca.
+4. `SPRAY`/Nav2 chegando ao `plot-03` e permanecendo lá.
+5. `DOCK` explícito, se couber no vídeo.
+6. Uma recusa segura: conflito visual/voz ou `CANCEL`.
+7. Opcional: trecho de terminal com 64/64 e 0 unsafe accepts.
 
-## Ordem sugerida na edição do vídeo
+## Ordem sugerida na edição
 
-1. Slides 1 e 2 em tela cheia com Felipe em picture-in-picture opcional.
-2. Slide 3 com realce sequencial dos três pontos.
-3. Slide 4 com 3 a 5 segundos do terminal/bridge e corte para o Gazebo.
-4. Slide 5 com duas evidências: `ACCEPTED` + movimento e `cancelar` + ausência de envio.
-5. Slide 6 limpo; manter um segundo depois da última palavra para facilitar o corte.
+1. Slides 1 e 2 em tela cheia.
+2. Slide 3 + corte curto para Android (`plot-03` e confirmação).
+3. Slide 4 + terminal/bridge + Gazebo.
+4. Slide 5 + falha segura e números dos testes.
+5. Slide 6 limpo com um segundo de respiro visual para facilitar o corte.
+
+## O que não mostrar como evidência
+
+- imagem genérica de óculos como se fosse frame real;
+- HMI manual para Dock/Undock como parte do fluxo Maestro;
+- Qwen emitindo comando;
+- script legado `make demo*` como prova do lifecycle atual;
+- afirmação de câmera/áudio dos Meta Wearables físicos antes do gate de hardware.

@@ -43,7 +43,7 @@ O DAT é usado para sessão e câmera. O reconhecimento de fala e o TTS pertence
 - Executa a máquina de estados de confirmação.
 - Envia comandos idempotentes ao bridge.
 
-Existe uma única implementação nativa Android/Kotlin. `datDebug` é o caminho do MVP demonstrado; `mockDebug` isola a fonte simulada usada no desenvolvimento sem duplicar regra de negócio. Não há React Native.
+Existe uma única implementação nativa Android/Kotlin. Na entrega pré-hardware de 22/08/2026, `datDebug` foi executado no Android físico com o MockDeviceKit explicitamente habilitado; `mockDebug` continua isolando a fonte simulada de desenvolvimento. O mesmo flavor `dat` será usado sem MockDeviceKit no gate de hardware real, caso a equipe avance. Não há React Native.
 
 ### Bridge ROS 2
 
@@ -139,7 +139,7 @@ IDLE -> CAPTURING -> INTERPRETING -> AWAITING_CONFIRMATION
 - Preferir captura sob demanda a streaming contínuo.
 - Manter modelos pequenos e intenções restritas.
 - Interromper câmera, áudio e sessão quando a jornada terminar.
-- Medir latência, temperatura e bateria no hardware real.
+- Medir latência, temperatura e bateria com os Meta Wearables reais na fase presencial, se a equipe avançar.
 
 ## IA local compartilhada
 
@@ -155,7 +155,7 @@ Qwen2.5-1.5B-Instruct Q4_K_M foi avaliado inicialmente como possível classifica
 
 O modelo foi então restrito ao papel de assistente de domínio. `LanguageRouter` envia somente `UNKNOWN` para `QwenDomainAssistant`. O system prompt canônico limita o domínio ao Maestro Agrícola e a GBNF permite apenas JSON com `CHAT` ou `OUT_OF_SCOPE`. O parser Kotlin normaliza `OUT_OF_SCOPE` para uma mensagem fixa e qualquer JSON inválido ou tipo desconhecido também falha fechado.
 
-O runtime Android usa `llama.cpp` pinado em `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`, JNI/CMake ARM64, 4 threads, contexto 2048 e batch 512. No SM-X510, o smoke final passou 5/5; load ~33,3 s, respostas warm ~5,7–5,9 s, PSS ~1,38 GB e Swap PSS 273 KB. O wiring na `MainActivity` foi validado depois no Edge 40 Neo/API 35: load ~43,8 s, geração cold ~11,1 s, geração warm ~7,3 s, PSS ~1,34 GB e RSS ~1,39 GB. O GGUF não é versionado nem empacotado no APK atual. A convivência com DAT/câmera/áudio continua pendente.
+O runtime Android usa `llama.cpp` pinado em `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`, JNI/CMake ARM64, 4 threads, contexto 2048 e batch 512. No SM-X510, o smoke final passou 5/5; load ~33,3 s, respostas warm ~5,7–5,9 s, PSS ~1,38 GB e Swap PSS 273 KB. O wiring na `MainActivity` foi validado depois no Edge 40 Neo/API 35. O GGUF não é versionado nem empacotado no APK atual; após reinstalar `datDebug`, ele precisa ser provisionado novamente para habilitar o assistente. Sua ausência não afeta o caminho operacional. A medição combinada com hardware Meta real fica para a fase presencial.
 
 O reconhecimento de fala usa os recursos nativos do Android. STT é uma etapa diferente tanto do classificador operacional quanto do Qwen.
 
@@ -167,9 +167,9 @@ O reconhecimento de fala usa os recursos nativos do Android. STT é uma etapa di
 | Classificador operacional Android | Implementado; seis rótulos e caminho de confirmação ativo na `MainActivity` |
 | Qwen Android/llama.cpp | Runtime JNI e wiring `UNKNOWN -> assistente` implementados; smoke isolado no SM-X510 e fluxo principal no Edge 40 Neo validados |
 | WebSocket Android | Implementado no fluxo principal |
-| DAT Android | Ciclo 0.9.0, MockDeviceKit e detector QR local com ZXing validados pré-hardware; sessão/câmera/áudio nos óculos reais pendentes |
-| Voz e TTS Android | Implementados com APIs nativas; rota de áudio com os óculos reais pendente |
-| ROS 2/Nav2 | Bridge e comandos explícitos implementados; E2E final do lifecycle atual ainda precisa substituir asserts legados de dock automático |
+| DAT Android | Ciclo 0.9.0 + MockDeviceKit + ZXing validados no E2E pré-hardware em Android físico; hardware Meta real é gate posterior |
+| Voz e TTS Android | Implementados com APIs nativas; rota de áudio dos Meta Wearables fica para o gate de hardware real |
+| ROS 2/Nav2 | Bridge e comandos explícitos implementados; E2E `UNDOCK -> SPRAY -> DOCK -> UNDOCK` validado em 22/08/2026 |
 
 ## Principais riscos
 

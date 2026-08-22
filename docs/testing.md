@@ -26,7 +26,7 @@ Na pasta `mobile/android`, os gates combinados usados após integrar Qwen + DAT/
 
 Os quatro devem terminar com `BUILD SUCCESSFUL`.
 
-`make demo`, `make demo-route` e `make demo-visual` ainda são úteis para diagnóstico do WebSocket/Nav2/Gazebo, mas conservam expectativas históricas de lifecycle automático. Enquanto a Task 7 não reescrever esses scripts, eles não são gate final de segurança: `SPRAY` deve terminar no alvo e permanecer lá, e `DOCK`/`UNDOCK` só podem ocorrer por comandos explícitos e confirmados.
+`make demo`, `make demo-route` e `make demo-visual` continuam úteis para diagnóstico do WebSocket/Nav2/Gazebo, mas podem conservar expectativas históricas de lifecycle automático. Eles não são o gate final de segurança. A Task 7 foi validada pelo Android físico com `datDebug` + MockDeviceKit: `SPRAY` termina no alvo e permanece lá, e `DOCK`/`UNDOCK` só ocorrem por comandos explícitos e confirmados.
 
 Não abra `127.0.0.1:18765` no navegador; é uma porta WebSocket.
 
@@ -40,9 +40,9 @@ Não abra `127.0.0.1:18765` no navegador; é uma porta WebSocket.
 | Android mock | `:app:testMockDebugUnitTest` + `:app:assembleMockDebug` | regressão Kotlin, IA e JNI/CMake | gate |
 | Android DAT | `:app:testDatDebugUnitTest` + `:app:assembleDatDebug` | regressão Kotlin e compatibilidade de build Qwen + DAT/UI | gate de build, não hardware |
 | Qwen físico | `QwenSmokeActivity` no `mockDebug` | runtime local, GBNF, latência e memória | evidência da Task 6 |
-| Integração legada | `make demo` | protocolo/WebSocket/Nav2/movimento | diagnóstico até Task 7 |
+| Integração legada | `make demo` | protocolo/WebSocket/Nav2/movimento | diagnóstico legado |
 | Rota legada | `make demo-route` | três plots no cenário | diagnóstico; retorno automático é histórico |
-| Visual NVIDIA | `make gazebo` + `make demo-visual` | inspeção visual Gazebo/RViz | diagnóstico visual até Task 7 |
+| Visual NVIDIA | `make gazebo` + `make demo-visual` | inspeção visual Gazebo/RViz | diagnóstico visual legado |
 
 ## Teste recomendado do zero
 
@@ -63,7 +63,7 @@ cd mobile/android
 ./gradlew :app:assembleDatDebug --no-daemon
 ```
 
-Para testar movimento no Gazebo antes da Task 7, prefira um smoke manual compatível com o lifecycle explícito: se o robô estiver dockado, envie `UNDOCK` explicitamente; envie e confirme `SPRAY`; verifique que a navegação termina no plot sem retorno automático; envie `DOCK` explicitamente somente quando quiser retornar.
+Para testar o lifecycle atual no Gazebo, use o app: se o robô estiver dockado, envie `UNDOCK` explicitamente; envie e confirme `SPRAY`; verifique que a navegação termina no plot sem retorno automático; envie `DOCK` explicitamente somente quando quiser retornar. Não use o HMI manual como parte do E2E Maestro.
 
 Os comandos `make demo*` continuam documentados abaixo como ferramentas de diagnóstico histórico. Não use a mensagem antiga `DEMO APROVADA: undock ... dock` como evidência do comportamento atual.
 
@@ -208,7 +208,7 @@ make simulation-down
 
 Use `make status` para confirmar que não há serviço ativo.
 
-Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da execução. Enquanto a Task 7 não atualizar os scripts, não use a mensagem legada `DEMO APROVADA` como evidência do lifecycle atual.
+Ao receber `make simulation-down`, o lançador envia sinais de término a dezenas de processos. Linhas com `SIGINT`, `SIGTERM`, `exit code -15` e até `process has died` para o Gazebo durante essa etapa são mensagens de desligamento, não resultado da execução. Não use a mensagem legada `DEMO APROVADA` como evidência do lifecycle atual; o gate normativo é o E2E da Task 7.
 
 ## Android: desenvolvimento e demonstração com DAT
 
@@ -246,11 +246,11 @@ manualmente até `Stream: streaming` e `Captured photo`, sem modificação do
 código oficial. `mockDebug` continua sendo o gate de regressão independente do
 SDK Meta.
 
-No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da demonstração, use `ws://IP_DO_COMPUTADOR:18765`; aparelho e computador precisam alcançar a mesma rede local. O `mockDebug` serve para desenvolvimento. A evidência principal do MVP usa `datDebug`, um Android compatível e os Meta Wearables pareados.
+No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da demonstração, use `ws://IP_DO_COMPUTADOR:18765`; aparelho e computador precisam alcançar a mesma rede local. O `mockDebug` serve para desenvolvimento. A evidência principal da entrega pré-hardware usa `datDebug` + MockDeviceKit em Android físico. Meta Wearables pareados são um gate futuro caso a equipe avance para a fase presencial.
 
 ## Qwen local: smoke físico de desenvolvimento
 
-O smoke isolado do Qwen existe somente no source set `mock` e, sozinho, não prova integração com a `MainActivity`, DAT ou Meta Wearables. O APK espera que o arquivo `qwen2.5-1.5b-q4_k_m.gguf` seja provisionado no diretório privado `files/` do app de desenvolvimento; o GGUF não faz parte do repositório nem do APK.
+O smoke isolado do Qwen existe no source set `mock` e o wiring da `MainActivity` já foi validado. O APK espera que `qwen2.5-1.5b-q4_k_m.gguf` seja provisionado no diretório privado `files/`; o GGUF não faz parte do repositório nem do APK. Após reinstalar `datDebug`, confirme o arquivo antes de demonstrar o assistente. Sem ele, o caminho operacional continua funcional e `UNKNOWN` falha de forma segura.
 
 Depois de instalar `app-mock-debug.apk` e provisionar o modelo, inicie:
 
@@ -274,7 +274,13 @@ Registre, sem mídia bruta:
 
 1. saída de `make test-quick`;
 2. builds `mockDebug` e `datDebug` aprovados;
-3. E2E atualizado da Task 7 mostrando o lifecycle explícito;
+3. E2E da Task 7 mostrando `UNDOCK -> SPRAY -> DOCK -> UNDOCK` pelo Android;
 4. uma recusa local por intenção/confirmação inválida;
-5. versão do `datDebug`, modelo do Android e Meta Wearables usados na jornada real;
+5. versão do `datDebug`, modelo do Android e indicação explícita `MockDeviceKit/pré-hardware`; hardware Meta real só quando efetivamente usado;
 6. se o Qwen fizer parte da demo final, evidência do wiring na `MainActivity` e de que comandos operacionais continuam sem depender dele.
+
+## Evidência final da Task 7 — 22/08/2026
+
+No Samsung SM-X510/API 36, `datDebug` + MockDeviceKit completou `UNDOCK -> SPRAY plot-03 -> DOCK -> UNDOCK`. O Undock nativo foi deixado terminar até `SUCCEEDED`, evitando que o robô ficasse colado à doca. `SPRAY` dockado foi bloqueado, conflito `plot-03` visual × `plot-01` falado terminou em `AMBÍGUO`, e `CANCEL` não enviou comando.
+
+O gate automatizado final registrou 64/64 no corpus, macro-F1 1.000, 0 aceites perigosos, 65 testes portáteis e 36 testes do bridge. O bridge também possui testes explícitos para `confirmed=false`, expiração e deduplicação de `command_id`.

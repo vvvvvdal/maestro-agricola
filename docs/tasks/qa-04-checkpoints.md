@@ -35,6 +35,8 @@ O primeiro comando valida somente evidências versionadas e é reproduzível mes
 
 Código implementado, mock ou intenção de teste não bastam para marcar `PASS`. A QA-04 só termina quando os cinco checkpoints estiverem `PASS` e `overall_status` também for `PASS`.
 
+**Escopo da entrega de seleção de 22/08/2026:** a demonstração do MVP usa `datDebug` + MockDeviceKit em Android físico. Isso é evidência pré-hardware e não promove automaticamente os checkpoints que exigem entrada dos Meta Wearables físicos. Esses checkpoints permanecem `PARTIAL`/pendentes para a fase presencial caso a equipe seja selecionada; essa pendência não deve ser confundida com falha do E2E operacional da Task 7.
+
 ## Responsabilidades
 
 | Pessoa | Responsabilidade na QA-04 |
@@ -126,6 +128,12 @@ Não existe limiar numérico inventado nesta spec. A matriz registra o resultado
 6. Anotar bateria, condição térmica final, falhas e rota de áudio.
 7. Atualizar a matriz com caminhos de evidência, responsável e horário.
 8. Marcar `PASS` somente após revisão dos critérios do checkpoint.
+
+### Evidência E2E pré-hardware de 22 de agosto de 2026
+
+No Samsung SM-X510/API 36, o flavor `datDebug` com MockDeviceKit executou a jornada operacional até o ROS 2/Nav2/Gazebo: `UNDOCK` explícito, captura repetível de `plot-03`, `SPRAY`, `DOCK` explícito e novo `UNDOCK`. Também foram observados `SPRAY` dockado sem movimento, conflito visual/voz e `CANCEL` sem envio.
+
+Essa evidência fortalece os checkpoints de software, segurança, integração e tratamento de mídia simulada, mas continua sendo pré-hardware: não comprova frame, microfone, áudio, bateria ou firmware dos Meta Wearables físicos. Portanto, a matriz QA-04 não deve ser promovida artificialmente a `PASS` por causa deste E2E.
 
 ### Execução física parcial de 19 de agosto de 2026
 

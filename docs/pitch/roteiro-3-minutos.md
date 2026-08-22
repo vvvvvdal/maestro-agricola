@@ -1,39 +1,40 @@
 # Roteiro final do pitch — 2min50s
 
-Duração-alvo: **2min40s a 2min55s**. O texto falado tem 376 palavras, deixando margem para pausas e a troca de apresentador. Não ultrapassar 3 minutos.
+Duração-alvo: **2min40s a 2min55s**. Não ultrapassar 3 minutos.
 
 ## Slide 1 — Maestro Agrícola (0:00–0:20) — Felipe
 
-Imagine um operador no meio da lavoura, com as mãos ocupadas, acompanhando um robô autônomo. A máquina já navega; mesmo assim, indicar uma nova área ainda pode exigir parar e abrir uma tela. O Maestro Agrícola muda essa conversa: olhar, falar e confirmar.
+Imagine um operador no meio da lavoura, com as mãos ocupadas, acompanhando uma máquina autônoma. A máquina já sabe navegar; mesmo assim, indicar uma nova área ainda pode exigir parar e abrir uma tela. O Maestro Agrícola muda essa conversa: olhar, falar e confirmar.
 
 ## Slide 2 — O problema (0:20–0:42) — Felipe
 
 No sol, na poeira e com luvas, um notebook ou tablet adiciona atrito justamente onde a interface deveria desaparecer. Nosso usuário inicial é o operador que acompanha uma máquina conectada e precisa indicar rapidamente uma área de trabalho. O problema não é a autonomia do robô. É a forma como o humano conversa com ela.
 
-## Slide 3 — Olhar, falar e confirmar (0:42–1:22) — Felipe
+## Slide 3 — Olhar, falar e confirmar (0:42–1:20) — Felipe
 
-A jornada tem três ações. Olhar: uma placa legível e seu QR identificam o plot três, associado a uma pose segura. Falar: o reconhecimento nativo transcreve a voz; depois, uma cascata local combina regras de segurança com um classificador treinado e retorna pulverizar, confirmar, cancelar ou desconhecido. São 144 frases de treino, 64 de avaliação separada e um artefato de apenas 367 KiB. Se o operador disser “no plot três”, o ID falado também é validado. Confirmar: o Maestro repete o alvo. Abaixo de 40% de confiança, ou se voz e câmera discordarem, nada é enviado.
+A jornada tem três ações. Olhar: pelo DAT, uma captura identifica uma placa e seu QR, associados a um talhão seguro. Nesta etapa pré-hardware usamos o MockDeviceKit da própria stack do DAT. Falar: o reconhecimento nativo transcreve a voz e um classificador local restrito entende pulverizar, dock, undock, confirmar, cancelar ou desconhecido. Confirmar: antes de qualquer movimento, o Maestro repete a operação. Se voz e câmera discordarem, se faltar confirmação ou se o comando expirar, nada é enviado.
 
-## Slide 4 — Arquitetura (1:22–1:59) — Rafael
+## Slide 4 — Arquitetura (1:20–1:58) — Rafael
 
-Por dentro, a câmera entra pelo DAT. Voz e TTS usam recursos nativos do celular, com o telefone como fallback. O app Kotlin consome a IA local, o catálogo de plots e o contrato versionado. Após a confirmação, um JSON com validade curta chega ao bridge, que valida e entrega uma meta ao Nav2 no Gazebo. Como o DAT público não documenta pose ou IMU, o MVP usa um alvo mapeado; GPS do operador não vira destino do robô.
+Por dentro, a câmera entra pelo DAT 0.9.0; voz e TTS usam recursos nativos do Android. O app Kotlin resolve o alvo e a intenção, exige confirmação e envia um JSON versionado por WebSocket. O bridge valida validade, estado e duplicidade antes de entregar a meta ao ROS 2 e ao Nav2 no Gazebo. Dock e undock também são comandos explícitos. O Qwen fica separado: pode conversar sobre o domínio, mas nunca recebe acesso ao robô.
 
-## Slide 5 — Evidência e próximo teste (1:59–2:34) — Rafael
+## Slide 5 — O que já provamos (1:58–2:35) — Rafael
 
-Hoje já provamos três sinais: a placa completa foi decodificada como plot três; a política local classificou os 64 casos controlados e não aceitou nenhum caso perigoso; e o cliente recebeu ACCEPTED, ativou o Nav2 e mudou a odometria do TurtleBot. Isso não substitui o teste de campo. “Cancelar” foi recusado sem movimento. O próximo gate é validar no Android físico o DAT, latência, bateria e rota Bluetooth com os óculos reais.
+No Android físico com `datDebug` e MockDeviceKit, repetimos a captura do plot três e fechamos o ciclo completo: undock confirmado, navegação até o plot, permanência no alvo, retorno à doca somente quando pedido e um novo undock depois do docking. Também tentamos quebrar o fluxo: pulverizar dockado não moveu o robô; voz no plot um contra câmera no plot três virou ambiguidade; cancelar não enviou nada. Nos testes, o classificador fez 64 de 64 e zero aceites perigosos, além de 65 testes portáteis e 36 do bridge.
 
-## Slide 6 — Fechamento (2:34–2:52) — Rafael
+## Slide 6 — Fechamento (2:35–2:52) — Rafael
 
-O Maestro conecta interface multimodal e robótica com protocolo aberto, confirmação obrigatória e ROS 2, sem se prender a um fabricante. O futuro do campo não precisa de mais uma tela. Precisa entender alvo, intenção e segurança. Maestro Agrícola: olhe, fale, confirme.
+Não construímos só um assistente nos óculos. Construímos uma interface segura entre linguagem natural e uma máquina física: alvo conhecido, intenção restrita, confirmação e execução verificável. Se avançarmos para a fase presencial, o próximo passo é substituir o MockDeviceKit pelos Meta Wearables reais. Maestro Agrícola: olhe, fale, confirme.
 
 ## Direção do ensaio
 
-- Fazer uma única troca: Felipe encerra o slide 3; Rafael entra diretamente em “Por dentro...”.
-- Falar como conversa, não como leitura. Pausar após “É a forma como o humano conversa com ela”.
-- No slide 5, mostrar brevemente a placa detectada, `ACCEPTED`, o TurtleBot em movimento e a recusa de `cancelar`.
-- Cronometrar três vezes. Se passar de 2min55s, cortar exemplos da fala; não acelerar o fechamento.
-- Não dizer que DAT, Meta Wearables ou áudio Bluetooth já foram validados fisicamente antes do teste real.
+- Fazer uma única troca: Felipe encerra o slide 3; Rafael entra em “Por dentro...”.
+- No slide 3 ou 5, deixar visível `DAT 0.9.0 + MockDeviceKit — pré-hardware`.
+- No slide 5, mostrar rapidamente `plot-03`, a tela de confirmação, o TurtleBot em movimento e uma recusa/ambiguidade.
+- Cronometrar três vezes. Se passar de 2min55s, cortar exemplos, não acelerar o fechamento.
+- Não dizer que câmera, microfone ou áudio dos Meta Wearables físicos já foram validados.
+- Não usar o Qwen como prova do controle do robô; ele é uma camada conversacional separada.
 
-## Plano B sem captura de tela
+## Plano B
 
-Se a gravação da simulação falhar, manter os slides e dizer exatamente a evidência observada no teste registrado. Não substituir por animação que pareça prova real.
+Se a gravação ao vivo falhar, usar o vídeo de contingência do E2E já observado e narrar exatamente o que foi validado. Não usar animação como se fosse execução real.

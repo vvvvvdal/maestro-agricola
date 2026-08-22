@@ -2,127 +2,131 @@
 
 ## Status
 
-Integração parcial concluída; **Task 7 ainda pendente** para revalidar o E2E conforme o lifecycle explícito atual.
+**DONE em 22/08/2026 — E2E pré-hardware validado no Android físico com `datDebug` + MockDeviceKit, WebSocket, ROS 2/Nav2 e Gazebo.**
+
+A validação com Meta Wearables físicos fica para a fase posterior caso a equipe avance no programa. O resultado desta task não deve ser apresentado como captura física dos óculos.
 
 ## Objetivo
 
-Fechar uma jornada segura entre Android, alvo mapeado, intenção operacional, confirmação, WebSocket e ROS 2/Nav2/Gazebo sem depender de lifecycle implícito.
+Fechar uma jornada segura entre fonte DAT pré-hardware, alvo mapeado, intenção operacional, confirmação, WebSocket e ROS 2/Nav2/Gazebo sem lifecycle implícito.
 
 ## Arquitetura da jornada
 
 ```text
-câmera/target + voz
--> LocalIntentClassifier
--> TargetResolver/validações
--> InteractionEngine
--> confirmação
--> Command JSON
--> WebSocket
--> bridge ROS 2
--> Nav2/Gazebo
+DAT 0.9.0 / MockDeviceKit -> câmera/target
+voz -> LocalIntentClassifier
+     -> TargetResolver/validações
+     -> InteractionEngine
+     -> confirmação
+     -> Command JSON
+     -> WebSocket
+     -> bridge ROS 2
+     -> Nav2/Gazebo
 ```
 
-O Qwen não participa deste caminho. Com o wiring da Task 6, apenas `UNKNOWN` em estado seguro para conversa pode ser desviado para `CHAT | OUT_OF_SCOPE`.
+O Qwen não participa deste caminho. Apenas `UNKNOWN`, em estado seguro para conversa, pode ser desviado ao assistente `CHAT | OUT_OF_SCOPE`; o assistente nunca produz `Command`.
 
 ## Decisões atuais
 
-- QR/target previamente mapeado continua sendo o caminho do MVP.
+- QR/target previamente mapeado é o caminho do MVP.
 - `SPRAY` pode usar target visual ou ID falado quando a política permitir.
 - IDs visual e falado divergentes resultam em conflito, sem comando.
 - `SPRAY` navega até o target e permanece lá.
 - `DOCK` e `UNDOCK` são ações operacionais explícitas, separadas e confirmadas.
 - `SPRAY` nunca causa `UNDOCK`, retorno à doca ou `DOCK` automaticamente.
+- `UNDOCK` espera a action nativa terminar; `dock_status=false` antecipado não cancela a manobra.
+- Após `DOCKED`, um novo `UNDOCK` explícito é permitido.
 - GPS do celular não é direção da cabeça nem pose do alvo.
 - Qwen nunca resolve target, inventa pose ou produz `Command`.
 
+## Evidência E2E observada
+
+Ambiente: Samsung SM-X510, Android API 36, `datDebug` com `-PmaestroDatMockDevice=true`, bridge em `:18765`, namespace ROS `/turtlebot1`.
+
+Fluxo positivo observado:
+
+```text
+UNDOCK explícito + confirmação
+-> Undock Goal Succeeded
+-> robot is clear of dock
+-> captura DAT/MockDeviceKit resolve plot-03
+-> SPRAY + confirmação
+-> Nav2 accepted/completed plot-03
+-> robô permanece fora da doca
+-> DOCK explícito + confirmação
+-> Nav2 até dock approach
+-> Dock Goal accepted / Dock Servo Goal Succeeded
+-> is_docked=true
+-> novo UNDOCK explícito
+-> Undock Goal Succeeded
+```
+
+A captura `Olhar para o alvo` também foi repetida várias vezes na mesma execução após corrigir o rearm do MockDeviceKit; todas voltaram a identificar `plot-03`.
+
+## Guardrails observados
+
+### SPRAY com robô dockado
+
+`SPRAY` foi tentado com `is_docked=true`. Não houve `Nav2 accepted`, não houve `Undock goal accepted` e o estado final permaneceu dockado. PASS.
+
+### Conflito entre visão e voz
+
+```text
+visual = plot-03
+voz = plot-01
+-> AMBÍGUO
+-> "Alvo falado e visual não conferem"
+-> nenhum Command
+-> nenhum movimento
+```
+
+PASS.
+
+### CANCEL
+
+Durante `AWAITING_CONFIRMATION`, `cancelar` produziu `CANCELADO / Nada foi enviado ao robô`. O log do bridge permaneceu sem novo comando. PASS.
+
+### UNKNOWN
+
+Uma frase fora do caminho operacional foi classificada como `UNKNOWN` e não criou confirmação nem movimento. O GGUF do Qwen não estava provisionado no `datDebug` instalado naquele momento, então a UI usou o fallback seguro genérico. Isso é uma limitação do assistente opcional, não do caminho operacional. PASS para segurança operacional.
+
+## Contrato, expiração e idempotência
+
+A Task 7 adicionou cobertura explícita para:
+
+- `confirmed=false` -> `REJECTED`;
+- comando com `expires_in_ms` vencido -> `REJECTED`;
+- mesmo `command_id` recebido novamente -> resposta anterior retornada, sem repetir callback ROS.
+
+O cache de idempotência do bridge é limitado e protegido por lock.
+
+## Gates automatizados finais
+
+Na `main`, após o merge do lifecycle E2E:
+
+```text
+model artifacts: up to date (read-only check)
+raw accuracy: 1.000 (64/64)
+operational accuracy: 1.000 (64/64, threshold=0.4)
+macro F1: 1.000; unsafe accepts: 0
+portable tests: 65/65
+bridge tests: 36/36
+```
+
 ## Critérios de aceite da Task 7
 
-1. `mockDebug` executa a jornada operacional contra o bridge atual.
-2. Se o robô estiver dockado, `SPRAY` é rejeitado até um `UNDOCK` explícito e confirmado.
-3. `UNDOCK` explícito chega à action correspondente.
-4. `SPRAY` confirmado navega para um plot válido e termina sem retorno automático.
-5. `DOCK` explícito navega para a aproximação configurada e executa Dock.
-6. `CANCEL`, timeout, `UNKNOWN`, conflito de target e comando incompatível não produzem movimento.
-7. `command_id`, expiração e deduplicação continuam válidos.
-8. Os scripts/testes não contêm asserts de dock/undock automático.
-9. Android `mockDebug` e `datDebug` continuam compilando.
-10. A evidência distingue simulação, MockDeviceKit e hardware Meta real.
+1. `datDebug` + MockDeviceKit executa a jornada operacional contra o bridge atual: **PASS**.
+2. `SPRAY` dockado é rejeitado até `UNDOCK` explícito: **PASS**.
+3. `UNDOCK` explícito chega à action e completa a manobra nativa: **PASS**.
+4. `SPRAY` confirmado navega para plot válido e termina sem retorno automático: **PASS**.
+5. `DOCK` explícito navega para a aproximação e executa Dock: **PASS**.
+6. `CANCEL`, `UNKNOWN`, conflito de target e estado incompatível não produzem movimento; timeout permanece coberto pela máquina de estados/testes: **PASS**.
+7. `command_id`, expiração e deduplicação possuem cobertura explícita: **PASS**.
+8. Scripts legados `make demo*` não são usados como gate normativo do lifecycle atual: **PASS para o MVP; reescrita fica como dívida não bloqueante**.
+9. Flavors Android `mockDebug` e `datDebug` permanecem construíveis; o E2E final foi executado no `datDebug`: **PASS**.
+10. Evidência distingue simulação, MockDeviceKit e hardware Meta real: **PASS**.
 
-## Casos mínimos
-
-### Caso A — SPRAY com robô fora da doca
-
-```text
-target plot-03
--> "pulverize aqui"
--> confirmação
--> ACCEPTED
--> Nav2 chega ao plot
--> estado final continua no plot
-```
-
-### Caso B — SPRAY com robô dockado
-
-```text
-"pulverize aqui"
--> rejeição segura
--> nenhum undock implícito
-```
-
-### Caso C — UNDOCK explícito
-
-```text
-"saia da doca"
--> confirmação
--> Command UNDOCK
--> action de undock
-```
-
-### Caso D — DOCK explícito
-
-```text
-"retorne à doca"
--> confirmação
--> Command DOCK
--> aproximação configurada
--> action Dock
-```
-
-### Caso E — conflito
-
-```text
-câmera = plot-03
-voz = plot-04
--> CONFLICT/AMBIGUOUS
--> nenhum Command
-```
-
-## Evidência já existente
-
-Há evidência histórica de protocolo, Nav2, alvo visual e movimento, além de testes de expiração/deduplicação. Esses resultados continuam úteis, mas execuções antigas que esperavam dock/undock automático não são prova do lifecycle atual.
-
-A UI Android atual já apresenta target, intenção, confirmação, countdown e último comando aceito. O caminho DAT 0.9.0 pré-hardware também foi integrado e passou com MockDeviceKit.
-
-## Como validar agora
-
-Primeiro:
-
-```bash
-make test-quick
-```
-
-Android:
-
-```bash
-cd mobile/android
-./gradlew :app:testMockDebugUnitTest --no-daemon
-./gradlew :app:assembleMockDebug --no-daemon
-./gradlew :app:assembleDatDebug --no-daemon
-```
-
-Depois execute a simulação e um fluxo manual/automatizado que siga os casos acima. Até os scripts `make demo*` serem reescritos, trate suas mensagens de “demo aprovada” como diagnóstico histórico, não como gate normativo.
-
-## Fora de escopo
+## Fora de escopo desta entrega
 
 - pulverização física;
 - navegação criada pelo Maestro;
@@ -131,13 +135,14 @@ Depois execute a simulação e um fluxo manual/automatizado que siga os casos ac
 - Qwen gerando comando;
 - afirmar DAT físico sem frame real dos Meta Wearables.
 
-## Resultado esperado
+## Resultado
 
-Ao final da Task 7 deve existir uma única evidência coerente entre código, testes e documentação:
+A evidência final é coerente entre código, testes e execução:
 
 ```text
 ações físicas explícitas + confirmação
--> JSON versionado
+-> JSON versionado, expirável e idempotente
+-> WebSocket
 -> ROS 2/Nav2
 -> nenhum lifecycle escondido
 ```

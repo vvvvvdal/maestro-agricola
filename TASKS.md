@@ -9,7 +9,7 @@
 - Task 4 --- Implementar comando explícito DOCK: DONE
 - Task 5 --- Android transportar intents: DONE
 - Task 6 --- Evolução da IA local: DONE (fallback seguro integrado e validado na MainActivity)
-- Task 7 --- E2E final e preparação da demonstração: EM ANDAMENTO
+- Task 7 --- E2E final e preparação da demonstração: DONE
 
 ---
 
@@ -39,20 +39,19 @@ A entrega deve priorizar:
 Status:
 
 ```text
-APROVADO — PRÉ-HARDWARE COM MOCKDEVICEKIT
+APROVADO — MVP PRÉ-HARDWARE COM DAT 0.9.0 + MOCKDEVICEKIT
 ```
 
-Objetivo:
+Objetivo da entrega de 22/08/2026:
 
-Validar o caminho real dos óculos até o aplicativo.
+Demonstrar a integração pelo flavor `datDebug` usando a própria stack do DAT e o MockDeviceKit no Android físico, sem afirmar captura pelos Meta Wearables reais. O hardware Meta real é um gate posterior, caso a equipe avance para a fase presencial.
 
-Próximos passos:
+Próximos passos pós-seleção:
 
-- repetir o sample oficial no hardware real quando os óculos chegarem;
-- validar sessão/captura de câmera física;
-- validar o mesmo adaptador com o frame real;
-- substituir o MockDeviceKit somente no ensaio físico;
-- manter o mock como fallback de demonstração.
+- repetir o sample oficial no hardware Meta real;
+- validar sessão/captura de câmera física e rota de áudio;
+- validar o mesmo adaptador com frame real;
+- manter o MockDeviceKit como caminho reproduzível de desenvolvimento e contingência.
 
 Plano pré-hardware:
 
@@ -68,9 +67,7 @@ Plano pré-hardware:
 
 Detalhes e critérios: [`docs/tasks/dat-prehardware.md`](docs/tasks/dat-prehardware.md).
 
-Validação em hardware real permanece bloqueada até a disponibilidade dos
-óculos. Resultado com MockDeviceKit não deve ser apresentado como captura dos
-Meta Wearables físicos.
+Validação em hardware Meta real permanece separada da entrega pré-hardware. Resultado com MockDeviceKit deve ser apresentado explicitamente como pré-hardware e nunca como captura dos óculos físicos.
 
 A integração DAT não deve quebrar o pipeline já funcional.
 
@@ -115,7 +112,7 @@ Detalhes, evidências e limitações: [`docs/tasks/android-demo-ui.md`](docs/tas
 Status:
 
 ```text
-EM VALIDAÇÃO
+CONCLUÍDA — E2E PRÉ-HARDWARE VALIDADO
 ```
 
 Fluxo esperado:
@@ -155,6 +152,18 @@ Critério principal:
 Nenhuma ação automática deve acontecer.
 
 O operador sempre inicia a ação.
+
+Evidência final de 22/08/2026 no Samsung SM-X510 com `datDebug` + MockDeviceKit:
+
+- `UNDOCK` explícito foi confirmado, executou a action nativa até `SUCCEEDED` e terminou fisicamente afastado da doca;
+- `SPRAY` para `plot-03` chegou ao Nav2 e terminou no alvo sem retorno automático;
+- `DOCK` explícito executou aproximação + action Dock e terminou com `is_docked: true`;
+- um segundo `UNDOCK` após o `DOCK` também passou, provando lifecycle repetível;
+- `SPRAY` enquanto dockado foi recusado sem movimento e sem undock implícito;
+- conflito `visual=plot-03` × `voz=plot-01` terminou em `AMBÍGUO`, sem comando;
+- `CANCEL` durante confirmação terminou em `CANCELADO`, sem envio;
+- `UNKNOWN` permaneceu sem autoridade operacional e não moveu o robô;
+- `make test` passou com 64/64 no corpus de avaliação, 0 aceites perigosos, 65 testes portáteis e 36 testes do bridge.
 
 ---
 
@@ -432,7 +441,7 @@ Limitações:
 - warm latency medida entre ~5,7–5,9 s no SM-X510 e ~7,3 s no Edge 40 Neo;
 - o GGUF de ~1,1 GB não é versionado nem empacotado no APK atual;
 - convivência com DAT, câmera e áudio simultâneos ainda não foi medida;
-- o gate físico combinado no aparelho final do evento continua pertencendo à Task 7.
+- a convivência simultânea Qwen + DAT/câmera/áudio continua como gate opcional/futuro; ela não faz parte do caminho operacional da Task 7.
 
 Critério final da Task 6 concluído:
 
@@ -446,27 +455,61 @@ Evidência detalhada: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-and
 
 # Task 7 --- E2E final e demonstração
 
-Status: EM ANDAMENTO
+Status: DONE
 
 Objetivo:
 
-Fechar o fluxo completo demonstrável.
+Fechar o fluxo demonstrável pré-hardware com `datDebug` + MockDeviceKit, Android físico, WebSocket, ROS 2/Nav2 e Gazebo, preservando lifecycle explícito e fail-closed.
 
-Pendências:
+## Evidência E2E de 22/08/2026
 
-- atualizar scripts E2E antigos;
-- validar Android -> WebSocket -> Bridge -> ROS -> Gazebo;
-- integrar DAT quando possível;
-- melhorar interface;
-- gravar demonstração.
+Fluxo positivo validado:
 
-Critérios:
+```text
+DAT 0.9.0 / MockDeviceKit
+-> captura repetível do alvo plot-03
+-> voz / IntentClassifier
+-> confirmação explícita
+-> Command JSON / WebSocket
+-> bridge ROS 2
+-> UNDOCK nativo completo
+-> Nav2 para plot-03
+-> permanência no alvo
+-> DOCK explícito
+-> novo UNDOCK explícito
+```
 
-- nenhuma ação automática de dock/undock;
-- confirmação obrigatória;
-- comando seguro;
-- robô executando no Gazebo;
-- narrativa clara para avaliação.
+Logs observaram, em sequência, `Undock Goal Succeeded`, `Nav2 completed ... plot-03`, retorno explícito à aproximação da doca, `Dock Servo Goal Succeeded` e um segundo `Undock Goal Succeeded`. O bridge deixou de cancelar a action `Undock` quando `dock_status` mudava cedo para `false`, permitindo o afastamento físico completo da doca.
+
+Guardrails validados:
+
+- `SPRAY` dockado: recusado; `is_docked` permaneceu `true`; nenhum `UNDOCK` implícito;
+- conflito de alvo: `visual=plot-03` e `voz=plot-01` -> `AMBÍGUO`; nenhum comando;
+- `CANCEL` durante confirmação -> `CANCELADO`; nada enviado ao robô;
+- `UNKNOWN` -> nenhum comando operacional e nenhum movimento;
+- `confirmed=false` -> rejeitado pelo contrato;
+- comando expirado -> rejeitado pelo contrato;
+- mesmo `command_id` -> resposta deduplicada; callback ROS não é executado duas vezes.
+
+Gates automatizados finais na `main`:
+
+```text
+raw accuracy: 1.000 (64/64)
+operational accuracy: 1.000 (64/64, threshold=0.4)
+macro F1: 1.000; unsafe accepts: 0
+portable tests: 65/65
+bridge tests: 36/36
+```
+
+O `datDebug` foi exercitado no Android físico com o MockDeviceKit. A validação com Meta Wearables reais é um gate posterior à seleção e não é requisito da definição de pronto deste MVP pré-hardware.
+
+## Qwen na demonstração
+
+O Qwen continua fora do caminho operacional. O wiring seguro `UNKNOWN -> QwenDomainAssistant` já foi validado anteriormente, mas o GGUF de ~1,1 GB não é empacotado no APK. Após reinstalação do `datDebug` usado no E2E final, o diretório privado do app não continha o GGUF; por isso o fallback conversacional mostrou a mensagem segura genérica. Isso não afeta `SPRAY`, `DOCK`, `UNDOCK`, confirmação, WebSocket ou ROS. Se o assistente for mostrado no vídeo, o GGUF deve ser provisionado novamente antes da gravação.
+
+## Dívida não bloqueante
+
+Os alvos `make demo*` históricos ainda podem conter expectativas antigas de lifecycle automático. Eles permanecem diagnósticos legados e não são o gate normativo da Task 7. O gate final usado foi o E2E real pelo Android + `datDebug`/MockDeviceKit e as suítes atuais.
 
 ---
 
@@ -501,8 +544,9 @@ Mudanças de contrato, lifecycle ou segurança devem continuar fail-closed e cob
 
 Foco até a entrega:
 
-1. Integrar o fallback conversacional Qwen à `MainActivity` sem tocar na autoridade operacional do `InteractionEngine`.
-2. Atualizar e executar o E2E do lifecycle explícito no Gazebo.
-3. Validar DAT/câmera/áudio com os Meta Wearables físicos quando disponíveis.
-4. Registrar evidência final Android → WebSocket → ROS 2/Nav2/Gazebo.
-5. Congelar documentação, formulário e pitch a partir do comportamento realmente demonstrado.
+1. Congelar código da `main` e evitar novas features.
+2. Atualizar documentação, formulário e pitch com a evidência E2E de 22/08/2026.
+3. Fazer push da `main` e confirmar CI verde.
+4. Gravar o pitch mostrando o `datDebug`/MockDeviceKit como evidência pré-hardware, sem afirmar Meta Wearables físicos.
+5. Se houver tempo e o assistente Qwen for mostrado, provisionar o GGUF no app antes da gravação; caso contrário, manter o foco no caminho operacional já validado.
+6. Caso a equipe seja selecionada para a fase presencial, substituir o MockDeviceKit pelo hardware Meta real e executar os gates de câmera/áudio/latência.

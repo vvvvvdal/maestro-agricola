@@ -1,164 +1,148 @@
-# Teste integrado no Galaxy A17
+# Teste integrado no Android físico
 
-Este roteiro é o gate planejado para provar a jornada `Android -> IA operacional -> WebSocket -> ROS 2/Nav2/Gazebo` no Galaxy A17 e, em seguida, validar a câmera/áudio com os Meta Wearables reais via DAT.
+> O arquivo mantém o nome histórico `galaxy-a17-e2e.md`, mas o E2E final pré-hardware de 22/08/2026 foi executado em um Samsung SM-X510/API 36.
 
-O runtime Qwen foi medido separadamente no Samsung SM-X510 e o wiring, no Edge 40 Neo. Não use esses números como benchmark do Galaxy A17.
+Este roteiro prova a jornada `Android -> IA operacional -> WebSocket -> ROS 2/Nav2/Gazebo` com `datDebug` + MockDeviceKit. O gate com Meta Wearables físicos é posterior e só deve ser executado quando o hardware estiver disponível na fase presencial.
 
-## Estado real antes do teste
+## Estado validado
 
-- `mockDebug` e a UI Compose estão implementados.
-- A `MainActivity` mantém `InteractionEngine(LocalIntentClassifier, TargetResolver)` como caminho operacional e usa `LanguageInteractionController` somente para o fallback conversacional.
-- O classificador operacional reconhece `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
-- `datDebug` implementa o ciclo DAT 0.9.0 e passou pelos cenários pré-hardware do MockDeviceKit.
-- O caminho DAT pré-hardware não comprova câmera dos óculos reais.
-- Voz e TTS usam APIs Android; a rota real de microfone/áudio com os óculos ainda precisa ser observada.
-- O runtime Qwen passou em smoke no SM-X510 e o wiring da `MainActivity` foi validado no Edge 40 Neo; o Galaxy A17 continua sem benchmark próprio.
+- `MainActivity` mantém `InteractionEngine(LocalIntentClassifier, TargetResolver)` como caminho operacional.
+- O classificador reconhece `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
+- `datDebug` implementa DAT 0.9.0 e MockDeviceKit.
+- A captura pré-hardware foi repetida várias vezes na mesma execução e resolveu `plot-03`.
+- Voz/TTS usam APIs Android.
+- O Qwen é opcional e fica fora do caminho operacional.
+- ROS 2/Nav2/Gazebo usa namespace `/turtlebot1` e bridge WebSocket `:18765`.
 
-## Portabilidade da instalação
-
-Não versione caminhos pessoais. Use JDK compatível com o Gradle do projeto e configure o Android SDK em `mobile/android/local.properties`:
-
-```properties
-sdk.dir=/caminho/individual/Android/Sdk
-```
-
-Antes do aparelho:
+## Gate 1 — build e testes
 
 ```bash
+make test
+
 cd mobile/android
 ./gradlew :app:testMockDebugUnitTest --no-daemon
 ./gradlew :app:assembleMockDebug --no-daemon
-./gradlew :app:assembleDatDebug --no-daemon
+./gradlew -PmaestroDatMockDevice=true :app:assembleDatDebug --no-daemon
 ```
 
-Os três comandos devem terminar com `BUILD SUCCESSFUL`.
+Resultado final do gate de software em 22/08/2026:
 
-## Gate 1 — preparar o Galaxy A17
+```text
+raw accuracy: 1.000 (64/64)
+operational accuracy: 1.000 (64/64, threshold=0.4)
+macro F1: 1.000; unsafe accepts: 0
+portable tests: 65/65
+bridge tests: 36/36
+```
 
-1. Ative **Opções do desenvolvedor**.
-2. Ative **Depuração USB**.
-3. Conecte com cabo de dados e aceite a chave RSA.
-4. Confirme:
+## Gate 2 — preparar o Android físico
+
+1. Ative Opções do desenvolvedor e Depuração USB.
+2. Conecte o aparelho e aceite a chave RSA.
+3. Confirme:
 
 ```bash
 adb devices
 ```
 
-Se o projeto ainda usar o preflight nesta máquina:
+4. Instale o `datDebug` construído com MockDeviceKit.
+5. No app, configure `ws://IP_DO_COMPUTADOR:18765`.
+6. Computador e Android devem estar na mesma rede local.
 
-```bash
-python3 mobile/android/tools/preflight.py --require-device
+## Gate 3 — lifecycle positivo
+
+Não use os botões Dock/Undock do HMI como parte do teste. O lifecycle deve ser comandado pelo Maestro.
+
+```text
+robô inicialmente dockado
+-> "sair da doca"
+-> confirmar
+-> Undock Goal Succeeded
+-> "Olhar para o alvo" -> plot-03
+-> "pulverizar"
+-> confirmar
+-> Nav2 accepted/completed plot-03
+-> robô permanece no alvo
+-> "voltar para a doca"
+-> confirmar
+-> Nav2 até dock approach
+-> Dock Goal Succeeded
+-> "sair da doca" novamente
+-> confirmar
+-> segundo Undock Goal Succeeded
 ```
 
-Não prossiga enquanto o aparelho estiver `unauthorized`.
+O bridge não deve cancelar o `Undock` assim que `dock_status` mudar para `false`; deve aguardar o resultado nativo para o robô terminar de limpar a doca.
 
-## Gate 2 — app físico com flavor mock
+## Gate 4 — guardrails
 
-Este gate valida o Android, a lógica operacional e o transporte sem atribuir o resultado aos óculos.
+### SPRAY dockado
 
-No computador:
+Com `is_docked=true`, tente `SPRAY`. Resultado esperado: recusa, nenhum `Nav2 accepted`, nenhum `Undock goal accepted` e `is_docked` continua `true`.
 
-```bash
-make test-quick
-make simulation-up
-hostname -I
+### Conflito visão × voz
+
+```text
+Olhar para o alvo -> plot-03
+voz -> "pulverizar talhão 01"
+resultado -> AMBÍGUO / alvo falado e visual não conferem
+nenhum Command
 ```
 
-Computador e Galaxy devem estar na mesma rede. No telefone, use `ws://IP_DO_COMPUTADOR:18765`, nunca `127.0.0.1` ou `10.0.2.2`.
+### CANCEL
 
-Instale o mock:
+Entre em confirmação de `SPRAY` e diga `cancelar`. Resultado esperado: `CANCELADO / Nada foi enviado ao robô`, sem novo log no bridge.
+
+### UNKNOWN
+
+Frase fora do caminho operacional não pode abrir execução nem mover o robô. Se o GGUF do Qwen não estiver provisionado, o fallback seguro genérico é aceitável para a segurança operacional.
+
+### Contrato
+
+- `confirmed=false`: rejeitado;
+- expirado: rejeitado;
+- `command_id` repetido: resposta deduplicada e callback ROS executado uma única vez.
+
+## Gate 5 — DAT/MockDeviceKit pré-hardware
+
+Construção recomendada:
 
 ```bash
 cd mobile/android
-./gradlew :app:installMockDebug --no-daemon
+./gradlew \
+  -PmaestroDatMockDevice=true \
+  -PmaestroDatMockScenario=success \
+  :app:assembleDatDebug --no-daemon
 ```
 
-Na UI:
+O resultado comprova o caminho do código DAT e a integração pré-hardware com MockDeviceKit. Não comprova câmera física dos Meta Wearables.
 
-1. confira o chip `câmera: mock`;
-2. abra **Ajustes de teste** e configure o endpoint WebSocket;
-3. toque **Olhar para o alvo**;
-4. fale a operação ou use **Transcrição digitada** como contingência;
-5. confira os cards **ALVO DETECTADO** e **INTENÇÃO**;
-6. antes de qualquer movimento, confira a tela de confirmação e o countdown;
-7. diga `sim` para confirmar ou `cancelar` para abortar;
-8. confirme no Gazebo e nos logs que somente comandos confirmados chegam ao bridge.
+## Gate futuro — Meta Wearables reais
 
-### Lifecycle que deve ser observado
+Execute somente se a equipe avançar para a fase com hardware:
 
-`SPRAY` não retorna automaticamente à doca.
+1. remover o modo MockDeviceKit;
+2. parear Meta Wearables pelo fluxo oficial;
+3. capturar frame real;
+4. validar target visual no mesmo `InteractionEngine`;
+5. validar rota de microfone/TTS;
+6. repetir lifecycle e guardrails;
+7. medir latência, memória, temperatura e bateria.
 
-Se o robô estiver dockado:
+MockDeviceKit, câmera do telefone ou ID digitado nunca devem ser descritos como prova de câmera física dos óculos.
+
+## Qwen opcional
+
+O wiring seguro `UNKNOWN -> QwenDomainAssistant` existe, mas o GGUF de ~1,1 GB não é empacotado no APK. Depois de reinstalar um flavor, confirme que existe:
 
 ```text
-UNDOCK explícito + confirmação
--> SPRAY + confirmação
--> robô permanece no alvo
--> DOCK explícito + confirmação, somente se desejado
+files/qwen2.5-1.5b-q4_k_m.gguf
 ```
 
-Não trate scripts antigos que esperam dock automático como gate do comportamento atual.
-
-## Gate 3 — comandos e recusas
-
-No mock físico, cubra pelo menos:
-
-- `SPRAY` com alvo válido;
-- `DOCK` explícito;
-- `UNDOCK` explícito;
-- `CANCEL` durante confirmação;
-- timeout de confirmação;
-- alvo ausente;
-- conflito entre alvo visual e alvo falado;
-- `UNKNOWN`;
-- tentativa incompatível com o estado atual do robô.
-
-Resultado esperado para falhas: nenhum `Command` de movimento enviado.
-
-## Gate 4 — DAT e Meta Wearables reais
-
-Execute somente quando os óculos estiverem disponíveis.
-
-1. Configure credenciais fora do Git.
-2. Instale `datDebug`.
-3. Pareie os Meta Wearables pelo fluxo oficial.
-4. Confirme no app que a fonte não é `mock`.
-5. Capture um frame sob demanda dos óculos.
-6. Confirme que o target visual chega ao mesmo `InteractionEngine`.
-7. Faça a jornada olhar -> falar -> ouvir operação entendida -> confirmar -> robô.
-8. Teste permissão recusada, timeout, desconexão, QR ilegível e conflito de alvo.
-9. Registre modelo do Android, versão do sistema, firmware dos óculos, versão DAT, rota de microfone/TTS, temperatura, bateria e latência.
-
-O gate só passa se a imagem observada vier dos óculos. MockDeviceKit, câmera do telefone ou ID digitado não comprovam DAT físico.
-
-## Gate opcional — Qwen
-
-O Qwen não faz parte do caminho operacional da `MainActivity`; o wiring seguro `UNKNOWN -> LanguageRouter -> QwenDomainAssistant` já existe. O `QwenSmokeActivity` prova apenas o runtime isolado, portanto ainda é necessário validar no Galaxy A17:
-
-1. `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM` e `CANCEL` não esperam pelo Qwen;
-2. somente `UNKNOWN` chega ao assistente;
-3. pedido como `Faça dock agora.` não vira ação pelo assistente;
-4. resposta inválida falha para `OUT_OF_SCOPE`;
-5. câmera DAT + STT/TTS + Qwen cabem na memória sem swap/temperatura inaceitáveis.
-
-## Localização rápida de falhas
-
-| Sintoma | Camada provável | Primeira verificação |
-|---|---|---|
-| Galaxy não aparece | USB/ADB | `adb devices` e autorização RSA |
-| App não compila | JDK/SDK/Gradle | gates de build Android |
-| Falha de registro Meta | DAT/configuração | app Meta AI, credenciais e manifesto |
-| Voz não transcreve | permissão/rota | `RECORD_AUDIO` e teste local |
-| `UNKNOWN` operacional | IA local | frase, confiança e origem RULE/MODEL |
-| WebSocket falha | rede/firewall | IP do computador e porta 18765 |
-| `ACCEPTED`, mas não move | ROS/Nav2/estado | logs do bridge e lifecycle |
-| QR e voz discordam | `TargetResolver` | esperado: conflito, sem comando |
-| Qwen lento | runtime local | só relevante após wiring; medir cold/warm e memória |
+Sem esse arquivo, o caminho operacional continua funcionando e `UNKNOWN` deve falhar de forma segura; apenas a resposta conversacional fica indisponível.
 
 ## Encerramento
 
 ```bash
 make simulation-down
 ```
-
-Não declare DAT físico, áudio dos óculos ou benchmark Qwen no Galaxy A17 como aprovados até os respectivos gates ocorrerem nesse hardware.
