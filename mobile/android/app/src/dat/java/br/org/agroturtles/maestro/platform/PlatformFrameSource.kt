@@ -162,31 +162,64 @@ class PlatformFrameSource(
     }
 
     private fun prepareMockDevice() {
-        if (mockGlasses != null) return
-        val kit = MockDeviceKit.getInstance(activity.applicationContext)
-        val permissionDenied = mockScenario == DatMockScenario.PERMISSION_DENIED
-        kit.enable(MockDeviceKitConfig(initialPermissionsGranted = !permissionDenied))
-        kit.permissions.set(
-            Permission.CAMERA,
-            if (permissionDenied) PermissionStatus.Denied else PermissionStatus.Granted,
-        )
-        if (permissionDenied) {
-            kit.permissions.setRequestResult(Permission.CAMERA, PermissionStatus.Denied)
+        val kit = mockDeviceKit ?: MockDeviceKit.getInstance(
+            activity.applicationContext
+        ).also { created ->
+            val permissionDenied =
+                mockScenario == DatMockScenario.PERMISSION_DENIED
+
+            created.enable(
+                MockDeviceKitConfig(
+                    initialPermissionsGranted = !permissionDenied
+                )
+            )
+            created.permissions.set(
+                Permission.CAMERA,
+                if (permissionDenied) {
+                    PermissionStatus.Denied
+                } else {
+                    PermissionStatus.Granted
+                },
+            )
+            if (permissionDenied) {
+                created.permissions.setRequestResult(
+                    Permission.CAMERA,
+                    PermissionStatus.Denied,
+                )
+            }
+
+            mockDeviceKit = created
         }
-        mockDeviceKit = kit
+
         if (mockScenario == DatMockScenario.TIMEOUT) return
 
-        val glasses = kit.pairGlasses(GlassesModel.RAYBAN_META).getOrThrow()
-        glasses.powerOn()
-        glasses.don()
-        glasses.unfold()
+        val glasses = mockGlasses ?: kit
+            .pairGlasses(GlassesModel.RAYBAN_META)
+            .getOrThrow()
+            .also { created ->
+                created.powerOn()
+                created.don()
+                created.unfold()
+                mockGlasses = created
+            }
+
+        /*
+         * Rearma a câmera do MockDeviceKit em toda captura.
+         *
+         * A captura anterior encerra Stream/Camera/DeviceSession, mas o
+         * MockGlasses permanece pareado para a próxima interação. Além disso,
+         * durante observeStream() o feed é temporariamente trocado para a
+         * fixture do alvo. Portanto, cada nova captura precisa restaurar o
+         * estado inicial da câmera simulada antes de abrir outra sessão.
+         */
         glasses.services.camera.setCameraFeed(CameraFacing.BACK)
+
         val targetUri = Uri.parse(
-            "content://${activity.packageName}.datmock/${DatMockAssetProvider.TARGET_ASSET}"
+            "content://${activity.packageName}.datmock/" +
+                DatMockAssetProvider.TARGET_ASSET
         )
         glasses.services.camera.setCapturedImage(targetUri)
         mockTargetUri = targetUri
-        mockGlasses = glasses
     }
 
     private fun waitForDeviceAndStartSession() {
