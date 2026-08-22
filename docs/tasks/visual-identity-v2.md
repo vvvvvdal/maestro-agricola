@@ -1,5 +1,7 @@
 # Identidade visual v2
 
+> **Atualização de 22/08/2026:** este registro preserva a troca de lockups concluída em 19/08. O pitch canônico agora tem sete slides, sete notas e novo layout editorial; as propostas foram regeneradas a partir dos Markdown revisados e passaram a ter quatro e dez páginas. A marca, a paleta e League Spartan permanecem. Evidência atual: [`../pitch/storyboard.md`](../pitch/storyboard.md), [`../proposta/README.md`](../proposta/README.md) e `docs/pitch/Maestro-Agricola-Pitch.pptx`.
+
 Status: concluída em 19 de agosto de 2026
 
 Responsáveis: Felipe e Rafael (pitch), Átila (validação Android)

@@ -5,7 +5,7 @@
 **Equipe:** AgroTurtles  
 **Trilha temática:** Produtividade  
 **Área de aplicação:** Agronegócio  
-**Revisão:** 18 de agosto de 2026
+**Revisão:** 22 de agosto de 2026
 
 ### Equipe
 
@@ -59,7 +59,7 @@ Demonstrar de ponta a ponta que um operador consegue selecionar um alvo mapeado 
 ## 4. Jornada crítica
 
 1. O operador centraliza a placa legível `PLOT-03`, que também contém o QR do talhão.
-2. O app mantém ou inicia a sessão DAT e obtém o frame necessário.
+2. O app mantém ou inicia a sessão DAT e obtém a foto necessária; no corte pré-hardware, a fonte é o MockDeviceKit explicitamente habilitado.
 3. O operador diz “pulverizar esta área” ou explicita “pulverizar no plot-03”.
 4. O app transcreve a fala e classifica a intenção como `SPRAY`.
 5. O resolvedor combina o ID visual e o ID falado: concordância seleciona `plot-03`; divergência cancela.
@@ -68,8 +68,9 @@ Demonstrar de ponta a ponta que um operador consegue selecionar um alvo mapeado 
 8. O app envia o comando por WebSocket.
 9. O bridge valida schema, expiração e duplicidade.
 10. O bridge mapeia `plot-03` para uma pose conhecida e publica a meta no ROS 2.
-11. O robô simulado inicia o deslocamento.
-12. O sistema informa “comando enviado”.
+11. Se necessário, um `UNDOCK` explícito e confirmado libera a saída da doca; `SPRAY` nunca faz undock implícito.
+12. O robô simulado inicia o deslocamento e permanece no alvo após a conclusão do Nav2.
+13. O sistema informa “comando enviado”; o retorno à doca só ocorre após `DOCK` explícito e confirmado.
 
 ## 5. Arquitetura
 
@@ -91,7 +92,7 @@ Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
 ### 5.1 Óculos
 
 - Câmera acessada pelo DAT mediante registro, permissão, sessão e stream.
-- Microfones e alto-falantes usados pelo caminho de áudio nativo do Android.
+- Microfones e alto-falantes dependem do caminho de áudio nativo do Android; a rota Bluetooth dos óculos ainda não foi validada.
 - Sem display; todos os estados relevantes precisam de feedback sonoro.
 - Sem processamento de negócio nos óculos.
 
@@ -163,13 +164,13 @@ Essas opções exigem validação separada e não entram na demonstração princ
 
 ### 7.1 Captura e transcrição
 
-O caminho de áudio é configurado antes do stream de câmera. No Android, o app seleciona o dispositivo de comunicação Bluetooth, prefere reconhecimento offline e reproduz TTS pelo caminho de saída ativo.
+No Android atual, o app solicita reconhecimento de fala com preferência offline e reproduz TTS pelo caminho de saída ativo. O código não seleciona explicitamente um dispositivo Bluetooth; essa configuração e a rota dos óculos permanecem como gate de hardware.
 
 O STT fica atrás de uma interface e o MVP exige execução on-device quando o pacote de idioma estiver disponível. Caso um aparelho não ofereça reconhecimento offline, o plano de contingência para desenvolvimento é entrada textual simulada, sem enviar áudio a um serviço externo. O classificador de intenção continua sempre local.
 
 ### 7.2 Classificador de intenção
 
-O componente de IA comprovável do MVP é uma cascata híbrida local e compacta: regras de alta precisão tratam negação, hesitação e comandos inequívocos; um classificador linear softmax multiclasse resolve as demais frases; baixa confiança resulta em `UNKNOWN`. O treino versionado contém 144 frases, balanceadas entre quatro classes, e a avaliação independente contém 64 frases sem sobreposição normalizada. O artefato JSON tem cerca de 367 KiB. Entrada: transcrição curta. Saída:
+O componente de IA comprovável do MVP é uma cascata híbrida local e compacta: regras de alta precisão tratam negação, hesitação e comandos inequívocos; um classificador linear softmax multiclasse resolve as demais frases; baixa confiança resulta em `UNKNOWN`. O treino canônico registra 213 exemplos e seis rótulos. O artefato JSON tem 729.056 bytes. Entrada: transcrição curta. Saída:
 
 ```json
 {
@@ -179,14 +180,20 @@ O componente de IA comprovável do MVP é uma cascata híbrida local e compacta:
 }
 ```
 
-Rótulos iniciais:
+Rótulos atuais:
 
 - `SPRAY`
+- `DOCK`
+- `UNDOCK`
 - `CONFIRM`
 - `CANCEL`
 - `UNKNOWN`
 
-O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e n-gramas de caracteres de três a cinco posições. A mesma política e os mesmos pesos são interpretados em Kotlin, e a saída informa origem `RULE` ou `MODEL`. Com limiar operacional de 0,40, os 64 casos da avaliação versionada foram classificados corretamente, com macro-F1 1,00 e zero aceite perigoso. Esse resultado descreve somente a suíte controlada do MVP, não desempenho no campo. O próximo benchmark mede latência, memória e acurácia no Android físico que executará `datDebug` com os Meta Wearables.
+O texto é normalizado para caixa e acentuação; as features incluem palavras, bigramas e n-gramas de caracteres de três a cinco posições. A mesma política e os mesmos pesos são interpretados em Kotlin, e a saída informa origem `RULE` ou `MODEL`. Com limiar operacional de 0,40, os 64 casos da avaliação original foram classificados corretamente, com macro-F1 1,00 e zero aceite perigoso; esse corpus cobre as quatro classes originais. O corpus de campo cobre os seis rótulos e obteve 48/48 na regressão reproduzível. Ambos descrevem suítes controladas, não desempenho no campo.
+
+Uma evidência física anterior registra 540 inferências no Motorola Edge 40 Neo, mediana de 229 µs, p95 de 1.013 µs e zero divergências, mas os hashes mostram que ela pertence a um modelo e APK anteriores. O candidato atual exige nova coleta antes de congelar métricas de dispositivo.
+
+O Qwen2.5-1.5B Q4_K_M é uma camada conversacional opcional executada via `llama.cpp`. O benchmark versionado como classificador operacional obteve 36/48, macro-F1 0,7384 e três aceites perigosos. Por isso, o `LanguageRouter` envia ao Qwen somente entradas já classificadas como `UNKNOWN`, e sua saída é limitada a `CHAT` ou `OUT_OF_SCOPE`; ele não conhece `Command`, `TargetResolver`, WebSocket ou ROS.
 
 O STT não é esse modelo: o Android tenta a transcrição on-device por sua API nativa. O classificador do Maestro recebe somente o texto e não envia áudio ou transcrição para um servidor de inferência.
 
@@ -203,8 +210,8 @@ Câmera e áudio não devem ser tratados como uma única API. O DAT fornece o ca
 
 Plano de validação:
 
-1. Fixar a versão do DAT depois do smoke test no sample oficial.
-2. Configurar o dispositivo de comunicação antes de iniciar o stream.
+1. Manter o DAT 0.9.0 fixado até uma atualização deliberada.
+2. Configurar e registrar o dispositivo de comunicação antes de iniciar a captura.
 3. Evitar renegociar o canal de áudio durante a sessão.
 4. Começar com qualidade LOW ou MEDIUM e 7 fps.
 5. Testar voz + câmera por cinco minutos no aparelho real.
@@ -271,7 +278,7 @@ Somente `AWAITING_CONFIRMATION -> SENDING` aceita uma confirmação válida. Fra
 | Checkpoint | Evidência na demonstração |
 |---|---|
 | Inteligência artificial | Classificador local retorna intenção e confiança |
-| Câmera ou microfone | Frame dos óculos identifica o alvo; voz expressa o comando |
+| Câmera ou microfone | DAT 0.9.0 + MockDeviceKit identifica o alvo no pré-hardware; câmera e áudio físicos são o próximo gate |
 | Output por áudio | TTS confirma, informa erros e encerra a jornada |
 | Privacidade e dados | Nenhuma mídia persistida pelo app; fluxo de terceiros documentado |
 | Eficiência de bateria | Captura sob demanda ou baixa taxa; recursos encerrados ao final |
@@ -358,11 +365,11 @@ A jornada crítica precisa rodar cinco vezes seguidas no cenário limpo, incluin
 
 ### Antes do hackathon
 
-- compilar `datDebug` no Android compatível, parear os Meta Wearables e validar frame, IA e áudio on-device;
-- integrar o detector de QR ao frame simulado;
-- rodar CameraAccess e Mock Device Kit e substituir os adaptadores DAT provisórios;
-- manter os testes automatizados do contrato, da IA, do bridge e dos estados;
-- ensaiar a jornada completa com o Gazebo e registrar evidências.
+- [x] compilar e instalar `datDebug` em Android físico com o MockDeviceKit explicitamente habilitado;
+- [x] integrar QR local por ZXing às fotos entregues pela stack DAT;
+- [x] fechar a jornada Android → WebSocket → ROS 2/Nav2/Gazebo com lifecycle explícito;
+- [x] manter testes automatizados do contrato, da IA, do bridge e dos estados;
+- [ ] gravar e ensaiar o pitch final de sete slides.
 
 ### No hardware real
 
@@ -374,6 +381,8 @@ A jornada crítica precisa rodar cinco vezes seguidas no cenário limpo, incluin
 ## 17. Diferencial e caminho de produto
 
 O Maestro Agrícola não é apenas um assistente que descreve o campo. Ele transforma visão e voz em um pedido operacional confirmado, mantendo a autonomia e as proteções no robô.
+
+A oportunidade de 20% a 30% exibida no pitch é uma hipótese de redução de custo operacional e retrabalho a validar em piloto controlado. Ela não é tratada como resultado técnico deste MVP.
 
 Após o MVP, o produto pode evoluir de alvos mapeados para localização visual mais natural, ampliar intenções e integrar plataformas diferentes pelo mesmo contrato. Cada evolução será validada sem alterar a regra central: o humano decide a ação e confirma; a máquina executa dentro de seus próprios limites de segurança.
 

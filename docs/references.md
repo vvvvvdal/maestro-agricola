@@ -5,8 +5,15 @@
 - [Meta Wearables Developer Center — Getting Started](https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit)
 - [Meta Wearables DAT Android](https://github.com/facebook/meta-wearables-dat-android)
 - [Sample Android CameraAccess](https://github.com/facebook/meta-wearables-dat-android/tree/main/samples/CameraAccess)
+- [Android SpeechRecognizer](https://developer.android.com/reference/android/speech/SpeechRecognizer)
+- [Android TextToSpeech](https://developer.android.com/reference/android/speech/tts/TextToSpeech)
+- [ROS 2 — artigo de arquitetura](https://www.science.org/doi/10.1126/scirobotics.abm6074)
+- [Navigation2 — código e referências acadêmicas](https://github.com/ros-navigation/navigation2)
+- [Qwen2.5 Technical Report](https://arxiv.org/abs/2412.15115)
+- [llama.cpp](https://github.com/ggml-org/llama.cpp)
+- [ZXing](https://github.com/zxing/zxing)
 
-O projeto mantém implementações nativas Kotlin. Os samples `CameraAccess` da mesma versão do DAT são a referência de ciclo de vida para cada plataforma.
+O projeto mantém implementação nativa Kotlin. O sample `CameraAccess` da mesma versão do DAT é a referência de ciclo de vida para Android.
 
 Versão fixada nesta primeira implementação: DAT 0.9.0. O sample oficial consultado exige Android API 31+ no flavor real.
 

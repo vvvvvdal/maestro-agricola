@@ -55,7 +55,7 @@ olhar para alvo mapeado
 
 Uma interação hands-free pode reduzir a fricção operacional, manter o trabalhador atento ao ambiente e tornar sistemas autônomos mais acessíveis a quem não opera interfaces técnicas complexas.
 
-Não há, nesta fase, dados medidos de economia de tempo em campo. Uma validação futura deve comparar tempo, erros e carga de interação entre o fluxo com tela e o fluxo “olhar, falar, confirmar”.
+O pitch usa uma faixa estimada de 20% a 30% de potencial de redução em custo operacional e retrabalho. Essa faixa é hipótese de negócio e não resultado do MVP. Uma validação futura deve comparar tempo, erros, carga de interação e custo entre o fluxo com tela e o fluxo “olhar, falar, confirmar”.
 
 ## Limites do MVP
 

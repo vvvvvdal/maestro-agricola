@@ -17,6 +17,7 @@
 - [`testing-ux.md`](testing-ux.md): caminho de teste local sem ambiguidade e desligamento limpo do bridge.
 - [`visual-smoke.md`](visual-smoke.md): inspeção das telas mobile e visualização do Gazebo/RViz2.
 - [`plots-dock.md`](plots-dock.md): histórico do ciclo automático e evidência da remoção de dock/undock implícitos, além das poses de aproximação usadas pelo comando explícito `DOCK`.
+- [`../paper/README.md`](../paper/README.md): artigo IEEE, fontes de evidência e procedimento de compilação.
 
 ## Convenção
 

@@ -1,5 +1,7 @@
 # Detecção do QR em imagem estática
 
+> **Atualização de 22/08/2026:** o handoff VIS-03 foi concluído no caminho pré-hardware. O `datDebug` recebe `PhotoData` da stack DAT 0.9.0, o `ZxingPhotoQrDecoder` processa a imagem somente em memória e o MockDeviceKit produz `plot-03` de forma repetível no Android físico. A câmera dos Meta Wearables reais continua como gate separado.
+
 Branch: `feat/vision-qr`
 
 ## Objetivo
@@ -39,4 +41,4 @@ Concluir a prova isolada VIS-02 antes de acoplar visão aos apps: transformar um
 
 ## Handoff para VIS-03
 
-O próximo adaptador deve entregar ao detector um frame recebido do mock ou do DAT e preservar a mesma regra de seleção. VIS-03 permanece aberta até essa execução ocorrer dentro de ao menos um app nativo.
+O adaptador foi entregue em `mobile/android/app/src/dat/`: sessão e câmera DAT ficam em `PlatformFrameSource`, a mídia de ensaio é fornecida pelo `DatMockAssetProvider` interno e o QR é decodificado por `ZxingPhotoQrDecoder`. Esta tarefa permanece como registro da prova estática original; o estado atual está em [`dat-prehardware.md`](dat-prehardware.md).

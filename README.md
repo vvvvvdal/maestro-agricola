@@ -22,7 +22,7 @@ O Maestro Agrícola permite que o operador olhe para um alvo no campo, diga a a�
 
 ## Jornada principal
 
-1. **Olhar:** a câmera dos óculos captura o alvo centralizado.
+1. **Olhar:** no produto, a câmera dos óculos captura o alvo centralizado; no MVP pré-hardware, o DAT 0.9.0 usa o MockDeviceKit explicitamente identificado.
 2. **Falar:** o operador diz a ação, por exemplo: “pulverizar esta área”.
 3. **Confirmar:** o sistema responde por áudio e só executa após confirmação explícita.
 
@@ -81,8 +81,10 @@ Detalhes e evidências: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-a
 ├── shared/ai/           # dataset, modelo local e avaliação
 ├── tests/               # catálogo central: portátil, Android, ROS e hardware
 ├── tools/               # treino, QR e simulador de óculos
-└── docs/                # spec, arquitetura, tarefas, proposta e pitch
+└── docs/                # spec, arquitetura, tarefas, proposta, pitch e paper IEEE
 ```
+
+O artigo científico do projeto está em [`docs/paper/main.tex`](docs/paper/main.tex), com instruções de compilação em [`docs/paper/README.md`](docs/paper/README.md).
 
 ## Teste em 5 minutos
 

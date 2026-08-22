@@ -21,7 +21,7 @@ As frentes abaixo coexistem no mesmo app e devem continuar desacopladas:
 | Android/UI | Compose com jornada operacional e diagnóstico | não esconder estados de confirmação/recusa |
 | DAT | fluxo 0.9.0 pré-hardware + MockDeviceKit | hardware real ainda é gate separado |
 | IA operacional | `LocalIntentClassifier` com seis rótulos | continua autoridade de controle |
-| Assistente Qwen | runtime JNI/llama.cpp validado no SM-X510 | somente `UNKNOWN -> CHAT/OUT_OF_SCOPE`; wiring principal ainda pendente |
+| Assistente Qwen | runtime JNI/llama.cpp e wiring principal validados | somente `UNKNOWN -> CHAT/OUT_OF_SCOPE`; sem autoridade operacional |
 | Visão/alvo | QR/target previamente mapeado + `TargetResolver` | não inventar pose ou target via LLM |
 | Robótica | WebSocket JSON -> ROS 2/Nav2/Gazebo | `SPRAY`, `DOCK`, `UNDOCK` são explícitos e confirmados |
 
@@ -93,7 +93,7 @@ Não avalie Qwen por algumas frases escolhidas. Mudanças em modelo, prompt, gra
 
 ### ROS / E2E
 
-Os scripts antigos de demo ainda contêm expectativas históricas de retorno automático à doca. Até a Task 7 reescrevê-los, use-os como diagnóstico, não como fonte normativa. O lifecycle atual é:
+Os scripts antigos de demo ainda podem conter expectativas históricas de retorno automático à doca. Use-os como diagnóstico, não como fonte normativa. O lifecycle atual, validado na Task 7, é:
 
 ```text
 UNDOCK explícito -> navegação/SPRAY -> permanece no alvo -> DOCK explícito
