@@ -56,7 +56,14 @@ Para `PASS`:
 - mediana, p95, máximo e pico aproximado de heap são coletados no aparelho físico;
 - a coleta usada na entrega corresponde ao APK final ou a diferença de build é justificada e aprovada.
 
-Situação atual: o modelo v2 e o APK candidato foram renovados no Edge 40 Neo com hashes coincidentes, 18 casos, 540 inferências e zero divergências. A coleta deve ser repetida se o modelo ou o APK mudar após o congelamento de features; por isso o checkpoint continua `PARTIAL`.
+Situação atual: a coleta de 19 de agosto permanece como evidência histórica do modelo e APK efetivamente benchmarkados no Edge 40 Neo, com 18 casos, 540 inferências e zero divergências. O candidato pós-Task 6 possui novo modelo canônico e novo APK; seus hashes estão registrados separadamente e divergem da coleta física anterior. `final_build_benchmark_pending` continua `true` e o checkpoint permanece `PARTIAL` até uma nova coleta no candidato final.
+
+Em 22 de agosto de 2026, a rastreabilidade do candidato foi atualizada sem promover evidência física:
+
+- modelo canônico: `a456c00f590152157a7f625c10955aed7f610398f2493155537a466f7f1fa243`;
+- APK `mockDebug` pós-Task 6: `618e30963eb190d3df8a9c91974f6431e64439fb5c8374b2bdb47820007f8169`;
+- benchmark do dispositivo: preservado nos hashes históricos de `device_evaluation.json`;
+- decisão: repetir o benchmark físico antes de atribuir as métricas antigas ao candidato atual.
 
 ### 2. Câmera ou microfone
 
