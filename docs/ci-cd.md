@@ -67,7 +67,7 @@ Na raiz:
 ```bash
 python3 tools/train_intent_model.py --check
 python3 tools/check_qa04_evidence.py
-python3 -m unittest discover -s tests -p 'test_*.py'
+python3 -m unittest discover -s tests/portable -t . -p 'test_*.py'
 PYTHONPATH=robot_ws/src/maestro_robot_bridge \
   python3 -m unittest discover \
   -s robot_ws/src/maestro_robot_bridge/test -p 'test_*.py'

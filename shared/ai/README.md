@@ -29,7 +29,7 @@ Para regenerar o modelo quando a task exigir explicitamente:
 
 ```bash
 python3 tools/train_intent_model.py
-python3 -m unittest discover -s tests -p 'test_*.py'
+python3 -m unittest discover -s tests/portable/ai -t . -p 'test_*.py'
 ```
 
 ## Avaliação do Qwen

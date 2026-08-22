@@ -2,6 +2,11 @@
 
 Este guia separa os testes por nível para que um erro possa ser localizado antes de iniciar o simulador pesado.
 
+O catálogo central, a classificação por domínio e os comandos canônicos estão
+em [`tests/README.md`](../tests/README.md). Testes Python próprios ficam em
+`tests/portable`; Kotlin e ROS permanecem nos source sets dos respectivos
+runners.
+
 ## Caminho simples: passou ou não passou
 
 Para regressão local alinhada ao lifecycle atual, execute na raiz:

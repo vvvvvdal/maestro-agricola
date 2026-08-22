@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from check_simulation import evaluate_mission_logs, wait_for_nav2  # noqa: E402

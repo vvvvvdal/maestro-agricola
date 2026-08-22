@@ -53,7 +53,7 @@ Referência e integridade do fixture:
 
 ```bash
 python3 tools/export_intent_parity.py --check
-python3 -m unittest tests/test_intent_parity.py
+python3 -m unittest tests.portable.ai.test_intent_parity
 ```
 
 Android, em uma máquina com a toolchain pronta:

@@ -5,7 +5,8 @@ import tempfile
 import unittest
 
 
-MODULE_PATH = Path(__file__).parents[1] / "mobile" / "android" / "tools" / "preflight.py"
+ROOT = Path(__file__).resolve().parents[3]
+MODULE_PATH = ROOT / "mobile" / "android" / "tools" / "preflight.py"
 SPEC = importlib.util.spec_from_file_location("android_preflight", MODULE_PATH)
 assert SPEC and SPEC.loader
 preflight = importlib.util.module_from_spec(SPEC)
