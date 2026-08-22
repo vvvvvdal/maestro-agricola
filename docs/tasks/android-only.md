@@ -1,6 +1,6 @@
 # Tarefa: consolidar o MVP somente em Android
 
-> **Registro histórico.** Esta tarefa documenta a consolidação Android de 18/08/2026. O estado corrente mantém a decisão Android-only, mas o pitch canônico passou a ter sete slides, o DAT 0.9.0 pré-hardware foi validado com MockDeviceKit no Android físico e os PDFs revisados agora têm quatro e dez páginas. Consulte [`../../TASKS.md`](../../TASKS.md), [`../architecture.md`](../architecture.md) e [`../pitch/storyboard.md`](../pitch/storyboard.md) para o snapshot atual.
+> **Registro histórico.** Esta tarefa documenta a consolidação Android de 18/08/2026. O estado corrente mantém a decisão Android-only; o storyboard final prevê sete slides e esta branch aguarda a substituição do PPTX-base pelo deck final. O DAT 0.9.0 pré-hardware foi validado com MockDeviceKit no Android físico e os PDFs revisados agora têm quatro e dez páginas. Consulte [`../../TASKS.md`](../../TASKS.md), [`../architecture.md`](../architecture.md) e [`../pitch/README.md`](../pitch/README.md) para o snapshot atual.
 
 ## Decisão
 

@@ -26,8 +26,9 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`proposta/versao-tecnica.md`](proposta/versao-tecnica.md): versão técnica revisada e canônica.
 - [`paper/main.tex`](paper/main.tex): artigo científico no formato IEEE, com metodologia, resultados, limitações e referências.
 - [`paper/README.md`](paper/README.md): instruções de compilação e política de atualização do artigo.
-- [`pitch/storyboard.md`](pitch/storyboard.md): conteúdo dos slides e sugestões de edição.
-- `pitch/Maestro-Agricola-Pitch.pptx`: apresentação editável de sete slides.
+- [`pitch/README.md`](pitch/README.md): caminho canônico e gate de aceite para a integração do deck final.
+- [`pitch/storyboard.md`](pitch/storyboard.md): especificação final de conteúdo para os sete slides.
+- `pitch/Maestro-Agricola-Pitch.pptx`: PPTX-base reservado para substituição pelo deck final.
 
 ## Fonte de verdade
 

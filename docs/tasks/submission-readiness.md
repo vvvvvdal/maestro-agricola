@@ -1,6 +1,6 @@
 # Plano de prontidão para entrega - 18 a 22 de agosto de 2026
 
-> **Registro histórico.** Este documento preserva a prontidão registrada em 18/08/2026. Desde então, `DOCK`/`UNDOCK` explícitos, UI Compose, DAT pré-hardware, runtime Qwen e um deck editorial de sete slides foram adicionados. Execuções antigas de `make demo` que pressupõem lifecycle automático e menções abaixo ao deck de seis slides não representam o estado normativo atual. Para o estado corrente, consulte `../../TASKS.md`, `../testing.md`, `qwen-android-runtime.md` e `../pitch/storyboard.md`.
+> **Registro histórico.** Este documento preserva a prontidão registrada em 18/08/2026. Desde então, `DOCK`/`UNDOCK` explícitos, UI Compose, DAT pré-hardware e runtime Qwen foram adicionados, e o storyboard final passou a prever sete slides. O PPTX final ainda será integrado nesta branch. Execuções antigas de `make demo` que pressupõem lifecycle automático e menções abaixo ao deck de seis slides não representam o estado normativo atual. Para o estado corrente, consulte `../../TASKS.md`, `../testing.md`, `qwen-android-runtime.md` e `../pitch/README.md`.
 
 ## Objetivo
 
