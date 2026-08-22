@@ -45,6 +45,7 @@ Somente depois dos itens `[OK]` execute:
 ```bash
 ./gradlew :app:testMockDebugUnitTest
 ./gradlew :app:assembleMockDebug
+./gradlew :app:testDatDebugUnitTest
 ./gradlew :app:assembleDatDebug
 ```
 

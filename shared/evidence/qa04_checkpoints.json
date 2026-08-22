@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-08-19T22:57:12-03:00",
+  "updated_at": "2026-08-22T01:05:27-03:00",
   "overall_status": "PARTIAL",
   "status_policy": {
     "allowed": [
@@ -15,8 +15,8 @@
   "build_traceability": {
     "device_benchmarked_model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd",
     "device_benchmarked_apk_sha256": "6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b",
-    "current_candidate_model_sha256": "4932a89ac74e82cc41b96936f41e49f439b4b0a998199f06c9434e8e9180c0fd",
-    "current_candidate_apk_sha256": "6b90e172eba847bf83790cebc7af22afdc782f749d1e3d8ce6a77a9fea5f7e8b",
+    "current_candidate_model_sha256": "a456c00f590152157a7f625c10955aed7f610398f2493155537a466f7f1fa243",
+    "current_candidate_apk_sha256": "618e30963eb190d3df8a9c91974f6431e64439fb5c8374b2bdb47820007f8169",
     "final_build_benchmark_pending": true
   },
   "checkpoints": [
@@ -58,10 +58,10 @@
         }
       ],
       "pending": [
-        "Repetir o benchmark físico somente se o APK ou o modelo mudar após o congelamento de features"
+        "Repetir o benchmark físico do modelo operacional no APK candidato pós-Task 6 antes de congelar a entrega"
       ],
       "contains_raw_media": false,
-      "pitch_claim": "O modelo v2 e o APK candidato atual foram validados no Edge 40 Neo; uma alteração posterior exige nova coleta"
+      "pitch_claim": "O benchmark físico existente pertence ao modelo e APK anteriores; o candidato pós-Task 6 exige nova coleta antes da entrega"
     },
     {
       "id": "GLASSES_INPUT",

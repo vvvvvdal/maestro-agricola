@@ -1,0 +1,85 @@
+name: Android full
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-full-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dat:
+    name: Android DAT
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository and llama.cpp
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+          cache-dependency-path: |
+            mobile/android/*.gradle.kts
+            mobile/android/app/*.gradle.kts
+            mobile/android/gradle/libs.versions.toml
+            mobile/android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Install pinned Android components
+        run: >-
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          "platforms;android-36"
+          "build-tools;36.0.0"
+          "ndk;29.0.13113456"
+          "cmake;3.31.6"
+
+      - name: Validate pinned llama.cpp submodule
+        run: |
+          expected="873e5d8e39feb34a376e0efd01bf3f665dfffeb5"
+          actual="$(git -C mobile/android/third_party/llama.cpp rev-parse HEAD)"
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::llama.cpp must be pinned at $expected, found $actual"
+            exit 1
+          fi
+
+      - name: Require DAT package token
+        env:
+          GITHUB_TOKEN: ${{ secrets.MWDAT_PACKAGES_TOKEN }}
+        run: |
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "::error::Repository secret MWDAT_PACKAGES_TOKEN is required"
+            exit 1
+          fi
+
+      - name: Run DAT unit tests
+        working-directory: mobile/android
+        env:
+          GITHUB_TOKEN: ${{ secrets.MWDAT_PACKAGES_TOKEN }}
+        run: ./gradlew :app:testDatDebugUnitTest --no-daemon --stacktrace
+
+      - name: Assemble DAT APK
+        working-directory: mobile/android
+        env:
+          GITHUB_TOKEN: ${{ secrets.MWDAT_PACKAGES_TOKEN }}
+        run: ./gradlew :app:assembleDatDebug --no-daemon --stacktrace
+
+      - name: Publish DAT debug APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: maestro-dat-debug-${{ github.sha }}
+          path: mobile/android/app/build/outputs/apk/dat/debug/app-dat-debug.apk
+          if-no-files-found: error
+          retention-days: 7

@@ -1,6 +1,6 @@
 # Documentação
 
-Para o ensaio físico com Meta Wearables, use [Teste integrado no Galaxy A17](testing/galaxy-a17-e2e.md). Para o runtime Qwen já medido no SM-X510, use [Qwen local no Android](tasks/qwen-android-runtime.md).
+Para o ensaio físico com Meta Wearables, use [Teste integrado no Galaxy A17](testing/galaxy-a17-e2e.md). Para o runtime Qwen já medido no SM-X510, use [Qwen local no Android](tasks/qwen-android-runtime.md). Para os gates automáticos e artefatos Android, use [CI/CD](ci-cd.md).
 
 Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o arquivo correspondente quando uma decisão mudar; não deixe decisões importantes apenas no chat.
 
@@ -11,6 +11,7 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
 - [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
 - [`tasks/qwen-android-runtime.md`](tasks/qwen-android-runtime.md): decisão de segurança, benchmark, runtime JNI/llama.cpp e evidência física do Qwen.
+- [`ci-cd.md`](ci-cd.md): workflows automáticos, segredo DAT, artefatos de depuração e fronteira dos testes manuais.
 - [`testing.md`](testing.md): teste guiado, saída esperada, diagnóstico e mobile.
 - [`team.md`](team.md): papéis, responsabilidades e acordos de integração.
 - [`hackathon-plan.md`](hackathon-plan.md): cronograma de preparação e execução.
