@@ -4,7 +4,7 @@ import sys
 import unittest
 
 
-ROOT = Path(__file__).parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "tools" / "qr_target_detector.py"
 SPEC = importlib.util.spec_from_file_location("qr_target_detector", MODULE_PATH)
 assert SPEC and SPEC.loader

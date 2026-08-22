@@ -6,7 +6,7 @@ import sys
 import unittest
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from export_intent_parity import build_fixture, render_fixture  # noqa: E402

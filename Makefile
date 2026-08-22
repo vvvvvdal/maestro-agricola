@@ -1,13 +1,15 @@
 PYTHON ?= python3
 .DEFAULT_GOAL := help
 
-.PHONY: help doctor model test test-model-artifact test-ai test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-route demo-client gazebo gazebo-up demo-visual rviz
+.PHONY: help doctor model test test-model-artifact test-portable test-ai test-android-tools test-robotics test-qa test-robot test-quick vision-smoke compose-config status logs simulation-up simulation-down simulation-logs demo demo-route demo-client gazebo gazebo-up demo-visual rviz
 
 help:
 	@printf '%s\n' \
 		'Maestro Agrícola - comandos principais' \
 		'  make doctor      verifica o ambiente antes do simulador' \
 		'  make test        executa testes portáteis, sem Docker/ROS no host' \
+		'  make test-portable  executa todas as suítes Python em tests/portable' \
+		'  make test-ai     executa somente os testes portáteis de IA' \
 		'  make test-quick  executa testes e valida a configuração Compose' \
 		'  make vision-smoke  verifica o QR plot-03 em imagem estática' \
 		'  make demo        TESTE PRINCIPAL: verifica protocolo, Nav2 e movimento' \
@@ -25,13 +27,25 @@ doctor:
 model:
 	$(PYTHON) tools/train_intent_model.py
 
-test: test-model-artifact test-ai test-robot
+test: test-model-artifact test-portable test-robot
 
 test-model-artifact:
 	$(PYTHON) tools/train_intent_model.py --check
 
+test-portable:
+	$(PYTHON) -m unittest discover -s tests/portable -t . -p 'test_*.py'
+
 test-ai:
-	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
+	$(PYTHON) -m unittest discover -s tests/portable/ai -t . -p 'test_*.py'
+
+test-android-tools:
+	$(PYTHON) -m unittest discover -s tests/portable/android -t . -p 'test_*.py'
+
+test-robotics:
+	$(PYTHON) -m unittest discover -s tests/portable/robotics -t . -p 'test_*.py'
+
+test-qa:
+	$(PYTHON) -m unittest discover -s tests/portable/qa -t . -p 'test_*.py'
 
 test-robot:
 	PYTHONPATH=robot_ws/src/maestro_robot_bridge $(PYTHON) -m unittest discover -s robot_ws/src/maestro_robot_bridge/test -p 'test_*.py'

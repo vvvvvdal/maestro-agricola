@@ -18,7 +18,7 @@ Validação:
 python3 tools/check_qa04_evidence.py
 python3 tools/check_qa04_evidence.py \
   --apk mobile/android/app/build/outputs/apk/mock/debug/app-mock-debug.apk
-python3 -m unittest tests/test_qa04_evidence.py
+python3 -m unittest tests.portable.qa.test_qa04_evidence
 ```
 
 O primeiro comando valida somente evidências versionadas e é reproduzível mesmo quando o clone contém builds locais antigos. Depois de montar o APK candidato, o segundo comando confere explicitamente seu SHA-256 contra a matriz.

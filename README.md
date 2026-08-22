@@ -69,7 +69,7 @@ Detalhes e evidências: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-a
 │   └── android/         # Kotlin, mock API 26+ e DAT API 31+
 ├── robot_ws/src/        # bridge ROS 2 e cenário Gazebo
 ├── shared/ai/           # dataset, modelo local e avaliação
-├── tests/               # testes portáveis do modelo e do cliente mock
+├── tests/               # catálogo central: portátil, Android, ROS e hardware
 ├── tools/               # treino, QR e simulador de óculos
 └── docs/                # spec, arquitetura, tarefas, proposta e pitch
 ```
