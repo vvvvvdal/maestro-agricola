@@ -49,6 +49,38 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(len(calls), 1)
 
 
+    def test_deduplicates_command_id_without_repeating_navigation(self):
+        calls = []
+
+        bridge = BridgeCore(
+            target_map={
+                "plot-01": {
+                    "x": 1.0,
+                    "y": 2.0,
+                }
+            },
+            navigation_callback=lambda pose, command_id: (
+                calls.append((pose, command_id))
+                or (True, "navigation queued")
+            ),
+        )
+
+        repeated_command = command(
+            "SPRAY",
+            Target(
+                type="MAPPED_PLOT",
+                id="plot-01",
+            ),
+        )
+
+        first = bridge.handle_command(repeated_command)
+        second = bridge.handle_command(repeated_command)
+
+        self.assertEqual(first, second)
+        self.assertEqual(first.status, "ACCEPTED")
+        self.assertEqual(len(calls), 1)
+
+
     def test_rejects_unknown_spray_plot(self):
         bridge = BridgeCore(
             target_map={},

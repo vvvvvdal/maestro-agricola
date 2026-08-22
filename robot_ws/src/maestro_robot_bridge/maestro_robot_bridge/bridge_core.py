@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Callable
+from threading import Lock
 
 from .models import Command, Response
 
@@ -23,6 +25,9 @@ class BridgeCore:
         self._navigation_callback = navigation_callback
         self._dock_callback = dock_callback
         self._undock_callback = undock_callback
+        self._dedupe_lock = Lock()
+        self._responses: OrderedDict[str, Response] = OrderedDict()
+        self._response_cache_limit = 1024
 
     def handle(self, raw_message: str) -> Response:
         from .contract import ContractError, parse_command
@@ -48,6 +53,27 @@ class BridgeCore:
             )
 
     def handle_command(self, command: Command) -> Response:
+        # command_id is the idempotency key. The WebSocket server may receive
+        # the same confirmed command again after a client retry; in that case
+        # return the previous response without executing any callback twice.
+        with self._dedupe_lock:
+            previous = self._responses.get(command.command_id)
+
+            if previous is not None:
+                self._responses.move_to_end(command.command_id)
+                return previous
+
+            response = self._dispatch_command(command)
+
+            self._responses[command.command_id] = response
+            self._responses.move_to_end(command.command_id)
+
+            while len(self._responses) > self._response_cache_limit:
+                self._responses.popitem(last=False)
+
+            return response
+
+    def _dispatch_command(self, command: Command) -> Response:
         if command.intent == "SPRAY":
             return self._handle_spray(command)
 

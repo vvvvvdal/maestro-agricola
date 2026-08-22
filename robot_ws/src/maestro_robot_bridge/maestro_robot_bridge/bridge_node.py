@@ -180,7 +180,7 @@ class MaestroBridgeNode(Node):
         if not self._transition(self._mission.begin_undock):
             return
         self._undock_attempts += 1
-        self.get_logger().info("Requesting undock before navigation")
+        self.get_logger().info("Requesting explicit undock action")
         try:
             future = self._undock_client.send_goal_async(Undock.Goal())
         except Exception as exc:
@@ -517,11 +517,10 @@ class MaestroBridgeNode(Node):
         self._fail_mission(f"{label} timed out")
 
     def _monitor_undock(self) -> None:
-        if self._latest_is_docked is False and self._dock_status_is_stable():
-            if self._undock_goal_handle is not None:
-                self._undock_goal_handle.cancel_goal_async()
-            self._complete_undock_from_state("dock status confirmed clear")
-            return
+        # DockStatus changes to undocked before the native Undock action has
+        # finished moving the robot physically clear of the dock. Do not
+        # cancel the accepted action here; wait for its result so the complete
+        # native undocking maneuver can finish.
         self._check_action_timeout("undock", self._undock_goal_handle)
 
     def _monitor_dock(self) -> None:

@@ -54,7 +54,10 @@ class MissionCycle:
         This only changes lifecycle state. The ROS action is executed by the
         bridge lifecycle loop.
         """
-        if self.phase != MissionPhase.READY:
+        if self.phase not in (
+            MissionPhase.READY,
+            MissionPhase.DOCKED,
+        ):
             return False
 
         self.phase = MissionPhase.NEEDS_UNDOCK
