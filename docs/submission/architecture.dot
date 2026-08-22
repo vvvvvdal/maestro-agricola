@@ -1,48 +1,63 @@
 digraph MaestroAgricola {
-  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.55", fontname="DejaVu Sans", labelloc="t", label="Maestro Agrícola — arquitetura do MVP", fontsize=24, fontcolor="#173F2A"];
-  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11, margin="0.16,0.10", color="#5D6A63", fontcolor="#17211B"];
-  edge [fontname="DejaVu Sans", fontsize=9, color="#536159", fontcolor="#465149", arrowsize=0.75];
+  graph [rankdir=TB, bgcolor="white", pad="0.30", nodesep="0.28", ranksep="0.50", fontname="DejaVu Sans", labelloc="t", label="Maestro Agrícola - arquitetura do MVP pré-hardware", fontsize=22, fontcolor="#173F2A"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=9.8, margin="0.14,0.09", color="#5D6A63", fontcolor="#17211B"];
+  edge [fontname="DejaVu Sans", fontsize=8.0, color="#536159", fontcolor="#465149", arrowsize=0.68];
 
-  subgraph cluster_glasses {
-    label="AI Glasses"; color="#6F7FA6"; fontcolor="#263354"; style="rounded";
-    CAM [label="Câmera", fillcolor="#E8ECF7"];
-    AUD [label="Microfone + áudio", fillcolor="#E8ECF7"];
+  U [label="Operador de campo", fillcolor="#FFFFFF", color="#555555"];
+
+  subgraph cluster_wearable {
+    label="Entrada wearable / pré-hardware"; color="#237A3B"; fontcolor="#174A2B"; style="rounded";
+    CAM [label="Checkpoint 2 - Câmera\nMeta Wearables DAT 0.9.0\nMockDeviceKit nesta etapa", fillcolor="#E9F5EC"];
+    MIC [label="Checkpoint 2 - Microfone\nrota de áudio do Android\nSpeechRecognizer", fillcolor="#E9F5EC"];
+    OUT [label="Checkpoint 3 - Áudio\nAndroid TTS\nrota de áudio ativa", fillcolor="#E9F5EC"];
   }
 
-  subgraph cluster_mobile {
-    label="Companion Android — Kotlin"; color="#4F8A68"; fontcolor="#174A2B"; style="rounded";
-    DAT [label="Meta Wearables DAT\nsessão + câmera", fillcolor="#E7F2EA"];
-    FRAME [label="Captura sob demanda\n1 frame por ação", fillcolor="#E7F2EA"];
-    QR [label="Placa PLOT-03\n+ detector QR local", fillcolor="#E7F2EA"];
-    VOICE [label="STT + TTS nativos\npt-BR", fillcolor="#E7F2EA"];
-    AI [label="Regras + softmax local · 367 KiB\n4 intenções · limiar 0,40", fillcolor="#E7F2EA"];
-    TARGET [label="Resolvedor de alvo\nvisual + ID falado", fillcolor="#E7F2EA"];
-    FSM [label="Política de segurança\nalvo + intenção + confirmação", fillcolor="#FFF0D5", color="#B77816"];
-    PRIV [label="Telemetria sem mídia bruta\nframe e áudio efêmeros", fillcolor="#FCECEC", color="#A33C3C"];
+  subgraph cluster_android {
+    label="Android físico - Kotlin - processamento local"; color="#43634D"; fontcolor="#174A2B"; style="rounded";
+    FRAME [label="Captura sob demanda\n1 frame por interação", fillcolor="#F5F7F5"];
+    QR [label="ZXing\nQR do alvo mapeado", fillcolor="#F5F7F5"];
+    STT [label="SpeechRecognizer\ntranscrição pt-BR", fillcolor="#F5F7F5"];
+    OPAI [label="Checkpoint 1 - IA operacional\nLocalIntentClassifier\nintenções restritas", fillcolor="#EAF1FF", color="#315FA8"];
+    TARGET [label="TargetResolver\nalvo visual + ID falado", fillcolor="#F5F7F5"];
+    SAFE [label="InteractionEngine\nconfirmação obrigatória\nfail-closed em conflito", fillcolor="#FFF2CC", color="#9A6A00"];
+    QWEN [label="Checkpoint 1 - IA conversacional\nQwen2.5-1.5B + llama.cpp\nCHAT / OUT_OF_SCOPE somente", fillcolor="#EAF1FF", color="#315FA8"];
+    PRIV [label="Checkpoint 4 - Privacidade\nsem persistência de mídia bruta\nlogs: estado, alvo, intenção, erro", fillcolor="#FCECEC", color="#A33C3C"];
+    BATT [label="Checkpoint 5 - Bateria\ncaptura sob demanda\nIA pequena; Qwen só quando necessário", fillcolor="#FCECEC", color="#A33C3C"];
   }
 
   subgraph cluster_network {
-    label="Rede local"; color="#96752A"; fontcolor="#644B13"; style="rounded";
-    WS [label="JSON/WebSocket\nID único + expiração", fillcolor="#FFF6D9"];
+    label="Rede local"; color="#315FA8"; fontcolor="#10203B"; style="rounded";
+    WS [label="JSON v1 + WebSocket\ncommand_id + expiração", fillcolor="#EAF1FF", color="#315FA8"];
   }
 
   subgraph cluster_robot {
-    label="Robô / simulação"; color="#4F7E92"; fontcolor="#274A59"; style="rounded";
-    BRIDGE [label="Bridge ROS 2\nvalidação + deduplicação", fillcolor="#E5F2F6"];
-    NAV [label="Nav2 + mapa\ntarget_id → pose", fillcolor="#E5F2F6"];
-    TB4 [label="TurtleBot 4\nGazebo", fillcolor="#E5F2F6"];
+    label="Robô / simulação"; color="#6644A6"; fontcolor="#21163A"; style="rounded";
+    BR [label="Bridge ROS 2\nschema + confirmação + estado\nexpiração + deduplicação", fillcolor="#F2ECFF", color="#6644A6"];
+    NAV [label="Nav2\ntarget_id allowlisted -> pose", fillcolor="#F2ECFF", color="#6644A6"];
+    TB [label="TurtleBot 4\nGazebo", fillcolor="#F2ECFF", color="#6644A6"];
   }
 
-  CAM -> DAT [style=dashed, label="mídia efêmera"];
-  DAT -> FRAME -> QR -> TARGET;
-  AUD -> VOICE [style=dashed, label="áudio efêmero"];
-  VOICE -> AI -> FSM;
-  VOICE -> TARGET [label="ID falado opcional"];
-  TARGET -> FSM [label="concordância\nou conflito"];
-  FSM -> VOICE [label="pergunta / resultado", constraint=false];
-  VOICE -> AUD [style=dashed, label="áudio", constraint=false];
-  FSM -> WS [label="somente após confirmar"];
-  WS -> BRIDGE -> NAV -> TB4;
-  FRAME -> PRIV [style=dotted, arrowhead=none];
-  VOICE -> PRIV [style=dotted, arrowhead=none];
+  NOTE [label="Sem inferência em nuvem no caminho do MVP.\nQwen não acessa Command, WebSocket ou ROS.", fillcolor="#FFFFFF", color="#777777", style="rounded,dashed"];
+
+  U -> CAM [label="olha para o alvo"];
+  CAM -> FRAME -> QR -> TARGET;
+  U -> MIC [label="fala"];
+  MIC -> STT -> OPAI;
+  STT -> TARGET [label="ID falado opcional"];
+  OPAI -> SAFE [label="operacional"];
+  OPAI -> QWEN [label="UNKNOWN"];
+  TARGET -> SAFE [label="concordância / conflito"];
+  SAFE -> OUT [label="pergunta / resultado"];
+  OUT -> U;
+  QWEN -> OUT [label="resposta sobre o Maestro"];
+  SAFE -> WS [label="somente após confirmar"];
+  WS -> BR -> NAV -> TB;
+  BR -> WS [label="status", constraint=false];
+
+  FRAME -> PRIV [style=dotted, label="descarta"];
+  STT -> PRIV [style=dotted, label="não persiste"];
+  FRAME -> BATT [style=dotted, label="uso pontual"];
+  OPAI -> BATT [style=dotted, label="local"];
+  QWEN -> BATT [style=dotted, label="sob demanda"];
+  QWEN -> NOTE [style=dashed, arrowhead=none];
 }
