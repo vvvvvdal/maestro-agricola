@@ -50,7 +50,7 @@ Estudante de Ciência da Computação no INF/UFG e voluntário no CEIA.
 O projeto possui duas funções distintas:
 
 1. `LocalIntentClassifier`: autoridade operacional. Seus rótulos ainda passam por `InteractionEngine`, resolução de alvo, estado e confirmação antes de existir `Command`.
-2. Qwen2.5-1.5B local: assistente de domínio. O runtime Android foi validado no SM-X510, mas o wiring na `MainActivity` ainda está pendente. Quando integrado, receberá apenas `UNKNOWN` e retornará `CHAT` ou `OUT_OF_SCOPE`.
+2. Qwen2.5-1.5B local: assistente de domínio. O runtime Android foi validado no SM-X510 e o wiring na `MainActivity`, no Edge 40 Neo. Recebe apenas `UNKNOWN` em estado seguro para conversa e retorna `CHAT` ou `OUT_OF_SCOPE`.
 
 Nenhum integrante deve conectar o Qwen diretamente a ROS, WebSocket, target ou estado do robô.
 

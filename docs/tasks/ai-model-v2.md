@@ -1,6 +1,6 @@
 # Task: classificador local híbrido v2
 
-> **Registro histórico.** Esta task documenta a decisão tomada antes da avaliação do Qwen e antes da adição de `DOCK`/`UNDOCK` ao classificador. A decisão “não será incluído Qwen/LLM” foi superada pela Task 6: o classificador operacional continua sendo a autoridade de controle, enquanto um Qwen2.5-1.5B local foi implementado apenas como assistente `CHAT | OUT_OF_SCOPE`. O runtime foi validado no SM-X510, mas o wiring na `MainActivity` ainda está pendente. Veja [`qwen-android-runtime.md`](qwen-android-runtime.md).
+> **Registro histórico.** Esta task documenta a decisão tomada antes da avaliação do Qwen e antes da adição de `DOCK`/`UNDOCK` ao classificador. A decisão “não será incluído Qwen/LLM” foi superada pela Task 6: o classificador operacional continua sendo a autoridade de controle, enquanto um Qwen2.5-1.5B local foi implementado apenas como assistente `CHAT | OUT_OF_SCOPE`. O runtime foi validado no SM-X510 e o wiring seguro na `MainActivity`, no Edge 40 Neo. Veja [`qwen-android-runtime.md`](qwen-android-runtime.md).
 
 ## Objetivo
 

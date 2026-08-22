@@ -42,7 +42,7 @@ Demonstrar, de ponta a ponta, que um operador consegue selecionar um alvo visual
 - Precisão centimétrica ou RTK-GPS.
 - Operação real de pulverização.
 - Múltiplos robôs simultâneos.
-- Linguagem natural aberta para qualquer tarefa. O assistente Qwen, quando integrado à UI, permanece restrito ao domínio do Maestro e nunca executa ações.
+- Linguagem natural aberta para qualquer tarefa. O assistente Qwen integrado à UI permanece restrito ao domínio do Maestro e nunca executa ações.
 - Estimativa de waypoint baseada em IMU dos óculos.
 - Operação sem smartphone companion.
 - Reconhecimento visual livre de objetos ou talhões sem marcador no MVP da semana.

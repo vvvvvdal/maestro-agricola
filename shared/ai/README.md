@@ -57,4 +57,4 @@ LocalIntentClassifier
 
 A GBNF do runtime Android restringe a estrutura da resposta. O parser Kotlin falha fechado para `OUT_OF_SCOPE` se a saída estiver malformada ou inventar outro tipo. Qwen não conhece `Command`, WebSocket, ROS ou `TargetResolver`.
 
-O runtime Android via `llama.cpp` foi validado em smoke físico no SM-X510, mas a `MainActivity` ainda não usa esse fallback. Veja [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).
+O runtime Android via `llama.cpp` foi validado em smoke físico no SM-X510, e o fallback seguro da `MainActivity`, no Edge 40 Neo. Veja [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).

@@ -22,7 +22,7 @@ câmera/target + voz
 -> Nav2/Gazebo
 ```
 
-O Qwen não participa deste caminho. Depois do wiring da Task 6, apenas `UNKNOWN` poderá ser desviado para conversa `CHAT | OUT_OF_SCOPE`.
+O Qwen não participa deste caminho. Com o wiring da Task 6, apenas `UNKNOWN` em estado seguro para conversa pode ser desviado para `CHAT | OUT_OF_SCOPE`.
 
 ## Decisões atuais
 

@@ -19,7 +19,7 @@ Documentar separadamente os dados tratados pelo Maestro Agrícola, pelo Android,
 |---|---|---|---|---|---|
 | Maestro — câmera | Foto sob demanda ou `target_id` simulado | DAT/MockDeviceKit ou `MockFrameSource`; resolver um talhão conhecido | ZXing local reduz a foto a `target_id` e timestamp; não inventa confiança | Não prevista | MockDeviceKit aprovado; DAT em óculos reais pendente |
 | Maestro — voz | Transcrição curta | `SpeechRecognizer`; classificar intenção | Texto permanece na memória da atividade e entra no classificador local | Não prevista | Código implementado; rota física pendente |
-| Maestro — assistente Qwen | Transcrição curta somente quando roteada ao assistente | `LanguageRouter`/assistente; responder perguntas do domínio Maestro | Inferência local no GGUF; transcrição e resposta ficam em memória | GGUF é artefato local persistente; prompts/respostas não são salvos pelo Maestro | Runtime/smoke físico validado; wiring na `MainActivity` pendente |
+| Maestro — assistente Qwen | Transcrição curta somente quando roteada ao assistente | `LanguageInteractionController`/assistente; responder perguntas do domínio Maestro | Inferência local no GGUF; transcrição e resposta ficam em memória | GGUF é artefato local persistente; prompts/respostas não são salvos pelo Maestro | Runtime e wiring na `MainActivity` validados; convivência com DAT real pendente |
 | Maestro — IA | Texto, intenção, confiança e métricas | Classificador JSON local | Resultado alimenta a máquina de estados | Modelo e fixtures versionados; fala do usuário não é salva | Modelo e benchmark aprovados |
 | Maestro — comando | UUID, horário, intenção, alvo, confirmação e expiração | Máquina de estados após confirmação | JSON segue por WebSocket ao bridge | Não há banco local; bridge pode registrar telemetria técnica | Contrato e bridge implementados |
 | Maestro — áudio de saída | Frases curtas de confirmação, cancelamento, erro e sucesso | Máquina de estados | Texto é entregue ao TTS do Android | O app não grava a saída | TTS ouvido no alto-falante inferior do Edge 40 Neo; rota dos óculos pendente |
@@ -62,7 +62,7 @@ transcrição operacional -> LocalIntentClassifier -> InteractionEngine
 -> confirmação explícita -> Command JSON -> WebSocket -> bridge ROS 2
 ```
 
-O assistente Qwen não participa desse fluxo. A arquitetura planejada envia somente `UNKNOWN` ao assistente e não oferece a ele referência para `Command`, WebSocket, ROS ou estado do robô.
+O assistente Qwen não participa desse fluxo. O `LanguageInteractionController` envia somente `UNKNOWN`, em estado seguro para conversa, ao assistente e não oferece a ele referência para `Command`, WebSocket, ROS ou estado do robô.
 
 ### Fluxo do assistente Qwen
 
@@ -71,7 +71,7 @@ transcrição UNKNOWN -> LanguageRouter -> QwenDomainAssistant
 -> NativeQwenEngine/llama.cpp -> JSON CHAT | OUT_OF_SCOPE -> UI/TTS
 ```
 
-O GGUF é armazenado localmente no aparelho quando provisionado para o smoke/desenvolvimento. Ele não contém dados pessoais do operador e não é versionado no repositório. O Maestro não grava prompt, resposta ou histórico de conversa em arquivo; o runtime limpa o turno e preserva apenas o cache do system prompt enquanto o processo está ativo. A integração desse fluxo na tela principal ainda está pendente.
+O GGUF é armazenado localmente no aparelho quando provisionado para o smoke/desenvolvimento. Ele não contém dados pessoais do operador e não é versionado no repositório. O Maestro não grava prompt, resposta ou histórico de conversa em arquivo; o runtime limpa o turno e preserva apenas o cache do system prompt enquanto o processo está ativo. Esse fluxo está integrado à tela principal, mas ainda precisa do ensaio simultâneo com DAT/câmera/áudio no hardware final.
 
 ## Permissões e configurações Android
 

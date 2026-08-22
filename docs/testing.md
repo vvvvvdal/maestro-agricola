@@ -242,7 +242,7 @@ No emulador de desenvolvimento, use `ws://10.0.2.2:18765`. No Android físico da
 
 ## Qwen local: smoke físico de desenvolvimento
 
-O smoke do Qwen existe somente no source set `mock` e não prova integração com a `MainActivity`, DAT ou Meta Wearables. O APK espera que o arquivo `qwen2.5-1.5b-q4_k_m.gguf` seja provisionado no diretório privado `files/` do app de desenvolvimento; o GGUF não faz parte do repositório nem do APK.
+O smoke isolado do Qwen existe somente no source set `mock` e, sozinho, não prova integração com a `MainActivity`, DAT ou Meta Wearables. O APK espera que o arquivo `qwen2.5-1.5b-q4_k_m.gguf` seja provisionado no diretório privado `files/` do app de desenvolvimento; o GGUF não faz parte do repositório nem do APK.
 
 Depois de instalar `app-mock-debug.apk` e provisionar o modelo, inicie:
 
@@ -255,6 +255,8 @@ adb logcat \
 ```
 
 O gate registrado em 21/08/2026 no SM-X510 foi `SMOKE_RESULT passed=5 total=5`. Evidência final: 603 tokens de system prompt, load 33.291,911 ms, quatro respostas warm entre 5.714 e 5.909 ms, PSS 1.377.044 KB, RSS 1.451.773 KB e Swap PSS 273 KB.
+
+Após o wiring, a `MainActivity` foi validada em 22/08/2026 no Edge 40 Neo/API 35. `UNKNOWN` exibiu `Processando resposta local…`; pergunta de domínio retornou `CHAT`; pergunta sobre bolo retornou a recusa fixa `OUT_OF_SCOPE`; `DOCK` abriu confirmação sem chamar o Qwen. O load foi 43.783,994 ms, a geração cold 11.106,745 ms, a warm 7.320,504 ms, PSS 1.342.225 KB e RSS 1.389.716 KB. O status térmico Android permaneceu 0.
 
 Detalhes: [`tasks/qwen-android-runtime.md`](tasks/qwen-android-runtime.md).
 
