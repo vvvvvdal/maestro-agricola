@@ -32,7 +32,7 @@ A arquitetura separa interpretação de linguagem e autoridade de controle:
 - o classificador operacional reconhece somente intenções versionadas;
 - `InteractionEngine` valida estado e exige confirmação;
 - `TargetResolver` aceita apenas alvos conhecidos;
-- o assistente Qwen, quando ligado à interface principal, fica restrito a `CHAT` ou `OUT_OF_SCOPE` e não controla o robô.
+- o assistente Qwen ligado à interface principal fica restrito a `CHAT` ou `OUT_OF_SCOPE` e não controla o robô.
 
 ## Jornada demonstrável
 

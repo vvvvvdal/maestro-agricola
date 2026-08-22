@@ -23,7 +23,7 @@ Rótulos atuais:
 
 `UNKNOWN` não autoriza movimento. `SPRAY`, `DOCK` e `UNDOCK` ainda passam pelas validações e confirmação do `InteractionEngine` antes de existir `Command`.
 
-A avaliação histórica `evaluation.tsv` tem 64 frases das quatro classes originais. A avaliação de campo usada na evolução atual é `field_evaluation.tsv`, com 48 frases balanceadas entre os seis rótulos; o baseline local classificou 48/48 no gate da Task 6.
+A avaliação histórica `evaluation.tsv` tem 64 frases das quatro classes originais. Suas métricas consideram os rótulos que aparecem como resultado esperado ou predito nesse corpus; rótulos ausentes de ambos não recebem F1 zero artificialmente, enquanto qualquer classe predita indevidamente continua sendo penalizada. A avaliação de campo usada na evolução atual é `field_evaluation.tsv`, com 48 frases balanceadas entre os seis rótulos; o baseline local classificou 48/48 no gate da Task 6.
 
 Para regenerar o modelo quando a task exigir explicitamente:
 
@@ -57,4 +57,4 @@ LocalIntentClassifier
 
 A GBNF do runtime Android restringe a estrutura da resposta. O parser Kotlin falha fechado para `OUT_OF_SCOPE` se a saída estiver malformada ou inventar outro tipo. Qwen não conhece `Command`, WebSocket, ROS ou `TargetResolver`.
 
-O runtime Android via `llama.cpp` foi validado em smoke físico no SM-X510, mas a `MainActivity` ainda não usa esse fallback. Veja [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).
+O runtime Android via `llama.cpp` foi validado em smoke físico no SM-X510, e o fallback seguro da `MainActivity`, no Edge 40 Neo. Veja [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).

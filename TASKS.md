@@ -8,7 +8,7 @@
 - Task 3 --- Implementar comando explícito UNDOCK: DONE
 - Task 4 --- Implementar comando explícito DOCK: DONE
 - Task 5 --- Android transportar intents: DONE
-- Task 6 --- Evolução da IA local: EM ANDAMENTO (runtime Qwen validado; integração na MainActivity pendente)
+- Task 6 --- Evolução da IA local: DONE (fallback seguro integrado e validado na MainActivity)
 - Task 7 --- E2E final e preparação da demonstração: EM ANDAMENTO
 
 ---
@@ -352,7 +352,7 @@ Testes:
 
 # Task 6 --- Evolução da IA local
 
-Status: EM ANDAMENTO — benchmark, isolamento de segurança e runtime Android concluídos; integração no fluxo principal pendente.
+Status: DONE — benchmark, isolamento de segurança, runtime Android e integração no fluxo principal concluídos.
 
 Objetivo:
 
@@ -402,6 +402,17 @@ Implementado:
 - cache do system prompt preservado entre perguntas sem acumular histórico de conversa;
 - Activity de smoke exclusiva do flavor `mock`.
 
+## Wiring seguro na MainActivity
+
+Implementado em 22/08/2026:
+
+- `LanguageInteractionController` mantém o `LocalIntentClassifier` como primeira autoridade;
+- operações e todo o estado de confirmação seguem diretamente para o `InteractionEngine`;
+- apenas `UNKNOWN` em `IDLE` ou `TARGET_READY` inicia o assistente;
+- a UI mostra `Processando resposta local…` sem bloquear novas operações;
+- resposta atrasada é descartada depois de operação, captura de alvo, nova escuta ou reinício;
+- ausência/falha do GGUF preserva o fallback seguro e nunca cria `Command`.
+
 ## Smoke físico no SM-X510
 
 Em 21/08/2026, no Samsung SM-X510 (Android API 36, ARM64), o smoke final passou 5/5:
@@ -417,15 +428,19 @@ Em 21/08/2026, no Samsung SM-X510 (Android API 36, ARM64), o smoke final passou 
 
 Limitações:
 
-- cold start de ~33 s exige preload/background se o assistente entrar na jornada principal;
-- warm latency de ~5,7–5,9 s exige feedback visual/sonoro de processamento;
+- cold start medido entre ~33 s no SM-X510 e ~43,8 s no Edge 40 Neo; preload continua uma decisão condicionada ao teste de memória combinado;
+- warm latency medida entre ~5,7–5,9 s no SM-X510 e ~7,3 s no Edge 40 Neo;
 - o GGUF de ~1,1 GB não é versionado nem empacotado no APK atual;
 - convivência com DAT, câmera e áudio simultâneos ainda não foi medida;
-- `MainActivity` ainda instancia diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`, portanto o assistente não está acessível na UI principal.
+- o gate físico combinado no aparelho final do evento continua pertencendo à Task 7.
 
-Critério restante da Task 6:
+Critério final da Task 6 concluído:
 
-- integrar o `LanguageRouter` e o `QwenDomainAssistant` na interface principal sem alterar o caminho operacional rápido e repetir testes/builds/smoke após o wiring.
+- `testMockDebugUnitTest` e `testDatDebugUnitTest`: 60/60 cada;
+- `assembleMockDebug` e `assembleDatDebug`: `BUILD SUCCESSFUL`;
+- no Edge 40 Neo/API 35, `CHAT`, `OUT_OF_SCOPE` e `DOCK` direto sem chamada ao Qwen foram observados na `MainActivity`;
+- a recriação por rotação descartou a conversa anterior sem crash;
+- nenhum erro `AndroidRuntime` e nenhum comando criado nos casos conversacionais.
 
 Evidência detalhada: [`docs/tasks/qwen-android-runtime.md`](docs/tasks/qwen-android-runtime.md).
 

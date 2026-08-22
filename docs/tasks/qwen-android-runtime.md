@@ -2,7 +2,7 @@
 
 ## Status
 
-Runtime e isolamento de segurança: **VALIDADOS**. Integração na `MainActivity`: **PENDENTE**.
+Runtime, isolamento de segurança e integração na `MainActivity`: **VALIDADOS**.
 
 ## Objetivo
 
@@ -88,11 +88,29 @@ Após sincronizar as alterações de Qwen com a UI/DAT da `main`, passaram:
 
 ```text
 :app:testMockDebugUnitTest -> BUILD SUCCESSFUL
+:app:testDatDebugUnitTest  -> BUILD SUCCESSFUL
 :app:assembleMockDebug     -> BUILD SUCCESSFUL
 :app:assembleDatDebug      -> BUILD SUCCESSFUL
 ```
 
 Esse gate comprova convivência de código/build; não comprova inferência Qwen simultânea à câmera DAT ou áudio.
+
+## Wiring e regressão da MainActivity
+
+Em 22/08/2026, o fallback foi ligado à tela principal por `LanguageInteractionController`. Operações e confirmações permanecem no `InteractionEngine`; somente `UNKNOWN` em `IDLE` ou `TARGET_READY` pode iniciar `QwenDomainAssistant`. A tela mostra `Processando resposta local…`, e callbacks antigos são ignorados quando outra operação, escuta, captura ou reinício invalida a conversa.
+
+No Edge 40 Neo/API 35:
+
+- pergunta sobre o Maestro retornou `CHAT` na `MainActivity` e citou a AgroTurtles;
+- pergunta sobre bolo retornou a mensagem fixa `OUT_OF_SCOPE`;
+- `voltar para a base` abriu a confirmação `DOCK` sem nova chamada ao Qwen;
+- load do modelo: 43.783,994 ms;
+- geração cold após o load: 11.106,745 ms; geração warm: 7.320,504 ms;
+- PSS 1.342.225 KB, RSS 1.389.716 KB e Swap PSS 41.270 KB;
+- status térmico Android 0 e nenhum erro `AndroidRuntime` durante o roteiro;
+- recriação por rotação descartou o callback anterior, voltou ao estado inicial e não registrou crash.
+
+Os dois flavors executaram 60 testes unitários sem falha, e `assembleMockDebug`/`assembleDatDebug` passaram.
 
 ## Limitações e próximo passo
 
@@ -100,9 +118,9 @@ Esse gate comprova convivência de código/build; não comprova inferência Qwen
 2. Respostas warm de ~5,7–5,9 s pedem estado visual/sonoro de `Processando…`.
 3. A memória residente de ~1,38 GB precisa ser medida junto com DAT, câmera e STT/TTS antes do uso na demo final.
 4. O runtime atual foi provado no SM-X510; não há benchmark Qwen físico versionado no Galaxy A17.
-5. A `MainActivity` ainda usa diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`; a Task 6 só termina depois do wiring `UNKNOWN -> assistente` e de nova regressão.
+5. O teste combinado Qwen + DAT/câmera + STT/TTS no aparelho final ainda não foi executado.
 6. Qwen nunca deve ganhar um tipo `COMMAND` nem acesso a ROS/WebSocket.
 
-## Critério de aceite restante
+## Critério de aceite concluído
 
-Integrar o assistente na experiência principal apenas como fallback de `UNKNOWN`, manter operações críticas independentes do tempo de inferência do Qwen e repetir os gates Android + smoke físico após a integração.
+O assistente foi integrado somente como fallback de `UNKNOWN`; operações críticas continuam independentes do tempo de inferência. Os gates Android e o smoke físico da `MainActivity` foram repetidos. O ensaio combinado com DAT/óculos reais permanece como gate de hardware da demonstração, não como autoridade adicional para o Qwen.

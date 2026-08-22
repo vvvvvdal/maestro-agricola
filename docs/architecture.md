@@ -21,7 +21,7 @@ WebSocket / JSON versionado (somente Command confirmado)
 Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
 ```
 
-A separação entre controle e conversa é uma restrição arquitetural. O Qwen não tem acesso a `CommandTransport`, ROS, WebSocket, pose, alvo resolvido nem estado do robô. No código atual, os componentes do assistente e o runtime nativo existem, mas o `MainActivity` ainda usa diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`; o wiring do fallback `UNKNOWN -> Qwen` permanece pendente.
+A separação entre controle e conversa é uma restrição arquitetural. O Qwen não tem acesso a `CommandTransport`, ROS, WebSocket, pose, alvo resolvido nem estado do robô. A `MainActivity` usa `LanguageInteractionController` para manter operações e confirmações no `InteractionEngine` e encaminhar somente `UNKNOWN`, nos estados seguros `IDLE` ou `TARGET_READY`, ao assistente.
 
 ## Componentes
 
@@ -155,7 +155,7 @@ Qwen2.5-1.5B-Instruct Q4_K_M foi avaliado inicialmente como possível classifica
 
 O modelo foi então restrito ao papel de assistente de domínio. `LanguageRouter` envia somente `UNKNOWN` para `QwenDomainAssistant`. O system prompt canônico limita o domínio ao Maestro Agrícola e a GBNF permite apenas JSON com `CHAT` ou `OUT_OF_SCOPE`. O parser Kotlin normaliza `OUT_OF_SCOPE` para uma mensagem fixa e qualquer JSON inválido ou tipo desconhecido também falha fechado.
 
-O runtime Android usa `llama.cpp` pinado em `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`, JNI/CMake ARM64, 4 threads, contexto 2048 e batch 512. No SM-X510, o smoke final passou 5/5; load ~33,3 s, respostas warm ~5,7–5,9 s, PSS ~1,38 GB e Swap PSS 273 KB. O GGUF não é versionado nem empacotado no APK atual. Integração na `MainActivity` e convivência com DAT/câmera/áudio ainda são pendências.
+O runtime Android usa `llama.cpp` pinado em `873e5d8e39feb34a376e0efd01bf3f665dfffeb5`, JNI/CMake ARM64, 4 threads, contexto 2048 e batch 512. No SM-X510, o smoke final passou 5/5; load ~33,3 s, respostas warm ~5,7–5,9 s, PSS ~1,38 GB e Swap PSS 273 KB. O wiring na `MainActivity` foi validado depois no Edge 40 Neo/API 35: load ~43,8 s, geração cold ~11,1 s, geração warm ~7,3 s, PSS ~1,34 GB e RSS ~1,39 GB. O GGUF não é versionado nem empacotado no APK atual. A convivência com DAT/câmera/áudio continua pendente.
 
 O reconhecimento de fala usa os recursos nativos do Android. STT é uma etapa diferente tanto do classificador operacional quanto do Qwen.
 
@@ -165,7 +165,7 @@ O reconhecimento de fala usa os recursos nativos do Android. STT é uma etapa di
 |---|---|
 | Mock Android | Implementado e usado nos testes automatizados |
 | Classificador operacional Android | Implementado; seis rótulos e caminho de confirmação ativo na `MainActivity` |
-| Qwen Android/llama.cpp | Runtime JNI implementado e smoke físico 5/5 no SM-X510; wiring na `MainActivity` pendente |
+| Qwen Android/llama.cpp | Runtime JNI e wiring `UNKNOWN -> assistente` implementados; smoke isolado no SM-X510 e fluxo principal no Edge 40 Neo validados |
 | WebSocket Android | Implementado no fluxo principal |
 | DAT Android | Ciclo 0.9.0, MockDeviceKit e detector QR local com ZXing validados pré-hardware; sessão/câmera/áudio nos óculos reais pendentes |
 | Voz e TTS Android | Implementados com APIs nativas; rota de áudio com os óculos reais pendente |

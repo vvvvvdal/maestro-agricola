@@ -111,6 +111,6 @@ O GGUF de aproximadamente 1,1 GB não é versionado e não é empacotado automat
 
 No SM-X510, o smoke final de 21/08/2026 passou 5/5. Load: 33,3 s; respostas warm: ~5,7–5,9 s; PSS: ~1,38 GB; Swap PSS: 273 KB. Esses números comprovam o runtime isolado, não a convivência com DAT/câmera/áudio.
 
-A `MainActivity` atual ainda instancia diretamente `InteractionEngine(LocalIntentClassifier, TargetResolver)`. Antes de usar Qwen na interface principal, conectar somente o caminho `UNKNOWN -> LanguageRouter -> QwenDomainAssistant`, manter o caminho operacional independente e oferecer feedback de `Processando…`/áudio durante a latência.
+A `MainActivity` mantém `InteractionEngine(LocalIntentClassifier, TargetResolver)` como caminho operacional e usa `LanguageInteractionController` para conectar somente `UNKNOWN -> LanguageRouter -> QwenDomainAssistant`. A interface exibe `Processando resposta local…`; operações, confirmações e transporte continuam independentes do Qwen.
 
 Detalhes e evidência: [`../../docs/tasks/qwen-android-runtime.md`](../../docs/tasks/qwen-android-runtime.md).

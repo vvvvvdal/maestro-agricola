@@ -31,7 +31,7 @@ alvo mapeado
 - [x] DAT 0.9.0 pré-hardware + MockDeviceKit.
 - [x] Visão/QR e `TargetResolver`.
 - [x] Runtime Qwen local via `llama.cpp` e smoke físico no SM-X510.
-- [ ] Wiring `UNKNOWN -> QwenDomainAssistant` na `MainActivity`.
+- [x] Wiring `UNKNOWN -> QwenDomainAssistant` na `MainActivity`.
 - [ ] E2E final atualizado para o lifecycle explícito.
 - [ ] DAT/câmera/áudio provados nos Meta Wearables reais.
 - [ ] Jornada física final repetida e registrada.
@@ -86,11 +86,11 @@ alvo mapeado
 - [x] GBNF estruturada;
 - [x] smoke físico 5/5 no SM-X510;
 - [x] load ~33,3 s; warm ~5,7–5,9 s; PSS ~1,38 GB; Swap PSS 273 KB.
+- [x] wiring e smoke da `MainActivity` no Edge 40 Neo/API 35;
+- [x] feedback `Processando resposta local…` e descarte de callback obsoleto.
 
 ### Pendente
 
-- [ ] conectar somente `UNKNOWN` ao assistente na `MainActivity`;
-- [ ] adicionar feedback de processamento;
 - [ ] medir convivência com DAT/câmera/áudio;
 - [ ] decidir preload antes da demo.
 

@@ -21,7 +21,7 @@ O trabalho até o evento não deve ampliar o produto. O foco é fechar a integra
 ## Estado técnico atual
 
 - Tasks 1–5: concluídas.
-- Task 6: runtime Qwen/llama.cpp e smoke físico concluídos; wiring na `MainActivity` pendente.
+- Task 6: runtime Qwen/llama.cpp, wiring seguro e smoke físico da `MainActivity` concluídos.
 - DAT: fluxo pré-hardware e MockDeviceKit concluídos; Meta Wearables reais pendentes.
 - UI: jornada Compose integrada à `main`.
 - Task 7: E2E final precisa substituir expectativas históricas de dock/undock automático.
@@ -30,7 +30,7 @@ O trabalho até o evento não deve ampliar o produto. O foco é fechar a integra
 
 ### 1. Fechar software antes do hardware
 
-- integrar o fallback `UNKNOWN -> Qwen` somente se ele não colocar a jornada operacional em risco;
+- manter o fallback `UNKNOWN -> Qwen` fora de operações e confirmações e medir sua convivência com o hardware final;
 - reescrever o E2E para `SPRAY` permanecer no alvo;
 - validar `DOCK` e `UNDOCK` explícitos;
 - executar os gates `mockDebug` e `datDebug`;

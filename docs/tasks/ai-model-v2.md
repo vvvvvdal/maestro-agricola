@@ -1,6 +1,6 @@
 # Task: classificador local híbrido v2
 
-> **Registro histórico.** Esta task documenta a decisão tomada antes da avaliação do Qwen e antes da adição de `DOCK`/`UNDOCK` ao classificador. A decisão “não será incluído Qwen/LLM” foi superada pela Task 6: o classificador operacional continua sendo a autoridade de controle, enquanto um Qwen2.5-1.5B local foi implementado apenas como assistente `CHAT | OUT_OF_SCOPE`. O runtime foi validado no SM-X510, mas o wiring na `MainActivity` ainda está pendente. Veja [`qwen-android-runtime.md`](qwen-android-runtime.md).
+> **Registro histórico.** Esta task documenta a decisão tomada antes da avaliação do Qwen e antes da adição de `DOCK`/`UNDOCK` ao classificador. A decisão “não será incluído Qwen/LLM” foi superada pela Task 6: o classificador operacional continua sendo a autoridade de controle, enquanto um Qwen2.5-1.5B local foi implementado apenas como assistente `CHAT | OUT_OF_SCOPE`. O runtime foi validado no SM-X510 e o wiring seguro na `MainActivity`, no Edge 40 Neo. Veja [`qwen-android-runtime.md`](qwen-android-runtime.md).
 
 ## Objetivo
 
@@ -59,3 +59,5 @@ Tornar a interpretação de voz do MVP mais robusta no Galaxy A17 sem depender d
 - benchmark no Edge 40 Neo: 540 inferências, zero divergências, mediana 229 µs, p95 1.013 µs e pico de heap de 19.254.032 bytes.
 
 Os 100% descrevem somente o conjunto pequeno e versionado do MVP, não desempenho no mundo real. O benchmark usa o flavor `mockDebug`, fixture fixa e o alto-falante do telefone; não comprova STT, DAT nem os Meta Wearables.
+
+Após `DOCK` e `UNDOCK` serem adicionados ao modelo operacional, a manutenção da métrica preservou este corpus histórico de quatro classes: o macro-F1 inclui classes esperadas ou preditas no próprio conjunto. Assim, rótulos ausentes de ambos não recebem zero artificial, mas uma predição inesperada continua entrando na matriz de confusão e reduzindo a métrica. Essa correção não altera treino, regras, pesos ou rótulos aceitos pelo aplicativo.

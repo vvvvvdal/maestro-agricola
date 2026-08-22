@@ -79,6 +79,14 @@ class InteractionEngine(
     fun handleTranscript(text: String): InteractionResult {
         val prediction = classifier.classify(text)
 
+        return handlePrediction(text, prediction)
+    }
+
+
+    internal fun handlePrediction(
+        text: String,
+        prediction: IntentPrediction,
+    ): InteractionResult {
         return when (state) {
             InteractionState.IDLE,
             InteractionState.TARGET_READY -> handleIntent(text, prediction)

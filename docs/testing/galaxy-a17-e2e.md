@@ -2,17 +2,17 @@
 
 Este roteiro é o gate planejado para provar a jornada `Android -> IA operacional -> WebSocket -> ROS 2/Nav2/Gazebo` no Galaxy A17 e, em seguida, validar a câmera/áudio com os Meta Wearables reais via DAT.
 
-O runtime Qwen foi medido separadamente no Samsung SM-X510. Não use esses números como benchmark do Galaxy A17.
+O runtime Qwen foi medido separadamente no Samsung SM-X510 e o wiring, no Edge 40 Neo. Não use esses números como benchmark do Galaxy A17.
 
 ## Estado real antes do teste
 
 - `mockDebug` e a UI Compose estão implementados.
-- A `MainActivity` usa `InteractionEngine(LocalIntentClassifier, TargetResolver)`.
+- A `MainActivity` mantém `InteractionEngine(LocalIntentClassifier, TargetResolver)` como caminho operacional e usa `LanguageInteractionController` somente para o fallback conversacional.
 - O classificador operacional reconhece `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
 - `datDebug` implementa o ciclo DAT 0.9.0 e passou pelos cenários pré-hardware do MockDeviceKit.
 - O caminho DAT pré-hardware não comprova câmera dos óculos reais.
 - Voz e TTS usam APIs Android; a rota real de microfone/áudio com os óculos ainda precisa ser observada.
-- O runtime Qwen existe e passou em smoke no SM-X510, mas ainda não está conectado à `MainActivity`.
+- O runtime Qwen passou em smoke no SM-X510 e o wiring da `MainActivity` foi validado no Edge 40 Neo; o Galaxy A17 continua sem benchmark próprio.
 
 ## Portabilidade da instalação
 
@@ -133,11 +133,7 @@ O gate só passa se a imagem observada vier dos óculos. MockDeviceKit, câmera 
 
 ## Gate opcional — Qwen
 
-O Qwen não faz parte do caminho operacional atual da `MainActivity`. Só execute este gate no Galaxy A17 depois que o wiring seguro `UNKNOWN -> LanguageRouter -> QwenDomainAssistant` estiver implementado.
-
-Antes disso, qualquer teste com `QwenSmokeActivity` prova apenas o runtime isolado.
-
-Quando o wiring existir, validar:
+O Qwen não faz parte do caminho operacional da `MainActivity`; o wiring seguro `UNKNOWN -> LanguageRouter -> QwenDomainAssistant` já existe. O `QwenSmokeActivity` prova apenas o runtime isolado, portanto ainda é necessário validar no Galaxy A17:
 
 1. `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM` e `CANCEL` não esperam pelo Qwen;
 2. somente `UNKNOWN` chega ao assistente;
