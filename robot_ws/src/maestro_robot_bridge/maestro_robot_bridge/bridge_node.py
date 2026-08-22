@@ -180,7 +180,7 @@ class MaestroBridgeNode(Node):
         if not self._transition(self._mission.begin_undock):
             return
         self._undock_attempts += 1
-        self.get_logger().info("Requesting undock before navigation")
+        self.get_logger().info("Requesting explicit undock action")
         try:
             future = self._undock_client.send_goal_async(Undock.Goal())
         except Exception as exc:

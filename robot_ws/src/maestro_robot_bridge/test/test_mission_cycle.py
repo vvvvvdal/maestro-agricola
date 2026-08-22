@@ -60,6 +60,15 @@ class MissionCycleTest(unittest.TestCase):
             cycle.phase,
         )
 
+    def test_explicit_undock_request_can_start_from_docked(self):
+        cycle = MissionCycle(phase=MissionPhase.DOCKED)
+
+        self.assertTrue(cycle.request_undock())
+        self.assertEqual(
+            MissionPhase.NEEDS_UNDOCK,
+            cycle.phase,
+        )
+
     def test_undock_request_cannot_start_from_unavailable_state(self):
         cycle = MissionCycle(
             phase=MissionPhase.NAVIGATING
