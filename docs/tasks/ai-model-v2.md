@@ -59,3 +59,5 @@ Tornar a interpretação de voz do MVP mais robusta no Galaxy A17 sem depender d
 - benchmark no Edge 40 Neo: 540 inferências, zero divergências, mediana 229 µs, p95 1.013 µs e pico de heap de 19.254.032 bytes.
 
 Os 100% descrevem somente o conjunto pequeno e versionado do MVP, não desempenho no mundo real. O benchmark usa o flavor `mockDebug`, fixture fixa e o alto-falante do telefone; não comprova STT, DAT nem os Meta Wearables.
+
+Após `DOCK` e `UNDOCK` serem adicionados ao modelo operacional, a manutenção da métrica preservou este corpus histórico de quatro classes: o macro-F1 inclui classes esperadas ou preditas no próprio conjunto. Assim, rótulos ausentes de ambos não recebem zero artificial, mas uma predição inesperada continua entrando na matriz de confusão e reduzindo a métrica. Essa correção não altera treino, regras, pesos ou rótulos aceitos pelo aplicativo.

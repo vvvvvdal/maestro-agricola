@@ -23,7 +23,7 @@ Rótulos atuais:
 
 `UNKNOWN` não autoriza movimento. `SPRAY`, `DOCK` e `UNDOCK` ainda passam pelas validações e confirmação do `InteractionEngine` antes de existir `Command`.
 
-A avaliação histórica `evaluation.tsv` tem 64 frases das quatro classes originais. A avaliação de campo usada na evolução atual é `field_evaluation.tsv`, com 48 frases balanceadas entre os seis rótulos; o baseline local classificou 48/48 no gate da Task 6.
+A avaliação histórica `evaluation.tsv` tem 64 frases das quatro classes originais. Suas métricas consideram os rótulos que aparecem como resultado esperado ou predito nesse corpus; rótulos ausentes de ambos não recebem F1 zero artificialmente, enquanto qualquer classe predita indevidamente continua sendo penalizada. A avaliação de campo usada na evolução atual é `field_evaluation.tsv`, com 48 frases balanceadas entre os seis rótulos; o baseline local classificou 48/48 no gate da Task 6.
 
 Para regenerar o modelo quando a task exigir explicitamente:
 

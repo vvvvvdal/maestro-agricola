@@ -128,16 +128,27 @@ def train(examples: list[tuple[str, str]]) -> dict:
 
 
 def evaluate(model: IntentModel, examples: list[tuple[str, str]]) -> dict:
-    labels = sorted(set(model.labels) | {expected for expected, _ in examples})
+    evaluated = []
+    for expected, text in examples:
+        prediction = model.predict(text)
+        operational = model.predict_with_threshold(text, CONFIDENCE_THRESHOLD)
+        evaluated.append((expected, text, prediction, operational))
+
+    # Macro-F1 deve refletir as classes exercitadas pelo corpus. Rótulos que
+    # não aparecem nem como esperado nem como predito não recebem F1 zero
+    # artificialmente. Uma predição inesperada continua entrando na matriz e
+    # sendo penalizada.
+    labels = sorted(
+        {expected for expected, _, _, _ in evaluated}
+        | {operational.label for _, _, _, operational in evaluated}
+    )
     confusion = {label: {candidate: 0 for candidate in labels} for label in labels}
     errors = []
     correct = 0
     operational_correct = 0
     source_counts: dict[str, int] = defaultdict(int)
     unsafe_accepts = []
-    for expected, text in examples:
-        prediction = model.predict(text)
-        operational = model.predict_with_threshold(text, CONFIDENCE_THRESHOLD)
+    for expected, text, prediction, operational in evaluated:
         source_counts[operational.source] += 1
         confusion[expected][operational.label] += 1
         if prediction.label == expected:
@@ -228,6 +239,20 @@ def artifacts_equal(current: object, expected: object) -> bool:
     return current == expected
 
 
+def write_artifact_if_changed(path: Path, payload: dict) -> bool:
+    """Write a generated artifact only when its relevant content changed."""
+    if path.exists():
+        current = json.loads(path.read_text(encoding="utf-8"))
+        if artifacts_equal(current, payload):
+            return False
+
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return True
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Treina ou verifica o classificador local.")
     parser.add_argument(
@@ -267,9 +292,10 @@ def main() -> None:
             raise SystemExit(1)
         print("model artifacts: up to date (read-only check)")
     else:
-        MODEL.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(f"model: {MODEL}")
+        model_changed = write_artifact_if_changed(MODEL, payload)
+        write_artifact_if_changed(REPORT, report)
+        model_status = "updated" if model_changed else "unchanged"
+        print(f"model: {MODEL} ({model_status})")
 
     print(f"raw accuracy: {report['accuracy']:.3f} ({report['correct']}/{report['examples']})")
     print(
