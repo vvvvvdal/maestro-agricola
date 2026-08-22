@@ -38,13 +38,17 @@ jobs:
             mobile/android/gradle/libs.versions.toml
             mobile/android/gradle/wrapper/gradle-wrapper.properties
 
+      - name: Accept Android SDK licenses
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+
       - name: Install pinned Android components
-        run: >-
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          "platforms;android-36"
-          "build-tools;36.0.0"
-          "ndk;29.0.13113456"
-          "cmake;3.31.6"
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "ndk;29.0.13113456" \
+            "cmake;3.31.6"
 
       - name: Validate pinned llama.cpp submodule
         run: |
