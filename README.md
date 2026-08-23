@@ -17,7 +17,7 @@
 </a>
 
 
-- 🎥​ [Maestro Agrícola (por AgroTurtles) - Pitch - Slides](docs/pitch/Maestro-Agricola-%28por-AgroTurtles%29-Slides-Pitch.pdf)
+- 🎥​ [Maestro Agrícola (por AgroTurtles) - Pitch - Slides](docs/pitch/Maestro-Agrícola-Slides-Pitch.pdf)
 - 📄 [Maestro Agrícola (por AgroTurtles) - Paper](docs/paper/Maestro-Agricola-Paper.pdf)
 
 
