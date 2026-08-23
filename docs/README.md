@@ -24,9 +24,11 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`submission/architecture.mmd`](submission/architecture.mmd): código-fonte do diagrama exigido na Seção B.
 - [`proposta/versao-resumida.md`](proposta/versao-resumida.md): versão curta revisada e canônica.
 - [`proposta/versao-tecnica.md`](proposta/versao-tecnica.md): versão técnica revisada e canônica.
-- [`pitch/roteiro-3-minutos.md`](pitch/roteiro-3-minutos.md): fala cronometrada.
-- [`pitch/storyboard.md`](pitch/storyboard.md): conteúdo dos slides e sugestões de edição.
-- `pitch/Maestro-Agricola-Pitch.pptx`: apresentação editável.
+- [`paper/main.tex`](paper/main.tex): artigo científico no formato IEEE, com metodologia, resultados, limitações e referências.
+- [`paper/Maestro-Agricola-Paper.pdf`](paper/Maestro-Agricola-Paper.pdf): versão publicada do artigo em PDF.
+- [`paper/README.md`](paper/README.md): instruções de compilação e política de atualização do artigo.
+- [`pitch/README.md`](pitch/README.md): decisão de não versionar slides do pitch.
+- [`pitch/storyboard.md`](pitch/storyboard.md): registro histórico da narrativa planejada para o deck removido.
 
 ## Fonte de verdade
 

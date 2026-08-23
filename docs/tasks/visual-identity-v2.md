@@ -1,5 +1,7 @@
 # Identidade visual v2
 
+> **Atualização de 22/08/2026:** este registro preserva a troca de lockups concluída em 19/08. A equipe posteriormente decidiu remover os slides do pitch do repositório; as referências ao PPTX abaixo descrevem apenas o trabalho histórico. As propostas foram regeneradas a partir dos Markdown revisados e passaram a ter quatro e dez páginas. A marca, a paleta e League Spartan permanecem. Evidência atual: [`../pitch/README.md`](../pitch/README.md) e [`../proposta/README.md`](../proposta/README.md).
+
 Status: concluída em 19 de agosto de 2026
 
 Responsáveis: Felipe e Rafael (pitch), Átila (validação Android)

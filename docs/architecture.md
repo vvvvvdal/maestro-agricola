@@ -128,7 +128,7 @@ IDLE -> CAPTURING -> INTERPRETING -> AWAITING_CONFIRMATION
 
 - Frame e áudio ficam somente em memória durante a interação.
 - Logs contêm IDs, estados, latência e erros, nunca mídia bruta.
-- O app deve habilitar o opt-out de analytics opcionais do DAT quando essa configuração estiver disponível e for compatível com as regras do programa.
+- O app declara os opt-outs de analytics e crash reporting do DAT 0.9.0 no manifesto; essas chaves devem ser revalidadas em qualquer atualização do SDK.
 - A política de privacidade deve distinguir o que o Maestro processa do que Android, Meta AI e DAT podem tratar para conexão, permissões e telemetria.
 - Comando inclui expiração, ID único e confirmação explícita.
 - O bridge deduplica `command_id`.

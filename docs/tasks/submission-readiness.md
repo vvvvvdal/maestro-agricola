@@ -1,6 +1,6 @@
 # Plano de prontidão para entrega - 18 a 22 de agosto de 2026
 
-> **Registro histórico.** Este documento preserva a prontidão registrada em 18/08/2026. Desde então, `DOCK`/`UNDOCK` explícitos, UI Compose, DAT pré-hardware e runtime Qwen foram adicionados. Execuções antigas de `make demo` que pressupõem lifecycle automático não representam o comportamento normativo atual. Para o estado corrente, consulte `../../TASKS.md`, `../testing.md` e `qwen-android-runtime.md`.
+> **Registro histórico.** Este documento preserva a prontidão registrada em 18/08/2026. Desde então, `DOCK`/`UNDOCK` explícitos, UI Compose, DAT pré-hardware e runtime Qwen foram adicionados. A equipe decidiu remover os slides do pitch; portanto, menções abaixo ao deck de seis slides ou a um PPTX final são históricas e não representam o estado normativo atual. Para o estado corrente, consulte `../../TASKS.md`, `../testing.md`, `qwen-android-runtime.md` e `../pitch/README.md`.
 
 ## Objetivo
 

@@ -172,18 +172,21 @@ Evidência final de 22/08/2026 no Samsung SM-X510 com `datDebug` + MockDeviceKit
 Status:
 
 ```text
-PENDENTE
+DECIDIDO — PITCH SEM SLIDES VERSIONADOS
 ```
 
-Prioridades:
+Concluído:
 
-- gravar vídeo/pitch;
-- preparar narrativa da solução;
-- explicar diferencial:
-  - comando hands-free;
-  - segurança por confirmação;
-  - integração visão + voz + robótica;
-  - uso de TurtleBot 4/Nav2/Gazebo como validação antecipada.
+- PPTX removido do repositório por decisão da equipe;
+- branch deixou de aguardar ou manter um deck final;
+- storyboard preservado apenas como registro histórico da narrativa planejada;
+- roteiro separado removido conforme decisão da equipe.
+
+Pendências:
+
+- definir e gravar o formato final do pitch sem slides versionados;
+- cronometrar três ensaios e exportar o vídeo final;
+- manter as afirmações técnicas alinhadas às evidências atuais.
 
 ---
 

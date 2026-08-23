@@ -1,5 +1,7 @@
 # Android mock smoke
 
+> **Atualização de 22/08/2026:** esta task preserva o primeiro smoke de 18/08. Depois dela, `mockDebug` e `datDebug` foram compilados; o `datDebug` com DAT 0.9.0 + MockDeviceKit foi instalado no Samsung SM-X510 e participou do E2E até ROS 2/Nav2/Gazebo. Os Meta Wearables físicos permanecem como gate posterior. Consulte [`dat-prehardware.md`](dat-prehardware.md) e [`e2e-demo.md`](e2e-demo.md).
+
 Branch: `feat/android-mock-smoke`
 
 ## Objetivo

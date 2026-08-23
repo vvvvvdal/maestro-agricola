@@ -1,5 +1,7 @@
 # Tarefa: consolidar o MVP somente em Android
 
+> **Registro histórico.** Esta tarefa documenta a consolidação Android de 18/08/2026. O estado corrente mantém a decisão Android-only e não mantém mais slides do pitch no repositório; o storyboard antigo foi preservado apenas como registro. O DAT 0.9.0 pré-hardware foi validado com MockDeviceKit no Android físico e os PDFs revisados agora têm quatro e dez páginas. Consulte [`../../TASKS.md`](../../TASKS.md), [`../architecture.md`](../architecture.md) e [`../pitch/README.md`](../pitch/README.md) para o snapshot atual.
+
 ## Decisão
 
 Em 18/08/2026, a equipe confirmou que o programa permite escolher uma única plataforma mobile. O Maestro Agrícola escolheu Android nativo em Kotlin. Manter uma segunda implementação não aumenta a nota do MVP e divide o tempo crítico de integração com DAT, áudio, IA local e robô.

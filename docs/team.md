@@ -56,9 +56,9 @@ Nenhum integrante deve conectar o Qwen diretamente a ROS, WebSocket, target ou e
 
 ## Pitch e demonstração
 
-- Felipe apresenta problema, jornada e aplicação em robótica.
-- Rafael apresenta arquitetura, IA, checkpoints e fechamento.
-- Átila prepara o build, apoia a demonstração e responde questões sobre mobile/DAT.
+- Felipe apresenta os slides 1–3 (abertura, problema e solução) e retorna nos slides 6–7 (próximas etapas, equipe e fechamento).
+- Rafael apresenta os slides 4–5 (arquitetura, IA, segurança, evidências e demonstração).
+- Átila aparece no slide final, prepara o build, apoia a demonstração e responde questões sobre mobile/DAT; ele não precisa falar no pitch gravado atual.
 - A divisão pode ser ajustada no ensaio final, desde que o tempo total e a narrativa continuem coerentes com o produto real.
 
 ## Acordos de integração

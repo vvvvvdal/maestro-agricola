@@ -5,7 +5,7 @@
 **Equipe:** AgroTurtles  
 **Trilha temática:** Produtividade  
 **Área de aplicação:** Agronegócio  
-**Revisão:** 18 de agosto de 2026
+**Revisão:** 22 de agosto de 2026
 
 ### Equipe
 
@@ -27,7 +27,7 @@ O Maestro Agrícola reduz essa fricção e pode se integrar a diferentes platafo
 
 ## 2. Solução: olhar, falar e confirmar
 
-O Maestro Agrícola transforma AI Glasses em uma interface operacional para maquinário autônomo.
+O Maestro Agrícola propõe transformar Meta AI Glasses em uma interface operacional para maquinário autônomo. A entrega atual é pré-hardware: o mesmo caminho DAT foi exercitado com o MockDeviceKit, sem alegar captura nos óculos físicos.
 
 1. **Olhar:** o operador centraliza a placa `PLOT-03`, legível por pessoas e pelo QR.
 2. **Falar:** diz “pulverizar esta área” ou explicita “pulverizar no plot-03”.
@@ -58,12 +58,16 @@ A placa do MVP combina texto grande e QR. Em campo, poeira ou obstrução contin
 
 ### Inteligência artificial
 
-O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, uma cascata local combina regras de alta precisão com um classificador softmax treinado em 144 frases e transforma o texto em `SPRAY`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O artefato JSON de cerca de 367 KiB usa palavras, pares e n-gramas de caracteres, é interpretado em Kotlin sem servidor e informa origem `RULE` ou `MODEL`. Os 64 casos da avaliação independente versionada foram classificados corretamente, com zero aceite perigoso; é uma suíte controlada, não uma estimativa de desempenho no campo. O benchmark ainda será executado no Android físico da demonstração com `datDebug` e os Meta Wearables.
+O reconhecimento de fala do sistema operacional produz a transcrição; ele é separado da IA do Maestro. Em seguida, uma cascata local combina regras de alta precisão com um classificador softmax treinado em 213 frases e transforma o texto em `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` ou `UNKNOWN`. O artefato JSON tem 729.056 bytes, usa palavras, pares e n-gramas de caracteres, é interpretado em Kotlin sem servidor e informa origem `RULE` ou `MODEL`.
+
+Os 64 casos da avaliação independente original foram classificados corretamente, com macro-F1 1,00 e zero aceite perigoso; esse corpus cobre as quatro classes originais. Um segundo corpus de campo, balanceado entre os seis rótulos atuais, obteve 48/48 na regressão reproduzível. São suítes controladas, não estimativas de desempenho no campo. A medição física versionada de 540 inferências pertence a um artefato anterior; o modelo candidato atual ainda precisa de novo benchmark físico antes de qualquer comparação de latência ou memória.
+
+O Qwen2.5-1.5B é opcional e fica restrito a `CHAT` ou `OUT_OF_SCOPE`. No benchmark de seis rótulos, obteve 36/48 e três aceites perigosos; por isso, não possui autoridade operacional nem acesso a WebSocket ou ROS.
 
 ## 4. Checkpoints obrigatórios
 
 - **Inteligência artificial:** classificador local funcional e demonstrável no companion app.
-- **Câmera ou microfone:** câmera dos óculos como entrada visual principal e voz como canal de comando.
+- **Câmera ou microfone:** caminho visual DAT 0.9.0 comprovado com MockDeviceKit; câmera e áudio nos óculos físicos permanecem como gate separado.
 - **Output por áudio:** confirmação, erro, cancelamento e sucesso pelos alto-falantes.
 - **Privacidade e dados:** o Maestro não salva fotos, áudio ou transcrições por padrão; a mídia é liberada após a interação. A equipe também documentará os fluxos próprios de Android, Meta AI e DAT e desabilitará analytics opcionais quando permitido.
 - **Eficiência de bateria:** captura sob demanda ou stream de baixa taxa, inferência pequena e encerramento dos recursos ao fim da jornada.
@@ -79,10 +83,10 @@ O reconhecimento de fala do sistema operacional produz a transcrição; ele é s
 
 ## 6. Prova de conceito
 
-Antes do evento, a equipe desenvolve com o Mock Device Kit, vídeo H.265 e ROS 2/Gazebo. No hardware real, serão validados pareamento, permissões, qualidade do stream, áudio e consumo.
+Na entrega pré-hardware, a equipe executou no Android físico o `datDebug` com DAT 0.9.0 e MockDeviceKit, QR local por ZXing, WebSocket e ROS 2/Nav2/Gazebo. O ciclo explícito `UNDOCK → SPRAY plot-03 → DOCK → UNDOCK` foi observado, assim como conflito de alvo e cancelamento sem movimento. No hardware Meta real, ainda precisam ser validados pareamento, permissões, câmera, rota de áudio, latência, bateria e encerramento de recursos.
 
-O critério principal é executar cinco vezes a jornada completa, incluindo uma recusa e uma ambiguidade, sem comando indevido e sem mídia persistida pelo app.
+O próximo critério físico é repetir a jornada com os Meta Wearables reais, incluindo recusa e ambiguidade, sem comando indevido e sem mídia persistida pelo app.
 
 ## 7. Diferencial e impacto
 
-Enquanto muitas soluções de AI Glasses atuam como assistentes informacionais, o Maestro usa visão e voz para iniciar uma ação física confirmada. O valor será validado comparando tempo, erros e carga de interação entre o fluxo com tela e o hands-free, sem antecipar ganhos ainda não medidos.
+Enquanto muitas soluções de AI Glasses atuam como assistentes informacionais, o Maestro usa visão e voz para iniciar uma ação física confirmada. O pitch apresenta uma oportunidade estimada de reduzir em 20% a 30% custos operacionais e retrabalho; essa faixa é uma hipótese de negócio, não um resultado do MVP. O valor será validado comparando tempo, erros, carga de interação e custo entre o fluxo com tela e o hands-free.
