@@ -10,9 +10,17 @@
   </a>
 </p>
 
+---
+<a href="https://www.youtube.com/watch?v=T2leg-1uZu8" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" width="24" style="vertical-align: middle;"> Maestro Ágricola (por AgroTurtles) - Pitch - Vídeo
+</a>
+
+---
+
 <p align="center">
   <img src="assets/brand/logo-horizontal.png" alt="Maestro Agrícola por AgroTurtles" width="760">
 </p>
+
 
 Interface hands-free para comandar maquinário agrícola autônomo com visão, voz e confirmação por áudio.
 
