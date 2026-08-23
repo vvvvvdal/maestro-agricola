@@ -1,5 +1,7 @@
 # Storyboard do pitch
 
+> **Registro histórico.** Este conteúdo preserva a narrativa planejada antes da decisão de remover os slides do repositório. Não existe deck final versionado e este arquivo não é uma especificação ativa de entrega.
+
 ## Formato
 
 - Proporção: 16:9.
@@ -7,7 +9,7 @@
 - Sete slides, com baixa densidade de texto.
 - Paleta oficial: amarelo `#FCC931`, verde `#3C4C1E`, azul `#0F3C65` e branco.
 - Tipografia: League Spartan.
-- Linguagem visual: editorial, tecnológica e agrícola, seguindo o deck final versionado.
+- Linguagem visual proposta: editorial, tecnológica e agrícola.
 
 ## Slide 1 — Capa
 

@@ -172,25 +172,21 @@ Evidência final de 22/08/2026 no Samsung SM-X510 com `datDebug` + MockDeviceKit
 Status:
 
 ```text
-PENDENTE — BRANCH PREPARADA PARA RECEBER O DECK FINAL
+DECIDIDO — PITCH SEM SLIDES VERSIONADOS
 ```
 
-Preparado:
+Concluído:
 
-- caminho canônico reservado em `docs/pitch/Maestro-Agricola-Pitch.pptx`;
-- storyboard final de sete slides definido em `docs/pitch/storyboard.md`;
-- gate de integração e validação documentado em `docs/pitch/README.md`;
-- hipótese quantitativa de 20–30% mantida como estimativa a validar em piloto;
-- slide exclusivo para próximas etapas e equipe em ordem alfabética especificados;
+- PPTX removido do repositório por decisão da equipe;
+- branch deixou de aguardar ou manter um deck final;
+- storyboard preservado apenas como registro histórico da narrativa planejada;
 - roteiro separado removido conforme decisão da equipe.
 
 Pendências:
 
-- substituir o PPTX-base pelo deck final de sete slides;
-- renderizar e inspecionar todos os slides, notas, fontes e transições;
-- gravar vídeo/pitch;
+- definir e gravar o formato final do pitch sem slides versionados;
 - cronometrar três ensaios e exportar o vídeo final;
-- inserir a captura curta do E2E no espaço reservado do slide 5.
+- manter as afirmações técnicas alinhadas às evidências atuais.
 
 ---
 
