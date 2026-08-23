@@ -369,7 +369,7 @@ A jornada crítica precisa rodar cinco vezes seguidas no cenário limpo, incluin
 - [x] integrar QR local por ZXing às fotos entregues pela stack DAT;
 - [x] fechar a jornada Android → WebSocket → ROS 2/Nav2/Gazebo com lifecycle explícito;
 - [x] manter testes automatizados do contrato, da IA, do bridge e dos estados;
-- [ ] gravar e ensaiar o pitch final de sete slides.
+- [ ] gravar e ensaiar o pitch final no formato definido pela equipe.
 
 ### No hardware real
 

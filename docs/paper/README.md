@@ -1,6 +1,6 @@
 # Paper IEEE do Maestro Agrícola
 
-O artigo em [`main.tex`](main.tex) descreve o snapshot pré-hardware de 22 de agosto de 2026. O texto segue o formato de conferência da classe `IEEEtran` e separa resultados medidos, evidência histórica e hipóteses ainda não validadas.
+O artigo em [`main.tex`](main.tex) descreve o snapshot pré-hardware de 22 de agosto de 2026. O texto segue o formato de conferência da classe `IEEEtran` e separa resultados medidos, evidência histórica e hipóteses ainda não validadas. A versão publicada está em [`Maestro-Agricola-Paper.pdf`](Maestro-Agricola-Paper.pdf).
 
 ## Compilação
 
@@ -20,7 +20,7 @@ pdflatex -interaction=nonstopmode -halt-on-error main.tex
 pdflatex -interaction=nonstopmode -halt-on-error main.tex
 ```
 
-O PDF gerado é `main.pdf` e não precisa ser versionado enquanto o artigo estiver em revisão.
+O PDF intermediário gerado é `main.pdf` e continua ignorado. Quando uma revisão for aprovada, valide-a visualmente e substitua o arquivo canônico `Maestro-Agricola-Paper.pdf`.
 
 ## Fontes internas de evidência
 

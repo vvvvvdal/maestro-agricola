@@ -58,6 +58,7 @@ docs/paper/*.fls
 docs/paper/*.log
 docs/paper/*.out
 docs/paper/*.pdf
+!docs/paper/Maestro-Agricola-Paper.pdf
 docs/paper/*.synctex.gz
 
 # Arquivos temporários criados por LibreOffice/Word.
