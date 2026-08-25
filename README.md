@@ -10,20 +10,6 @@
   </a>
 </p>
 
-> [!IMPORTANT]
-> ### Nota sobre a equipe e a lista de contribuidores do GitHub
->
-> A equipe oficial **AgroTurtles**, responsável pelo Maestro Agrícola no **Programa AI Glasses Brasil 2026**, é composta por **três integrantes**: `vvvvvdal`, `plusfrapp` e `CapoJuice`.
->
-> A conta `matheusjosesm29`, que atualmente pode aparecer no cartão **Contributors** da página principal deste repositório, **não integra a equipe e não realizou uma contribuição independente ao projeto**.
->
-> A atribuição ocorreu porque Rafael (`plusfrapp`), integrante da equipe, utilizou temporariamente o notebook de seu irmão para trabalhar no projeto enquanto o Git da máquina estava configurado com a identidade de `matheusjosesm29`. Como consequência, parte do trabalho realizado por Rafael foi atribuída incorretamente a essa conta.
->
-> A autoria do histórico Git já foi corrigida. Atualmente, `matheusjosesm29` **não aparece em `Insights → Contributors` e não possui acesso ao repositório em `Settings → Collaborators and teams`**. O cartão **Contributors** da página principal ainda apresenta dados inconsistentes após a reescrita do histórico.
->
-> O problema foi reportado ao **GitHub Support em 24/08/2026**, para revisão das estatísticas de contribuidores.
-
-
 ---
 <a href="https://www.youtube.com/watch?v=T2leg-1uZu8" target="_blank">
   <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" width="24" style="vertical-align: middle;"> Maestro Agrícola (por AgroTurtles) - Pitch - Vídeo
@@ -32,7 +18,6 @@
 
 - 🎥​ [Maestro Agrícola (por AgroTurtles) - Pitch - Slides](docs/pitch/Maestro-Agrícola-Slides-Pitch.pdf)
 - 📄 [Maestro Agrícola (por AgroTurtles) - Paper](docs/paper/Maestro-Agricola-Paper.pdf)
-
 
 ---
 
