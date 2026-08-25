@@ -24,8 +24,6 @@
 > O problema foi reportado ao **GitHub Support em 24/08/2026**, para revisão das estatísticas de contribuidores.
 
 
-
-
 ---
 <a href="https://www.youtube.com/watch?v=T2leg-1uZu8" target="_blank">
   <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" width="24" style="vertical-align: middle;"> Maestro Agrícola (por AgroTurtles) - Pitch - Vídeo
@@ -34,10 +32,6 @@
 
 - 🎥​ [Maestro Agrícola (por AgroTurtles) - Pitch - Slides](docs/pitch/Maestro-Agrícola-Slides-Pitch.pdf)
 - 📄 [Maestro Agrícola (por AgroTurtles) - Paper](docs/paper/Maestro-Agricola-Paper.pdf)
-
-
----
-
 
 
 ---
