@@ -4,6 +4,10 @@
 para validar contrato, fake, adaptador e harness enquanto o corpus final ainda
 esta separado. Nao representa resultado, cobertura de campo ou calibracao.
 
+`smoke.tsv` e uma amostra ainda menor e imutavel de seis frases, uma por
+rotulo. Ele existe somente para a primeira rodada remota da JEV-40 e nao e o
+corpus final nem fonte para ajuste de limiar.
+
 ## Dados e privacidade
 
 As frases sao sinteticas e sanitizadas. `<ALVO>` e um marcador generico: nao

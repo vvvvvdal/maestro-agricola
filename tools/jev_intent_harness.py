@@ -19,6 +19,7 @@ DEFAULT_DATASET = ROOT / "docs/study-groups/jev-rl-2026-10-01/corpus/development
 DEFAULT_LOCAL_MODEL = ROOT / "shared/ai/intent_model.json"
 LABELS = frozenset({"SPRAY", "DOCK", "UNDOCK", "CONFIRM", "CANCEL", "UNKNOWN"})
 ERROR_CODES = frozenset({
+    "ATTEMPT_LIMIT",
     "TIMEOUT",
     "RATE_LIMITED",
     "OVERLOADED",
