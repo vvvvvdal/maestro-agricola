@@ -16,7 +16,7 @@ ao caminho operacional.
 | --- | --- | --- |
 | `JevChoiceAnswer` | `choice`, `probabilities`, `confidence` | Resposta `Choice` valida da API. |
 | `JevUsage` | `inputTokens`, `outputTokens` | Uso retornado pela API. |
-| `JevEvaluationError` | `code`, `detail` | Falha observada, sem decidir politica de retry. |
+| `JevEvaluationError` | `code`, `detail`, `retryAfterMs` | Falha observada, sem produzir classificacao. |
 | `JevEvaluation` | modelo pedido/respondido, resposta, uso, latencia, custo e erro | Envelope de benchmark para sucesso ou falha. |
 
 ## Invariantes
@@ -33,7 +33,8 @@ ao caminho operacional.
 ## Fora do escopo
 
 - HTTP, serializacao, API key, rede e SDK;
-- classificacao de `429`, timeout e resposta invalida, que pertence a JEV-23;
+- classificacao de `429`, timeout e resposta invalida, definida em
+  [`jev-failure-policy.md`](jev-failure-policy.md);
 - fake, adaptador e harness;
 - qualquer mudanca em `InteractionEngine`, Qwen ou ROS.
 

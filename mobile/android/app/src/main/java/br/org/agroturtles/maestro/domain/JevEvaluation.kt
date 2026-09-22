@@ -23,10 +23,64 @@ data class JevUsage(
     val outputTokens: Int,
 )
 
+enum class JevErrorCode {
+    TIMEOUT,
+    RATE_LIMITED,
+    OVERLOADED,
+    UNAUTHORIZED,
+    INVALID_REQUEST,
+    INVALID_RESPONSE,
+    TRANSPORT,
+    HTTP_ERROR,
+    ;
+
+    companion object {
+        fun fromHttpStatus(statusCode: Int): JevErrorCode = when (statusCode) {
+            401 -> UNAUTHORIZED
+            422 -> INVALID_REQUEST
+            429 -> RATE_LIMITED
+            529 -> OVERLOADED
+            else -> HTTP_ERROR
+        }
+    }
+}
+
 data class JevEvaluationError(
-    val code: String,
+    val code: JevErrorCode,
     val detail: String? = null,
-)
+    val retryAfterMs: Long? = null,
+) {
+    init {
+        require(retryAfterMs == null || retryAfterMs >= 0)
+    }
+}
+
+data class JevRequestPolicy(
+    val timeoutMs: Long = 2_000,
+    val maxAttempts: Int = 2,
+    val fallbackRetryDelayMs: Long = 250,
+    val maxRetryAfterMs: Long = 1_000,
+) {
+    init {
+        require(timeoutMs > 0)
+        require(maxAttempts == 2)
+        require(fallbackRetryDelayMs >= 0)
+        require(maxRetryAfterMs >= fallbackRetryDelayMs)
+    }
+
+    fun retryDelayMs(error: JevEvaluationError, completedAttempts: Int): Long? {
+        if (completedAttempts != 1 || error.code !in RETRYABLE_CODES) return null
+        val retryAfterMs = error.retryAfterMs ?: return fallbackRetryDelayMs
+        return retryAfterMs.takeIf { it in 0..maxRetryAfterMs }
+    }
+
+    private companion object {
+        val RETRYABLE_CODES = setOf(
+            JevErrorCode.RATE_LIMITED,
+            JevErrorCode.OVERLOADED,
+        )
+    }
+}
 
 /**
  * Experimental record for a single Jev Choice evaluation.

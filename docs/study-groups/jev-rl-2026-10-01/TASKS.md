@@ -72,8 +72,8 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-20 | DONE | 22/09 | JEV-03 | Contrato minimo em [`choice-contract.md`](choice-contract.md): endpoint, modelo fixo `jev-1.13.0`, uma `Choice`, seis criterios, resposta esperada e limites de dados. Nenhuma chave ou chamada remota. |
 | JEV-21 | DONE | 22/09 | JEV-20 | DTO experimental em [`../../tasks/jev-evaluation-dto.md`](../../tasks/jev-evaluation-dto.md): `Choice`, probabilidades, confidence Jev, modelos, uso, latencia, custo e erro, sem alterar `IntentPrediction`. Teste unitario focado incluido. |
 | JEV-22 | DONE | 22/09 | JEV-21 | Mapeamento em [`../../tasks/jev-intent-mapping.md`](../../tasks/jev-intent-mapping.md): `choice` vira rotulo, `probabilities[choice]` vira `IntentPrediction.confidence`, confidence Jev fica no benchmark e origem e `JEV`. Teste focado incluido. |
-| JEV-23 | NEXT | 24/09 | JEV-21 | Definir timeout, no maximo uma tentativa segura, classificacao de 429/resposta invalida e falha fechada sem `Command`. |
-| JEV-24 | TODO | 25/09 | JEV-22, JEV-23 | Criar fake local para escolha, baixa probabilidade, timeout, 429 e resposta invalida; testes rodam sem rede. |
+| JEV-23 | DONE | 22/09 | JEV-21 | Politica em [`../../tasks/jev-failure-policy.md`](../../tasks/jev-failure-policy.md): deadline de 2 s, no maximo uma repeticao para `429`/`529`, classificacao de erros e falha fechada sem `Command`. Teste focado incluido. |
+| JEV-24 | NEXT | 25/09 | JEV-22, JEV-23 | Criar fake local para escolha, baixa probabilidade, timeout, 429 e resposta invalida; testes rodam sem rede. |
 | JEV-25 | TODO | 25/09 | JEV-24 | Implementar adaptador `JevIntentClassifier` atras de `IntentClassifier`, selecionavel apenas em `test/jev`; cada execucao usa local ou Jev, nunca ambos sobre a mesma fala; local permanece baseline. |
 | JEV-26 | TODO | 25/09 | JEV-25 | Criar harness unico que executa local e Jev sobre o mesmo corpus e grava resultado por exemplo. |
 | JEV-27 | TODO | 26/09 | JEV-26 | Calcular matriz de confusao, macro-F1, aceites perigosos, Brier, ECE, coverage, p50/p95, custo e falhas. |

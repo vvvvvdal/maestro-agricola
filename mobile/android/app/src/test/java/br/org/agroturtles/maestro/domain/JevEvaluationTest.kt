@@ -61,7 +61,7 @@ class JevEvaluationTest {
             requestedModel = "jev-1.13.0",
             latencyMs = 2_000,
             error = JevEvaluationError(
-                code = "TIMEOUT",
+                code = JevErrorCode.TIMEOUT,
                 detail = "request deadline elapsed",
             ),
         )
@@ -70,7 +70,7 @@ class JevEvaluationTest {
         assertNull(evaluation.responseModel)
         assertNull(evaluation.usage)
         assertNull(evaluation.costUsd)
-        assertEquals("TIMEOUT", evaluation.error?.code)
+        assertEquals(JevErrorCode.TIMEOUT, evaluation.error?.code)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -85,7 +85,7 @@ class JevEvaluationTest {
             ),
             usage = JevUsage(inputTokens = 1, outputTokens = 1),
             latencyMs = 1,
-            error = JevEvaluationError(code = "INVALID_RESPONSE"),
+            error = JevEvaluationError(code = JevErrorCode.INVALID_RESPONSE),
         )
     }
 
@@ -96,5 +96,69 @@ class JevEvaluationTest {
             probabilities = mapOf("UNKNOWN" to 1.0),
             confidence = 0.2,
         ).toIntentPrediction()
+    }
+
+    @Test
+    fun retriesOnlyFirstRateLimitOrOverloadWithinDelayBudget() {
+        val policy = JevRequestPolicy()
+
+        assertEquals(
+            750L,
+            policy.retryDelayMs(
+                JevEvaluationError(
+                    code = JevErrorCode.RATE_LIMITED,
+                    retryAfterMs = 750,
+                ),
+                completedAttempts = 1,
+            ),
+        )
+        assertEquals(
+            250L,
+            policy.retryDelayMs(
+                JevEvaluationError(code = JevErrorCode.OVERLOADED),
+                completedAttempts = 1,
+            ),
+        )
+        assertNull(
+            policy.retryDelayMs(
+                JevEvaluationError(code = JevErrorCode.RATE_LIMITED),
+                completedAttempts = 2,
+            ),
+        )
+        assertNull(
+            policy.retryDelayMs(
+                JevEvaluationError(
+                    code = JevErrorCode.RATE_LIMITED,
+                    retryAfterMs = 1_001,
+                ),
+                completedAttempts = 1,
+            ),
+        )
+    }
+
+    @Test
+    fun failsClosedForNonRetryableFailures() {
+        val policy = JevRequestPolicy()
+        val nonRetryableCodes = listOf(
+            JevErrorCode.TIMEOUT,
+            JevErrorCode.UNAUTHORIZED,
+            JevErrorCode.INVALID_REQUEST,
+            JevErrorCode.INVALID_RESPONSE,
+            JevErrorCode.TRANSPORT,
+            JevErrorCode.HTTP_ERROR,
+        )
+
+        nonRetryableCodes.forEach { code ->
+            assertNull(policy.retryDelayMs(JevEvaluationError(code = code), completedAttempts = 1))
+        }
+    }
+
+    @Test
+    fun classifiesOfficialHttpStatuses() {
+        assertEquals(JevErrorCode.UNAUTHORIZED, JevErrorCode.fromHttpStatus(401))
+        assertEquals(JevErrorCode.INVALID_REQUEST, JevErrorCode.fromHttpStatus(422))
+        assertEquals(JevErrorCode.RATE_LIMITED, JevErrorCode.fromHttpStatus(429))
+        assertEquals(JevErrorCode.OVERLOADED, JevErrorCode.fromHttpStatus(529))
+        assertEquals(JevErrorCode.HTTP_ERROR, JevErrorCode.fromHttpStatus(500))
     }
 }
