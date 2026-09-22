@@ -176,8 +176,29 @@ def local_result(model: IntentModel, text: str) -> dict[str, Any]:
     latency_ms = (time.perf_counter_ns() - started_at) / 1_000_000
     return {
         "prediction": prediction(value.label, value.confidence, value.source),
+        "probabilities": local_probabilities(value.scores, value.source),
         "latency_ms": latency_ms,
     }
+
+
+def local_probabilities(scores: dict[str, float], source: str) -> dict[str, float]:
+    if source == "RULE" or is_unknown_fallback(scores):
+        return {label: float(scores[label]) for label in sorted(LABELS)}
+
+    peak = max(scores.values())
+    denominator = sum(math.exp(score - peak) for score in scores.values())
+    return {
+        label: math.exp(scores[label] - peak) / denominator
+        for label in sorted(LABELS)
+    }
+
+
+def is_unknown_fallback(scores: dict[str, float]) -> bool:
+    return scores.get("UNKNOWN") == 1.0 and all(
+        scores.get(label) == 0.0
+        for label in LABELS
+        if label != "UNKNOWN"
+    )
 
 
 def jev_result(model: str, fixture: dict[str, Any]) -> dict[str, Any]:
@@ -218,7 +239,7 @@ def run_harness(
     local_model = IntentModel.load(local_model_path)
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "dataset": {
             "sha256": sha256(dataset),
             "cases": len(cases),

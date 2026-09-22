@@ -76,7 +76,7 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-24 | DONE | 22/09 | JEV-22, JEV-23 | Fake local em [`../../tasks/jev-fake-evaluator.md`](../../tasks/jev-fake-evaluator.md): escolha valida, baixa probabilidade, timeout, `429` e resposta invalida, todos sem rede. Teste focado incluido. |
 | JEV-25 | DONE | 22/09 | JEV-24 | Adaptador em [`../../tasks/jev-intent-classifier.md`](../../tasks/jev-intent-classifier.md): seis rotulos, limiar `0,40`, validacao completa da Choice e falha fechada; nao esta ligado ao app nem usa fallback local. Testes focados incluidos. |
 | JEV-26 | DONE | 22/09 | JEV-25 | Harness em [`../../tasks/jev-harness.md`](../../tasks/jev-harness.md): executa local e fixture Jev sobre o mesmo corpus, grava uma linha por `id` e hashes, sem texto, rede ou chave. Teste portatil incluido. |
-| JEV-27 | NEXT | 26/09 | JEV-26 | Calcular matriz de confusao, macro-F1, aceites perigosos, Brier, ECE, coverage, p50/p95, custo e falhas. |
+| JEV-27 | DONE | 22/09 | JEV-26 | Calculador em [`../../tasks/jev-metrics.md`](../../tasks/jev-metrics.md): matriz, macro-F1, aceitao perigosa, Brier, ECE, coverage, p50/p95, custo e falhas; fixture so valida pipeline, nao resultado Jev. Teste portatil incluido. |
 
 ## Fase 3 - App e experiencia da demonstracao
 

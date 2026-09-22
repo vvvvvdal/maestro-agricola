@@ -11,9 +11,13 @@ executa o modelo local e uma fixture de resultados Jev para cada mesmo `id` do
 TSV, sem enviar a fala ao output. A saida JSON registra por caso apenas:
 
 - `id`, rotulo ouro e categoria;
-- predicao local, origem e latencia;
+- predicao local, origem, vetor de probabilidades e latencia;
 - predicao Jev, modelo, Choice, uso, latencia, custo e erro;
 - hashes do corpus, modelo local e fixture Jev.
+
+O resultado do baseline tambem preserva seu vetor de probabilidades sem texto.
+Ele vem do softmax do modelo; regras deterministicas usam vetor one-hot. Isso
+permite o calculo comparavel de Brier e ECE na JEV-27.
 
 A fixture deve conter exatamente os IDs do corpus. O harness rejeita CSV/TSV
 malformado, ID duplicado, rotulo ouro fora dos seis e fixture com IDs faltando

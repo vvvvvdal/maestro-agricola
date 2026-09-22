@@ -23,7 +23,7 @@ class JevIntentHarnessTest(unittest.TestCase):
                 "id\ttext\tgold_label\tcategory\n"
                 "case-001\tpulverize o talhao <ALVO>\tSPRAY\tdirect_command\n"
                 "case-002\ttalvez pulverize\tUNKNOWN\thesitation\n"
-                "case-003\txyzzy quux\tUNKNOWN\tasr_noise\n",
+                "case-003\t!!!\tUNKNOWN\tasr_noise\n",
                 encoding="utf-8",
             )
             fixture.write_text(json.dumps({
@@ -58,18 +58,23 @@ class JevIntentHarnessTest(unittest.TestCase):
                 fixture,
             )
 
-        self.assertEqual("1.0", report["schema_version"])
+        self.assertEqual("1.1", report["schema_version"])
         self.assertEqual(3, report["dataset"]["cases"])
         self.assertEqual(["case-001", "case-002", "case-003"], [
             result["id"] for result in report["results"]
         ])
         self.assertNotIn("text", report["results"][0])
         self.assertEqual("JEV", report["results"][0]["jev"]["prediction"]["source"])
+        self.assertEqual(
+            {"SPRAY", "DOCK", "UNDOCK", "CONFIRM", "CANCEL", "UNKNOWN"},
+            set(report["results"][0]["local"]["probabilities"]),
+        )
         self.assertEqual("SPRAY", report["results"][0]["jev"]["prediction"]["label"])
         self.assertEqual("UNKNOWN", report["results"][1]["jev"]["prediction"]["label"])
         self.assertEqual(0.23, report["results"][1]["jev"]["prediction"]["confidence"])
         self.assertEqual("UNKNOWN", report["results"][2]["jev"]["prediction"]["label"])
         self.assertEqual(0.0, report["results"][2]["jev"]["prediction"]["confidence"])
+        self.assertEqual(1.0, report["results"][2]["local"]["probabilities"]["UNKNOWN"])
         self.assertEqual({"code": "INVALID_RESPONSE"}, report["results"][2]["jev"]["error"])
         serialized = json.dumps(report)
         self.assertNotIn("operator said never record this text", serialized)
