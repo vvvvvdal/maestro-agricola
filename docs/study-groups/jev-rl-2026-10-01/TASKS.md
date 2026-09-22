@@ -69,8 +69,8 @@ do Qwen e ausencia de RAG neste experimento.
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-20 | NEXT | 23/09 | JEV-03 | Fixar modelo/API e documentar request minimo de `Choice` para os seis rotulos; nenhuma chave em arquivo versionado. |
-| JEV-21 | TODO | 24/09 | JEV-20 | Definir DTO experimental: choice, `probabilities`, confidence Jev, versao, uso, latencia, custo e erro. |
+| JEV-20 | DONE | 22/09 | JEV-03 | Contrato minimo em [`choice-contract.md`](choice-contract.md): endpoint, modelo fixo `jev-1.13.0`, uma `Choice`, seis criterios, resposta esperada e limites de dados. Nenhuma chave ou chamada remota. |
+| JEV-21 | NEXT | 24/09 | JEV-20 | Definir DTO experimental: choice, `probabilities`, confidence Jev, versao, uso, latencia, custo e erro. |
 | JEV-22 | TODO | 24/09 | JEV-21 | Definir mapeamento: `probabilities[choice]` vai para `IntentPrediction.confidence`; confidence Jev fica fora do contrato operacional. |
 | JEV-23 | TODO | 24/09 | JEV-21 | Definir timeout, no maximo uma tentativa segura, classificacao de 429/resposta invalida e falha fechada sem `Command`. |
 | JEV-24 | TODO | 25/09 | JEV-22, JEV-23 | Criar fake local para escolha, baixa probabilidade, timeout, 429 e resposta invalida; testes rodam sem rede. |

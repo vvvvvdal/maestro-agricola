@@ -160,6 +160,11 @@ OUT_OF_SCOPE`. Nao ha RAG neste estudo.
 imagem por padrao. Nenhuma dessas duas classes deve burlar o
 `InteractionEngine` ou conceder acesso a ROS para Jev.
 
+O contrato minimo da chamada experimental esta em
+[`choice-contract.md`](choice-contract.md): uma `Choice`, os seis rotulos e
+modelo fixo. Ele descreve request e resposta, mas nao realiza chamada nem
+autoriza o adaptador antes das tasks seguintes.
+
 ### Probabilidade e confidence no adaptador
 
 `Choice` devolve a opcao vencedora, um vetor de probabilidades e um campo
