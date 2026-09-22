@@ -219,6 +219,11 @@ em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca esta em
 [`corpus/final.tsv`](corpus/final.tsv) e foi congelado antes da rodada remota
 final; seu manifesto registra as restricoes de reproducao.
 
+O harness [`../../../tools/jev_intent_harness.py`](../../../tools/jev_intent_harness.py)
+executa o baseline local e uma fixture Jev contra os mesmos IDs e produz um
+registro por caso sem repetir a fala. O cliente HTTP ainda nao existe: JEV-40
+somente podera preencher a fixture dentro do subteto remoto aprovado.
+
 Os resultados que nunca podem criar `Command`, assim como a diferenca entre
 evidencia do baseline e requisitos pendentes do adaptador Jev, estao em
 [`safety-gates.md`](safety-gates.md).
