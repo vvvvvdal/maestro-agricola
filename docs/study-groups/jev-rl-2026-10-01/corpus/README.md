@@ -38,6 +38,10 @@ para ajustar frases, limiares ou opcoes da `Choice`.
 A recuperacao autorizada usa corpus final independente, com outro nome, hash e
 manifest; ela nao altera o original nem usa seus textos para ajuste.
 
+O corpus de recuperacao esta em [`final-recovery.tsv`](final-recovery.tsv), com
+congelamento e separacao registrados em
+[`final-recovery-manifest.md`](final-recovery-manifest.md).
+
 ## Limites
 
 - `SPRAY`, `DOCK` e `UNDOCK` continuam exigindo estado valido e confirmacao.
