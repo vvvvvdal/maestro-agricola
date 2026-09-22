@@ -51,13 +51,13 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-00 | DONE | 21/09 | - | Estudo separado de `docs/pitch/`; roteiro tecnico e pasta propria existem. |
 | JEV-01 | DONE | 21/09 | - | `test/jev`, preflight, Terra planner/reviewer e workers Gemini via Antigravity CLI read-only configurados. |
 | JEV-02 | DONE | 21/09 | JEV-00 | Decisoes iniciais registradas: Jev troca apenas o classificador; Qwen nao recebe filtro Jev e nao ha RAG. |
-| JEV-03 | NEXT | 22/09 | JEV-02 | Registrar aprovacao humana do uso da API, dados permitidos (somente corpus/transcricao sanitizada), teto de US$5 e subtetos. Sem isso, nenhuma chamada remota. |
+| JEV-03 | DONE | 22/09 | JEV-02 | Aprovacao, dados permitidos, teto de US$5, subtetos e credencial local registrados em [`../../tasks/jev-api-approval.md`](../../tasks/jev-api-approval.md). Chamadas continuam bloqueadas ate `JEV-40`. |
 
 ## Fase 1 - Semantica e corpus
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-10 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `SPRAY`, com exemplos claros, negacao, mencao historica e alvo conflitante. |
+| JEV-10 | NEXT | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `SPRAY`, com exemplos claros, negacao, mencao historica e alvo conflitante. |
 | JEV-11 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `DOCK` e `UNDOCK`; explicitar que nenhum deles e implicito. |
 | JEV-12 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `CONFIRM`, `CANCEL` e `UNKNOWN`; `UNKNOWN` cobre duvida, ruido e fora de dominio. |
 | JEV-13 | TODO | 23/09 | JEV-10, JEV-11, JEV-12 | Montar corpus de desenvolvimento em pt-BR, com identificador, texto, rotulo ouro e categoria de caso. |

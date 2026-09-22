@@ -13,6 +13,7 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`agent-architecture.md`](agent-architecture.md): papeis, isolamento e fluxo Terra/Gemini via Antigravity CLI para o experimento JEV.
 - [`tasks/qwen-android-runtime.md`](tasks/qwen-android-runtime.md): decisão de segurança, benchmark, runtime JNI/llama.cpp e evidência física do Qwen.
 - [`tasks/jev-ui-decision-visibility.md`](tasks/jev-ui-decision-visibility.md): plano da visualizacao da decisao Jev no app, sem mudar a jornada operacional.
+- [`tasks/jev-api-approval.md`](tasks/jev-api-approval.md): aprovacao, dados permitidos, limite de custo e credencial local do experimento Jev.
 - [`ci-cd.md`](ci-cd.md): workflows automáticos, segredo DAT, artefatos de depuração e fronteira dos testes manuais.
 - [`testing.md`](testing.md): teste guiado, saída esperada, diagnóstico e mobile.
 - [`tasks/test-organization.md`](tasks/test-organization.md): organização central e localização canônica das suítes.

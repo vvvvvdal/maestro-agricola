@@ -26,6 +26,9 @@ controlada, com uma task por vez, orcamento maximo de US$5 e falha fechada.
   no registro de benchmark e no painel de testes.
 - Arquitetura de trabalho aplicada: Terra planner `medium`, workers Gemini via
   Antigravity CLI read-only e Terra reviewer `high`; ver [`docs/agent-architecture.md`](docs/agent-architecture.md).
+- Uso remoto aprovado somente para o harness experimental: dados sanitizados,
+  teto cumulativo de US$5 e chave local em
+  [`docs/tasks/jev-api-approval.md`](docs/tasks/jev-api-approval.md).
 - Plano, datas e criterios de aceite: [`docs/study-groups/jev-rl-2026-10-01/TASKS.md`](docs/study-groups/jev-rl-2026-10-01/TASKS.md).
 - O plano do estudo pode ser replanejado quando houver evidencia ou bloqueio;
   toda mudanca precisa registrar motivo, data, dependencia e impacto na demo.
