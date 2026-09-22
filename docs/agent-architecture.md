@@ -107,3 +107,9 @@ inclui `AGENTS.md` e `GEMINI.md` e aceita arquivos adicionais apenas por
 nao rastreados ou com nomes de segredo sao rejeitados antes de qualquer envio.
 O limite de dois minutos e um guardrail: uma pergunta pequena que o exceder
 deve ser investigada antes de ser repetida.
+
+`AGENTS.md` e `GEMINI.md` sao contexto de politica, nao evidencia de
+localizacao de codigo/teste, comando de teste, comportamento de runtime ou
+resultado. Sem arquivo nao-politico suficiente, o worker responde
+`INSUFFICIENT_CONTEXT` e indica os tipos de arquivos adicionais necessarios;
+so pode citar um caminho exato se ele ja estiver no contexto fornecido.
