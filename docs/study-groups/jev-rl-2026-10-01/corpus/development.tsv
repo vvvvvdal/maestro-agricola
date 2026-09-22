@@ -43,13 +43,13 @@ dev-041	autorizado	CONFIRM	explicit_confirmation
 dev-042	pode prosseguir	CONFIRM	direct_confirmation
 dev-043	manda ver	CONFIRM	colloquial_confirmation
 dev-044	correto pode enviar	CONFIRM	explicit_confirmation
-dev-045	sim pode executar agora	CONFIRM	direct_confirmation
+dev-045	sim pode executar agora	CONFIRM	asr_without_punctuation
 dev-046	de acordo	CONFIRM	colloquial_confirmation
 dev-047	ordem aprovada	CONFIRM	explicit_confirmation
 dev-048	confirmado pode seguir	CONFIRM	explicit_confirmation
 dev-049	cancele agora	CANCEL	direct_cancel
 dev-050	interrompa o comando	CANCEL	direct_cancel
-dev-051	nao envie esse comando	CANCEL	negated_action
+dev-051	nao envie esse comando	CANCEL	asr_without_accent
 dev-052	deixa quieto	CANCEL	colloquial_cancel
 dev-053	aborte a missao	CANCEL	direct_cancel
 dev-054	pare a operacao	CANCEL	direct_cancel

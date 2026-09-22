@@ -42,3 +42,6 @@ frases, limiares ou opcoes da `Choice`.
 Revisar campos obrigatorios, IDs unicos, duplicatas, distribuicao por rotulo,
 categorias de fronteira, variacoes de ASR e ausencia de dados pessoais antes
 de qualquer harness ou chamada remota.
+
+A revisao inicial foi concluida em 22/09/2026 e esta registrada em
+[`review.md`](review.md). O arquivo continua ajustavel ate JEV-15.
