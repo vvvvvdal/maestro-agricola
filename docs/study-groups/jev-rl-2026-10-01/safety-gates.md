@@ -11,12 +11,12 @@ Nenhuma entrada, probabilidade ou falha do Jev pode pular o
 
 | Caso | Resultado seguro obrigatorio | Evidencia atual | Prova pendente para Jev |
 | --- | --- | --- | --- |
-| Timeout de confirmacao | `CANCELLED`, sem `Command`; confirmacao tardia permanece sem `Command` | `InteractionEngineTest.timeoutAndLateConfirmationNeverCreateCommand()` | JEV-23/JEV-24 devem provar que timeout remoto tambem falha fechado. |
-| Baixa probabilidade | Classificar como `UNKNOWN` ou resultado ambiguo, sem `Command` | O local possui limiar no classificador, mas nao ha caso Jev implementado | JEV-22/JEV-24 devem definir o mapeamento e fake de baixa probabilidade. |
-| `UNKNOWN` | Nenhuma operacao e criada; se for elegivel, assistente fica isolado em `CHAT | OUT_OF_SCOPE` | `unknownIntentNeverCreatesCommand()` e `unknownIntentUsesAssistantWithoutCreatingCommand()` | JEV-25 deve repetir o caso atraves de `JevIntentClassifier`. |
-| `CANCEL` | `CANCELLED`, sem `Command`; confirmacao tardia nao recupera a operacao | `explicitCancelAndLateConfirmationNeverCreateCommand()` | JEV-25 deve repetir o caso atraves de `JevIntentClassifier`. |
-| Conflito visual/voz | `AMBIGUOUS`, sem `Command`; confirmacao tardia continua recusada | `visualAndSpokenConflictRejectsLateConfirmation()` e fixture de `TargetResolverTest` | JEV-25 deve preservar o mesmo fluxo com `SPRAY` vindo do Jev. |
-| Injecao | Tratar como `UNKNOWN`; nao gerar comando, payload ROS, acesso a estado ou autoridade para Qwen | `final-055` fixa o texto e a arquitetura isola Qwen; ainda nao ha adaptador Jev | JEV-24/JEV-25 devem testar a resposta Jev/fake e o caminho sem `Command`. |
+| Timeout de confirmacao | `CANCELLED`, sem `Command`; confirmacao tardia permanece sem `Command` | `InteractionEngineTest.timeoutAndLateConfirmationNeverCreateCommand()` | `JevIntentClassifierTest` prova que timeout remoto classifica fechado; expiracao da confirmacao continua no engine. |
+| Baixa probabilidade | Classificar como `UNKNOWN` ou resultado ambiguo, sem `Command` | O local possui limiar no classificador | `JevIntentClassifierTest` converte `SPRAY` `0,23` em `UNKNOWN` com limiar `0,40`. |
+| `UNKNOWN` | Nenhuma operacao e criada; se for elegivel, assistente fica isolado em `CHAT | OUT_OF_SCOPE` | `unknownIntentNeverCreatesCommand()` e `unknownIntentUsesAssistantWithoutCreatingCommand()` | `JevIntentClassifierTest` repete o caminho sem `Command`. |
+| `CANCEL` | `CANCELLED`, sem `Command`; confirmacao tardia nao recupera a operacao | `explicitCancelAndLateConfirmationNeverCreateCommand()` | `JevIntentClassifierTest` repete cancelamento e confirmacao tardia. |
+| Conflito visual/voz | `AMBIGUOUS`, sem `Command`; confirmacao tardia continua recusada | `visualAndSpokenConflictRejectsLateConfirmation()` e fixture de `TargetResolverTest` | `JevIntentClassifierTest` preserva o fluxo com `SPRAY` vindo do Jev. |
+| Injecao | Tratar como `UNKNOWN`; nao gerar comando, payload ROS, acesso a estado ou autoridade para Qwen | `final-055` fixa o texto e a arquitetura isola Qwen | `JevIntentClassifierTest` usa a resposta `UNKNOWN` do fake e nao cria `Command`. |
 
 ## Casos congelados e origem de cada fronteira
 

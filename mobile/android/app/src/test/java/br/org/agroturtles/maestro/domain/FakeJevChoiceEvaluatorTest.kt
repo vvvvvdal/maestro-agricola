@@ -8,8 +8,21 @@ class FakeJevChoiceEvaluatorTest {
 
     private val fake = FakeJevChoiceEvaluator(
         mapOf(
-            "pulverize o talhao dois" to successfulEvaluation("SPRAY", 0.91),
-            "talvez pulverize o talhao dois" to successfulEvaluation("SPRAY", 0.23),
+            "pulverize o talhao dois" to successfulEvaluation(
+                choice = "SPRAY",
+                probabilities = probabilities("SPRAY" to 0.91, "UNKNOWN" to 0.09),
+            ),
+            "talvez pulverize o talhao dois" to successfulEvaluation(
+                choice = "SPRAY",
+                probabilities = probabilities(
+                    "SPRAY" to 0.23,
+                    "DOCK" to 0.20,
+                    "UNDOCK" to 0.15,
+                    "CONFIRM" to 0.15,
+                    "CANCEL" to 0.14,
+                    "UNKNOWN" to 0.13,
+                ),
+            ),
             "timeout" to failedEvaluation(JevErrorCode.TIMEOUT),
             "rate limited" to failedEvaluation(
                 code = JevErrorCode.RATE_LIMITED,
@@ -55,13 +68,16 @@ class FakeJevChoiceEvaluatorTest {
     }
 
     private companion object {
-        fun successfulEvaluation(choice: String, probability: Double): JevEvaluation = JevEvaluation(
+        fun successfulEvaluation(
+            choice: String,
+            probabilities: Map<String, Double>,
+        ): JevEvaluation = JevEvaluation(
             requestedModel = "jev-1.13.0",
             responseModel = "jev-1.13.0",
             answer = JevChoiceAnswer(
                 choice = choice,
-                probabilities = mapOf(choice to probability),
-                confidence = probability,
+                probabilities = probabilities,
+                confidence = probabilities.getValue(choice),
             ),
             usage = JevUsage(inputTokens = 1, outputTokens = 1),
             latencyMs = 1,
@@ -78,5 +94,14 @@ class FakeJevChoiceEvaluatorTest {
                 retryAfterMs = retryAfterMs,
             ),
         )
+
+        fun probabilities(vararg values: Pair<String, Double>): Map<String, Double> = mapOf(
+            "SPRAY" to 0.0,
+            "DOCK" to 0.0,
+            "UNDOCK" to 0.0,
+            "CONFIRM" to 0.0,
+            "CANCEL" to 0.0,
+            "UNKNOWN" to 0.0,
+        ) + values
     }
 }

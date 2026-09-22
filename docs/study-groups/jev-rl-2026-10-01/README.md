@@ -179,9 +179,10 @@ vetor completo e o `confidence` do Jev precisam permanecer no registro de
 benchmark, em uma estrutura experimental separada, para permitir analise de
 calibracao e abstencao sem mudar o contrato operacional de modo silencioso.
 
-O repositorio atualmente nao possui um diff versionado de Jev na branch
-`test/jev`. Ate que exista implementacao, corpus e resultado reproduzivel, a
-apresentacao chama este trecho de proposta experimental.
+`JevIntentClassifier` ja existe como adaptador experimental injetavel na branch
+`test/jev`, validado por fakes locais. Ele nao esta ligado a `MainActivity`,
+nao contem cliente HTTP e ainda nao possui resultado remoto reproduzivel; a
+apresentacao deve descreve-lo como experimento em andamento.
 
 ### Visualizacao no app
 

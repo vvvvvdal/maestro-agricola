@@ -74,8 +74,8 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-22 | DONE | 22/09 | JEV-21 | Mapeamento em [`../../tasks/jev-intent-mapping.md`](../../tasks/jev-intent-mapping.md): `choice` vira rotulo, `probabilities[choice]` vira `IntentPrediction.confidence`, confidence Jev fica no benchmark e origem e `JEV`. Teste focado incluido. |
 | JEV-23 | DONE | 22/09 | JEV-21 | Politica em [`../../tasks/jev-failure-policy.md`](../../tasks/jev-failure-policy.md): deadline de 2 s, no maximo uma repeticao para `429`/`529`, classificacao de erros e falha fechada sem `Command`. Teste focado incluido. |
 | JEV-24 | DONE | 22/09 | JEV-22, JEV-23 | Fake local em [`../../tasks/jev-fake-evaluator.md`](../../tasks/jev-fake-evaluator.md): escolha valida, baixa probabilidade, timeout, `429` e resposta invalida, todos sem rede. Teste focado incluido. |
-| JEV-25 | NEXT | 25/09 | JEV-24 | Implementar adaptador `JevIntentClassifier` atras de `IntentClassifier`, selecionavel apenas em `test/jev`; cada execucao usa local ou Jev, nunca ambos sobre a mesma fala; local permanece baseline. |
-| JEV-26 | TODO | 25/09 | JEV-25 | Criar harness unico que executa local e Jev sobre o mesmo corpus e grava resultado por exemplo. |
+| JEV-25 | DONE | 22/09 | JEV-24 | Adaptador em [`../../tasks/jev-intent-classifier.md`](../../tasks/jev-intent-classifier.md): seis rotulos, limiar `0,40`, validacao completa da Choice e falha fechada; nao esta ligado ao app nem usa fallback local. Testes focados incluidos. |
+| JEV-26 | NEXT | 25/09 | JEV-25 | Criar harness unico que executa local e Jev sobre o mesmo corpus e grava resultado por exemplo. |
 | JEV-27 | TODO | 26/09 | JEV-26 | Calcular matriz de confusao, macro-F1, aceites perigosos, Brier, ECE, coverage, p50/p95, custo e falhas. |
 
 ## Fase 3 - App e experiencia da demonstracao

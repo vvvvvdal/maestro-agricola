@@ -97,7 +97,7 @@ mantem telemetria e falhas fora de `IntentPrediction`.
   `InteractionEngine`, confirmacao por audio, expiracao, schema e bridge
   continuam fora do request e continuam sendo autoridade.
 - Erro HTTP, corpo invalido, rotulo inesperado, distribuicao invalida, timeout
-  ou baixa probabilidade nao recebem fallback para uma acao. JEV-23 e JEV-24
+  ou baixa probabilidade nao recebem fallback para uma acao. JEV-23 a JEV-25
   definem e testam essa falha fechada.
 - O `UNKNOWN` segue o roteamento atual, sem filtro Jev para Qwen e sem RAG.
 
