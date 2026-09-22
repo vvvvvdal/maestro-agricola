@@ -57,8 +57,8 @@ do Qwen e ausencia de RAG neste experimento.
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-10 | NEXT | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `SPRAY`, com exemplos claros, negacao, mencao historica e alvo conflitante. |
-| JEV-11 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `DOCK` e `UNDOCK`; explicitar que nenhum deles e implicito. |
+| JEV-10 | DONE | 22/09 | JEV-03 | Rubrica de `SPRAY` registrada em [`rubrics.md`](rubrics.md): pedido atual, negacao, historico, hesitacao, alvo sem acao e fronteira de conflito de alvo. Nenhuma chamada Jev ou mudanca operacional. |
+| JEV-11 | NEXT | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `DOCK` e `UNDOCK`; explicitar que nenhum deles e implicito. |
 | JEV-12 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `CONFIRM`, `CANCEL` e `UNKNOWN`; `UNKNOWN` cobre duvida, ruido e fora de dominio. |
 | JEV-13 | TODO | 23/09 | JEV-10, JEV-11, JEV-12 | Montar corpus de desenvolvimento em pt-BR, com identificador, texto, rotulo ouro e categoria de caso. |
 | JEV-14 | TODO | 23/09 | JEV-13 | Revisar corpus de desenvolvimento: cada classe possui exemplos positivos, negativos e ASR; remover duplicatas e dados pessoais. |

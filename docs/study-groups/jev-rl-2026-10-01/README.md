@@ -104,6 +104,11 @@ caminho operacional. Qwen continua recebendo `UNKNOWN` sem filtro Jev de
 topico, e RAG foi descartado deste recorte para nao confundir decisao
 estruturada com busca de conhecimento.
 
+As fronteiras de linguagem que alimentarao os corpora ficam em
+[`rubrics.md`](rubrics.md). A primeira rubrica, `SPRAY`, deixa explicito que a
+classe reconhece um pedido atual de pulverizacao, sem resolver alvo nem criar
+autorizacao de movimento.
+
 As classes abaixo sao roadmap de produto e viram o bloco final da
 apresentacao. Elas mostram onde uma `Choice` tipada pode ser util sem alegar
 que ja estao implementadas.
