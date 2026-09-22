@@ -33,13 +33,28 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 - Desde a conclusão da Task 1, `SPRAY` nunca deve causar `Undock`, retorno à doca ou `Dock` implicitamente.
 - `DOCK` e `UNDOCK` são comandos operacionais explícitos; não inventar lifecycle automático para compensar uma task ainda não implementada.
 - A IA pode interpretar linguagem natural, mas a saída de controle deve continuar estruturada e validada; nenhum modelo deve gerar comandos ROS livres diretamente.
-- `LocalIntentClassifier` continua sendo a autoridade operacional para `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`.
+- Na `main`, `LocalIntentClassifier` continua sendo a autoridade operacional para `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`. Na branch experimental `test/jev`, `JevIntentClassifier` pode substituir somente essa implementacao, com os mesmos seis rotulos, corpus reproduzivel e todos os gates existentes preservados; o local continua sendo o baseline de comparacao.
 - Qwen é somente assistente de domínio: recebe apenas o caminho `UNKNOWN`, produz somente `CHAT` ou `OUT_OF_SCOPE` e nunca recebe acesso a `Command`, WebSocket, ROS, estado do robô ou resolução de alvo.
+- O experimento JEV nao classifica topicos para Qwen e nao introduz RAG. `UNKNOWN -> LanguageRouter -> QwenDomainAssistant` permanece inalterado.
 - `TargetResolver` continua separado do assistente; Qwen não inventa target, pose ou ação.
 - Mudanças de modelo de IA devem ser comparadas em corpus/benchmark reproduzível antes da escolha final e, quando houver o aparelho alvo, medidas também em latência e memória no dispositivo.
 - O caminho DAT 0.9.0 pré-hardware já existe com MockDeviceKit; a pendência é validar sessão/câmera e áudio nos Meta Wearables reais, sem confundir mock com evidência física.
 - Antes de declarar DAT aprovado, validar no mesmo aparelho e com os mesmos óculos o sample oficial de câmera/sessão aplicável à versão do SDK em uso.
 - Não assumir de antemão qual microfone/rota de áudio estará disponível com os óculos conectados; validar câmera e ASR/áudio simultaneamente no hardware real.
+
+## Arquitetura de agentes de desenvolvimento
+
+- Para o experimento JEV, trabalhar somente na branch `test/jev`; o script
+  `tools/agents/preflight.sh` deve passar antes de delegar ou integrar uma task.
+- Terra com effort `medium` planeja, Terra com effort `high` revisa e Gemini CLI
+  atua somente como worker de leitura em `--approval-mode plan --sandbox`.
+- O humano integrador e o unico writer. Nenhum worker pode editar arquivos,
+  criar worktree, iniciar servicos, ler segredos ou fazer chamadas ao JEV.
+- Handoffs precisam declarar escopo, evidencia, riscos, testes focados e o
+  dono da decisao. Workers nao decidem contrato, seguranca, dados, intents ou
+  comportamento do robo.
+- A arquitetura completa, os comandos e a politica de isolamento estao em
+  `docs/agent-architecture.md`.
 
 ## Protocolo obrigatório para agentes de código
 
