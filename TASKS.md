@@ -11,6 +11,23 @@
 - Task 6 --- Evolução da IA local: DONE (fallback seguro integrado e validado na MainActivity)
 - Task 7 --- E2E final e preparação da demonstração: DONE
 
+## Estudo experimental JEV (`test/jev`)
+
+O trabalho JEV nao altera as tasks concluidas do MVP nem a autoridade do
+`LocalIntentClassifier`. A branch `test/jev` concentra somente comparacao
+controlada, com uma task por vez, orcamento maximo de US$5 e falha fechada.
+
+- Fase inicial decidida: `JevIntentClassifier` e uma implementacao alternativa
+  para os mesmos seis rotulos; `UNKNOWN -> Qwen` e RAG nao fazem parte dela.
+- A tela preserva o cartao `INTENCAO` e passa a distinguir a origem `JEV` da
+  probabilidade da classe; a distribuicao completa e a confidence do Jev ficam
+  no registro de benchmark e no painel de testes.
+- Arquitetura de trabalho aplicada: Terra planner `medium`, workers Gemini CLI
+  read-only e Terra reviewer `high`; ver [`docs/agent-architecture.md`](docs/agent-architecture.md).
+- Plano, datas e criterios de aceite: [`docs/study-groups/jev-rl-2026-10-01/TASKS.md`](docs/study-groups/jev-rl-2026-10-01/TASKS.md).
+- Antes de iniciar uma task: `tools/agents/preflight.sh` deve confirmar a
+  branch e os CLIs locais.
+
 ---
 
 # Prioridades até a entrega de sábado

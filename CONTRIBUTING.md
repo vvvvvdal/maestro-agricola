@@ -25,6 +25,25 @@ As frentes abaixo coexistem no mesmo app e devem continuar desacopladas:
 | Visão/alvo | QR/target previamente mapeado + `TargetResolver` | não inventar pose ou target via LLM |
 | Robótica | WebSocket JSON -> ROS 2/Nav2/Gazebo | `SPRAY`, `DOCK`, `UNDOCK` são explícitos e confirmados |
 
+## Experimento JEV
+
+`test/jev` e a branch de integracao exclusiva do estudo JEV. Ela nao e a linha
+demonstravel `main` e nao permite promover um resultado de benchmark a
+comportamento operacional. A primeira fase compara uma implementacao Jev aos
+mesmos seis rotulos de `LocalIntentClassifier`; nao adiciona filtro para Qwen,
+RAG, missao composta ou nova acao fisica. Antes de uma task nessa branch,
+execute:
+
+```bash
+tools/agents/preflight.sh
+```
+
+Use a arquitetura documentada em [`docs/agent-architecture.md`](docs/agent-architecture.md):
+Terra planeja com effort medio, workers Gemini CLI investigam sem escrita e
+Terra revisa com effort alto. O integrador humano continua sendo o unico writer
+e decisor. As tarefas e os gates da apresentacao ficam em
+[`docs/study-groups/jev-rl-2026-10-01/TASKS.md`](docs/study-groups/jev-rl-2026-10-01/TASKS.md).
+
 ## Fluxo de Git
 
 Atualize a `main` antes de iniciar:

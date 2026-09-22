@@ -10,7 +10,9 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`product-brief.md`](product-brief.md): problema, proposta de valor, público e limites.
 - [`mvp-spec.md`](mvp-spec.md): jornada principal, critérios de aceite e definição de pronto.
 - [`architecture.md`](architecture.md): componentes, contratos, riscos e decisões técnicas.
+- [`agent-architecture.md`](agent-architecture.md): papeis, isolamento e fluxo Terra/Gemini CLI para o experimento JEV.
 - [`tasks/qwen-android-runtime.md`](tasks/qwen-android-runtime.md): decisão de segurança, benchmark, runtime JNI/llama.cpp e evidência física do Qwen.
+- [`tasks/jev-ui-decision-visibility.md`](tasks/jev-ui-decision-visibility.md): plano da visualizacao da decisao Jev no app, sem mudar a jornada operacional.
 - [`ci-cd.md`](ci-cd.md): workflows automáticos, segredo DAT, artefatos de depuração e fronteira dos testes manuais.
 - [`testing.md`](testing.md): teste guiado, saída esperada, diagnóstico e mobile.
 - [`tasks/test-organization.md`](tasks/test-organization.md): organização central e localização canônica das suítes.
@@ -29,6 +31,8 @@ Este diretório concentra o contexto permanente do Maestro Agrícola. Atualize o
 - [`paper/README.md`](paper/README.md): instruções de compilação e política de atualização do artigo.
 - [`pitch/README.md`](pitch/README.md): decisão de não versionar slides do pitch.
 - [`pitch/storyboard.md`](pitch/storyboard.md): registro histórico da narrativa planejada para o deck removido.
+- [`study-groups/jev-rl-2026-10-01/README.md`](study-groups/jev-rl-2026-10-01/README.md): estudo técnico de Jev para o grupo de estudos de RL.
+- [`study-groups/jev-rl-2026-10-01/TASKS.md`](study-groups/jev-rl-2026-10-01/TASKS.md): tarefas até a apresentação de 01/10/2026.
 
 ## Fonte de verdade
 

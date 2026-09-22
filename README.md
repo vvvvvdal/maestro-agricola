@@ -38,6 +38,13 @@ O Maestro Agrícola permite que o operador olhe para um alvo no campo, diga a a�
 
 > Estado: MVP pré-hardware integrado e validado ponta a ponta em 22/08/2026 para o Programa AI Glasses Brasil 2026.
 
+> **Experimento JEV:** este checkout usa a branch `test/jev` para comparar o
+> `JevIntentClassifier` ao `LocalIntentClassifier` nos mesmos seis rotulos
+> operacionais. O experimento preserva alvo, confirmacao por audio, contrato e
+> bridge; a `main` continua local. Nao ha filtro Jev para Qwen nem RAG neste
+> recorte. Escopo, budget e gates:
+> [`docs/study-groups/jev-rl-2026-10-01/`](docs/study-groups/jev-rl-2026-10-01/).
+
 ## Jornada principal
 
 1. **Olhar:** no produto, a câmera dos óculos captura o alvo centralizado; no MVP pré-hardware, o DAT 0.9.0 usa o MockDeviceKit explicitamente identificado.

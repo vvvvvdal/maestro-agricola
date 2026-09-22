@@ -149,6 +149,30 @@ O classificador operacional continua pequeno, determinístico na borda e indepen
 
 A avaliação histórica de 64 frases cobre as quatro classes originais e continua útil para regressão. Para a evolução com `DOCK`/`UNDOCK`, o corpus `field_evaluation.tsv` contém 48 frases balanceadas entre os seis rótulos e o baseline local classificou 48/48 no gate usado durante a Task 6.
 
+### Experimento Jev em `test/jev`
+
+O experimento planejado para o grupo de estudos usa `JevIntentClassifier` como
+uma segunda implementacao de `IntentClassifier`. Ele recebe somente a
+transcricao aprovada para a rodada e escolhe entre os mesmos seis rotulos:
+`SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`. O adaptador retorna
+`IntentPrediction` e preserva `TargetResolver`, `InteractionEngine`,
+confirmacao por audio, expiracao, UUID, schema e bridge sem acesso do Jev a
+qualquer um desses componentes.
+
+O baseline local nao e removido: os dois classificadores usam o mesmo corpus,
+comparam latencia, custo, acertos, recusas perigosas e calibracao. A
+probabilidade da opcao escolhida alimenta a compatibilidade com
+`IntentPrediction.confidence`; a distribuicao completa e a metrica
+`confidence` propria do Jev ficam no registro experimental, pois representam
+coisas diferentes.
+
+`UNKNOWN` continua a seguir diretamente para `LanguageRouter` e
+`QwenDomainAssistant`. Nao existe filtro Jev de topico antes do Qwen e nao ha
+RAG neste experimento. Classes como `STATUS_QUERY`, `PLOT_STATUS_QUERY`,
+`INSPECT_TARGET` e `COMPOUND_MISSION` sao roadmap de produto; exigem interfaces
+separadas e, quando tiverem efeito fisico, novo contrato e testes. Elas nao
+entram no catalogo inicial do Jev.
+
 ### Assistente Qwen isolado
 
 Qwen2.5-1.5B-Instruct Q4_K_M foi avaliado inicialmente como possível classificador operacional e rejeitado: 36/48, acurácia 0,75, macro-F1 0,7384 e 3 aceites perigosos. A decisão é não substituir `LocalIntentClassifier`.
