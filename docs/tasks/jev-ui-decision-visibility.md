@@ -1,6 +1,6 @@
 # Visualizacao da decisao Jev no Android
 
-Status: JEV-30 a JEV-33 concluidas; JEV-34 planejada para `test/jev`
+Status: JEV-30 a JEV-35 concluidas; JEV-36 e a proxima task na `test/jev`
 
 Responsavel sugerido: Atila (Android), com Rafael na evidencia do classificador
 
@@ -64,11 +64,30 @@ A arvore de acessibilidade do Android expôs esse contrato para o cartao
 servico de acessibilidade do tablet permaneceu desligado.
 
 A inspecao tambem encontrou dois limites para as proximas tasks, sem corrigir
-esses pontos neste gate: o wordmark do cabecalho e cortado em paisagem por
+esses pontos neste gate: o wordmark do cabecalho era cortado em paisagem por
 `ContentScale.Crop`, e o `MainActivity` ainda instancia somente
 `LocalIntentClassifier`. JEV-35 corrige o cabecalho antes das capturas; JEV-36
 cria cenarios Jev apenas no `mock` para capturas demonstraveis, sem chamada
 remota ou mudanca no fluxo `dat`.
+
+## JEV-35 concluida
+
+Em 22/09/2026, o cabeçalho deixou de aplicar `Crop` na largura inteira da
+tela. Ele agora centraliza o mesmo PNG dentro de um viewport de altura fixa
+de 88 dp e largura responsiva limitada a 480 dp. Nesse enquadramento, o
+recorte remove somente a margem branca do arquivo e preserva o wordmark e o
+simbolo completos.
+
+`mockDebug` foi recompilado e instalado no Samsung SM-X510. Em paisagem, a
+captura visual confirmou a marca inteira, legivel e acima dos chips, sem
+sobrepor a jornada. A validacao visual fisica posterior em retrato confirmou
+o mesmo resultado: o Android reportou configuracao `port` e `ROTATION_0`, e o
+wordmark completo permaneceu dentro do cabecalho de `480 x 88 dp`.
+
+Uma tentativa anterior com tamanho logico temporario produziu uma captura de
+pixels preta e nao foi usada como evidencia. Ela serviu apenas para confirmar
+os bounds antes da verificacao fisica; a configuracao temporaria foi
+restaurada.
 
 ## Objetivo
 

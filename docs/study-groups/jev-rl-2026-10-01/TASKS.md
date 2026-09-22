@@ -87,8 +87,8 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-32 | DONE | 22/09 | JEV-31 | Estados visuais para `SPRAY`, `DOCK`, `UNKNOWN` e indisponibilidade fechada; texto explicita que nenhum comando foi enviado. |
 | JEV-33 | DONE | 22/09 | JEV-31 | Diagnostico recolhido no `mock`: vetor ordenado e confidence Jev em fixture local; `dat` recebe `null`. Testes incluidos. |
 | JEV-34 | DONE | 22/09 | JEV-32, JEV-33 | Testes focados, `assembleMockDebug` e inspecao no SM-X510 em paisagem: cartao, rolagem e arvore de acessibilidade aprovados. TalkBack audivel e complementar. |
-| JEV-35 | NEXT | 23/09 | JEV-34 | Corrigir o wordmark cortado em paisagem, validar em `mockDebug` no SM-X510 e preservar cabecalho compacto em retrato. |
-| JEV-36 | TODO | 23/09 | JEV-34 | Criar cenarios Jev somente no `mock`, com fixture local e selecao explicita, para mostrar `SPRAY` e `UNKNOWN` no cartao. Manter `dat` e baseline local sem chamada remota. |
+| JEV-35 | DONE | 22/09 | JEV-34 | Wordmark limitado a viewport responsivo de 480 x 88 dp, sem corte em paisagem e retrato no SM-X510 em `mockDebug`. |
+| JEV-36 | NEXT | 23/09 | JEV-34 | Criar cenarios Jev somente no `mock`, com fixture local e selecao explicita, para mostrar `SPRAY` e `UNKNOWN` no cartao. Manter `dat` e baseline local sem chamada remota. |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
 
@@ -120,8 +120,8 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 - JEV-15 e JEV-16 bloqueiam a rodada final; nenhum limiar e ajustado depois de
   abrir o corpus final.
 - JEV-23 bloqueia o adaptador; timeout ou erro sem falha fechada e bloqueador.
-- JEV-35 e JEV-36 bloqueiam capturas do app; a demonstracao nao usa wordmark
-  cortado nem cartao Jev apenas simulado fora do fluxo definido.
+- JEV-36 bloqueia as capturas Jev finais do app; a demonstracao nao usa cenario
+  simulado fora do fluxo definido.
 - JEV-43 bloqueia slides que afirmem resultado do Maestro; sem medicao, o slide
   usa somente a arquitetura proposta.
 - Classes de roadmap nao autorizam mudanca no contrato ROS antes de uma nova

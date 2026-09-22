@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -177,14 +179,22 @@ fun MaestroScreen(
 @Composable
 private fun Header(frameSource: String, endpoint: String) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Image(
-            painter = painterResource(R.drawable.maestro_logo_horizontal),
-            contentDescription = "Maestro Agrícola por AgroTurtles",
-            contentScale = ContentScale.Crop,
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp),
-        )
+                .height(88.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            val logoWidth = if (maxWidth > 480.dp) 480.dp else maxWidth
+            Image(
+                painter = painterResource(R.drawable.maestro_logo_horizontal),
+                contentDescription = "Maestro Agrícola por AgroTurtles",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(logoWidth)
+                    .fillMaxHeight(),
+            )
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Chip(text = "câmera: $frameSource")
             Chip(text = endpoint, modifier = Modifier.weight(1f, fill = false))
