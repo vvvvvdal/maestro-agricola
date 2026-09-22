@@ -98,9 +98,11 @@ Um anti-exemplo obrigatorio: camera identifica `plot-03`, a fala pede
 A primeira fase do experimento nao amplia o catalogo: Jev substitui somente a
 implementacao do classificador para `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`,
 `CANCEL` e `UNKNOWN`. Isso permite uma comparacao direta contra o baseline
-local. Qwen continua recebendo `UNKNOWN` sem filtro Jev de topico, e RAG foi
-descartado deste recorte para nao confundir decisao estruturada com busca de
-conhecimento.
+local. Cada execucao seleciona uma unica implementacao, `LocalIntentClassifier`
+ou `JevIntentClassifier`; os dois nao votam nem classificam a mesma fala no
+caminho operacional. Qwen continua recebendo `UNKNOWN` sem filtro Jev de
+topico, e RAG foi descartado deste recorte para nao confundir decisao
+estruturada com busca de conhecimento.
 
 As classes abaixo sao roadmap de produto e viram o bloco final da
 apresentacao. Elas mostram onde uma `Choice` tipada pode ser util sem alegar

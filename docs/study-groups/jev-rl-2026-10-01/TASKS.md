@@ -74,7 +74,7 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-22 | TODO | 24/09 | JEV-21 | Definir mapeamento: `probabilities[choice]` vai para `IntentPrediction.confidence`; confidence Jev fica fora do contrato operacional. |
 | JEV-23 | TODO | 24/09 | JEV-21 | Definir timeout, no maximo uma tentativa segura, classificacao de 429/resposta invalida e falha fechada sem `Command`. |
 | JEV-24 | TODO | 25/09 | JEV-22, JEV-23 | Criar fake local para escolha, baixa probabilidade, timeout, 429 e resposta invalida; testes rodam sem rede. |
-| JEV-25 | TODO | 25/09 | JEV-24 | Implementar adaptador `JevIntentClassifier` atras de `IntentClassifier`, selecionavel apenas em `test/jev`; local permanece baseline. |
+| JEV-25 | TODO | 25/09 | JEV-24 | Implementar adaptador `JevIntentClassifier` atras de `IntentClassifier`, selecionavel apenas em `test/jev`; cada execucao usa local ou Jev, nunca ambos sobre a mesma fala; local permanece baseline. |
 | JEV-26 | TODO | 25/09 | JEV-25 | Criar harness unico que executa local e Jev sobre o mesmo corpus e grava resultado por exemplo. |
 | JEV-27 | TODO | 26/09 | JEV-26 | Calcular matriz de confusao, macro-F1, aceites perigosos, Brier, ECE, coverage, p50/p95, custo e falhas. |
 

@@ -18,7 +18,9 @@ O trabalho JEV nao altera as tasks concluidas do MVP nem a autoridade do
 controlada, com uma task por vez, orcamento maximo de US$5 e falha fechada.
 
 - Fase inicial decidida: `JevIntentClassifier` e uma implementacao alternativa
-  para os mesmos seis rotulos; `UNKNOWN -> Qwen` e RAG nao fazem parte dela.
+  para os mesmos seis rotulos. Cada execucao usa somente o baseline local ou
+  Jev, nunca os dois sobre a mesma fala; `UNKNOWN -> Qwen` e RAG nao fazem
+  parte dela.
 - A tela preserva o cartao `INTENCAO` e passa a distinguir a origem `JEV` da
   probabilidade da classe; a distribuicao completa e a confidence do Jev ficam
   no registro de benchmark e no painel de testes.
