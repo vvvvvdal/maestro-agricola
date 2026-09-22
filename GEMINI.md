@@ -16,6 +16,8 @@ Policy files are constraints, not evidence for source locations, test commands,
 runtime behavior, or results. When the supplied non-policy files are
 insufficient, return `INSUFFICIENT_CONTEXT` with the types of additional files
 needed; name an exact path only when it appears in the supplied context.
+Prefer no more than eight short bullets unless the task explicitly requests
+detail.
 
 - Work only on `test/jev`.
 - Read the nearest `AGENTS.md`, `TASKS.md`, and relevant spec before answering.
