@@ -1,0 +1,1266 @@
+{
+  "schema_version": "1.0",
+  "model": "jev-1.13.0",
+  "results": {
+    "recovery-001": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 1.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 591,
+        "output_tokens": 70
+      },
+      "latency_ms": 824.621714,
+      "cost_usd": 2.4822000000000004e-05
+    },
+    "recovery-002": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 1.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 593,
+        "output_tokens": 70
+      },
+      "latency_ms": 946.232983,
+      "cost_usd": 2.4906000000000002e-05
+    },
+    "recovery-003": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 1.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 585,
+        "output_tokens": 70
+      },
+      "latency_ms": 1571.927282,
+      "cost_usd": 2.457e-05
+    },
+    "recovery-004": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 0.98,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.02
+        },
+        "confidence": 0.98
+      },
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 70
+      },
+      "latency_ms": 689.076904,
+      "cost_usd": 2.4654e-05
+    },
+    "recovery-005": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 1.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 70
+      },
+      "latency_ms": 778.075814,
+      "cost_usd": 2.4654e-05
+    },
+    "recovery-006": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 1.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 589,
+        "output_tokens": 70
+      },
+      "latency_ms": 696.766566,
+      "cost_usd": 2.4738000000000003e-05
+    },
+    "recovery-007": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 0.93,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.06999999999999999
+        },
+        "confidence": 0.91
+      },
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 70
+      },
+      "latency_ms": 668.06634,
+      "cost_usd": 2.4696000000000002e-05
+    },
+    "recovery-008": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 0.93,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.03,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.04
+        },
+        "confidence": 0.92
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 70
+      },
+      "latency_ms": 1806.543806,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-009": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.37,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.6,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.03
+        },
+        "confidence": 0.52
+      },
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 70
+      },
+      "latency_ms": 716.574997,
+      "cost_usd": 2.4654e-05
+    },
+    "recovery-010": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "SPRAY",
+        "probabilities": {
+          "SPRAY": 0.99,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.01
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 70
+      },
+      "latency_ms": 1026.910148,
+      "cost_usd": 2.4654e-05
+    },
+    "recovery-011": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 1.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 70
+      },
+      "latency_ms": 5668.48495,
+      "cost_usd": 2.4654e-05
+    },
+    "recovery-012": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.74,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.25
+        },
+        "confidence": 0.68
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 70
+      },
+      "latency_ms": 738.436595,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-013": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.99,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.01
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 680.874995,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-014": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.39,
+          "UNDOCK": 0.01,
+          "CONFIRM": 0.57,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.03
+        },
+        "confidence": 0.48
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 704.9012,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-015": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.99,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.01
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 710.749946,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-016": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.92,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.06,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.02
+        },
+        "confidence": 0.91
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 763.797291,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-017": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 1.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 70
+      },
+      "latency_ms": 747.452924,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-018": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.91,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.08
+        },
+        "confidence": 0.89
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 759.879947,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-019": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 1.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 704.597402,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-020": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "DOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.85,
+          "UNDOCK": 0.08,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.06
+        },
+        "confidence": 0.82
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 70
+      },
+      "latency_ms": 700.169126,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-021": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.1,
+          "UNDOCK": 0.7,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.15,
+          "UNKNOWN": 0.04
+        },
+        "confidence": 0.63
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 725.992399,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-022": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 1.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 706.653503,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-023": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 1.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 70
+      },
+      "latency_ms": 715.362384,
+      "cost_usd": 2.4696000000000002e-05
+    },
+    "recovery-024": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 1.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 585,
+        "output_tokens": 70
+      },
+      "latency_ms": 685.6362,
+      "cost_usd": 2.457e-05
+    },
+    "recovery-025": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.01,
+          "UNDOCK": 0.92,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.06
+        },
+        "confidence": 0.91
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 70
+      },
+      "latency_ms": 797.663423,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-026": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.97,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.02,
+          "UNKNOWN": 0.01
+        },
+        "confidence": 0.96
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 70
+      },
+      "latency_ms": 1012.997866,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-027": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 1.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 70
+      },
+      "latency_ms": 1329.8509,
+      "cost_usd": 2.4696000000000002e-05
+    },
+    "recovery-028": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 1.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 585,
+        "output_tokens": 70
+      },
+      "latency_ms": 657.139078,
+      "cost_usd": 2.457e-05
+    },
+    "recovery-029": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.98,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.02
+        },
+        "confidence": 0.97
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 727.400919,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-030": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNDOCK",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.9400000000000001,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.06
+        },
+        "confidence": 0.92
+      },
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 70
+      },
+      "latency_ms": 1003.146723,
+      "cost_usd": 2.4612e-05
+    },
+    "recovery-031": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.97,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.03
+        },
+        "confidence": 0.97
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 70
+      },
+      "latency_ms": 959.002683,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-032": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.01,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.96,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.03
+        },
+        "confidence": 0.95
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 70
+      },
+      "latency_ms": 861.736428,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-033": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.8200000000000001,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.18
+        },
+        "confidence": 0.77
+      },
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 70
+      },
+      "latency_ms": 689.236458,
+      "cost_usd": 2.4360000000000004e-05
+    },
+    "recovery-034": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 1.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 70
+      },
+      "latency_ms": 925.611794,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-035": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.91,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.09
+        },
+        "confidence": 0.89
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 70
+      },
+      "latency_ms": 2100.575097,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-036": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.03,
+          "DOCK": 0.0,
+          "UNDOCK": 0.09,
+          "CONFIRM": 0.7,
+          "CANCEL": 0.01,
+          "UNKNOWN": 0.17
+        },
+        "confidence": 0.64
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 70
+      },
+      "latency_ms": 1184.150934,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-037": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.07,
+          "CONFIRM": 0.33,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.6
+        },
+        "confidence": 0.5
+      },
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 69
+      },
+      "latency_ms": 700.394335,
+      "cost_usd": 2.4360000000000004e-05
+    },
+    "recovery-038": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.99,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.01
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 70
+      },
+      "latency_ms": 745.930074,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-039": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.12,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.63,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.25
+        },
+        "confidence": 0.55
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 70
+      },
+      "latency_ms": 684.030119,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-040": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.87,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.13
+        },
+        "confidence": 0.84
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 70
+      },
+      "latency_ms": 780.613868,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-041": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.01,
+          "CONFIRM": 0.21,
+          "CANCEL": 0.35,
+          "UNKNOWN": 0.43
+        },
+        "confidence": 0.31
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 69
+      },
+      "latency_ms": 679.656481,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-042": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.99,
+          "UNKNOWN": 0.01
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 71
+      },
+      "latency_ms": 707.736199,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-043": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 1.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 71
+      },
+      "latency_ms": 694.778313,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-044": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.75,
+          "UNKNOWN": 0.25
+        },
+        "confidence": 0.7
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 71
+      },
+      "latency_ms": 667.334523,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-045": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CONFIRM",
+        "probabilities": {
+          "SPRAY": 0.01,
+          "DOCK": 0.01,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.75,
+          "CANCEL": 0.1,
+          "UNKNOWN": 0.13
+        },
+        "confidence": 0.7
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 70
+      },
+      "latency_ms": 736.234037,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-046": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.02,
+          "UNDOCK": 0.01,
+          "CONFIRM": 0.06,
+          "CANCEL": 0.28,
+          "UNKNOWN": 0.63
+        },
+        "confidence": 0.57
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 69
+      },
+      "latency_ms": 713.12972,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-047": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 1.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 71
+      },
+      "latency_ms": 773.529271,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-048": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 1.0,
+          "UNKNOWN": 0.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 71
+      },
+      "latency_ms": 719.869913,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-049": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.86,
+          "UNKNOWN": 0.14
+        },
+        "confidence": 0.83
+      },
+      "usage": {
+        "input_tokens": 581,
+        "output_tokens": 71
+      },
+      "latency_ms": 742.332734,
+      "cost_usd": 2.4402e-05
+    },
+    "recovery-050": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "CANCEL",
+        "probabilities": {
+          "SPRAY": 0.01,
+          "DOCK": 0.02,
+          "UNDOCK": 0.01,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.84,
+          "UNKNOWN": 0.12
+        },
+        "confidence": 0.8
+      },
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 71
+      },
+      "latency_ms": 1152.753856,
+      "cost_usd": 2.4360000000000004e-05
+    },
+    "recovery-051": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 1.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 69
+      },
+      "latency_ms": 981.319009,
+      "cost_usd": 2.4528000000000003e-05
+    },
+    "recovery-052": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 1.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 69
+      },
+      "latency_ms": 882.256336,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-053": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 1.0
+        },
+        "confidence": 1.0
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 69
+      },
+      "latency_ms": 724.7405,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-054": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.04,
+          "UNKNOWN": 0.95
+        },
+        "confidence": 0.93
+      },
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 69
+      },
+      "latency_ms": 776.686088,
+      "cost_usd": 2.4696000000000002e-05
+    },
+    "recovery-055": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.01,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.99
+        },
+        "confidence": 0.98
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 69
+      },
+      "latency_ms": 5706.84205,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-056": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.04,
+          "UNKNOWN": 0.96
+        },
+        "confidence": 0.95
+      },
+      "usage": {
+        "input_tokens": 585,
+        "output_tokens": 69
+      },
+      "latency_ms": 2459.523918,
+      "cost_usd": 2.457e-05
+    },
+    "recovery-057": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.19,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.81
+        },
+        "confidence": 0.76
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 69
+      },
+      "latency_ms": 695.110587,
+      "cost_usd": 2.4444000000000002e-05
+    },
+    "recovery-058": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.01,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.01,
+          "CANCEL": 0.07,
+          "UNKNOWN": 0.91
+        },
+        "confidence": 0.89
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 69
+      },
+      "latency_ms": 1679.491473,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-059": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.0,
+          "DOCK": 0.01,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.0,
+          "UNKNOWN": 0.99
+        },
+        "confidence": 0.99
+      },
+      "usage": {
+        "input_tokens": 583,
+        "output_tokens": 69
+      },
+      "latency_ms": 680.961443,
+      "cost_usd": 2.4486e-05
+    },
+    "recovery-060": {
+      "response_model": "jev-1.13.0",
+      "answer": {
+        "choice": "UNKNOWN",
+        "probabilities": {
+          "SPRAY": 0.01,
+          "DOCK": 0.0,
+          "UNDOCK": 0.0,
+          "CONFIRM": 0.0,
+          "CANCEL": 0.01,
+          "UNKNOWN": 0.98
+        },
+        "confidence": 0.97
+      },
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 69
+      },
+      "latency_ms": 1785.521385,
+      "cost_usd": 2.4444000000000002e-05
+    }
+  }
+}

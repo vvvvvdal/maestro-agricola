@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementacao local pronta; a rodada `JEV-41R` permanece pendente.
+**Concluida em 22/09/2026** na branch `test/jev`.
 
 ## Objetivo
 
@@ -48,3 +48,35 @@ python3 tools/jev_intent_metrics.py \
 Antes do commit de evidencia, os JSONs precisam ser verificados contra textos
 do corpus, `Authorization`, `Bearer` e `TYPESAFE_API_KEY`. A interpretacao de
 metricas continua em JEV-42 e JEV-43; esta task nao permite uma segunda rodada.
+
+## Evidencia da rodada
+
+A rodada unica foi executada no corpus congelado. Os quatro artefatos abaixo
+foram verificados contra todos os textos do corpus, `Authorization`, `Bearer`
+e `TYPESAFE_API_KEY`; nenhum desses dados aparece nos JSONs versionados.
+
+| Medida | Local | Jev remoto |
+| --- | ---: | ---: |
+| Casos | 60 | 60 |
+| Acertos | 48 | 54 |
+| Accuracy | 0,8000 | 0,9000 |
+| Macro-F1 | 0,8026 | 0,9010 |
+| Falhas remotas | 0 | 0 |
+| Aceitacoes inseguras | 3 | 1 |
+| Brier multiclasses | 0,3034 | 0,1057 |
+| Top-label ECE | 0,0810 | 0,0787 |
+| Latencia p50 | 0,175 ms | 742,333 ms |
+| Latencia p95 | 0,293 ms | 2.100,575 ms |
+| Custo | US$0,00 | US$0,001472394 |
+
+O Jev retornou `jev-1.13.0` nos 60 casos, com 35.057 tokens de entrada. O
+achado inseguro Jev e `recovery-045`: rotulo ouro `CANCEL`, predicao
+`CONFIRM`, probabilidade 0,75. O local teve tres aceites inseguros:
+`recovery-043`, `recovery-047` e `recovery-060`. Esses numeros sao medidos;
+nao promovem Jev ao APK nem concluem sobre seguranca de campo. A comparacao e a
+decisao pertencem a JEV-42 e JEV-43.
+
+- [`jev-final-recovery-reservation.json`](../study-groups/jev-rl-2026-10-01/results/jev-final-recovery-reservation.json): reserva atomica da rodada.
+- [`jev-final-recovery-fixture.json`](../study-groups/jev-rl-2026-10-01/results/jev-final-recovery-fixture.json): respostas sanitizadas.
+- [`jev-final-recovery-harness.json`](../study-groups/jev-rl-2026-10-01/results/jev-final-recovery-harness.json): comparacao pareada.
+- [`jev-final-recovery-metrics.json`](../study-groups/jev-rl-2026-10-01/results/jev-final-recovery-metrics.json): metricas calculadas.

@@ -99,7 +99,7 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | JEV-40 | DONE | 22/09 | JEV-26 | Smoke remoto executado uma vez com 6 casos: `jev-1.13.0`, 6/6 acertos, 0 falhas, US$0,000146832 e p95 de 1.694,136 ms. Evidencia sanitizada em [`../../tasks/jev-remote-smoke.md`](../../tasks/jev-remote-smoke.md); nao ajustou o corpus final. |
 | JEV-41 | BLOCKED | 22/09 | JEV-27, JEV-40 | O corpus `final.tsv` foi reservado, mas nao gerou fixture; nao pode ser repetido. Registro em [`../../tasks/jev-final-evaluation.md`](../../tasks/jev-final-evaluation.md). |
 | JEV-41A | DONE | 22/09 | JEV-41 | Incidente registrado: reserva existente, fixture ausente e uso remoto indeterminado; nenhum corpus ou reserva original foi alterado. |
-| JEV-41R | NEXT | 22/09 | JEV-27, JEV-40, JEV-41A | Nova rodada unica em corpus independente, dentro de US$1,50; preservar respostas, erros e reserva propria. Plano em [`../../tasks/jev-final-recovery-evaluation.md`](../../tasks/jev-final-recovery-evaluation.md). |
+| JEV-41R | DONE | 22/09 | JEV-27, JEV-40, JEV-41A | Rodada unica no corpus independente: Jev 54/60, 1 aceite inseguro, US$0,001472394 e p95 de 2.100,575 ms. Evidencia em [`../../tasks/jev-final-recovery-evaluation.md`](../../tasks/jev-final-recovery-evaluation.md); nenhuma repeticao autorizada. |
 | JEV-42 | TODO | 27/09 | JEV-41R | Gerar tabela local versus Jev e reliability diagram; separar calibracao medida de limitacoes de tamanho amostral. |
 | JEV-43 | TODO | 28/09 | JEV-42 | Escrever decisao experimental: evidencia favoravel, contraria ou inconclusiva. Nenhum resultado promove Jev a producao. |
 
