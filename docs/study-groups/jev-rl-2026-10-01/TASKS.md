@@ -2,56 +2,132 @@
 
 Data alvo: 01/10/2026
 
-Regra de execucao: uma tarefa em andamento por vez. Nao promover Jev a caminho
-operacional nem adicionar uma nova acao do robo antes de passar pelos criterios
-de seguranca escritos abaixo.
+Este e o plano executavel do estudo JEV, nao uma promessa imutavel. Ele cobre
+da definicao do experimento ate a apresentacao. Uma task fica em andamento por
+vez; uma task concluida precisa produzir a evidencia indicada antes de liberar
+a proxima.
 
-## Criterios de aceite globais
+## Regra de replanejamento
+
+Tasks podem ser divididas, reordenadas, adiadas ou removidas quando uma nova
+evidencia, limite de credito, falha de ambiente ou descoberta tecnica justificar
+a mudanca. Ao mudar o plano:
+
+1. atualizar este arquivo com data, status, motivo e nova dependencia;
+2. preservar o escopo da Fase 1 ou registrar aprovacao humana para amplia-lo;
+3. nao esconder uma task nova dentro de outra nem marcar uma task como concluida
+   sem sua evidencia;
+4. replanejar slides, demo e ensaio se a mudanca alterar uma afirmacao da
+   apresentacao.
+
+Nao podem mudar sem decisao humana registrada: teto de US$5, envio de dados a
+API, as seis classes iniciais, confirmacao por audio, falha fechada, isolamento
+do Qwen e ausencia de RAG neste experimento.
+
+## Criterios globais
 
 - A apresentacao distingue evidencia medida, resultado de terceiros e hipotese.
 - O exemplo de xadrez explicita que Fable perdeu no tempo.
 - Qualquer demo remota possui captura gravada ou fixture local de reserva.
-- Nenhum segredo entra no APK, no repositorio ou nas capturas.
-- Nenhum novo intent fisico chega a ROS sem contrato, confirmacao, testes e
-  aprovacao humana.
+- Nenhum segredo entra no APK, repositorio, log ou captura.
+- Jev nao recebe foto, audio, `Command`, WebSocket, ROS, estado do robo ou
+  resolucao de alvo.
+- Nenhuma acao fisica ocorre sem a confirmacao por audio e as validacoes atuais.
 
-## Sequencia
+## Convencoes
 
-| Task | Status | Data alvo | Entrega e criterio de aceite |
-| --- | --- | --- | --- |
-| 0. Separar o estudo do pitch | DONE | 21/09 | Pasta propria, roteiro tecnico e plano de tarefas versionados; `docs/pitch/` permanece historico. |
-| 0.1 Preparar agentes de desenvolvimento | DONE | 21/09 | `test/jev` e guardada por preflight; Terra planeja/revisa em read-only e Gemini CLI opera somente em `plan` + sandbox. |
-| 1. Congelar escopo e orcamento experimental | NEXT | 22/09 | Registrar que a Fase 1 compara somente os seis rotulos atuais; sem classes novas, filtro Qwen ou RAG. Aprovar o fluxo de transcricao sanitizada para a API, o teto de US$5 e os subtetos. |
-| 2. Definir criterios dos seis rotulos | TODO | 22/09 | Criar criterios positivos, negativos e exemplos em pt-BR para `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`; manter `UNKNOWN` como cobertura. |
-| 3. Desenhar a fronteira Jev | TODO | 23/09 | Especificar adaptador atras de `IntentClassifier`, versao de modelo, timeout, retries e falha fechada. Mapear `probabilities[choice]` para a probabilidade exibida e registrar vetor e `confidence` do Jev separadamente. |
-| 4. Criar fakes e contratos locais | TODO | 23/09 | Testes unitarios simulam probabilidade, timeout, 429 e resposta invalida sem rede ou credenciais. |
-| 5. Montar corpus de desenvolvimento | TODO | 24/09 | Frases rotuladas para comandos claros, negacao, historico, ASR, fora de dominio, injecao e conflito de alvo; separar do corpus final. |
-| 6. Montar corpus final de seguranca | TODO | 24/09 | Casos congelados e nao usados para ajustar criterios ou limiares; inclui todos os caminhos que nunca podem criar `Command`. |
-| 7. Implementar harness e adaptador Jev | TODO | 25/09 | Mesmo contrato para local e Jev; guardar rotulo, probabilidades, `confidence` do Jev, versao, latencia, custo e erro. O local continua selecionavel como baseline. |
-| 8. Planejar e implementar visibilidade Jev no app | TODO | 26/09 | Reusar o cartao `INTENCAO`: acao humana, classe, probabilidade escolhida e origem `JEV`; vetor completo apenas no mock. Ver `jev-ui-decision-visibility.md`. |
-| 9. Executar avaliacao controlada | TODO | 27/09 | Matriz de confusao, macro-F1, aceites perigosos, Brier, ECE, coverage e p50/p95; preservar falhas em vez de descarta-las. |
-| 10. Preparar demo e evidencias visuais | TODO | 28/09 | Capturas equivalentes local/Jev, ticket, xadrez, matriz de confusao e recusa segura; cada numero externo tem fonte e escopo. |
-| 11. Escrever slides do estudo | TODO | 29/09 | Deck fora de `docs/pitch/`, com RLCD/calibracao, benchmark local versus Jev, app e roadmap de classes. Conteudo por 46 minutos e quatro de debate. |
-| 12. Gravar reserva e ensaiar | TODO | 30/09 | Video ou fixtures locais para os fluxos remotos; dois ensaios cronometrados e revisao de claims contra resultados. |
-| 13. Apresentar e registrar resultados | TODO | 01/10 | Usar apenas metricas obtidas; apos o encontro, registrar conclusoes que alterem uma decisao tecnica. |
+- `DONE`: evidencia registrada.
+- `NEXT`: unica task que pode iniciar agora.
+- `TODO`: aguardando dependencias.
+- `BLOCKED`: depende de decisao humana, servico ou ambiente externo.
+- Fase 1: somente `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e
+  `UNKNOWN`. `STATUS_QUERY`, `PLOT_STATUS_QUERY`, `INSPECT_TARGET` e
+  `COMPOUND_MISSION` sao roadmap para slides, nao entregas antes de 01/10.
 
-## Dependencias e pontos de parada
+## Fase 0 - Base do estudo
 
-- Task 1 bloqueia Tasks 3, 7 e 8 quando nao houver aprovacao para a API, o
-  fluxo de dados externos e o teto de gasto.
-- Task 2 bloqueia corpus e implementacao. Uma classe nova fica fora da Fase 1;
-  ela precisa de dono, descricao, exemplos negativos e efeito permitido antes
-  de entrar em uma fase futura.
-- Classes de roadmap, como `STATUS_QUERY`, `INSPECT_TARGET` e
-  `COMPOUND_MISSION`, bloqueiam qualquer mudanca no contrato ROS. Elas podem
-  aparecer no slide de arquitetura, mas nao autorizam uma nova operacao fisica.
-- Falha em timeout, rede, baixa confianca, `CANCEL`, `UNKNOWN` ou conflito de
-  alvo deve terminar sem `Command`; qualquer excecao e bloqueadora.
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-00 | DONE | 21/09 | - | Estudo separado de `docs/pitch/`; roteiro tecnico e pasta propria existem. |
+| JEV-01 | DONE | 21/09 | - | `test/jev`, preflight, Terra planner/reviewer e workers Gemini read-only configurados. |
+| JEV-02 | DONE | 21/09 | JEV-00 | Decisoes iniciais registradas: Jev troca apenas o classificador; Qwen nao recebe filtro Jev e nao ha RAG. |
+| JEV-03 | NEXT | 22/09 | JEV-02 | Registrar aprovacao humana do uso da API, dados permitidos (somente corpus/transcricao sanitizada), teto de US$5 e subtetos. Sem isso, nenhuma chamada remota. |
+
+## Fase 1 - Semantica e corpus
+
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-10 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `SPRAY`, com exemplos claros, negacao, mencao historica e alvo conflitante. |
+| JEV-11 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `DOCK` e `UNDOCK`; explicitar que nenhum deles e implicito. |
+| JEV-12 | TODO | 22/09 | JEV-03 | Escrever rubrica positiva e negativa para `CONFIRM`, `CANCEL` e `UNKNOWN`; `UNKNOWN` cobre duvida, ruido e fora de dominio. |
+| JEV-13 | TODO | 23/09 | JEV-10, JEV-11, JEV-12 | Montar corpus de desenvolvimento em pt-BR, com identificador, texto, rotulo ouro e categoria de caso. |
+| JEV-14 | TODO | 23/09 | JEV-13 | Revisar corpus de desenvolvimento: cada classe possui exemplos positivos, negativos e ASR; remover duplicatas e dados pessoais. |
+| JEV-15 | TODO | 24/09 | JEV-10, JEV-11, JEV-12 | Montar corpus final de seguranca, congelado e separado do desenvolvimento. |
+| JEV-16 | TODO | 24/09 | JEV-15 | Revisar os casos que jamais podem criar `Command`: timeout, baixa probabilidade, `UNKNOWN`, `CANCEL`, conflito de alvo e fala injetada. |
+
+## Fase 2 - Adaptador, fakes e harness
+
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-20 | TODO | 23/09 | JEV-03 | Fixar modelo/API e documentar request minimo de `Choice` para os seis rotulos; nenhuma chave em arquivo versionado. |
+| JEV-21 | TODO | 24/09 | JEV-20 | Definir DTO experimental: choice, `probabilities`, confidence Jev, versao, uso, latencia, custo e erro. |
+| JEV-22 | TODO | 24/09 | JEV-21 | Definir mapeamento: `probabilities[choice]` vai para `IntentPrediction.confidence`; confidence Jev fica fora do contrato operacional. |
+| JEV-23 | TODO | 24/09 | JEV-21 | Definir timeout, no maximo uma tentativa segura, classificacao de 429/resposta invalida e falha fechada sem `Command`. |
+| JEV-24 | TODO | 25/09 | JEV-22, JEV-23 | Criar fake local para escolha, baixa probabilidade, timeout, 429 e resposta invalida; testes rodam sem rede. |
+| JEV-25 | TODO | 25/09 | JEV-24 | Implementar adaptador `JevIntentClassifier` atras de `IntentClassifier`, selecionavel apenas em `test/jev`; local permanece baseline. |
+| JEV-26 | TODO | 25/09 | JEV-25 | Criar harness unico que executa local e Jev sobre o mesmo corpus e grava resultado por exemplo. |
+| JEV-27 | TODO | 26/09 | JEV-26 | Calcular matriz de confusao, macro-F1, aceites perigosos, Brier, ECE, coverage, p50/p95, custo e falhas. |
+
+## Fase 3 - App e experiencia da demonstracao
+
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-30 | TODO | 26/09 | JEV-22 | Adicionar origem `JEV` ao modelo de apresentacao sem alterar semantica de fontes locais. |
+| JEV-31 | TODO | 26/09 | JEV-30 | Atualizar `predictionSourceLabel` e o cartao `INTENCAO` para `SPRAY · 87% · Jev`; o percentual e a probabilidade da classe. |
+| JEV-32 | TODO | 26/09 | JEV-31 | Cobrir visualmente `SPRAY`, `DOCK`, `UNKNOWN`, timeout e erro; texto deixa claro que `UNKNOWN` nao executou nada. |
+| JEV-33 | TODO | 27/09 | JEV-31 | Mostrar vetor e confidence Jev somente em `Ajustes de teste` do `mock`, como diagnostico recolhido. |
+| JEV-34 | TODO | 27/09 | JEV-32, JEV-33 | Executar testes unitarios Android focados e inspecao `mockDebug`: cartao compacto, rolagem, semantica e leitura contextual. |
+
+Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
+
+## Fase 4 - Medicao e decisao experimental
+
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-40 | TODO | 26/09 | JEV-26 | Rodar smoke remoto dentro do subteto de US$0,50; registrar versao, custo e falhas sem ajustar o corpus final. |
+| JEV-41 | TODO | 27/09 | JEV-27, JEV-40 | Rodar corpus final uma unica vez dentro do subteto de US$3,00; preservar respostas e erros. |
+| JEV-42 | TODO | 27/09 | JEV-41 | Gerar tabela local versus Jev e reliability diagram; separar calibracao medida de limitacoes de tamanho amostral. |
+| JEV-43 | TODO | 28/09 | JEV-42 | Escrever decisao experimental: evidencia favoravel, contraria ou inconclusiva. Nenhum resultado promove Jev a producao. |
+
+## Fase 5 - Evidencias e apresentacao
+
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-50 | TODO | 28/09 | JEV-34, JEV-43 | Capturar app em baseline local, Jev `SPRAY` e Jev `UNKNOWN`; cada captura tem fonte e estado. |
+| JEV-51 | TODO | 28/09 | JEV-42 | Preparar matriz, reliability diagram e tabela de custo/latencia legiveis; nao ocultar falhas. |
+| JEV-52 | TODO | 28/09 | JEV-50 | Gravar demo de reserva ou fixtures locais dos tres fluxos; reproduzir com internet desligada. |
+| JEV-53 | TODO | 29/09 | JEV-43, JEV-50, JEV-51 | Escrever roteiro final: RLCD/calibracao, xadrez, casos externos, Maestro e roadmap de classes. |
+| JEV-54 | TODO | 29/09 | JEV-53 | Criar slides fora de `docs/pitch/`: 46 minutos de conteudo e quatro de debate; numerar fontes e marcar hipotese versus evidencia. |
+| JEV-55 | TODO | 30/09 | JEV-54, JEV-52 | Ensaio 1 cronometrado; registrar cortes e perguntas que exigem explicacao melhor. |
+| JEV-56 | TODO | 30/09 | JEV-55 | Ensaio 2 cronometrado com demo de reserva; revisar cada claim contra os resultados registrados. |
+| JEV-57 | TODO | 01/10 | JEV-56 | Apresentar usando apenas evidencias medidas; apos o encontro, registrar decisoes tecnicas que realmente mudarem. |
+
+## Pontos de parada
+
+- JEV-03 bloqueia qualquer chamada Jev, JEV-20 a JEV-27 e JEV-40 a JEV-43.
+- JEV-15 e JEV-16 bloqueiam a rodada final; nenhum limiar e ajustado depois de
+  abrir o corpus final.
+- JEV-23 bloqueia o adaptador; timeout ou erro sem falha fechada e bloqueador.
+- JEV-34 bloqueia capturas do app; a demonstracao nao usa tela nao validada.
+- JEV-43 bloqueia slides que afirmem resultado do Maestro; sem medicao, o slide
+  usa somente a arquitetura proposta.
+- Classes de roadmap nao autorizam mudanca no contrato ROS antes de uma nova
+  task aprovada, especificacao versionada e testes proporcionais ao risco.
 
 ## Fora do escopo ate nova decisao
 
 - hardware Meta real e rota de audio dos oculos;
-- controle por Jev em producao;
+- controle Jev em producao;
 - filtro Jev para Qwen e RAG;
 - parada de emergencia por reconhecimento de fala;
 - navegacao livre, dosagem e acoes agronomicas sem contrato fechado;

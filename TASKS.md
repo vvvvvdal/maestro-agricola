@@ -25,6 +25,8 @@ controlada, com uma task por vez, orcamento maximo de US$5 e falha fechada.
 - Arquitetura de trabalho aplicada: Terra planner `medium`, workers Gemini CLI
   read-only e Terra reviewer `high`; ver [`docs/agent-architecture.md`](docs/agent-architecture.md).
 - Plano, datas e criterios de aceite: [`docs/study-groups/jev-rl-2026-10-01/TASKS.md`](docs/study-groups/jev-rl-2026-10-01/TASKS.md).
+- O plano do estudo pode ser replanejado quando houver evidencia ou bloqueio;
+  toda mudanca precisa registrar motivo, data, dependencia e impacto na demo.
 - Antes de iniciar uma task: `tools/agents/preflight.sh` deve confirmar a
   branch e os CLIs locais.
 
