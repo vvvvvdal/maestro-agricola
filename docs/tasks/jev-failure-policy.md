@@ -35,7 +35,8 @@ observavel o numero de chamadas.
   robo.
 - Baixa probabilidade sera definida e exercitada com fake na JEV-24; esta task
   apenas impede retry indevido de uma falha de transporte/protocolo.
-- O adaptador real, parser e cliente HTTP pertencem a JEV-24 e JEV-25.
+- O fake local pertence a JEV-24; adaptador, parser e cliente HTTP pertencem
+  a JEV-25 e tasks posteriores.
 
 ## Evidencia
 
