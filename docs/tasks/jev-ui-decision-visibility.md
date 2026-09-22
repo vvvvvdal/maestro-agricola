@@ -50,18 +50,25 @@ local, chamadas remotas ou os dados enviados ao Jev.
 Os testes tambem acompanham os source sets: o `mock` valida o vetor completo e
 o `dat` valida explicitamente a ausencia do diagnostico.
 
-## JEV-34 parcialmente validada
+## JEV-34 concluida
 
-Em 22/09/2026, os testes Android focados passaram e `assembleMockDebug` gerou
-o APK. `FactCard` passou a reunir titulo, valor e detalhe em uma unica
-`contentDescription`, por exemplo `INTENCAO: Pulverizar. SPRAY · 87% · Jev.`,
-para que o leitor de tela receba o contexto completo e nao dependa de cor.
+Em 22/09/2026, os testes Android focados passaram e `assembleMockDebug` foi
+instalado no Samsung SM-X510 por ADB. Na resolucao fisica 1440x2304, em
+paisagem, o cartao permaneceu compacto, o `ScrollView` percorreu o painel de
+testes e o diagnostico recolhido mostrou os seis rotulos sem sobreposicao.
 
-A inspecao visual real continua pendente: este host nao tinha dispositivo ADB
-conectado, AVD configurado nem imagem de sistema instalada. Portanto nao foi
-possivel observar compactacao, rolagem, modo paisagem, texto dinamico ou
-TalkBack no `mockDebug`. JEV-34 permanece bloqueada por ambiente; JEV-50 nao
-pode capturar telas antes dessa validacao em um Android executavel.
+`FactCard` passou a reunir titulo, valor e detalhe em uma unica
+`contentDescription`, por exemplo `INTENCAO: Pulverizar. SPRAY · 87% · Jev.`.
+A arvore de acessibilidade do Android expôs esse contrato para o cartao
+`INTENCAO`; a reproducao audivel pelo TalkBack nao foi executada porque o
+servico de acessibilidade do tablet permaneceu desligado.
+
+A inspecao tambem encontrou dois limites para as proximas tasks, sem corrigir
+esses pontos neste gate: o wordmark do cabecalho e cortado em paisagem por
+`ContentScale.Crop`, e o `MainActivity` ainda instancia somente
+`LocalIntentClassifier`. JEV-35 corrige o cabecalho antes das capturas; JEV-36
+cria cenarios Jev apenas no `mock` para capturas demonstraveis, sem chamada
+remota ou mudanca no fluxo `dat`.
 
 ## Objetivo
 
@@ -124,11 +131,12 @@ tocado para confirmar, alterar a classe ou enviar um comando.
 - [x] `UNKNOWN`, timeout e erro ficam claros por texto, sem comando e sem
       confundir o operador com estado de execucao.
 - [x] Detalhes de distribuicao aparecem apenas no painel de testes do mock.
-- [ ] O cartao preserva tipografia, espacamento, cores semanticas e rolagem da
+- [x] O cartao preserva tipografia, espacamento, cores semanticas e rolagem da
       `MaestroScreen`; nenhuma informacao depende apenas de cor.
 - [x] Testes de `JourneyPresentation` cobrem Jev, local, `UNKNOWN` e erro.
-- [ ] Inspecao no `mockDebug` valida tela compacta e leitor de tela anuncia uma
-      frase contextual, por exemplo: `Intencao: Pulverizar. Jev: 87 por cento.`
+- [x] Inspecao no `mockDebug` valida tela compacta, rolagem e a arvore de
+      acessibilidade expoe uma frase contextual. A reproducao pelo TalkBack
+      continua como verificacao presencial complementar.
 
 ## Limites
 

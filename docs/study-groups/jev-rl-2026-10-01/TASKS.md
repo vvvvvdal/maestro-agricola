@@ -86,7 +86,9 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-31 | DONE | 22/09 | JEV-30 | O cartao `INTENCAO` existente usa `predictionDetail`: `SPRAY · 87% · Jev` e `DOCK · 91% · Jev`, com a probabilidade da classe e arredondamento consistente. Teste de apresentacao incluido. |
 | JEV-32 | DONE | 22/09 | JEV-31 | Estados visuais para `SPRAY`, `DOCK`, `UNKNOWN` e indisponibilidade fechada; texto explicita que nenhum comando foi enviado. |
 | JEV-33 | DONE | 22/09 | JEV-31 | Diagnostico recolhido no `mock`: vetor ordenado e confidence Jev em fixture local; `dat` recebe `null`. Testes incluidos. |
-| JEV-34 | BLOCKED | 22/09 | JEV-32, JEV-33 | Testes focados e `assembleMockDebug` passaram; falta inspecao em Android executavel. Este host nao possui AVD, imagem de sistema ou ADB conectado. |
+| JEV-34 | DONE | 22/09 | JEV-32, JEV-33 | Testes focados, `assembleMockDebug` e inspecao no SM-X510 em paisagem: cartao, rolagem e arvore de acessibilidade aprovados. TalkBack audivel e complementar. |
+| JEV-35 | NEXT | 23/09 | JEV-34 | Corrigir o wordmark cortado em paisagem, validar em `mockDebug` no SM-X510 e preservar cabecalho compacto em retrato. |
+| JEV-36 | TODO | 23/09 | JEV-34 | Criar cenarios Jev somente no `mock`, com fixture local e selecao explicita, para mostrar `SPRAY` e `UNKNOWN` no cartao. Manter `dat` e baseline local sem chamada remota. |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
 
@@ -103,7 +105,7 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-50 | TODO | 28/09 | JEV-34, JEV-43 | Capturar app em baseline local, Jev `SPRAY` e Jev `UNKNOWN`; cada captura tem fonte e estado. |
+| JEV-50 | TODO | 28/09 | JEV-35, JEV-36, JEV-43 | Capturar app em baseline local, Jev `SPRAY` e Jev `UNKNOWN`; cada captura tem fonte e estado. |
 | JEV-51 | TODO | 28/09 | JEV-42 | Preparar matriz, reliability diagram e tabela de custo/latencia legiveis; nao ocultar falhas. |
 | JEV-52 | TODO | 28/09 | JEV-50 | Gravar demo de reserva ou fixtures locais dos tres fluxos; reproduzir com internet desligada. |
 | JEV-53 | TODO | 29/09 | JEV-43, JEV-50, JEV-51 | Escrever roteiro final: RLCD/calibracao, xadrez, casos externos, Maestro e roadmap de classes. |
@@ -118,7 +120,8 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 - JEV-15 e JEV-16 bloqueiam a rodada final; nenhum limiar e ajustado depois de
   abrir o corpus final.
 - JEV-23 bloqueia o adaptador; timeout ou erro sem falha fechada e bloqueador.
-- JEV-34 bloqueia capturas do app; a demonstracao nao usa tela nao validada.
+- JEV-35 e JEV-36 bloqueiam capturas do app; a demonstracao nao usa wordmark
+  cortado nem cartao Jev apenas simulado fora do fluxo definido.
 - JEV-43 bloqueia slides que afirmem resultado do Maestro; sem medicao, o slide
   usa somente a arquitetura proposta.
 - Classes de roadmap nao autorizam mudanca no contrato ROS antes de uma nova
