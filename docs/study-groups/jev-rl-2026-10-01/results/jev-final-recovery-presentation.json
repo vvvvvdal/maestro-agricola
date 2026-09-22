@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0",
+  "source_metrics_sha256": "e7984bbc1eb715402809f59d47130068e985789d0efb1d1c5b0db7362f5dddcc",
+  "scope": "n=60, corpus sintetico pareado, uma rodada remota",
+  "limitation": "Descritivo: nao prova calibracao generalizavel, seguranca de campo ou prontidao operacional.",
+  "backends": {
+    "local": {
+      "examples": 60,
+      "correct": 48,
+      "accuracy": 0.8,
+      "macro_f1": 0.8025685483957122,
+      "unsafe_accepts": [
+        {
+          "id": "recovery-043",
+          "gold_label": "CANCEL",
+          "predicted_label": "UNDOCK",
+          "confidence": 0.5929553418122038
+        },
+        {
+          "id": "recovery-047",
+          "gold_label": "CANCEL",
+          "predicted_label": "CONFIRM",
+          "confidence": 0.9407260465238111
+        },
+        {
+          "id": "recovery-060",
+          "gold_label": "UNKNOWN",
+          "predicted_label": "CONFIRM",
+          "confidence": 0.4526878414197846
+        }
+      ],
+      "failure_rate": 0.0,
+      "failures": [],
+      "probability_coverage": 1.0,
+      "calibration": {
+        "brier_multiclass": 0.303408854387992,
+        "top_label_ece": 0.08099616478985691,
+        "occupied_bins": [
+          {
+            "lower": 0.3,
+            "upper": 0.4,
+            "examples": 3,
+            "accuracy": 0.0,
+            "confidence": 0.3790812251420799
+          },
+          {
+            "lower": 0.4,
+            "upper": 0.5,
+            "examples": 4,
+            "accuracy": 0.5,
+            "confidence": 0.4646684176952516
+          },
+          {
+            "lower": 0.5,
+            "upper": 0.6,
+            "examples": 4,
+            "accuracy": 0.25,
+            "confidence": 0.5543059243124331
+          },
+          {
+            "lower": 0.6,
+            "upper": 0.7,
+            "examples": 8,
+            "accuracy": 0.625,
+            "confidence": 0.6481035251057405
+          },
+          {
+            "lower": 0.7,
+            "upper": 0.8,
+            "examples": 3,
+            "accuracy": 0.6666666666666666,
+            "confidence": 0.7251477468751681
+          },
+          {
+            "lower": 0.8,
+            "upper": 0.9,
+            "examples": 4,
+            "accuracy": 1.0,
+            "confidence": 0.8657523388335314
+          },
+          {
+            "lower": 0.9,
+            "upper": 1.0,
+            "examples": 34,
+            "accuracy": 0.9411764705882353,
+            "confidence": 0.9843151205693866
+          }
+        ]
+      },
+      "latency_ms": {
+        "examples": 60,
+        "p50": 0.174756,
+        "p95": 0.292586
+      },
+      "cost_usd": {
+        "total": 0.0,
+        "known_cases": 0
+      },
+      "models": [],
+      "confusion_matrix": {
+        "CANCEL": {
+          "CANCEL": 7,
+          "CONFIRM": 1,
+          "DOCK": 0,
+          "SPRAY": 0,
+          "UNDOCK": 1,
+          "UNKNOWN": 1
+        },
+        "CONFIRM": {
+          "CANCEL": 0,
+          "CONFIRM": 8,
+          "DOCK": 1,
+          "SPRAY": 0,
+          "UNDOCK": 0,
+          "UNKNOWN": 1
+        },
+        "DOCK": {
+          "CANCEL": 0,
+          "CONFIRM": 1,
+          "DOCK": 7,
+          "SPRAY": 0,
+          "UNDOCK": 1,
+          "UNKNOWN": 1
+        },
+        "SPRAY": {
+          "CANCEL": 0,
+          "CONFIRM": 0,
+          "DOCK": 0,
+          "SPRAY": 9,
+          "UNDOCK": 0,
+          "UNKNOWN": 1
+        },
+        "UNDOCK": {
+          "CANCEL": 0,
+          "CONFIRM": 0,
+          "DOCK": 2,
+          "SPRAY": 0,
+          "UNDOCK": 8,
+          "UNKNOWN": 0
+        },
+        "UNKNOWN": {
+          "CANCEL": 0,
+          "CONFIRM": 1,
+          "DOCK": 0,
+          "SPRAY": 0,
+          "UNDOCK": 0,
+          "UNKNOWN": 9
+        }
+      }
+    },
+    "jev": {
+      "examples": 60,
+      "correct": 54,
+      "accuracy": 0.9,
+      "macro_f1": 0.901002214907182,
+      "unsafe_accepts": [
+        {
+          "id": "recovery-045",
+          "gold_label": "CANCEL",
+          "predicted_label": "CONFIRM",
+          "confidence": 0.75
+        }
+      ],
+      "failure_rate": 0.0,
+      "failures": [],
+      "probability_coverage": 1.0,
+      "calibration": {
+        "brier_multiclass": 0.10567333333333336,
+        "top_label_ece": 0.07866666666666666,
+        "occupied_bins": [
+          {
+            "lower": 0.4,
+            "upper": 0.5,
+            "examples": 1,
+            "accuracy": 0.0,
+            "confidence": 0.43
+          },
+          {
+            "lower": 0.5,
+            "upper": 0.6,
+            "examples": 1,
+            "accuracy": 0.0,
+            "confidence": 0.57
+          },
+          {
+            "lower": 0.6,
+            "upper": 0.7,
+            "examples": 4,
+            "accuracy": 0.25,
+            "confidence": 0.615
+          },
+          {
+            "lower": 0.7,
+            "upper": 0.8,
+            "examples": 5,
+            "accuracy": 0.8,
+            "confidence": 0.728
+          },
+          {
+            "lower": 0.8,
+            "upper": 0.9,
+            "examples": 6,
+            "accuracy": 1.0,
+            "confidence": 0.8416666666666668
+          },
+          {
+            "lower": 0.9,
+            "upper": 1.0,
+            "examples": 43,
+            "accuracy": 1.0,
+            "confidence": 0.977906976744186
+          }
+        ]
+      },
+      "latency_ms": {
+        "examples": 60,
+        "p50": 742.332734,
+        "p95": 2100.575097
+      },
+      "cost_usd": {
+        "total": 0.0014723940000000001,
+        "known_cases": 60
+      },
+      "models": [
+        "jev-1.13.0"
+      ],
+      "confusion_matrix": {
+        "CANCEL": {
+          "CANCEL": 7,
+          "CONFIRM": 1,
+          "DOCK": 0,
+          "SPRAY": 0,
+          "UNDOCK": 0,
+          "UNKNOWN": 2
+        },
+        "CONFIRM": {
+          "CANCEL": 0,
+          "CONFIRM": 9,
+          "DOCK": 0,
+          "SPRAY": 0,
+          "UNDOCK": 0,
+          "UNKNOWN": 1
+        },
+        "DOCK": {
+          "CANCEL": 0,
+          "CONFIRM": 1,
+          "DOCK": 9,
+          "SPRAY": 0,
+          "UNDOCK": 0,
+          "UNKNOWN": 0
+        },
+        "SPRAY": {
+          "CANCEL": 0,
+          "CONFIRM": 1,
+          "DOCK": 0,
+          "SPRAY": 9,
+          "UNDOCK": 0,
+          "UNKNOWN": 0
+        },
+        "UNDOCK": {
+          "CANCEL": 0,
+          "CONFIRM": 0,
+          "DOCK": 0,
+          "SPRAY": 0,
+          "UNDOCK": 10,
+          "UNKNOWN": 0
+        },
+        "UNKNOWN": {
+          "CANCEL": 0,
+          "CONFIRM": 0,
+          "DOCK": 0,
+          "SPRAY": 0,
+          "UNDOCK": 0,
+          "UNKNOWN": 10
+        }
+      }
+    }
+  }
+}
