@@ -4,5 +4,7 @@ import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 
 /** The DAT flavor does not expose JEV development diagnostics. */
 object JevTestDiagnostics {
+    fun scenarios(): List<JevChoiceAnswer> = emptyList()
+
     fun current(): JevChoiceAnswer? = null
 }

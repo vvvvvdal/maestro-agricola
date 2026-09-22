@@ -1,6 +1,6 @@
 # Visualizacao da decisao Jev no Android
 
-Status: JEV-30 a JEV-35 concluidas; JEV-36 e a proxima task na `test/jev`
+Status: JEV-30 a JEV-36 concluidas; JEV-40 e a proxima task na `test/jev`
 
 Responsavel sugerido: Atila (Android), com Rafael na evidencia do classificador
 
@@ -89,6 +89,27 @@ pixels preta e nao foi usada como evidencia. Ela serviu apenas para confirmar
 os bounds antes da verificacao fisica; a configuracao temporaria foi
 restaurada.
 
+## JEV-36 concluida
+
+Em 22/09/2026, o `mock` passou a expor tres escolhas explicitas em `Ajustes
+de teste`: `Baseline local`, `Jev · Pulverizar` e `Jev · Nao reconhecida`. As
+duas fixtures Jev sao locais, possuem vetores completos dos seis rotulos e nao
+fazem chamada de rede.
+
+A escolha fica inicialmente em baseline e, quando uma fixture Jev e
+selecionada, altera somente a apresentacao do cartao `INTENCAO`. `SPRAY` mostra
+`SPRAY · 87% · Jev`; `UNKNOWN` mostra `UNKNOWN · 85% · Jev · nenhum comando
+enviado`. `InteractionEngine`, `LanguageInteractionController`, jornada,
+acoes, WebSocket e `Command` continuam usando o caminho local normal. Assim,
+o painel e uma ferramenta de captura visual, nao um caminho de decisao ou
+execucao. O diagnostico existente permanece no baseline; ele se oculta durante
+um cenario para que a selecao altere somente o cartao `INTENCAO`.
+
+O source set `dat` devolve uma lista vazia e, por isso, nao mostra seletor,
+fixture ou diagnostico Jev. Os testes por flavor verificam essa separacao; no
+SM-X510, as capturas de `SPRAY` e `UNKNOWN` mostraram os dois cartoes sem
+sobreposicao e a arvore de acessibilidade preservou a frase completa do cartao.
+
 ## Objetivo
 
 Permitir que a demonstracao mostre, no mesmo app do Maestro, o que o
@@ -156,6 +177,9 @@ tocado para confirmar, alterar a classe ou enviar um comando.
 - [x] Inspecao no `mockDebug` valida tela compacta, rolagem e a arvore de
       acessibilidade expoe uma frase contextual. A reproducao pelo TalkBack
       continua como verificacao presencial complementar.
+- [x] O `mock` oferece fixtures locais selecionaveis para `SPRAY` e `UNKNOWN`,
+      enquanto baseline, `dat`, classificador e fluxo operacional permanecem
+      separados.
 
 ## Limites
 

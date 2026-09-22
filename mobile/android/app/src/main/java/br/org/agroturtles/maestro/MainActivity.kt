@@ -156,6 +156,7 @@ class MainActivity : ComponentActivity() {
                     result = result,
                     robot = robot,
                     frameSource = BuildConfig.FRAME_SOURCE,
+                    jevScenarios = JevTestDiagnostics.scenarios(),
                     jevDiagnostic = JevTestDiagnostics.current(),
                     endpoint = endpoint,
                     onEndpointChange = { endpoint = it },

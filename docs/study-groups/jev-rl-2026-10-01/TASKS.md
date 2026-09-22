@@ -88,7 +88,7 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-33 | DONE | 22/09 | JEV-31 | Diagnostico recolhido no `mock`: vetor ordenado e confidence Jev em fixture local; `dat` recebe `null`. Testes incluidos. |
 | JEV-34 | DONE | 22/09 | JEV-32, JEV-33 | Testes focados, `assembleMockDebug` e inspecao no SM-X510 em paisagem: cartao, rolagem e arvore de acessibilidade aprovados. TalkBack audivel e complementar. |
 | JEV-35 | DONE | 22/09 | JEV-34 | Wordmark limitado a viewport responsivo de 480 x 88 dp, sem corte em paisagem e retrato no SM-X510 em `mockDebug`. |
-| JEV-36 | NEXT | 23/09 | JEV-34 | Criar cenarios Jev somente no `mock`, com fixture local e selecao explicita, para mostrar `SPRAY` e `UNKNOWN` no cartao. Manter `dat` e baseline local sem chamada remota. |
+| JEV-36 | DONE | 22/09 | JEV-34 | `mock` tem selecao explicita de baseline, Jev `SPRAY` e Jev `UNKNOWN`; a selecao so altera o cartao `INTENCAO`. `dat`, classificador local, jornada, transporte e comandos permanecem inalterados. |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
 
@@ -96,7 +96,7 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-40 | TODO | 26/09 | JEV-26 | Rodar smoke remoto dentro do subteto de US$0,50; registrar versao, custo e falhas sem ajustar o corpus final. |
+| JEV-40 | NEXT | 26/09 | JEV-26 | Rodar smoke remoto dentro do subteto de US$0,50; registrar versao, custo e falhas sem ajustar o corpus final. |
 | JEV-41 | TODO | 27/09 | JEV-27, JEV-40 | Rodar corpus final uma unica vez dentro do subteto de US$3,00; preservar respostas e erros. |
 | JEV-42 | TODO | 27/09 | JEV-41 | Gerar tabela local versus Jev e reliability diagram; separar calibracao medida de limitacoes de tamanho amostral. |
 | JEV-43 | TODO | 28/09 | JEV-42 | Escrever decisao experimental: evidencia favoravel, contraria ou inconclusiva. Nenhum resultado promove Jev a producao. |
@@ -120,8 +120,8 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 - JEV-15 e JEV-16 bloqueiam a rodada final; nenhum limiar e ajustado depois de
   abrir o corpus final.
 - JEV-23 bloqueia o adaptador; timeout ou erro sem falha fechada e bloqueador.
-- JEV-36 bloqueia as capturas Jev finais do app; a demonstracao nao usa cenario
-  simulado fora do fluxo definido.
+- JEV-40 bloqueia afirmacoes sobre o Jev remoto; as fixtures do app demonstram
+  somente apresentacao, nao constituem resultado experimental.
 - JEV-43 bloqueia slides que afirmem resultado do Maestro; sem medicao, o slide
   usa somente a arquitetura proposta.
 - Classes de roadmap nao autorizam mudanca no contrato ROS antes de uma nova

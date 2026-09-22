@@ -145,9 +145,55 @@ class JourneyPresentationTest {
             listOf("SPRAY", "DOCK", "UNDOCK", "CONFIRM", "CANCEL", "UNKNOWN"),
             diagnostic.rows.map { it.label },
         )
-        assertFalse(shouldShowJevDiagnostics("dat", diagnostic))
-        assertFalse(shouldShowJevDiagnostics("mock", null))
-        assertTrue(shouldShowJevDiagnostics("mock", diagnostic))
+        assertFalse(shouldShowJevScenarios("dat", listOf(answer)))
+        assertFalse(shouldShowJevScenarios("mock", emptyList()))
+        assertTrue(shouldShowJevScenarios("mock", listOf(answer)))
+        assertTrue(shouldShowJevDiagnostics("mock", diagnostic, null))
+        assertFalse(shouldShowJevDiagnostics("mock", diagnostic, "SPRAY"))
+        assertFalse(shouldShowJevDiagnostics("dat", diagnostic, null))
+    }
+
+    @Test
+    fun jevScenariosOnlyOverrideIntentPresentation() {
+        val spray = JevChoiceAnswer(
+            choice = "SPRAY",
+            probabilities = linkedMapOf(
+                "SPRAY" to 0.87,
+                "DOCK" to 0.03,
+                "UNDOCK" to 0.02,
+                "CONFIRM" to 0.01,
+                "CANCEL" to 0.01,
+                "UNKNOWN" to 0.06,
+            ),
+            confidence = 0.74,
+        )
+        val unknown = JevChoiceAnswer(
+            choice = "UNKNOWN",
+            probabilities = linkedMapOf(
+                "SPRAY" to 0.05,
+                "DOCK" to 0.04,
+                "UNDOCK" to 0.03,
+                "CONFIRM" to 0.02,
+                "CANCEL" to 0.01,
+                "UNKNOWN" to 0.85,
+            ),
+            confidence = 0.81,
+        )
+
+        assertEquals(
+            IntentPresentation("Pulverizar", "SPRAY · 87% · Jev", Tone.INFO),
+            jevScenarioIntentPresentation(spray),
+        )
+        assertEquals(
+            IntentPresentation(
+                "Não reconhecida",
+                "UNKNOWN · 85% · Jev · nenhum comando enviado",
+                Tone.ATTENTION,
+            ),
+            jevScenarioIntentPresentation(unknown),
+        )
+        assertEquals("Jev · Pulverizar", jevScenarioLabel("SPRAY"))
+        assertEquals("Jev · Não reconhecida", jevScenarioLabel("UNKNOWN"))
     }
 
     @Test

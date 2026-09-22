@@ -155,6 +155,23 @@ fun intentPresentation(
     )
 }
 
+fun jevScenarioIntentPresentation(answer: JevChoiceAnswer?): IntentPresentation? {
+    val validAnswer = answer ?: return null
+    val diagnostic = jevDiagnosticPresentation(validAnswer) ?: return null
+    return intentPresentation(
+        intent = validAnswer.choice.takeUnless { it == "UNKNOWN" },
+        label = validAnswer.choice,
+        confidence = validAnswer.probabilities.getValue(diagnostic.choice),
+        source = "JEV",
+    )
+}
+
+fun jevScenarioLabel(choice: String): String = when (choice) {
+    "SPRAY" -> "Jev · Pulverizar"
+    "UNKNOWN" -> "Jev · Não reconhecida"
+    else -> "Jev · $choice"
+}
+
 fun predictionDetail(label: String?, confidence: Double?, source: String?): String {
     if (label == null || confidence == null) return "aguardando fala"
     return "$label · ${(confidence * 100).roundToInt()}% · ${predictionSourceLabel(source)}"
@@ -210,8 +227,14 @@ fun jevDiagnosticPresentation(answer: JevChoiceAnswer?): JevDiagnosticPresentati
     )
 }
 
-fun shouldShowJevDiagnostics(frameSource: String, diagnostic: JevDiagnosticPresentation?): Boolean =
-    frameSource == "mock" && diagnostic != null
+fun shouldShowJevScenarios(frameSource: String, scenarios: List<JevChoiceAnswer>): Boolean =
+    frameSource == "mock" && scenarios.isNotEmpty()
+
+fun shouldShowJevDiagnostics(
+    frameSource: String,
+    diagnostic: JevDiagnosticPresentation?,
+    selectedChoice: String?,
+): Boolean = frameSource == "mock" && selectedChoice == null && diagnostic != null
 
 fun factCardContentDescription(title: String, value: String, detail: String): String =
     "$title: $value. $detail."
