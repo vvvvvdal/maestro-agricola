@@ -1,6 +1,6 @@
 # Visualizacao da decisao Jev no Android
 
-Status: JEV-30 concluida; JEV-31 a JEV-34 planejadas para `test/jev`
+Status: JEV-30 e JEV-31 concluidas; JEV-32 a JEV-34 planejadas para `test/jev`
 
 Responsavel sugerido: Atila (Android), com Rafael na evidencia do classificador
 
@@ -10,6 +10,15 @@ Em 22/09/2026, `predictionSourceLabel` passou a converter a origem `JEV` em
 `Jev`, sem mudar `RULE`, `MODEL` ou o fallback local. A mudanca e apenas de
 apresentacao e o cartao existente ja recebe essa funcao; ela nao liga o
 adaptador Jev ao app nem adiciona dados ou controles ao layout.
+
+## JEV-31 concluida
+
+Em 22/09/2026, confirmou-se que o cartao `INTENCAO` existente ja recebe
+`predictionDetail`, sem nova secao ou layout. Com a origem JEV, ele mostra
+`SPRAY · 87% · Jev` ou `DOCK · 91% · Jev`; o percentual e o valor de
+`IntentPrediction.confidence`, que o adaptador JEV-22 preenche com a
+probabilidade da classe escolhida. O teste de apresentacao fixa o formato e o
+arredondamento. Estados `UNKNOWN` e erro continuam na JEV-32.
 
 ## Objetivo
 
@@ -67,7 +76,7 @@ tocado para confirmar, alterar a classe ou enviar um comando.
 ## Criterios de aceite
 
 - [x] `predictionSourceLabel` reconhece `JEV` e nao altera os rótulos locais.
-- [ ] O detalhe usa a probabilidade da classe, com arredondamento consistente,
+- [x] O detalhe usa a probabilidade da classe, com arredondamento consistente,
       e nao chama esse valor de confidence do Jev.
 - [ ] `UNKNOWN`, timeout e erro ficam claros por texto, sem comando e sem
       confundir o operador com estado de execucao.
