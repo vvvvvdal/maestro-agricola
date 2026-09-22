@@ -213,6 +213,10 @@ em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca esta em
 [`corpus/final.tsv`](corpus/final.tsv) e foi congelado antes da rodada remota
 final; seu manifesto registra as restricoes de reproducao.
 
+Os resultados que nunca podem criar `Command`, assim como a diferenca entre
+evidencia do baseline e requisitos pendentes do adaptador Jev, estao em
+[`safety-gates.md`](safety-gates.md).
+
 O `confidence` do Jev tambem pode orientar abstencao, pois indica se a
 distribuicao esta concentrada ou dividida. No Maestro, mesmo alta probabilidade
 ou alto `confidence` nunca removem a confirmacao por audio para uma acao fisica.

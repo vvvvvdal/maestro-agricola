@@ -63,13 +63,13 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-13 | DONE | 22/09 | JEV-10, JEV-11, JEV-12 | Corpus sintetico de desenvolvimento criado em [`corpus/development.tsv`](corpus/development.tsv): 72 casos, 12 por rotulo, com identificador, texto sanitizado, rotulo ouro e categoria. Nenhuma chamada Jev. |
 | JEV-14 | DONE | 22/09 | JEV-13 | Revisao registrada em [`corpus/review.md`](corpus/review.md): 12 casos por rotulo, positivos, fronteiras negativas e ASR para cada classe; sem duplicatas ou dados pessoais. Duas categorias ASR foram explicitadas. |
 | JEV-15 | DONE | 22/09 | JEV-10, JEV-11, JEV-12 | Corpus final criado em [`corpus/final.tsv`](corpus/final.tsv): 60 casos, 10 por rotulo, textos distintos do desenvolvimento e manifesto de congelamento em [`corpus/final-manifest.md`](corpus/final-manifest.md). Nenhuma chamada Jev. |
-| JEV-16 | NEXT | 24/09 | JEV-15 | Revisar os casos que jamais podem criar `Command`: timeout, baixa probabilidade, `UNKNOWN`, `CANCEL`, conflito de alvo e fala injetada. |
+| JEV-16 | DONE | 22/09 | JEV-15 | Matriz de gates registrada em [`safety-gates.md`](safety-gates.md): timeout, baixa probabilidade, `UNKNOWN`, `CANCEL`, conflito e injecao; evidencia do baseline separada de provas Jev pendentes. Teste Kotlin focado passou. |
 
 ## Fase 2 - Adaptador, fakes e harness
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-20 | TODO | 23/09 | JEV-03 | Fixar modelo/API e documentar request minimo de `Choice` para os seis rotulos; nenhuma chave em arquivo versionado. |
+| JEV-20 | NEXT | 23/09 | JEV-03 | Fixar modelo/API e documentar request minimo de `Choice` para os seis rotulos; nenhuma chave em arquivo versionado. |
 | JEV-21 | TODO | 24/09 | JEV-20 | Definir DTO experimental: choice, `probabilities`, confidence Jev, versao, uso, latencia, custo e erro. |
 | JEV-22 | TODO | 24/09 | JEV-21 | Definir mapeamento: `probabilities[choice]` vai para `IntentPrediction.confidence`; confidence Jev fica fora do contrato operacional. |
 | JEV-23 | TODO | 24/09 | JEV-21 | Definir timeout, no maximo uma tentativa segura, classificacao de 429/resposta invalida e falha fechada sem `Command`. |
