@@ -209,8 +209,9 @@ de avaliacao, nunca como resultado.
 
 O corpus de desenvolvimento fica em [`corpus/development.tsv`](corpus/development.tsv).
 Ele e sintetico, sanitizado e ajustavel; o seu formato e as regras de uso ficam
-em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca sera
-outro artefato, congelado antes da rodada remota final.
+em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca esta em
+[`corpus/final.tsv`](corpus/final.tsv) e foi congelado antes da rodada remota
+final; seu manifesto registra as restricoes de reproducao.
 
 O `confidence` do Jev tambem pode orientar abstencao, pois indica se a
 distribuicao esta concentrada ou dividida. No Maestro, mesmo alta probabilidade

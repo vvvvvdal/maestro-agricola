@@ -62,8 +62,8 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-12 | DONE | 22/09 | JEV-03 | Rubrica de `CONFIRM`, `CANCEL` e `UNKNOWN` registrada em [`rubrics.md`](rubrics.md): estado pendente, negacao, hesitacao, ruido, conversa, fora de dominio e injecao. Nenhuma chamada Jev ou mudanca operacional. |
 | JEV-13 | DONE | 22/09 | JEV-10, JEV-11, JEV-12 | Corpus sintetico de desenvolvimento criado em [`corpus/development.tsv`](corpus/development.tsv): 72 casos, 12 por rotulo, com identificador, texto sanitizado, rotulo ouro e categoria. Nenhuma chamada Jev. |
 | JEV-14 | DONE | 22/09 | JEV-13 | Revisao registrada em [`corpus/review.md`](corpus/review.md): 12 casos por rotulo, positivos, fronteiras negativas e ASR para cada classe; sem duplicatas ou dados pessoais. Duas categorias ASR foram explicitadas. |
-| JEV-15 | NEXT | 24/09 | JEV-10, JEV-11, JEV-12 | Montar corpus final de seguranca, congelado e separado do desenvolvimento. |
-| JEV-16 | TODO | 24/09 | JEV-15 | Revisar os casos que jamais podem criar `Command`: timeout, baixa probabilidade, `UNKNOWN`, `CANCEL`, conflito de alvo e fala injetada. |
+| JEV-15 | DONE | 22/09 | JEV-10, JEV-11, JEV-12 | Corpus final criado em [`corpus/final.tsv`](corpus/final.tsv): 60 casos, 10 por rotulo, textos distintos do desenvolvimento e manifesto de congelamento em [`corpus/final-manifest.md`](corpus/final-manifest.md). Nenhuma chamada Jev. |
+| JEV-16 | NEXT | 24/09 | JEV-15 | Revisar os casos que jamais podem criar `Command`: timeout, baixa probabilidade, `UNKNOWN`, `CANCEL`, conflito de alvo e fala injetada. |
 
 ## Fase 2 - Adaptador, fakes e harness
 

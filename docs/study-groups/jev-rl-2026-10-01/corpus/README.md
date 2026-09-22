@@ -2,7 +2,7 @@
 
 `development.tsv` e o corpus de desenvolvimento do experimento. Ele existe
 para validar contrato, fake, adaptador e harness enquanto o corpus final ainda
-esta fechado. Nao representa resultado, cobertura de campo ou calibracao.
+esta separado. Nao representa resultado, cobertura de campo ou calibracao.
 
 ## Dados e privacidade
 
@@ -26,8 +26,9 @@ O TSV possui quatro colunas:
 Cada um dos seis rotulos possui 12 casos iniciais. As categorias seguem as
 rubricas em [`../rubrics.md`](../rubrics.md) e podem crescer durante JEV-14,
 desde que a mudanca seja registrada. Este corpus pode ser ajustado antes de
-JEV-15; o corpus final sera separado, congelado e nunca usado para ajustar
-frases, limiares ou opcoes da `Choice`.
+JEV-15. O corpus final esta em [`final.tsv`](final.tsv), com regras de
+congelamento em [`final-manifest.md`](final-manifest.md), e nunca sera usado
+para ajustar frases, limiares ou opcoes da `Choice`.
 
 ## Limites
 
