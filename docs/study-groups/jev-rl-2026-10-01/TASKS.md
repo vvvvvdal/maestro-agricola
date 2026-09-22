@@ -97,8 +97,10 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
 | JEV-40 | DONE | 22/09 | JEV-26 | Smoke remoto executado uma vez com 6 casos: `jev-1.13.0`, 6/6 acertos, 0 falhas, US$0,000146832 e p95 de 1.694,136 ms. Evidencia sanitizada em [`../../tasks/jev-remote-smoke.md`](../../tasks/jev-remote-smoke.md); nao ajustou o corpus final. |
-| JEV-41 | TODO | 27/09 | JEV-27, JEV-40 | Rodar corpus final uma unica vez dentro do subteto de US$3,00; preservar respostas e erros. |
-| JEV-42 | TODO | 27/09 | JEV-41 | Gerar tabela local versus Jev e reliability diagram; separar calibracao medida de limitacoes de tamanho amostral. |
+| JEV-41 | BLOCKED | 22/09 | JEV-27, JEV-40 | O corpus `final.tsv` foi reservado, mas nao gerou fixture; nao pode ser repetido. Registro em [`../../tasks/jev-final-evaluation.md`](../../tasks/jev-final-evaluation.md). |
+| JEV-41A | DONE | 22/09 | JEV-41 | Incidente registrado: reserva existente, fixture ausente e uso remoto indeterminado; nenhum corpus ou reserva original foi alterado. |
+| JEV-41R | NEXT | 22/09 | JEV-27, JEV-40, JEV-41A | Nova rodada unica em corpus independente, dentro de US$1,50; preservar respostas, erros e reserva propria. |
+| JEV-42 | TODO | 27/09 | JEV-41R | Gerar tabela local versus Jev e reliability diagram; separar calibracao medida de limitacoes de tamanho amostral. |
 | JEV-43 | TODO | 28/09 | JEV-42 | Escrever decisao experimental: evidencia favoravel, contraria ou inconclusiva. Nenhum resultado promove Jev a producao. |
 
 ## Fase 5 - Evidencias e apresentacao
@@ -122,6 +124,8 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 - JEV-23 bloqueia o adaptador; timeout ou erro sem falha fechada e bloqueador.
 - JEV-40 bloqueia afirmacoes sobre o Jev remoto; as fixtures do app demonstram
   somente apresentacao, nao constituem resultado experimental.
+- JEV-41 bloqueia qualquer reuso de `corpus/final.tsv`; somente JEV-41R pode
+  produzir a medicao final, em corpus e reserva novos.
 - JEV-43 bloqueia slides que afirmem resultado do Maestro; sem medicao, o slide
   usa somente a arquitetura proposta.
 - Classes de roadmap nao autorizam mudanca no contrato ROS antes de uma nova

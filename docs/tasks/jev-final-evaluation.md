@@ -2,7 +2,8 @@
 
 ## Status
 
-Implementacao local pronta; a rodada final remota permanece pendente.
+**Interrompida e indeterminada em 22/09/2026.** Este artefato nao pode ser
+executado novamente.
 
 ## Objetivo
 
@@ -65,3 +66,18 @@ uma rodada de ajuste.
 - Testes portateis usam transporte falso e nao fazem rede.
 - A rodada remota unica fica abaixo de US$3,00, produz fixture por ID e gera
   harness/metricas sanitizados.
+
+## Registro JEV-41A
+
+`results/jev-final-reservation.json` foi criado antes da chamada remota, como
+previsto, e permanece como evidencia de que a rodada original foi reservada.
+Nao existe `jev-final-fixture.json`, processo ativo ou resultado pareado. O
+painel apresentado pelo operador mostra quatro requests, 1.507 tokens e cerca
+de US$0,0001, mas tambem informa que as estatisticas podem atrasar; ele nao
+identifica a qual etapa pertence cada request. Logo, nao e possivel afirmar
+que a rodada nao enviou nenhuma fala nem que ela foi concluida.
+
+O corpus e a reserva originais permanecem inalterados. A decisao humana foi
+criar `JEV-41R` em corpus independente, documentada em
+[`jev-api-approval.md`](jev-api-approval.md); ela nao libera a remocao da
+reserva nem uma repeticao de `final.tsv`.

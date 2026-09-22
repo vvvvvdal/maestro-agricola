@@ -37,12 +37,29 @@ ocorre antes de `JEV-40`; fakes e corpus continuam locais.
 | Uso | Limite | Regra |
 | --- | ---: | --- |
 | `JEV-40`, smoke remoto | US$0,50 | uma rodada pequena, sem ajustar corpus final |
-| `JEV-41`, corpus final | US$3,00 | uma rodada congelada, com respostas e erros preservados |
-| Reserva nao alocada | US$1,50 | so pode ser usada apos registrar motivo e atualizar `TASKS.md` |
+| `JEV-41A`, final original interrompido | US$3,00 | corpus original nao pode ser repetido; custo real e indeterminado |
+| `JEV-41R`, final de recuperacao | US$1,50 | nova rodada unica, em corpus independente e congelado |
+| Reserva nao alocada | US$0,00 | alocada explicitamente para `JEV-41R` em 22/09/2026 |
 
 Adicionar credito na conta nao aumenta este teto automaticamente. Qualquer novo
 teto exige aprovacao humana registrada, atualizacao deste documento e
 replanejamento das tasks afetadas.
+
+## Recuperacao aprovada
+
+Em 22/09/2026, o operador aprovou uma avaliacao final de recuperacao apos a
+rodada `JEV-41A` ficar interrompida e indeterminada. A reserva atomica do
+corpus original existe, mas a fixture final nao existe. O painel apresentado
+pelo operador mostra quatro requests, 1.507 tokens e cerca de US$0,0001, com
+aviso de estatisticas atrasadas; esses valores nao podem ser atribuidos com
+seguranca a uma etapa especifica.
+
+Portanto, `final.tsv` permanece preservado e inelegivel para repeticao. A
+autorizacao permite somente `JEV-41R`, em corpus novo, com manifest, hash,
+reserva e outputs novos. O seu pior caso matematico de US$0,322560 cabe nos
+US$1,50 alocados e no teto cumulativo de US$5,00. Esta recuperacao nao usa
+novos dados pessoais, nao altera a chave e nao autoriza nova tentativa do
+corpus original.
 
 ## Credencial local
 

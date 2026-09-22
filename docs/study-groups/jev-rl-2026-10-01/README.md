@@ -217,7 +217,10 @@ O corpus de desenvolvimento fica em [`corpus/development.tsv`](corpus/developmen
 Ele e sintetico, sanitizado e ajustavel; o seu formato e as regras de uso ficam
 em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca esta em
 [`corpus/final.tsv`](corpus/final.tsv) e foi congelado antes da rodada remota
-final; seu manifesto registra as restricoes de reproducao.
+final; seu manifesto registra as restricoes de reproducao. Ele foi reservado
+em uma rodada interrompida e permanece inelegivel para repeticao. A medicao
+final de recuperacao usara corpus independente, com manifest proprio, sem
+alterar os textos originais.
 
 O harness [`../../../tools/jev_intent_harness.py`](../../../tools/jev_intent_harness.py)
 executa o baseline local e uma fixture Jev contra os mesmos IDs e produz um

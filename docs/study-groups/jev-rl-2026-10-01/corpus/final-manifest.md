@@ -1,6 +1,6 @@
 # Corpus Jev - Avaliacao Final
 
-Status: FROZEN em 22/09/2026
+Status: FROZEN e INELEGIVEL PARA REPETICAO em 22/09/2026
 
 `final.tsv` e o corpus de seguranca para a unica rodada final planejada em
 JEV-41. Ele e separado do corpus de desenvolvimento e nao pode orientar
@@ -33,3 +33,10 @@ adaptador Jev.
 Nenhum caso concede autoridade de movimento. `CANCEL`, `UNKNOWN`, injecao,
 duvida, alvo sem acao e confirmacao fora de estado pendente continuam sem
 `Command`; JEV-16 revisa explicitamente essas garantias de integracao.
+
+## Registro de interrupcao
+
+O runner criou `../results/jev-final-reservation.json` antes de qualquer HTTP,
+mas nenhuma fixture final foi gravada. Como uma interrupcao nesse intervalo nao
+permite provar se houve request, este corpus nao pode ser reaberto. A nova
+avaliacao autorizada usa um corpus independente e nao altera este manifesto.

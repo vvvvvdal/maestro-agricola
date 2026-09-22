@@ -34,6 +34,10 @@ JEV-15. O corpus final esta em [`final.tsv`](final.tsv), com regras de
 congelamento em [`final-manifest.md`](final-manifest.md), e nunca sera usado
 para ajustar frases, limiares ou opcoes da `Choice`.
 
+`final.tsv` foi reservado para uma rodada interrompida e nao pode ser repetido.
+A recuperacao autorizada usa corpus final independente, com outro nome, hash e
+manifest; ela nao altera o original nem usa seus textos para ajuste.
+
 ## Limites
 
 - `SPRAY`, `DOCK` e `UNDOCK` continuam exigindo estado valido e confirmacao.
