@@ -158,7 +158,7 @@ class InteractionEngine(
 
         if (intent !in SUPPORTED_INTENTS) {
             return ambiguous(
-                "Intenção não reconhecida",
+                "Intenção não reconhecida. Nenhum comando enviado",
                 "Não entendi. Diga pulverizar, sair da doca ou retornar à doca.",
                 prediction
             )

@@ -73,6 +73,7 @@ class InteractionEngineTest {
         val unknown = engine.handleTranscript("qual a previsão do tempo")
         assertEquals(InteractionState.TARGET_READY, unknown.state)
         assertNull(unknown.command)
+        assertEquals("Intenção não reconhecida. Nenhum comando enviado", unknown.message)
     }
 
     @Test

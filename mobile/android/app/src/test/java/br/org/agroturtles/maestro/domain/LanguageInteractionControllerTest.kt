@@ -117,7 +117,7 @@ class LanguageInteractionControllerTest {
         assertTrue(dispatch is LanguageDispatch.Operational)
         val result = (dispatch as LanguageDispatch.Operational).result
         assertEquals(InteractionState.IDLE, result.state)
-        assertEquals("Intenção não reconhecida", result.message)
+        assertEquals("Intenção não reconhecida. Nenhum comando enviado", result.message)
         assertNull(result.command)
     }
 

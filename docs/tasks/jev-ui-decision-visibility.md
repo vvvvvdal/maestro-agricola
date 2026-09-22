@@ -1,6 +1,6 @@
 # Visualizacao da decisao Jev no Android
 
-Status: JEV-30 e JEV-31 concluidas; JEV-32 a JEV-34 planejadas para `test/jev`
+Status: JEV-30 a JEV-32 concluidas; JEV-33 e JEV-34 planejadas para `test/jev`
 
 Responsavel sugerido: Atila (Android), com Rafael na evidencia do classificador
 
@@ -19,6 +19,21 @@ Em 22/09/2026, confirmou-se que o cartao `INTENCAO` existente ja recebe
 `IntentPrediction.confidence`, que o adaptador JEV-22 preenche com a
 probabilidade da classe escolhida. O teste de apresentacao fixa o formato e o
 arredondamento. Estados `UNKNOWN` e erro continuam na JEV-32.
+
+## JEV-32 concluida
+
+Em 22/09/2026, o cartao `INTENCAO` passou a apresentar quatro estados no
+mesmo espaco: `SPRAY`, `DOCK`, `UNKNOWN` valido e indisponibilidade do Jev.
+O fallback fechado do `JevIntentClassifier` ja e `UNKNOWN` com probabilidade
+zero e origem `JEV`; como uma Choice valida sempre seleciona uma probabilidade
+positiva, a apresentacao usa esse sinal para mostrar `Classificacao
+indisponivel` e `sem decisao remota · nenhum comando enviado`.
+
+Um `UNKNOWN` valido permanece diferente: `Nao reconhecida` e `UNKNOWN · 42% ·
+Jev · nenhum comando enviado`. O motor tambem informa `Intencao nao
+reconhecida. Nenhum comando enviado` no cartao de status. Nenhum desses textos
+altera estado operacional, cria `Command`, liga chamadas remotas ou permite
+confirmacao.
 
 ## Objetivo
 
@@ -69,8 +84,8 @@ tocado para confirmar, alterar a classe ou enviar um comando.
 | --- | --- | --- | --- |
 | Jev escolhe `SPRAY` | `Pulverizar` | `SPRAY · 87% · Jev` | A confirmacao existente continua obrigatoria. |
 | Jev escolhe `DOCK` | `Retornar a doca` | `DOCK · 91% · Jev` | Alvo continua dispensado; nenhuma mudanca no lifecycle. |
-| Jev escolhe `UNKNOWN` | `Nao reconhecida` | `UNKNOWN · 42% · Jev` | Nenhum `Command`; segue o fluxo atual de conversa. |
-| Timeout ou erro Jev | `Classificacao indisponivel` | `sem decisao remota` | Falha fechada, sem `Command`; o estado visual explica a recusa. |
+| Jev escolhe `UNKNOWN` | `Nao reconhecida` | `UNKNOWN · 42% · Jev · nenhum comando enviado` | Nenhum `Command`; segue o fluxo atual de conversa. |
+| Timeout ou erro Jev | `Classificacao indisponivel` | `sem decisao remota · nenhum comando enviado` | Falha fechada, sem `Command`; o estado visual explica a recusa. |
 | Baseline local | leitura atual | `... · modelo local` | Usado como comparacao lado a lado em capturas separadas. |
 
 ## Criterios de aceite
@@ -78,12 +93,12 @@ tocado para confirmar, alterar a classe ou enviar um comando.
 - [x] `predictionSourceLabel` reconhece `JEV` e nao altera os rótulos locais.
 - [x] O detalhe usa a probabilidade da classe, com arredondamento consistente,
       e nao chama esse valor de confidence do Jev.
-- [ ] `UNKNOWN`, timeout e erro ficam claros por texto, sem comando e sem
+- [x] `UNKNOWN`, timeout e erro ficam claros por texto, sem comando e sem
       confundir o operador com estado de execucao.
 - [ ] Detalhes de distribuicao aparecem apenas no painel de testes do mock.
 - [ ] O cartao preserva tipografia, espacamento, cores semanticas e rolagem da
       `MaestroScreen`; nenhuma informacao depende apenas de cor.
-- [ ] Testes de `JourneyPresentation` cobrem Jev, local, `UNKNOWN` e erro.
+- [x] Testes de `JourneyPresentation` cobrem Jev, local, `UNKNOWN` e erro.
 - [ ] Inspecao no `mockDebug` valida tela compacta e leitor de tela anuncia uma
       frase contextual, por exemplo: `Intencao: Pulverizar. Jev: 87 por cento.`
 

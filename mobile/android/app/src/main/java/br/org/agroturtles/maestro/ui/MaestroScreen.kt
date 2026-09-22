@@ -109,6 +109,13 @@ fun MaestroScreen(
 
             JourneyStrip(steps = journeySteps(result.state, result.intent))
 
+            val intentPresentation = intentPresentation(
+                intent = result.intent,
+                label = result.prediction?.label,
+                confidence = result.prediction?.confidence,
+                source = result.prediction?.source,
+            )
+
             Row(
                 modifier = Modifier.height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -124,13 +131,9 @@ fun MaestroScreen(
                 )
                 FactCard(
                     title = "INTENÇÃO",
-                    value = intentValue(result.intent),
-                    detail = predictionDetail(
-                        result.prediction?.label,
-                        result.prediction?.confidence,
-                        result.prediction?.source,
-                    ),
-                    tone = if (result.intent == null) Tone.NEUTRAL else Tone.INFO,
+                    value = intentPresentation.value,
+                    detail = intentPresentation.detail,
+                    tone = intentPresentation.tone,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),

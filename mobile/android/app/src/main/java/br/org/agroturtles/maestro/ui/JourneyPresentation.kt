@@ -119,6 +119,41 @@ fun targetSourceLabel(source: String?): String = when (source) {
 fun intentValue(intent: String?): String =
     if (intent == null) "—" else actionLabel(intent)
 
+data class IntentPresentation(
+    val value: String,
+    val detail: String,
+    val tone: Tone,
+)
+
+/**
+ * Keeps a valid UNKNOWN choice distinct from Jev's closed failure fallback.
+ * Jev reserves UNKNOWN with zero probability for unavailable evaluations.
+ */
+fun intentPresentation(
+    intent: String?,
+    label: String?,
+    confidence: Double?,
+    source: String?,
+): IntentPresentation = when {
+    isJevUnavailable(label, confidence, source) -> IntentPresentation(
+        value = "Classificação indisponível",
+        detail = "sem decisão remota · nenhum comando enviado",
+        tone = Tone.ATTENTION,
+    )
+
+    label == "UNKNOWN" -> IntentPresentation(
+        value = "Não reconhecida",
+        detail = predictionDetail(label, confidence, source) + " · nenhum comando enviado",
+        tone = Tone.ATTENTION,
+    )
+
+    else -> IntentPresentation(
+        value = intentValue(intent),
+        detail = predictionDetail(label, confidence, source),
+        tone = if (intent == null) Tone.NEUTRAL else Tone.INFO,
+    )
+}
+
 fun predictionDetail(label: String?, confidence: Double?, source: String?): String {
     if (label == null || confidence == null) return "aguardando fala"
     return "$label · ${(confidence * 100).roundToInt()}% · ${predictionSourceLabel(source)}"
@@ -130,6 +165,9 @@ fun predictionSourceLabel(source: String?): String = when (source) {
     "MODEL" -> "modelo local"
     else -> "classificador local"
 }
+
+private fun isJevUnavailable(label: String?, confidence: Double?, source: String?): Boolean =
+    label == "UNKNOWN" && confidence == 0.0 && source == "JEV"
 
 data class RobotPresentation(
     val title: String,

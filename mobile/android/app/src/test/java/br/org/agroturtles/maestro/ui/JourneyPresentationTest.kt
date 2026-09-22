@@ -90,4 +90,32 @@ class JourneyPresentationTest {
         assertEquals("classificador local", predictionSourceLabel(null))
         assertEquals("aguardando fala", predictionDetail(null, null, null))
     }
+
+    @Test
+    fun jevIntentStatesKeepUnknownAndUnavailableSafe() {
+        assertEquals(
+            IntentPresentation("Pulverizar", "SPRAY · 87% · Jev", Tone.INFO),
+            intentPresentation("SPRAY", "SPRAY", 0.87, "JEV"),
+        )
+        assertEquals(
+            IntentPresentation("Retornar à doca", "DOCK · 91% · Jev", Tone.INFO),
+            intentPresentation("DOCK", "DOCK", 0.91, "JEV"),
+        )
+        assertEquals(
+            IntentPresentation(
+                "Não reconhecida",
+                "UNKNOWN · 42% · Jev · nenhum comando enviado",
+                Tone.ATTENTION,
+            ),
+            intentPresentation(null, "UNKNOWN", 0.42, "JEV"),
+        )
+        assertEquals(
+            IntentPresentation(
+                "Classificação indisponível",
+                "sem decisão remota · nenhum comando enviado",
+                Tone.ATTENTION,
+            ),
+            intentPresentation(null, "UNKNOWN", 0.0, "JEV"),
+        )
+    }
 }
