@@ -24,8 +24,8 @@ controlada, com uma task por vez, orcamento maximo de US$5 e falha fechada.
 - A tela preserva o cartao `INTENCAO` e passa a distinguir a origem `JEV` da
   probabilidade da classe; a distribuicao completa e a confidence do Jev ficam
   no registro de benchmark e no painel de testes.
-- Arquitetura de trabalho aplicada: Terra planner `medium`, workers Gemini CLI
-  read-only e Terra reviewer `high`; ver [`docs/agent-architecture.md`](docs/agent-architecture.md).
+- Arquitetura de trabalho aplicada: Terra planner `medium`, workers Gemini via
+  Antigravity CLI read-only e Terra reviewer `high`; ver [`docs/agent-architecture.md`](docs/agent-architecture.md).
 - Plano, datas e criterios de aceite: [`docs/study-groups/jev-rl-2026-10-01/TASKS.md`](docs/study-groups/jev-rl-2026-10-01/TASKS.md).
 - O plano do estudo pode ser replanejado quando houver evidencia ou bloqueio;
   toda mudanca precisa registrar motivo, data, dependencia e impacto na demo.

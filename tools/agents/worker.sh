@@ -5,7 +5,7 @@ set -euo pipefail
 source "$(dirname "$0")/common.sh"
 
 if [ "$#" -lt 2 ]; then
-  printf 'Usage: %s <research|test|implementation> <question>\n' "$0" >&2
+  printf 'Usage: %s <research|test|implementation> [--file <tracked-relative-path>]... <question>\n' "$0" >&2
   exit 2
 fi
 
@@ -21,7 +21,42 @@ case "$role" in
 esac
 
 require_test_jev_branch
-require_command gemini
+require_command agy
 
-exec gemini --skip-trust --approval-mode plan --sandbox --output-format text -p \
-  "You are the $role worker for Maestro Agricola on test/jev. $* Read only the minimum relevant files. Do not edit files, create worktrees, run mutating commands, access credentials, call external services, or make safety/product decisions. Return concise evidence with file paths, risks, and recommended focused tests."
+context_files=(AGENTS.md GEMINI.md)
+
+while [ "$#" -gt 1 ] && [ "$1" = "--file" ]; do
+  context_files+=("$2")
+  shift 2
+done
+
+question="$*"
+
+for file in "${context_files[@]}"; do
+  case "$file" in
+    /*|../*|*/../*|.|..|*.env|*.env.*|*credentials*|*secret*|*token*|*key*)
+      printf 'Unsafe context path: %s\n' "$file" >&2
+      exit 2
+      ;;
+  esac
+
+  if [ ! -f "$PROJECT_ROOT/$file" ]; then
+    printf 'Context file not found: %s\n' "$file" >&2
+    exit 2
+  fi
+
+  if ! git ls-files --error-unmatch -- "$file" >/dev/null 2>&1; then
+    printf 'Context file must be tracked: %s\n' "$file" >&2
+    exit 2
+  fi
+done
+
+context=""
+for file in "${context_files[@]}"; do
+  context+=$'\n\n--- BEGIN '"$file"$' ---\n'
+  context+="$(sed -n '1,500p' "$PROJECT_ROOT/$file")"
+  context+=$'\n--- END '"$file"$' ---'
+done
+
+exec agy --sandbox --print-timeout 2m --output-format text -p \
+  "You are the $role worker for Maestro Agricola on test/jev. Analyze only the supplied context bundle; do not invoke any tool or shell command. Do not edit files, create worktrees, access credentials, call external services, or make safety/product decisions. Answer only what the task requests.\n\nTask:\n$question\n\nContext bundle:$context"

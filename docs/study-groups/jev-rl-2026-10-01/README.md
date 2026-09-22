@@ -10,9 +10,9 @@ ao pitch do Maestro Agricola. Nenhum deck e versionado nesta pasta ainda.
 ## Como o estudo sera executado
 
 Todo trabalho do estudo fica em `test/jev`. Terra planeja as tasks com effort
-medio, workers Gemini CLI fazem perguntas independentes em modo somente leitura
-e Terra revisa o diff com effort alto. O integrador humano e o unico writer e
-decisor. A configuracao e os comandos ficam em
+medio, workers Gemini via Antigravity CLI fazem perguntas independentes em modo
+somente leitura e Terra revisa o diff com effort alto. O integrador humano e o
+unico writer e decisor. A configuracao e os comandos ficam em
 [`../../agent-architecture.md`](../../agent-architecture.md).
 
 ## Questao central

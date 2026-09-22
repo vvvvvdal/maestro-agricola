@@ -39,9 +39,9 @@ tools/agents/preflight.sh
 ```
 
 Use a arquitetura documentada em [`docs/agent-architecture.md`](docs/agent-architecture.md):
-Terra planeja com effort medio, workers Gemini CLI investigam sem escrita e
-Terra revisa com effort alto. O integrador humano continua sendo o unico writer
-e decisor. As tarefas e os gates da apresentacao ficam em
+Terra planeja com effort medio, workers Gemini via Antigravity CLI investigam
+sem escrita e Terra revisa com effort alto. O integrador humano continua sendo
+o unico writer e decisor. As tarefas e os gates da apresentacao ficam em
 [`docs/study-groups/jev-rl-2026-10-01/TASKS.md`](docs/study-groups/jev-rl-2026-10-01/TASKS.md).
 
 ## Fluxo de Git

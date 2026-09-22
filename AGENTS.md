@@ -46,8 +46,9 @@ Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas co
 
 - Para o experimento JEV, trabalhar somente na branch `test/jev`; o script
   `tools/agents/preflight.sh` deve passar antes de delegar ou integrar uma task.
-- Terra com effort `medium` planeja, Terra com effort `high` revisa e Gemini CLI
-  atua somente como worker de leitura em `--approval-mode plan --sandbox`.
+- Terra com effort `medium` planeja, Terra com effort `high` revisa e um modelo
+  Gemini via Antigravity CLI (`agy`) atua somente como worker de leitura em
+  sandbox, a partir de um pacote de contexto curado pelo integrador.
 - O humano integrador e o unico writer. Nenhum worker pode editar arquivos,
   criar worktree, iniciar servicos, ler segredos ou fazer chamadas ao JEV.
 - Handoffs precisam declarar escopo, evidencia, riscos, testes focados e o
