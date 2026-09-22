@@ -47,6 +47,7 @@ import br.org.agroturtles.maestro.R
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 
 private const val MOCK_FRAME_SOURCE = "mock"
 
@@ -78,6 +79,7 @@ fun MaestroScreen(
     result: InteractionResult,
     robot: RobotPresentation,
     frameSource: String,
+    jevDiagnostic: JevChoiceAnswer?,
     endpoint: String,
     onEndpointChange: (String) -> Unit,
     transcript: String,
@@ -159,6 +161,7 @@ fun MaestroScreen(
                 expanded = toolsExpanded,
                 onToggle = { toolsExpanded = !toolsExpanded },
                 frameSource = frameSource,
+                jevDiagnostic = jevDiagnostic,
                 endpoint = endpoint,
                 onEndpointChange = onEndpointChange,
                 transcript = transcript,
@@ -424,12 +427,17 @@ private fun ToolsPanel(
     expanded: Boolean,
     onToggle: () -> Unit,
     frameSource: String,
+    jevDiagnostic: JevChoiceAnswer?,
     endpoint: String,
     onEndpointChange: (String) -> Unit,
     transcript: String,
     onTranscriptChange: (String) -> Unit,
     onInterpret: () -> Unit,
 ) {
+    val diagnostic = jevDiagnosticPresentation(jevDiagnostic)
+    val showsJevDiagnostics = shouldShowJevDiagnostics(frameSource, diagnostic)
+    var diagnosticsExpanded by rememberSaveable { mutableStateOf(false) }
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         TextButton(onClick = onToggle, modifier = Modifier.align(Alignment.Start)) {
             Text(
@@ -472,6 +480,64 @@ private fun ToolsPanel(
                     Text(
                         text = "Fonte de frame: $frameSource · modelo e alvos lidos dos assets versionados",
                         style = MaterialTheme.typography.bodySmall,
+                        color = MaestroBlue,
+                    )
+                    if (showsJevDiagnostics) {
+                        JevDiagnostics(
+                            diagnostic = requireNotNull(diagnostic),
+                            expanded = diagnosticsExpanded,
+                            onToggle = { diagnosticsExpanded = !diagnosticsExpanded },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun JevDiagnostics(
+    diagnostic: JevDiagnosticPresentation,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        TextButton(onClick = onToggle, modifier = Modifier.align(Alignment.Start)) {
+            Text(
+                text = if (expanded) "Ocultar diagnóstico Jev" else "Ver diagnóstico Jev",
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
+
+        if (expanded) {
+            Text(
+                text = "Fixture local do mock · não participa da decisão operacional",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaestroBlue,
+            )
+            Text(
+                text = "Escolha: ${diagnostic.choice} · probabilidade: ${diagnostic.selectedProbability}",
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.SemiBold,
+                color = MaestroBlue,
+            )
+            Text(
+                text = "Confidence do Jev: ${diagnostic.confidence}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaestroBlue,
+            )
+            diagnostic.rows.forEach { row ->
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = row.label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaestroBlue,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        text = row.probability,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaestroBlue,
                     )
                 }

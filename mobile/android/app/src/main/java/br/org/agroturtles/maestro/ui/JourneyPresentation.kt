@@ -1,6 +1,7 @@
 package br.org.agroturtles.maestro.ui
 
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 import br.org.agroturtles.maestro.domain.actionLabel
 import br.org.agroturtles.maestro.domain.plotLabel
 import kotlin.math.roundToInt
@@ -168,6 +169,51 @@ fun predictionSourceLabel(source: String?): String = when (source) {
 
 private fun isJevUnavailable(label: String?, confidence: Double?, source: String?): Boolean =
     label == "UNKNOWN" && confidence == 0.0 && source == "JEV"
+
+data class JevDiagnosticRow(
+    val label: String,
+    val probability: String,
+)
+
+data class JevDiagnosticPresentation(
+    val choice: String,
+    val selectedProbability: String,
+    val confidence: String,
+    val rows: List<JevDiagnosticRow>,
+)
+
+private val JEV_DIAGNOSTIC_LABELS = listOf(
+    "SPRAY",
+    "DOCK",
+    "UNDOCK",
+    "CONFIRM",
+    "CANCEL",
+    "UNKNOWN",
+)
+
+fun jevDiagnosticPresentation(answer: JevChoiceAnswer?): JevDiagnosticPresentation? {
+    if (answer == null || answer.choice !in JEV_DIAGNOSTIC_LABELS) return null
+    if (answer.probabilities.keys != JEV_DIAGNOSTIC_LABELS.toSet()) return null
+    if (!answer.confidence.isFinite() || answer.confidence !in 0.0..1.0) return null
+
+    val probabilities = JEV_DIAGNOSTIC_LABELS.map { label ->
+        val probability = answer.probabilities.getValue(label)
+        if (!probability.isFinite() || probability !in 0.0..1.0) return null
+        JevDiagnosticRow(label, probability.asPercent())
+    }
+
+    return JevDiagnosticPresentation(
+        choice = answer.choice,
+        selectedProbability = answer.probabilities.getValue(answer.choice).asPercent(),
+        confidence = answer.confidence.asPercent(),
+        rows = probabilities,
+    )
+}
+
+fun shouldShowJevDiagnostics(frameSource: String, diagnostic: JevDiagnosticPresentation?): Boolean =
+    frameSource == "mock" && diagnostic != null
+
+private fun Double.asPercent(): String = "${(this * 100).roundToInt()}%"
 
 data class RobotPresentation(
     val title: String,

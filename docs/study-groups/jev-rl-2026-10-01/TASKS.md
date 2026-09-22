@@ -85,8 +85,8 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-30 | DONE | 22/09 | JEV-22 | `predictionSourceLabel` reconhece `JEV` como `Jev`, preservando fontes locais e fallback. Teste de apresentacao incluido. |
 | JEV-31 | DONE | 22/09 | JEV-30 | O cartao `INTENCAO` existente usa `predictionDetail`: `SPRAY · 87% · Jev` e `DOCK · 91% · Jev`, com a probabilidade da classe e arredondamento consistente. Teste de apresentacao incluido. |
 | JEV-32 | DONE | 22/09 | JEV-31 | Estados visuais para `SPRAY`, `DOCK`, `UNKNOWN` e indisponibilidade fechada; texto explicita que nenhum comando foi enviado. |
-| JEV-33 | NEXT | 27/09 | JEV-31 | Mostrar vetor e confidence Jev somente em `Ajustes de teste` do `mock`, como diagnostico recolhido. |
-| JEV-34 | TODO | 27/09 | JEV-32, JEV-33 | Executar testes unitarios Android focados e inspecao `mockDebug`: cartao compacto, rolagem, semantica e leitura contextual. |
+| JEV-33 | DONE | 22/09 | JEV-31 | Diagnostico recolhido no `mock`: vetor ordenado e confidence Jev em fixture local; `dat` recebe `null`. Testes incluidos. |
+| JEV-34 | NEXT | 27/09 | JEV-32, JEV-33 | Executar testes unitarios Android focados e inspecao `mockDebug`: cartao compacto, rolagem, semantica e leitura contextual. |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
 

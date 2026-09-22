@@ -1,7 +1,10 @@
 package br.org.agroturtles.maestro.ui
 
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 
@@ -117,5 +120,33 @@ class JourneyPresentationTest {
             ),
             intentPresentation(null, "UNKNOWN", 0.0, "JEV"),
         )
+    }
+
+    @Test
+    fun jevDiagnosticsAreStructuredAndRestrictedToMock() {
+        val answer = JevChoiceAnswer(
+            choice = "SPRAY",
+            probabilities = linkedMapOf(
+                "SPRAY" to 0.87,
+                "DOCK" to 0.03,
+                "UNDOCK" to 0.02,
+                "CONFIRM" to 0.01,
+                "CANCEL" to 0.01,
+                "UNKNOWN" to 0.06,
+            ),
+            confidence = 0.74,
+        )
+
+        val diagnostic = requireNotNull(jevDiagnosticPresentation(answer))
+        assertEquals("SPRAY", diagnostic.choice)
+        assertEquals("87%", diagnostic.selectedProbability)
+        assertEquals("74%", diagnostic.confidence)
+        assertEquals(
+            listOf("SPRAY", "DOCK", "UNDOCK", "CONFIRM", "CANCEL", "UNKNOWN"),
+            diagnostic.rows.map { it.label },
+        )
+        assertFalse(shouldShowJevDiagnostics("dat", diagnostic))
+        assertFalse(shouldShowJevDiagnostics("mock", null))
+        assertTrue(shouldShowJevDiagnostics("mock", diagnostic))
     }
 }

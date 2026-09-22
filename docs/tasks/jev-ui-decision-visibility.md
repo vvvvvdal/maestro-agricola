@@ -1,6 +1,6 @@
 # Visualizacao da decisao Jev no Android
 
-Status: JEV-30 a JEV-32 concluidas; JEV-33 e JEV-34 planejadas para `test/jev`
+Status: JEV-30 a JEV-33 concluidas; JEV-34 planejada para `test/jev`
 
 Responsavel sugerido: Atila (Android), com Rafael na evidencia do classificador
 
@@ -34,6 +34,21 @@ Jev · nenhum comando enviado`. O motor tambem informa `Intencao nao
 reconhecida. Nenhum comando enviado` no cartao de status. Nenhum desses textos
 altera estado operacional, cria `Command`, liga chamadas remotas ou permite
 confirmacao.
+
+## JEV-33 concluida
+
+Em 22/09/2026, `Ajustes de teste` ganhou um diagnostico Jev recolhido no
+flavor `mock`. A fixture local mostra a classe escolhida, a probabilidade da
+classe, a metrica `confidence` propria do Jev e o vetor ordenado dos seis
+rotulos. Ela fica em `src/mock`; no source set `dat`, o mesmo provider retorna
+`null`, portanto nao ha vetor ou confidence no fluxo da demonstracao.
+
+A fixture e rotulada como local e sem participacao na decisao operacional. Ela
+nao altera `IntentPrediction`, `InteractionEngine`, `Command`, classificacao
+local, chamadas remotas ou os dados enviados ao Jev.
+
+Os testes tambem acompanham os source sets: o `mock` valida o vetor completo e
+o `dat` valida explicitamente a ausencia do diagnostico.
 
 ## Objetivo
 
@@ -95,7 +110,7 @@ tocado para confirmar, alterar a classe ou enviar um comando.
       e nao chama esse valor de confidence do Jev.
 - [x] `UNKNOWN`, timeout e erro ficam claros por texto, sem comando e sem
       confundir o operador com estado de execucao.
-- [ ] Detalhes de distribuicao aparecem apenas no painel de testes do mock.
+- [x] Detalhes de distribuicao aparecem apenas no painel de testes do mock.
 - [ ] O cartao preserva tipografia, espacamento, cores semanticas e rolagem da
       `MaestroScreen`; nenhuma informacao depende apenas de cor.
 - [x] Testes de `JourneyPresentation` cobrem Jev, local, `UNKNOWN` e erro.
