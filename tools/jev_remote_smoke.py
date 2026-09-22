@@ -230,14 +230,20 @@ def retry_delay(headers: Mapping[str, str]) -> float | None:
     return seconds if 0.0 <= seconds <= MAX_RETRY_AFTER_SECONDS else None
 
 
-def run_smoke(cases: list[SmokeCase], api_key: str, transport: Transport, sleep: Callable[[float], None] = time.sleep) -> dict[str, Any]:
-    if worst_case_cost_usd() > SMOKE_COST_CAP_USD:
-        raise RuntimeError("documented model limit exceeds smoke cost cap")
-
+def run_evaluation(
+    cases: list[SmokeCase],
+    api_key: str,
+    transport: Transport,
+    max_total_attempts: int,
+    cost_cap_usd: float,
+    sleep: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    if worst_case_cost_usd(max_total_attempts) > cost_cap_usd:
+        raise RuntimeError("documented model limit exceeds evaluation cost cap")
     attempts = 0
     results: dict[str, dict[str, Any]] = {}
     for case in cases:
-        if attempts >= MAX_TOTAL_ATTEMPTS:
+        if attempts >= max_total_attempts:
             results[case.case_id] = failed_result("ATTEMPT_LIMIT", None)
             continue
 
@@ -265,7 +271,7 @@ def run_smoke(cases: list[SmokeCase], api_key: str, transport: Transport, sleep:
 
             code = error_code(response.status)
             delay = retry_delay(response.headers) if response.status in (429, 529) else None
-            if can_retry and delay is not None and attempts < MAX_TOTAL_ATTEMPTS:
+            if can_retry and delay is not None and attempts < max_total_attempts:
                 can_retry = False
                 sleep(delay)
                 continue
@@ -275,12 +281,23 @@ def run_smoke(cases: list[SmokeCase], api_key: str, transport: Transport, sleep:
     return {"schema_version": "1.0", "model": MODEL, "results": results}
 
 
+def run_smoke(cases: list[SmokeCase], api_key: str, transport: Transport, sleep: Callable[[float], None] = time.sleep) -> dict[str, Any]:
+    return run_evaluation(
+        cases,
+        api_key,
+        transport,
+        MAX_TOTAL_ATTEMPTS,
+        SMOKE_COST_CAP_USD,
+        sleep,
+    )
+
+
 def elapsed_ms(started_at: int) -> float:
     return (time.perf_counter_ns() - started_at) / 1_000_000
 
 
-def worst_case_cost_usd() -> float:
-    return MAX_TOTAL_ATTEMPTS * MODEL_CONTEXT_LIMIT_TOKENS * INPUT_COST_PER_MILLION_USD / 1_000_000
+def worst_case_cost_usd(max_total_attempts: int = MAX_TOTAL_ATTEMPTS) -> float:
+    return max_total_attempts * MODEL_CONTEXT_LIMIT_TOKENS * INPUT_COST_PER_MILLION_USD / 1_000_000
 
 
 def main() -> None:
