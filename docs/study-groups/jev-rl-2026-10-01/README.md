@@ -207,6 +207,11 @@ O corpus atual de seis rotulos e pequeno demais para provar calibracao. Sem uma
 amostra maior e rotulada, os graficos de calibracao devem aparecer como plano
 de avaliacao, nunca como resultado.
 
+O corpus de desenvolvimento fica em [`corpus/development.tsv`](corpus/development.tsv).
+Ele e sintetico, sanitizado e ajustavel; o seu formato e as regras de uso ficam
+em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca sera
+outro artefato, congelado antes da rodada remota final.
+
 O `confidence` do Jev tambem pode orientar abstencao, pois indica se a
 distribuicao esta concentrada ou dividida. No Maestro, mesmo alta probabilidade
 ou alto `confidence` nunca removem a confirmacao por audio para uma acao fisica.
