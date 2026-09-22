@@ -31,7 +31,9 @@ O planner e o reviewer usam `gpt-5.6-terra`. Os perfis locais aplicados sao
 `$CODEX_HOME/maestro-reviewer.config.toml` (effort `high`). Eles fixam sandbox
 read-only e pedem aprovacao para qualquer acao fora desse limite. O worker
 Gemini usa o modelo disponivel na conta ativa, sem pin de modelo; sua funcao e
-coletar evidencia, nao produzir autoridade.
+coletar evidencia, nao produzir autoridade. O wrapper passa `--skip-trust` para
+evitar que um diretorio ainda nao confiavel rebaixe `--approval-mode plan` para
+`default`; a sandbox e a proibicao de escrita continuam obrigatorias.
 
 ## Contrato dos papeis
 

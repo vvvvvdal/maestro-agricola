@@ -23,5 +23,5 @@ esac
 require_test_jev_branch
 require_command gemini
 
-exec gemini --approval-mode plan --sandbox --output-format text -p \
+exec gemini --skip-trust --approval-mode plan --sandbox --output-format text -p \
   "You are the $role worker for Maestro Agricola on test/jev. $* Read only the minimum relevant files. Do not edit files, create worktrees, run mutating commands, access credentials, call external services, or make safety/product decisions. Return concise evidence with file paths, risks, and recommended focused tests."

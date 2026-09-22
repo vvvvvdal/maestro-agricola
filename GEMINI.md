@@ -1,8 +1,10 @@
 # Gemini CLI worker contract
 
 This repository uses Gemini CLI only as a read-only development worker in the
-Jev experiment branch. Its command wrapper always uses `--approval-mode plan`
-and `--sandbox`.
+Jev experiment branch. Its command wrapper always uses `--skip-trust`,
+`--approval-mode plan` and `--sandbox`. `--skip-trust` accepts the current
+workspace for that invocation so Gemini does not downgrade `plan` to `default`;
+it does not grant write permission.
 
 - Work only on `test/jev`.
 - Read the nearest `AGENTS.md`, `TASKS.md`, and relevant spec before answering.
