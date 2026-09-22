@@ -7,6 +7,17 @@ data class JevChoiceAnswer(
     val confidence: Double,
 )
 
+fun JevChoiceAnswer.toIntentPrediction(): IntentPrediction {
+    val selectedProbability = requireNotNull(probabilities[choice]) {
+        "Choice probability is missing for $choice"
+    }
+    return IntentPrediction(
+        label = choice,
+        confidence = selectedProbability,
+        source = "JEV",
+    )
+}
+
 data class JevUsage(
     val inputTokens: Int,
     val outputTokens: Int,

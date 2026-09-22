@@ -37,6 +37,25 @@ class JevEvaluationTest {
     }
 
     @Test
+    fun mapsSelectedProbabilityInsteadOfJevConfidence() {
+        val answer = JevChoiceAnswer(
+            choice = "SPRAY",
+            probabilities = mapOf(
+                "SPRAY" to 0.82,
+                "UNKNOWN" to 0.18,
+            ),
+            confidence = 0.64,
+        )
+
+        val prediction = answer.toIntentPrediction()
+
+        assertEquals("SPRAY", prediction.label)
+        assertEquals(0.82, prediction.confidence, 0.0)
+        assertEquals("JEV", prediction.source)
+        assertEquals(0.64, answer.confidence, 0.0)
+    }
+
+    @Test
     fun preservesFailureTelemetryWithoutChoiceAnswer() {
         val evaluation = JevEvaluation(
             requestedModel = "jev-1.13.0",
@@ -68,5 +87,14 @@ class JevEvaluationTest {
             latencyMs = 1,
             error = JevEvaluationError(code = "INVALID_RESPONSE"),
         )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun rejectsChoiceWithoutSelectedProbability() {
+        JevChoiceAnswer(
+            choice = "SPRAY",
+            probabilities = mapOf("UNKNOWN" to 1.0),
+            confidence = 0.2,
+        ).toIntentPrediction()
     }
 }
