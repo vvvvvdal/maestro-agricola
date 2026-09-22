@@ -50,6 +50,19 @@ local, chamadas remotas ou os dados enviados ao Jev.
 Os testes tambem acompanham os source sets: o `mock` valida o vetor completo e
 o `dat` valida explicitamente a ausencia do diagnostico.
 
+## JEV-34 parcialmente validada
+
+Em 22/09/2026, os testes Android focados passaram e `assembleMockDebug` gerou
+o APK. `FactCard` passou a reunir titulo, valor e detalhe em uma unica
+`contentDescription`, por exemplo `INTENCAO: Pulverizar. SPRAY · 87% · Jev.`,
+para que o leitor de tela receba o contexto completo e nao dependa de cor.
+
+A inspecao visual real continua pendente: este host nao tinha dispositivo ADB
+conectado, AVD configurado nem imagem de sistema instalada. Portanto nao foi
+possivel observar compactacao, rolagem, modo paisagem, texto dinamico ou
+TalkBack no `mockDebug`. JEV-34 permanece bloqueada por ambiente; JEV-50 nao
+pode capturar telas antes dessa validacao em um Android executavel.
+
 ## Objetivo
 
 Permitir que a demonstracao mostre, no mesmo app do Maestro, o que o

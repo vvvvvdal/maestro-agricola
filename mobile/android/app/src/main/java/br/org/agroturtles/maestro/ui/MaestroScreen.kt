@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -340,7 +342,13 @@ private fun FactCard(
     modifier: Modifier = Modifier,
 ) {
     val colors = toneColors(tone)
-    Surface(color = colors.container, shape = CardShape, modifier = modifier) {
+    Surface(
+        color = colors.container,
+        shape = CardShape,
+        modifier = modifier.semantics(mergeDescendants = true) {
+            contentDescription = factCardContentDescription(title, value, detail)
+        },
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),

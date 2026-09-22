@@ -149,4 +149,12 @@ class JourneyPresentationTest {
         assertFalse(shouldShowJevDiagnostics("mock", null))
         assertTrue(shouldShowJevDiagnostics("mock", diagnostic))
     }
+
+    @Test
+    fun factCardDescriptionKeepsJevDecisionContextTogether() {
+        assertEquals(
+            "INTENÇÃO: Pulverizar. SPRAY · 87% · Jev.",
+            factCardContentDescription("INTENÇÃO", "Pulverizar", "SPRAY · 87% · Jev"),
+        )
+    }
 }

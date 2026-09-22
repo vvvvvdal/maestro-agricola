@@ -213,6 +213,9 @@ fun jevDiagnosticPresentation(answer: JevChoiceAnswer?): JevDiagnosticPresentati
 fun shouldShowJevDiagnostics(frameSource: String, diagnostic: JevDiagnosticPresentation?): Boolean =
     frameSource == "mock" && diagnostic != null
 
+fun factCardContentDescription(title: String, value: String, detail: String): String =
+    "$title: $value. $detail."
+
 private fun Double.asPercent(): String = "${(this * 100).roundToInt()}%"
 
 data class RobotPresentation(
