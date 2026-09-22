@@ -49,7 +49,7 @@ do Qwen e ausencia de RAG neste experimento.
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
 | JEV-00 | DONE | 21/09 | - | Estudo separado de `docs/pitch/`; roteiro tecnico e pasta propria existem. |
-| JEV-01 | DONE | 21/09 | - | `test/jev`, preflight, Terra planner/reviewer e workers Gemini via Antigravity CLI read-only configurados. |
+| JEV-01 | DONE | 21/09 | - | `test/jev`, preflight, Terra planner/reviewer e worker Gemini condicional via Antigravity CLI read-only configurados. |
 | JEV-02 | DONE | 21/09 | JEV-00 | Decisoes iniciais registradas: Jev troca apenas o classificador; Qwen nao recebe filtro Jev e nao ha RAG. |
 | JEV-03 | DONE | 22/09 | JEV-02 | Aprovacao, dados permitidos, teto de US$5, subtetos e credencial local registrados em [`../../tasks/jev-api-approval.md`](../../tasks/jev-api-approval.md). Chamadas continuam bloqueadas ate `JEV-40`. |
 

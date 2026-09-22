@@ -24,8 +24,9 @@ controlada, com uma task por vez, orcamento maximo de US$5 e falha fechada.
 - A tela preserva o cartao `INTENCAO` e passa a distinguir a origem `JEV` da
   probabilidade da classe; a distribuicao completa e a confidence do Jev ficam
   no registro de benchmark e no painel de testes.
-- Arquitetura de trabalho aplicada: Terra planner `medium`, workers Gemini via
-  Antigravity CLI read-only e Terra reviewer `high`; ver [`docs/agent-architecture.md`](docs/agent-architecture.md).
+- Arquitetura de trabalho aplicada: Terra planner `medium`, worker Gemini
+  condicional via Antigravity CLI read-only e Terra reviewer `high`; ver
+  [`docs/agent-architecture.md`](docs/agent-architecture.md).
 - Uso remoto aprovado somente para o harness experimental: dados sanitizados,
   teto cumulativo de US$5 e chave local em
   [`docs/tasks/jev-api-approval.md`](docs/tasks/jev-api-approval.md).

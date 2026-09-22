@@ -12,9 +12,7 @@ humano integrador (unico writer e decisor)
           v
 Terra planner, effort medium, read-only
           |
-          +--> Gemini research worker via Antigravity CLI, read-only
-          +--> Gemini test worker via Antigravity CLI, read-only
-          +--> Gemini implementation worker via Antigravity CLI, read-only
+          +--> Gemini worker condicional via Antigravity CLI, read-only
           |
           v
 humano integra uma unica mudanca pequena
@@ -42,9 +40,7 @@ obrigatoria.
 | --- | --- | --- | --- | --- |
 | Humano integrador | task aprovada e evidencias | unico papel que pode editar e executar a mudanca aprovada | diff, testes e docs | humano |
 | Terra planner | descricao da task e repositorio | leitura; `medium` | ambiguidades, aceite, plano e testes focados | humano |
-| Gemini research via Antigravity CLI | pergunta limitada + contexto curado | sem ferramentas; sandbox | fontes locais, riscos e lacunas | humano |
-| Gemini test via Antigravity CLI | hipotese + contexto curado | sem ferramentas; sandbox | comando focado e expectativa | humano |
-| Gemini implementation via Antigravity CLI | recorte + contexto curado | sem ferramentas; sandbox | pontos de mudanca e possivel diff textual | humano |
+| Gemini worker via Antigravity CLI | uma pergunta concreta + contexto curado | sem ferramentas; sandbox | evidencia para mapear codigo, localizar testes **ou** comparar opcoes | humano |
 | Terra reviewer | diff integrado | leitura; `high` | findings acionaveis e lacunas de teste | humano |
 
 Nenhum worker recebe chave JEV, credencial, audio, foto, transcricao ou acesso
@@ -54,17 +50,25 @@ mantem qualquer decisao de seguranca revisavel.
 
 ## Fluxo de trabalho
 
-1. O integrador roda `tools/agents/preflight.sh`; ele falha fora de `test/jev`.
-2. O planner descreve a task e seus criterios. Exemplo:
+1. **Preflight tecnico.** O integrador roda `tools/agents/preflight.sh`, que
+   valida branch, CLIs e diff. A autenticacao do Gemini e verificada somente
+   antes de uma chamada real do worker, sem imprimir ou ler credenciais.
+2. **Pacote de task aprovado.** O planner ou integrador registra objetivo,
+   arquivos de contexto permitidos, fora de escopo, criterios de aceite e um
+   teste focado real. Exemplo:
    `tools/agents/plan.sh "definir harness Jev sem rede"`.
-3. Um ou mais workers Gemini via Antigravity CLI analisam perguntas independentes
-   com contexto explicitamente selecionado. Exemplo:
-   `tools/agents/worker.sh test --file mobile/android/app/src/main/java/br/org/agroturtles/maestro/domain/IntentClassifier.kt "localize os testes relevantes"`.
-4. O humano escolhe uma unica mudanca, a implementa e executa apenas os testes
-   focados definidos na task.
-5. O reviewer avalia o diff. Exemplo:
+3. **Worker condicional.** So use Gemini se houver uma duvida concreta para
+   mapear codigo **ou** localizar testes **ou** comparar opcoes. Escolha uma
+   dessas perguntas, com o menor pacote de contexto necessario; nao execute as
+   tres por padrao.
+4. **Um unico responsavel pela implementacao.** O integrador aplica uma unica
+   mudanca pequena; nao ha writers concorrentes.
+5. **Teste focado real.** Rode o teste definido no pacote antes da revisao.
+6. **Revisao delimitada.** Terra `high` revisa o diff contra o pacote de task,
+   sem redescobrir o repositorio inteiro. Exemplo:
    `tools/agents/review.sh "a fronteira Jev do IntentClassifier"`.
-6. O humano compara diff, testes e spec; so entao pode encerrar a task.
+7. **Correcao limitada.** So corrija finding real e pertencente ao escopo;
+   repita o teste focado e encerre ou escale uma ambiguidade/bloqueio real.
 
 Os scripts em `tools/agents/` sao wrappers intencionalmente estreitos. Eles
 nao autenticam Gemini, nao leem segredos e nao criam configuracoes de produto.
