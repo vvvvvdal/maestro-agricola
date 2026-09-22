@@ -85,6 +85,10 @@ das opcoes e `confidence` descreve a concentracao dessa distribuicao. JEV-21
 define o DTO experimental e JEV-22 decide como a probabilidade escolhida entra
 no contrato atual de `IntentPrediction`.
 
+O DTO entregue em JEV-21 esta documentado em
+[`../../tasks/jev-evaluation-dto.md`](../../tasks/jev-evaluation-dto.md). Ele
+mantem telemetria e falhas fora de `IntentPrediction`.
+
 ## Limites operacionais
 
 - Uma execucao faz uma unica pergunta `operational_intent`; nao ha voto entre
