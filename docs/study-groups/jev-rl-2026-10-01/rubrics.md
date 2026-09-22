@@ -87,3 +87,85 @@ alvo, a validacao de estado ou a confirmacao por audio.
 - Verificacao desta task documental: leitura cruzada das fontes canonicas e
   `git diff --check`. Nenhum teste de produto foi necessario, pois nao houve
   mudanca de codigo, modelo ou fixture.
+
+## JEV-11 - `DOCK` e `UNDOCK`
+
+### Decisao
+
+Classificar `DOCK` somente quando a fala pedir agora que o robo retorne,
+aproxime-se ou acople na doca/base/carregador. Classificar `UNDOCK` somente
+quando a fala pedir agora que ele saia, desacople ou se afaste da doca/base.
+Os dois pedidos sao operacoes distintas, sem alvo de talhao e sem lifecycle
+implicito.
+
+O classificador interpreta a fala, nao o estado do robo. Uma fala explicita
+pode receber `DOCK` ou `UNDOCK` e ser recusada depois pelo `InteractionEngine`
+ou bridge por estado incompativel. O inverso tambem vale: `is_docked=true`,
+fim de `SPRAY`, chegada ao alvo ou uma expectativa de retorno nunca criam
+`DOCK` ou `UNDOCK` sem uma nova fala explicita e confirmada.
+
+### Exemplos positivos
+
+| Classe | Categoria | Exemplo sanitizado | Rotulo ouro |
+| --- | --- | --- | --- |
+| `DOCK` | Retorno direto | `volte para a doca` | `DOCK` |
+| `DOCK` | Acoplamento | `acople na base` | `DOCK` |
+| `DOCK` | Destino equivalente | `retorne ao carregador` | `DOCK` |
+| `DOCK` | Pedido polido | `pode ir para a doca` | `DOCK` |
+| `UNDOCK` | Saida direta | `saia da doca` | `UNDOCK` |
+| `UNDOCK` | Desacoplamento | `desacople da base` | `UNDOCK` |
+| `UNDOCK` | Afastamento | `afaste o robo da doca` | `UNDOCK` |
+| `UNDOCK` | Pedido polido | `pode sair da base` | `UNDOCK` |
+
+Os sinonimos seguem o dataset local atual, mas o adaptador Jev nao deve
+inventar um destino, uma rota ou uma acao ROS alem do rotulo escolhido.
+
+### Exclusoes e fronteiras de seguranca
+
+| Categoria | Exemplo sanitizado | Rotulo ouro | Motivo |
+| --- | --- | --- | --- |
+| Negacao de retorno | `nao volte para a doca` | `CANCEL` | Recusa uma operacao, nao solicita `DOCK`. |
+| Negacao de saida | `nao saia da doca` | `CANCEL` | Recusa uma operacao, nao solicita `UNDOCK`. |
+| Historico | `o robo voltou para a doca ontem` | `UNKNOWN` | Relata fato passado. |
+| Pergunta de capacidade | `o robo consegue sair da doca?` | `UNKNOWN` | Pergunta sobre capacidade, sem ordem atual. |
+| Planejamento condicional | `depois da pulverizacao volte para a doca` | `UNKNOWN` | Pede uma sequencia futura; nao cria lifecycle implicito. |
+| Estado sem ordem | `o robo esta na doca` | `UNKNOWN` | Estado observado nao e comando. |
+| Operacao diferente | `pulverize o talhao <ALVO>` | `SPRAY` | Estar dockado nao transforma `SPRAY` em `UNDOCK`. |
+
+`CONFIRM` posterior so autoriza uma operacao pendente ja formada; ele nao e
+substituto de um pedido explicito de doca ou saida. `CANCEL` prevalece sobre a
+acao negada. As fronteiras completas de `CONFIRM`, `CANCEL` e `UNKNOWN` ficam
+para JEV-12.
+
+### Sequencia operacional proibida de inferir
+
+O fluxo abaixo e valido somente quando cada fala e classificada e confirmada
+separadamente:
+
+```text
+"saia da doca" -> UNDOCK -> confirmacao -> Undock nativo completo
+"pulverize o talhao <ALVO>" -> SPRAY -> alvo valido + confirmacao
+"volte para a doca" -> DOCK -> confirmacao -> aproximacao + Dock nativo
+```
+
+Nao sao regras do Jev: `SPRAY -> UNDOCK`, `SPRAY concluido -> DOCK` ou
+`DOCK concluido -> UNDOCK`. Elas nao devem aparecer como exemplos positivos de
+intencao, comportamento de fallback nem correcao automatica do estado.
+
+### Criterios para JEV-13 e JEV-15
+
+Os corpora devem separar verbos de acoplamento e saida, sinonimos de
+doca/base/carregador, negacoes, historico, perguntas de capacidade e sequencias
+condicionais. Tambem devem manter cenarios de estado incompativel fora do
+classificador: o rotulo pode estar certo e ainda assim nenhum `Command` deve
+ser enviado.
+
+## Evidencia e limites da JEV-11
+
+- Evidencia consultada: dataset e artefato do classificador local, regras de
+  lifecycle em `AGENTS.md`, `docs/mvp-spec.md` e `docs/testing.md`.
+- Fora do escopo: alterar o ciclo ROS, estado do robo, corpus, adaptador Jev,
+  UI ou contrato de `Command`.
+- Verificacao desta task documental: leitura cruzada das fontes canonicas e
+  `git diff --check`. Nenhum teste de produto foi necessario, pois nao houve
+  mudanca de codigo, modelo ou fixture.
