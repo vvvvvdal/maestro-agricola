@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementacao local pronta; a rodada remota permanece pendente nesta etapa.
+**Concluida em 22/09/2026** na branch `test/jev`.
 
 ## Objetivo
 
@@ -64,3 +64,31 @@ evidencia em `TASKS.md`.
 - Testes portateis usam transporte falso; nenhum teste faz rede ou usa chave.
 - A chamada real, quando ocorrer, fica abaixo de US$0,50 e gera evidencia
   sanitizada reproduzivel para a comparacao posterior.
+
+## Evidencia da rodada
+
+A rodada autorizada foi executada uma vez com o corpus fixo de seis casos. A
+fixture, o harness pareado e as metricas versionadas abaixo foram verificados
+contra textos do corpus, `Authorization`, `Bearer` e `TYPESAFE_API_KEY`; nenhum
+desses valores aparece nos artefatos.
+
+| Medida | Local | Jev remoto |
+| --- | ---: | ---: |
+| Casos | 6 | 6 |
+| Acertos | 5 | 6 |
+| Accuracy | 0,8333 | 1,0000 |
+| Macro-F1 | 0,7778 | 1,0000 |
+| Falhas | 0 | 0 |
+| Aceitacoes inseguras | 0 | 0 |
+| Latencia p50 | 0,108 ms | 716,512 ms |
+| Latencia p95 | 0,604 ms | 1.694,136 ms |
+| Custo | US$0,00 | US$0,000146832 |
+
+O Jev retornou `jev-1.13.0` nos seis casos, com 3.496 tokens de entrada e 420
+de saida. O custo ficou muito abaixo do subteto de US$0,50. Esta amostra nao
+mede cobertura de fala real, calibracao robusta ou decisao de adocao; essas
+afirmacoes continuam bloqueadas por JEV-41 a JEV-43.
+
+- [`jev-smoke-fixture.json`](../study-groups/jev-rl-2026-10-01/results/jev-smoke-fixture.json): respostas sanitizadas da API.
+- [`jev-smoke-harness.json`](../study-groups/jev-rl-2026-10-01/results/jev-smoke-harness.json): comparacao pareada.
+- [`jev-smoke-metrics.json`](../study-groups/jev-rl-2026-10-01/results/jev-smoke-metrics.json): metricas calculadas.

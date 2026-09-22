@@ -96,7 +96,7 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-40 | NEXT | 26/09 | JEV-26 | Rodar smoke remoto dentro do subteto de US$0,50; registrar versao, custo e falhas sem ajustar o corpus final. |
+| JEV-40 | DONE | 22/09 | JEV-26 | Smoke remoto executado uma vez com 6 casos: `jev-1.13.0`, 6/6 acertos, 0 falhas, US$0,000146832 e p95 de 1.694,136 ms. Evidencia sanitizada em [`../../tasks/jev-remote-smoke.md`](../../tasks/jev-remote-smoke.md); nao ajustou o corpus final. |
 | JEV-41 | TODO | 27/09 | JEV-27, JEV-40 | Rodar corpus final uma unica vez dentro do subteto de US$3,00; preservar respostas e erros. |
 | JEV-42 | TODO | 27/09 | JEV-41 | Gerar tabela local versus Jev e reliability diagram; separar calibracao medida de limitacoes de tamanho amostral. |
 | JEV-43 | TODO | 28/09 | JEV-42 | Escrever decisao experimental: evidencia favoravel, contraria ou inconclusiva. Nenhum resultado promove Jev a producao. |
