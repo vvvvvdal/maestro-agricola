@@ -83,8 +83,10 @@ class JourneyPresentationTest {
 
     @Test
     fun predictionDetailKeepsConfidenceAndSourceVisible() {
+        assertEquals("SPRAY · 87% · Jev", predictionDetail("SPRAY", 0.87, "JEV"))
         assertEquals("SPRAY · 97% · modelo local", predictionDetail("SPRAY", 0.9712, "MODEL"))
         assertEquals("CONFIRM · 100% · regra determinística", predictionDetail("CONFIRM", 1.0, "RULE"))
+        assertEquals("classificador local", predictionSourceLabel(null))
         assertEquals("aguardando fala", predictionDetail(null, null, null))
     }
 }

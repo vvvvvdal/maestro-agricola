@@ -125,6 +125,7 @@ fun predictionDetail(label: String?, confidence: Double?, source: String?): Stri
 }
 
 fun predictionSourceLabel(source: String?): String = when (source) {
+    "JEV" -> "Jev"
     "RULE" -> "regra determinística"
     "MODEL" -> "modelo local"
     else -> "classificador local"
