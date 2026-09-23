@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Jev versus classificador local - comparacao medida</title>
+<desc id="desc">Comparacao descritiva do corpus sintetico independente. Inclui accuracy, macro-F1, aceitacoes inseguras, latencia e custo.</desc>
+<rect width="1600" height="900" fill="#fbfaf5"/>
+<rect x="72" y="60" width="16" height="98" rx="8" fill="#f5bd24"/>
+<text x="116.0" y="100.0" text-anchor="start" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#69745f">MAESTRO AGRICOLA - EXPERIMENTO JEV</text>
+<text x="116.0" y="146.0" text-anchor="start" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#24311d">Comparacao medida</text>
+<text x="116.0" y="184.0" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#69745f">Melhor resultado descritivo nao e promocao para o app.</text>
+<rect x="72" y="230" width="912" height="530" rx="20" fill="#ffffff" stroke="#d5d2c2"/>
+<rect x="1010" y="230" width="518" height="530" rx="20" fill="#f1efe4"/>
+<text x="116.0" y="276.0" text-anchor="start" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#69745f">METRICA</text>
+<text x="686.0" y="276.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#3d6e65">LOCAL</text>
+<text x="896.0" y="276.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#bb5a24">JEV REMOTO</text>
+<text x="116.0" y="328.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="400" fill="#24311d">Acertos</text>
+<text x="686.0" y="328.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#3d6e65">48/60</text>
+<text x="896.0" y="328.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#bb5a24">54/60</text>
+<line x1="116" y1="362" x2="940" y2="362" stroke="#d5d2c2"/>
+<text x="116.0" y="396.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="400" fill="#24311d">Accuracy</text>
+<text x="686.0" y="396.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#3d6e65">0,8000</text>
+<text x="896.0" y="396.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#bb5a24">0,9000</text>
+<line x1="116" y1="430" x2="940" y2="430" stroke="#d5d2c2"/>
+<text x="116.0" y="464.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="400" fill="#24311d">Macro-F1</text>
+<text x="686.0" y="464.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#3d6e65">0,8026</text>
+<text x="896.0" y="464.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#bb5a24">0,9010</text>
+<line x1="116" y1="498" x2="940" y2="498" stroke="#d5d2c2"/>
+<text x="116.0" y="532.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#a43d32">Aceitacoes inseguras</text>
+<text x="686.0" y="532.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#3d6e65">3</text>
+<text x="896.0" y="532.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#bb5a24">1</text>
+<line x1="116" y1="566" x2="940" y2="566" stroke="#d5d2c2"/>
+<text x="116.0" y="600.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="400" fill="#24311d">Brier multiclasses</text>
+<text x="686.0" y="600.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#3d6e65">0,3034</text>
+<text x="896.0" y="600.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#bb5a24">0,1057</text>
+<line x1="116" y1="634" x2="940" y2="634" stroke="#d5d2c2"/>
+<text x="116.0" y="668.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="400" fill="#24311d">Top-label ECE</text>
+<text x="686.0" y="668.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#3d6e65">0,0810</text>
+<text x="896.0" y="668.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#bb5a24">0,0787</text>
+<text x="1054.0" y="280.0" text-anchor="start" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#69745f">LATENCIA E CUSTO</text>
+<text x="1054.0" y="334.0" text-anchor="start" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#69745f">p50</text>
+<text x="1054.0" y="372.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#3d6e65">Local  0,175 ms</text>
+<text x="1054.0" y="410.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#bb5a24">Jev     742,333 ms</text>
+<text x="1054.0" y="476.0" text-anchor="start" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#69745f">p95</text>
+<text x="1054.0" y="514.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#3d6e65">Local  0,293 ms</text>
+<text x="1054.0" y="552.0" text-anchor="start" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#bb5a24">Jev     2.100,575 ms</text>
+<text x="1054.0" y="618.0" text-anchor="start" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#69745f">Custo total do harness</text>
+<text x="1054.0" y="656.0" text-anchor="start" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#3d6e65">Local  US$0.000000000</text>
+<text x="1054.0" y="692.0" text-anchor="start" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#bb5a24">Jev     US$0.001472394</text>
+<rect x="1038" y="714" width="462" height="54" rx="12" fill="#fce6df"/>
+<text x="1064.0" y="748.0" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#a43d32">Jev: CANCEL -&gt; CONFIRM (0,75)</text>
+<line x1="72" y1="820" x2="1528" y2="820" stroke="#d5d2c2"/>
+<text x="72.0" y="852.0" text-anchor="start" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#69745f">n=60, corpus sintetico pareado, uma rodada remota</text>
+<text x="1528.0" y="852.0" text-anchor="end" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#a43d32">Decisao: HOLD - sem adocao operacional</text>
+<text x="72.0" y="878.0" text-anchor="start" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#69745f">Fonte: JEV-42, SHA-256 e7984bbc1eb7...</text>
+</svg>

@@ -108,8 +108,8 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
 | JEV-50 | DONE | 22/09 | JEV-35, JEV-36, JEV-43 | Tres capturas `mockDebug` no SM-X510 registradas em [`../../tasks/jev-app-captures.md`](../../tasks/jev-app-captures.md): baseline local, Jev `SPRAY` e Jev `UNKNOWN`, sempre sem rede ou comando. |
-| JEV-51 | NEXT | 28/09 | JEV-42 | Preparar matriz, reliability diagram e tabela de custo/latencia legiveis; nao ocultar falhas. |
-| JEV-52 | TODO | 28/09 | JEV-50 | Gravar demo de reserva ou fixtures locais dos tres fluxos; reproduzir com internet desligada. |
+| JEV-51 | DONE | 22/09 | JEV-42 | Tres SVGs 16:9 gerados da evidencia sanitizada: comparacao, matrizes e reliability, todos com `n=60`, `HOLD` e aceite inseguro. Evidencia em [`../../tasks/jev-presentation-slides.md`](../../tasks/jev-presentation-slides.md). |
+| JEV-52 | NEXT | 28/09 | JEV-50 | Gravar demo de reserva ou fixtures locais dos tres fluxos; reproduzir com internet desligada. |
 | JEV-53 | TODO | 29/09 | JEV-43, JEV-50, JEV-51 | Escrever roteiro final: RLCD/calibracao, xadrez, casos externos, Maestro e roadmap de classes. |
 | JEV-54 | TODO | 29/09 | JEV-53 | Criar slides fora de `docs/pitch/`: 46 minutos de conteudo e quatro de debate; numerar fontes, marcar hipotese versus evidencia e rotular capturas JEV-50 como `fixture mock local - nao executa o robo`. |
 | JEV-55 | TODO | 30/09 | JEV-54, JEV-52 | Ensaio 1 cronometrado; registrar cortes e perguntas que exigem explicacao melhor. |
