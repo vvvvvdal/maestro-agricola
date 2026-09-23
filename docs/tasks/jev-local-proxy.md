@@ -21,9 +21,11 @@ externas por processo, incluindo retry. O Android nao recebe
 O operador precisa marcar no app que usara fala de teste sem dados pessoais.
 Como barreira complementar, o proxy recusa e-mail, telefone e URL evidentes;
 isso nao substitui julgamento humano nem anonimização completa. Alvo,
-estado do robô, `Command`, WebSocket e ROS nunca seguem para o Jev. Se uma
-intenção remota chegar a `ACCEPTED` após confirmação, o `Command` é bloqueado
-antes do bridge: a demonstração não movimenta o robô.
+estado do robô, `Command`, WebSocket e ROS nunca seguem para o Jev. O Jev
+devolve somente uma escolha entre os seis rótulos. No flavor `mock`, uma
+escolha remota que atravesse a confirmação explícita gera o mesmo `Command`
+estruturado do classificador local e o envia ao bridge do Gazebo. `dat` não
+oferece Jev remoto; hardware físico não faz parte desta demonstração.
 
 O subteto aprovado e US$0,10. O proxy so sera executado depois dos testes e
 deve usar `TYPESAFE_API_KEY` no terminal, seguido de `adb reverse tcp:8787
@@ -38,11 +40,14 @@ python3 tools/jev_local_proxy.py --max-requests 24
 ```
 
 No `mockDebug`, abra `Ajustes de teste`, marque a fala de teste sem dados
-pessoais e selecione `Jev remoto`. Para encerrar, selecione `Local`, pare o
-proxy e execute `adb reverse --remove tcp:8787`.
+pessoais e selecione `Jev remoto (Gazebo)`. Para usar um tablet sem Wi-Fi,
+execute também `adb reverse tcp:18765 tcp:18765` e informe
+`ws://127.0.0.1:18765` no endpoint do app. Para encerrar, selecione `Local`,
+pare o proxy e execute `adb reverse --remove tcp:8787` e
+`adb reverse --remove tcp:18765`.
 
 Os cenarios visuais estaticos e o diagnostico de fixture foram removidos:
-`Local` usa o classificador local real e `Jev remoto` usa somente a resposta
+`Local` usa o classificador local real e `Jev remoto (Gazebo)` usa somente a resposta
 real do proxy. O cartao `INTENCAO` identifica a origem escolhida.
 
 ## Evidência de validação
@@ -51,7 +56,8 @@ No SM-X510, com o APK `mockDebug` e o proxy loopback ativos, uma fala curta e
 consentida de comando de doca foi classificada pela chamada remota como `DOCK`
 com origem visível `Jev` e 100% para a opção escolhida. Ela entrou em
 confirmação e expirou sem confirmação. O cartão do robô permaneceu
-"Aguardando comando"; nenhum `Command`, WebSocket ou ROS foi executado.
+"Aguardando comando"; nenhum `Command`, WebSocket ou ROS foi executado nessa
+validação inicial.
 
 Os testes portáteis do proxy (4), os testes Kotlin focados (17) e
 `assembleMockDebug` passaram antes da instalação. A revisão Terra high aprovou
@@ -59,3 +65,18 @@ o endpoint fixo, o teto sincronizado, a declaração de dados, o bloqueio de
 controles e o caminho sem bridge. A evidência não registra a fala, chave,
 captura, logcat ou custo exato; o painel de uso do provedor é a fonte para
 consumo acumulado.
+
+## JEV-38 - comando no Gazebo
+
+Em 23/09/2026, o bloqueio artificial entre uma confirmação Jev e o
+`WebSocketCommandTransport` foi removido somente do flavor `mock`. O teste
+focado `JevIntentClassifierTest` passou com nove testes, incluindo
+`Jev -> CONFIRM -> Command(UNDOCK)`, e o `mockDebug` atualizado foi instalado
+no SM-X510. O ambiente headless do Gazebo e o bridge WebSocket em `18765`
+foram iniciados, com `adb reverse tcp:18765 tcp:18765` configurado.
+
+Pendência: executar uma única jornada E2E consentida no tablet com o proxy
+Jev ativo, confirmação por voz e bridge Gazebo disponível. O resultado deve
+provar envio aceito ou recusado pelo simulador, sem áudio, texto, chave ou
+captura persistidos. Até essa evidência, a implementação não pode ser descrita
+como E2E aprovada.

@@ -216,6 +216,31 @@ class JevIntentClassifierTest {
     }
 
     @Test
+    fun createsStructuredCommandOnlyAfterJevConfirmation() {
+        val engine = InteractionEngine(
+            classifierOf(
+                "saia da doca" to successfulEvaluation(
+                    choice = "UNDOCK",
+                    probabilities = probabilities("UNDOCK" to 0.96, "UNKNOWN" to 0.04),
+                ),
+                "confirmar" to successfulEvaluation(
+                    choice = "CONFIRM",
+                    probabilities = probabilities("CONFIRM" to 0.98, "UNKNOWN" to 0.02),
+                ),
+            ),
+        )
+
+        val pending = engine.handleTranscript("saia da doca")
+        val sending = engine.handleTranscript("confirmar")
+
+        assertEquals(InteractionState.AWAITING_CONFIRMATION, pending.state)
+        assertNull(pending.command)
+        assertEquals(InteractionState.SENDING, sending.state)
+        assertEquals("UNDOCK", sending.command?.intent)
+        assertNull(sending.command?.targetId)
+    }
+
+    @Test
     fun guardedCancellationClosesPendingInteractionWithoutCommand() {
         val engine = InteractionEngine(
             JevIntentClassifier(

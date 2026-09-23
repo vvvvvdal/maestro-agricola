@@ -560,7 +560,7 @@ private fun JevRemoteSelector(
                 selected = enabled,
                 onClick = { onEnabledChange(true) },
                 enabled = interactionsEnabled && consent,
-                label = { Text("Jev remoto") },
+                label = { Text("Jev remoto (Gazebo)") },
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {

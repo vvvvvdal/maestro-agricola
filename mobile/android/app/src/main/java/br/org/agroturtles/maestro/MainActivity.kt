@@ -95,22 +95,12 @@ class MainActivity : ComponentActivity() {
             var jevPending by remember { mutableStateOf(false) }
 
             fun apply(next: InteractionResult) {
-                val displayed = if (jevRemoteEnabled && next.command != null) {
-                    engine.transportCompleted(
-                        accepted = false,
-                        reason = "Demonstração Jev: comando bloqueado antes do bridge",
-                    ).copy(
-                        speech = "Demonstração Jev: comando bloqueado antes do bridge",
-                    )
-                } else {
-                    next
+                result = next
+                if (next.state == InteractionState.ACCEPTED && next.command != null) {
+                    robot = robotPresentation(next.intent, next.targetId)
                 }
-                result = displayed
-                if (displayed.state == InteractionState.ACCEPTED && displayed.command != null) {
-                    robot = robotPresentation(displayed.intent, displayed.targetId)
-                }
-                displayed.speech?.let(voice::speak)
-                displayed.command?.let { command ->
+                next.speech?.let(voice::speak)
+                next.command?.let { command ->
                     WebSocketCommandTransport(endpoint).send(command) { accepted, reason ->
                         runOnUiThread { apply(engine.transportCompleted(accepted, reason)) }
                     }

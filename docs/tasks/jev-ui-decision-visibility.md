@@ -116,7 +116,7 @@ sobreposicao e a arvore de acessibilidade preservou a frase completa do cartao.
 As fixtures de cenario e o diagnostico estatico foram removidos do app em
 23/09/2026. Eles eram uteis antes de existir uma chamada remota real, mas
 passaram a competir visualmente com ela. No `mockDebug`, a fonte de intencao
-agora oferece apenas `Local` ou `Jev remoto`; o cartao `INTENCAO` sempre mostra
+agora oferece apenas `Local` ou `Jev remoto (Gazebo)`; o cartao `INTENCAO` sempre mostra
 o resultado do caminho realmente escolhido. `dat` continua sem Jev remoto.
 
 Em 23/09/2026, o novo `mockDebug` foi instalado no Samsung SM-X510. A arvore

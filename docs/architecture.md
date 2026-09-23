@@ -171,10 +171,11 @@ ao Jev em 60 falas sinteticas, mas tambem um `CANCEL -> CONFIRM` inseguro e
 latencia remota p95 de 2.100,575 ms. A decisao e `HOLD`: o classificador local
 continua a autoridade operacional. A unica excecao e uma demo opt-in em
 `mockDebug`: Android fala somente com um proxy loopback fixo via `adb reverse`,
-o proxy detem a chave e uma fala Jev confirmada tem seu `Command` bloqueado
-antes do bridge. Portanto ela demonstra classificacao e gates, nunca movimento
-do robô. Metricas, limites e gates de uma futura reabertura estao em
-[`tasks/jev-experimental-decision.md`](tasks/jev-experimental-decision.md).
+o proxy detem a chave e, após confirmação, o app pode enviar o `Command`
+estruturado ao bridge do Gazebo. Essa exceção é limitada ao flavor `mock`; o
+Jev não recebe acesso ao bridge, a `Command`, a estado, alvo ou ROS, e o
+flavor `dat` não oferece Jev remoto. Métricas, limites e gates de uma futura
+reabertura estao em [`tasks/jev-experimental-decision.md`](tasks/jev-experimental-decision.md).
 
 `UNKNOWN` continua a seguir diretamente para `LanguageRouter` e
 `QwenDomainAssistant`. Nao existe filtro Jev de topico antes do Qwen e nao ha
