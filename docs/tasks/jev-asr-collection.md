@@ -43,9 +43,11 @@ revisar o guard e o protocolo; nao e holdout, nao chama Jev e nao mede adocao.
 
 ## Revisao e privacidade
 
-- Dois revisores atribuem `gold_label` e `category` independentemente.
-- Divergencia e motivo de exclusao ficam em uma planilha privada sem nomes;
-  nenhum caso vai para corpus antes de consenso.
+- Dois revisores atribuem `gold_label` independentemente. A `category` vem da
+  rubrica controlada do cartao e e conferida pelo integrador contra o texto
+  sanitizado apos o consenso do rotulo.
+- Divergencia de rotulo ou conflito com a semantica contratual e motivo de
+  exclusao; nenhum caso vai para corpus antes de consenso e dessa conferencia.
 - O TSV versionado tera apenas `id`, `text` sanitizado, `gold_label` e
   `category`; nao tera falante, sessao, aparelho, audio ou texto descartado.
 - O auditor confirma que audio, logcat, screenshots e transcricoes brutas nao

@@ -8,7 +8,7 @@ esta separado. Nao representa resultado, cobertura de campo ou calibracao.
 rotulo. Ele existe somente para a primeira rodada remota da JEV-40 e nao e o
 corpus final nem fonte para ajuste de limiar.
 
-`asr-development.tsv` contem 28 transcricoes sanitizadas, obtidas offline no
+`asr-development.tsv` contem 33 transcricoes sanitizadas, obtidas offline no
 SM-X510 e revisadas por duas pessoas. Ele serve para desenvolver e revisar o
 guard; nao e holdout, nao mede adocao e nunca deve ser enviado ao Jev. A
 revisao e as observacoes do baseline local estao em

@@ -2,7 +2,7 @@
 
 ## Status
 
-Preparados em 23/09/2026. Duas pessoas revisaram os 28 textos de forma
+Preparados em 23/09/2026. Duas pessoas revisaram os 34 textos de forma
 independente e chegaram aos mesmos rotulos. Estes sao cartoes de fala para o
 corpus de desenvolvimento; nao sao transcricoes ASR nem holdout.
 
@@ -38,6 +38,12 @@ corpus de desenvolvimento; nao sao transcricoes ASR nem holdout.
 | S08 | bota produto no talhão de teste | `SPRAY` | acao coloquial |
 | S09 | volta pra doca aí | `DOCK` | doca coloquial |
 | S10 | sai da base então | `UNDOCK` | saida coloquial |
+| N01 | cancele o que estava pendente | `CANCEL` | ASR com ruido, cancelamento direto |
+| N02 | pode continuar com segurança | `CONFIRM` | ASR com ruido, confirmacao |
+| N03 | o plot de teste recebeu produto ontem? | `UNKNOWN` | ASR com ruido, pergunta historica |
+| N04 | pulverize a área de demonstração | `SPRAY` | ASR com ruido, acao explicita |
+| N05 | retorne para a doca | `DOCK` | ASR com ruido, doca explicita |
+| N06 | saia da doca lentamente | `DOCK` | Excluido: consenso conflita com a semantica contratual de `UNDOCK`. |
 
 ## Uso na coleta
 
