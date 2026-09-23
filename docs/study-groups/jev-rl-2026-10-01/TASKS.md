@@ -112,7 +112,7 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | JEV-52 | DONE | 22/09 | JEV-50 | Tres fixtures locais de reserva no SM-X510, com Wi-Fi desligado e depois restaurado; evidencia em [`../../tasks/jev-offline-reserve-demo.md`](../../tasks/jev-offline-reserve-demo.md). |
 | JEV-53 | DONE | 22/09 | JEV-43, JEV-50, JEV-51 | Roteiro falavel de 50 minutos (46 de conteudo e 4 de debate) em [`presentation-script.md`](presentation-script.md), com fontes, limites e visuais previstos. |
 | JEV-54 | DONE | 23/09 | JEV-53 | Deck HTML com 19 laminas em [`slides/jev-rl-study.html`](slides/jev-rl-study.html): 46 minutos de conteudo e quatro de debate; fontes e tipo de claim visiveis; capturas JEV-50 rotuladas `fixture mock local - nao executa o robo`. Evidencia em [`../../tasks/jev-study-group-deck.md`](../../tasks/jev-study-group-deck.md). |
-| JEV-55 | NEXT | 30/09 | JEV-54, JEV-52 | Ensaio 1 cronometrado; registrar cortes e perguntas que exigem explicacao melhor. |
+| JEV-55 | NEXT | 30/09 | JEV-54, JEV-52 | Ensaio 1 cronometrado; registrar cortes e perguntas que exigem explicacao melhor na [`../../tasks/jev-rehearsal-1.md`](../../tasks/jev-rehearsal-1.md). So conclui apos execucao falada real. |
 | JEV-56 | TODO | 30/09 | JEV-55 | Ensaio 2 cronometrado com demo de reserva; revisar cada claim contra os resultados registrados. |
 | JEV-57 | TODO | 01/10 | JEV-56 | Apresentar usando apenas evidencias medidas; apos o encontro, registrar decisoes tecnicas que realmente mudarem. |
 
