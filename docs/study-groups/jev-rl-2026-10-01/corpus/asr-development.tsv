@@ -32,3 +32,4 @@ asr-dev-030	pode continuar com segurança	CONFIRM	asr_ruido_confirmacao
 asr-dev-031	o plot de teste recebeu produto ontem?	UNKNOWN	asr_ruido_pergunta_historica
 asr-dev-032	pulverize a área de demonstração	SPRAY	asr_ruido_acao_explicita
 asr-dev-033	retorne para a doca	DOCK	asr_ruido_doca_explicita
+asr-dev-034	desacople o robô da doca e afaste-o da base	UNDOCK	asr_ruido_saida_explicita

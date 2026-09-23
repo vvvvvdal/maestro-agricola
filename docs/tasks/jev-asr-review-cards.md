@@ -2,7 +2,7 @@
 
 ## Status
 
-Preparados em 23/09/2026. Duas pessoas revisaram os 34 textos de forma
+Preparados em 23/09/2026. Duas pessoas revisaram os 35 textos de forma
 independente e chegaram aos mesmos rotulos. Estes sao cartoes de fala para o
 corpus de desenvolvimento; nao sao transcricoes ASR nem holdout.
 
@@ -44,6 +44,7 @@ corpus de desenvolvimento; nao sao transcricoes ASR nem holdout.
 | N04 | pulverize a área de demonstração | `SPRAY` | ASR com ruido, acao explicita |
 | N05 | retorne para a doca | `DOCK` | ASR com ruido, doca explicita |
 | N06 | saia da doca lentamente | `DOCK` | Excluido: consenso conflita com a semantica contratual de `UNDOCK`. |
+| U01 | desacople o robô da doca e afaste-o da base | `UNDOCK` | ASR com ruido, saida explicita |
 
 ## Uso na coleta
 

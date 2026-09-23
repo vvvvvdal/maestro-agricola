@@ -2,9 +2,9 @@
 
 ## Status
 
-Preparada em 23/09/2026. O preflight local passou, mas a coleta e revisao
-continuam bloqueadas ate haver falantes consentidos no SM-X510 e a separacao de
-sessoes definida.
+Concluida em 23/09/2026. O corpus de desenvolvimento tem 34 transcricoes
+sanitizadas, revisadas por duas pessoas e coletadas offline no SM-X510. Nenhuma
+delas foi enviada ao Jev.
 
 ## Objetivo
 
@@ -55,9 +55,9 @@ revisar o guard e o protocolo; nao e holdout, nao chama Jev e nao mede adocao.
 
 ## Saida esperada
 
-`corpus/asr-development.tsv` e `corpus/asr-label-review.md`, somente depois de
-coleta e revisao humanas. O arquivo nao pode conter `recovery-045` nem texto
-de nenhum holdout futuro.
+[`corpus/asr-development.tsv`](../study-groups/jev-rl-2026-10-01/corpus/asr-development.tsv)
+e [`corpus/asr-label-review.md`](../study-groups/jev-rl-2026-10-01/corpus/asr-label-review.md).
+O arquivo nao contem `recovery-045` nem texto de nenhum holdout futuro.
 
 ## Sem autorizacao remota
 
@@ -76,16 +76,15 @@ versao `googletts.google-speech-apk_20260817.01_p0.966249458`. Esta verificacao
 nao e corpus: nao recebeu identificador, `gold_label`, categoria ou texto de
 holdout, e nao autoriza chamada Jev.
 
-## Sessao de desenvolvimento pendente de revisao
+## Sessao inicial excluida
 
 Em 23/09/2026, uma pessoa consentida realizou uma sessao offline com seis
 frases neutras, uma por rotulo. As seis transcricoes corresponderam exatamente
 aos cartoes lidos. As acoes `SPRAY`, `DOCK` e `UNDOCK` pararam antes de enviar
 comando; a jornada foi resetada entre frases.
 
-As transcricoes, os identificadores e os rotulos ainda nao foram versionados:
-dois revisores humanos devem atribuir `gold_label` e `category` de forma
-independente antes de qualquer entrada ir para `corpus/asr-development.tsv`.
+Essas seis transcricoes iniciais nao receberam a revisao dupla prevista e foram
+excluidas do corpus. Elas nao contam para cobertura, metricas ou holdouts.
 
 Os cartoes para a proxima sessao receberam consenso humano duplo e estao em
 [`jev-asr-review-cards.md`](jev-asr-review-cards.md). O consenso do cartao nao
