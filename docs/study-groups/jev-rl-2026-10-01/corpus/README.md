@@ -14,6 +14,13 @@ guard; nao e holdout, nao mede adocao e nunca deve ser enviado ao Jev. A
 revisao e as observacoes do baseline local estao em
 [`asr-label-review.md`](asr-label-review.md).
 
+`asr-primary.tsv` e o primeiro holdout ASR real, congelado antes de HTTP e
+separado do desenvolvimento. Ele contem 41 transcricoes sanitizadas e sua
+revisao, exclusao e congelamento estao em
+[`asr-primary-review.md`](asr-primary-review.md) e
+[`asr-primary-manifest.md`](asr-primary-manifest.md). A rodada JEV continua
+bloqueada; o arquivo nao pode ser usado para ajustar regra, limiar ou frases.
+
 ## Dados e privacidade
 
 As frases de `development.tsv` sao sinteticas e sanitizadas. `<ALVO>` e um

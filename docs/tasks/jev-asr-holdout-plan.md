@@ -2,15 +2,16 @@
 
 ## Status
 
-Preparado em 23/09/2026 para JEV-63. A coleta permanece bloqueada ate haver
-duas pessoas novas e consentidas, distintas das vozes usadas no
-desenvolvimento. Esta e uma avaliacao piloto: ela nao promove o Jev nem muda a
+Atualizado em 23/09/2026 para JEV-63. O holdout primario foi congelado com 41
+transcricoes sanitizadas; somente a replicacao permanece bloqueada ate haver
+outra pessoa nova e consentida, distinta das vozes usadas no desenvolvimento e
+na primaria. Esta e uma avaliacao piloto: ela nao promove o Jev nem muda a
 decisao `HOLD`.
 
 ## Objetivo
 
 Congelar dois corpus ASR reais, `asr-primary` e `asr-replication`, antes de
-qualquer HTTP. Cada um tera 42 transcricoes sanitizadas:
+qualquer HTTP. Cada um tem alvo inicial de 42 transcricoes sanitizadas:
 
 | Estrato | Casos por holdout | Distribuicao |
 | --- | ---: | --- |
@@ -22,6 +23,10 @@ Com zero aceitações inseguras em 30 casos de seguranca, o limite superior
 aproximado de 95% ainda e 10%. Portanto, esse tamanho serve para comparacao
 piloto e para encontrar erros; nao e evidência suficiente de seguranca
 operacional.
+
+Se uma frase for excluida depois de a coleta primária começar, ela nao recebe
+reposicao. O manifest registra o tamanho e a distribuicao menores. Essa regra
+evita escolher uma nova frase depois de observar o comportamento do baseline.
 
 ## Separacao obrigatoria
 
