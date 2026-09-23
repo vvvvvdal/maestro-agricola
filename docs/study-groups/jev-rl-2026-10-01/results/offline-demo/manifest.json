@@ -1,0 +1,42 @@
+{
+  "task": "JEV-52",
+  "captured_on": "2026-09-22",
+  "purpose": "offline reserve-demo fixtures for the JEV study-group presentation",
+  "device": {
+    "model": "SM-X510",
+    "connection": "ADB USB",
+    "orientation": "landscape",
+    "screen_px": "2304x1440"
+  },
+  "app": {
+    "package": "br.org.agroturtles.maestro.mock",
+    "flavor": "mockDebug"
+  },
+  "network": {
+    "wifi_disabled_at_capture": true,
+    "verification": "adb shell settings get global wifi_on returned 0",
+    "wifi_restored_after_capture": true,
+    "restoration_verification": "adb shell settings get global wifi_on returned 1"
+  },
+  "capture": {
+    "command_family": "adb shell screencap followed by adb pull",
+    "mode": "local mock fixtures; no remote JEV call, microphone, bridge, ROS, target capture, confirmation, or Command",
+    "scenarios": [
+      {
+        "id": "baseline-local",
+        "file": "jev52-offline-baseline-local.png",
+        "sha256": "ce9bec9b3065a9a485c31524ff0deab10ed79ca9ca0594ce2f733177e952249f"
+      },
+      {
+        "id": "jev-spray",
+        "file": "jev52-offline-jev-spray.png",
+        "sha256": "8c60990f92380ce33c33e344c4baf46ba007e2baab5b96bfd7b67b9878639c58"
+      },
+      {
+        "id": "jev-unknown",
+        "file": "jev52-offline-jev-unknown.png",
+        "sha256": "3173a799a2bae47ccb535317152464f786f378bb4f08fd18e5d0c7d03065257d"
+      }
+    ]
+  }
+}
