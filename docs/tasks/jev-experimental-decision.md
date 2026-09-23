@@ -40,6 +40,11 @@ melhor em geral ou calibrado no campo.
 Por isso, nao se pode alegar menor risco operacional, calibracao generalizavel,
 prontidao para producao ou substituicao do classificador local.
 
+O protocolo de reabertura fica em
+[`jev-post-hold-protocol.md`](jev-post-hold-protocol.md). Ele preserva o
+resultado bruto JEV-41R e exige que qualquer guard de produto seja medido como
+uma camada separada, em novos holdouts ASR congelados antes de chamadas remotas.
+
 ## Guardrails que permanecem
 
 - Os seis rotulos continuam `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e

@@ -112,9 +112,22 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | JEV-52 | DONE | 22/09 | JEV-50 | Tres fixtures locais de reserva no SM-X510, com Wi-Fi desligado e depois restaurado; evidencia em [`../../tasks/jev-offline-reserve-demo.md`](../../tasks/jev-offline-reserve-demo.md). |
 | JEV-53 | DONE | 22/09 | JEV-43, JEV-50, JEV-51 | Roteiro falavel de 50 minutos (46 de conteudo e 4 de debate) em [`presentation-script.md`](presentation-script.md), com fontes, limites e visuais previstos. |
 | JEV-54 | DONE | 23/09 | JEV-53 | Deck HTML com 19 laminas em [`slides/jev-rl-study.html`](slides/jev-rl-study.html): 46 minutos de conteudo e quatro de debate; fontes e tipo de claim visiveis; capturas JEV-50 rotuladas `fixture mock local - nao executa o robo`. Evidencia em [`../../tasks/jev-study-group-deck.md`](../../tasks/jev-study-group-deck.md). |
-| JEV-55 | NEXT | 30/09 | JEV-54, JEV-52 | Ensaio 1 cronometrado; registrar cortes e perguntas que exigem explicacao melhor na [`../../tasks/jev-rehearsal-1.md`](../../tasks/jev-rehearsal-1.md). So conclui apos execucao falada real. |
+| JEV-55 | TODO | 30/09 | JEV-54, JEV-52 | Reordenada em 23/09 pela abertura da fase pos-HOLD: ensaio 1 cronometrado; registrar cortes e perguntas em [`../../tasks/jev-rehearsal-1.md`](../../tasks/jev-rehearsal-1.md). So conclui apos execucao falada real. |
 | JEV-56 | TODO | 30/09 | JEV-55 | Ensaio 2 cronometrado com demo de reserva; revisar cada claim contra os resultados registrados. |
 | JEV-57 | TODO | 01/10 | JEV-56 | Apresentar usando apenas evidencias medidas; apos o encontro, registrar decisoes tecnicas que realmente mudarem. |
+
+## Fase 6 - Reabertura pos-HOLD
+
+| ID | Status | Data | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- | --- |
+| JEV-60 | DONE | 23/09 | JEV-43 | Protocolo pos-HOLD em [`../../tasks/jev-post-hold-protocol.md`](../../tasks/jev-post-hold-protocol.md): Jev bruto e Jev+guard separados, dois holdouts ASR, uma rodada reservada por corpus e `HOLD` para qualquer aceite guarded inseguro. Nenhuma chamada remota. |
+| JEV-61 | NEXT | - | JEV-60 | Implementar guard deterministico de cancelamento explicito, desligado por padrao para preservar Jev bruto; cobrir `recovery-045` como regressao de desenvolvimento e provar que nenhuma entrada cria rotulo positivo, `Command` ou chamada extra. Falha/indisponibilidade do guard retorna `CANCEL` sem fallback bruto ou Qwen. |
+| JEV-62 | TODO | - | JEV-61 | Coletar e revisar corpus ASR de desenvolvimento: transcricoes sanitizadas, dois revisores, sem audio salvo, negacao, ambiguidade, ruido e exclusoes auditaveis. |
+| JEV-63 | TODO | - | JEV-62 | Congelar `asr-primary` e `asr-replication`: hashes, manifests, estrato de seguranca e separacao de falante/sessao antes de HTTP. |
+| JEV-64 | TODO | - | JEV-61, JEV-63 | Evoluir harness e metricas para relatar `local`, `jev_raw` e `jev_guarded` sem ocultar Choice ou probabilidades. |
+| JEV-65 | BLOCKED | - | JEV-60, JEV-63, JEV-64 | Rodada primaria unica, com script/reserva/custo novos. Bloqueada por aprovacao humana de custo e dados ASR. |
+| JEV-66 | BLOCKED | - | JEV-65 | Rodada de replicacao unica no segundo holdout, sem mudar guard ou limiar. Bloqueada pela primaria congelada e pelo novo subteto. |
+| JEV-67 | TODO | - | JEV-65, JEV-66 | Revisar as duas rodadas e registrar decisao. Zero aceite inseguro guarded em cada holdout e requisito minimo; um erro preserva `HOLD`. |
 
 ## Pontos de parada
 

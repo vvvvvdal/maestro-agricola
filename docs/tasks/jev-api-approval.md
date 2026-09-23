@@ -45,6 +45,14 @@ Adicionar credito na conta nao aumenta este teto automaticamente. Qualquer novo
 teto exige aprovacao humana registrada, atualizacao deste documento e
 replanejamento das tasks afetadas.
 
+## Fase pos-HOLD
+
+A fase registrada em [`jev-post-hold-protocol.md`](jev-post-hold-protocol.md)
+nao possui subteto remoto aprovado. JEV-61 a JEV-64 sao locais; JEV-65 e
+JEV-66 permanecem bloqueadas ate aprovacao humana de custo, dados ASR e
+condicoes de parada. A autorizacao anterior nao pode ser reaproveitada para
+uma nova rodada, mesmo que o painel da conta tenha credito disponivel.
+
 ## Recuperacao aprovada
 
 Em 22/09/2026, o operador aprovou uma avaliacao final de recuperacao apos a
