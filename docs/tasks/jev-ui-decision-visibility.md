@@ -119,6 +119,13 @@ passaram a competir visualmente com ela. No `mockDebug`, a fonte de intencao
 agora oferece apenas `Local` ou `Jev remoto`; o cartao `INTENCAO` sempre mostra
 o resultado do caminho realmente escolhido. `dat` continua sem Jev remoto.
 
+Em 23/09/2026, o novo `mockDebug` foi instalado no Samsung SM-X510. A arvore
+de acessibilidade confirmou a ausencia de `Cenario Jev`, `Baseline local` e do
+diagnostico estatico; o app iniciou em `Aguardando comando`. Depois dessa
+verificacao, o pacote antigo `br.org.agroturtles.maestro` foi removido e ficou
+instalado apenas `br.org.agroturtles.maestro.mock`. Nenhuma chamada remota nem
+comando ao robo foi feito nesta checagem de interface.
+
 ## Objetivo
 
 Permitir que a demonstracao mostre, no mesmo app do Maestro, o que o
