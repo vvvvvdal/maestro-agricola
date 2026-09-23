@@ -168,9 +168,12 @@ coisas diferentes.
 
 A rodada independente de recuperacao registrou resultado descritivo favoravel
 ao Jev em 60 falas sinteticas, mas tambem um `CANCEL -> CONFIRM` inseguro e
-latencia remota p95 de 2.100,575 ms. A decisao e `HOLD`: ele nao esta ligado ao
-APK, e o classificador local continua a autoridade operacional. Metricas,
-limites e gates de uma futura reabertura estao em
+latencia remota p95 de 2.100,575 ms. A decisao e `HOLD`: o classificador local
+continua a autoridade operacional. A unica excecao e uma demo opt-in em
+`mockDebug`: Android fala somente com um proxy loopback fixo via `adb reverse`,
+o proxy detem a chave e uma fala Jev confirmada tem seu `Command` bloqueado
+antes do bridge. Portanto ela demonstra classificacao e gates, nunca movimento
+do robô. Metricas, limites e gates de uma futura reabertura estao em
 [`tasks/jev-experimental-decision.md`](tasks/jev-experimental-decision.md).
 
 `UNKNOWN` continua a seguir diretamente para `LanguageRouter` e

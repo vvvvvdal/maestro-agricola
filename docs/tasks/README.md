@@ -12,6 +12,7 @@
 - [`qwen-android-runtime.md`](qwen-android-runtime.md): benchmark que rejeitou Qwen como controle, isolamento de domínio, runtime llama.cpp e smoke físico no SM-X510.
 - [`jev-ui-decision-visibility.md`](jev-ui-decision-visibility.md): apresentacao da classe, origem e probabilidade Jev no cartao de intencao, com detalhes tecnicos recolhidos.
 - [`jev-experimental-decision.md`](jev-experimental-decision.md): decisao HOLD do experimento Jev, seus limites e gates antes de qualquer adocao operacional.
+- [`jev-local-proxy.md`](jev-local-proxy.md): demo Jev opt-in no `mockDebug`, com proxy loopback, teto de chamadas e bloqueio de comando antes do bridge.
 - [`jev-app-captures.md`](jev-app-captures.md): capturas do `mockDebug` no SM-X510 para baseline local, Jev `SPRAY` e Jev `UNKNOWN`, sem rede ou comando.
 - [`jev-offline-reserve-demo.md`](jev-offline-reserve-demo.md): fixtures locais de reserva no SM-X510, capturadas com Wi-Fi desligado e sem executar o robo.
 - [`jev-presentation-script.md`](jev-presentation-script.md): roteiro falavel de 50 minutos para o grupo de estudos, com fontes, limites e debate final.

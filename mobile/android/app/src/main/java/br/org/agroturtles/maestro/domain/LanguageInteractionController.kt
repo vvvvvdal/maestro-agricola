@@ -24,35 +24,41 @@ class LanguageInteractionController(
         text: String,
         assistantCompletion: (IntentPrediction, Result<AssistantReply>) -> Unit,
     ): LanguageDispatch {
+        return handlePrediction(text, router.route(text).prediction, assistantCompletion)
+    }
+
+    /** Applies a prediction already obtained off the main thread, for example by Jev. */
+    fun handlePrediction(
+        text: String,
+        prediction: IntentPrediction,
+        assistantCompletion: (IntentPrediction, Result<AssistantReply>) -> Unit,
+    ): LanguageDispatch {
         if (interactionEngine.state !in ASSISTANT_ELIGIBLE_STATES) {
             cancelAssistant()
             return LanguageDispatch.Operational(
-                interactionEngine.handleTranscript(text)
+                interactionEngine.handlePrediction(text, prediction)
             )
         }
 
-        val route = router.route(text)
-        val assistantText = route.assistantText
-
         if (
-            route.type == LanguageRouteType.OPERATIONAL ||
+            prediction.label != "UNKNOWN" ||
             assistant == null ||
-            assistantText == null
+            text.isBlank()
         ) {
             cancelAssistant()
             return LanguageDispatch.Operational(
-                interactionEngine.handlePrediction(text, route.prediction)
+                interactionEngine.handlePrediction(text, prediction)
             )
         }
 
         val requestId = assistantRequest.incrementAndGet()
-        assistant.respond(assistantText) { result ->
+        assistant.respond(text) { result ->
             if (assistantRequest.get() == requestId) {
-                assistantCompletion(route.prediction, result)
+                assistantCompletion(prediction, result)
             }
         }
 
-        return LanguageDispatch.AssistantPending(route.prediction)
+        return LanguageDispatch.AssistantPending(prediction)
     }
 
     fun cancelAssistant() {

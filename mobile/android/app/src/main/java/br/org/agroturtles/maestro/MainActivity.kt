@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.JevIntentClassifier
 import br.org.agroturtles.maestro.domain.LanguageDispatch
 import br.org.agroturtles.maestro.domain.LanguageInteractionController
 import br.org.agroturtles.maestro.domain.LocalIntentClassifier
@@ -25,11 +26,14 @@ import br.org.agroturtles.maestro.platform.PlatformFrameSource
 import br.org.agroturtles.maestro.platform.VoiceIO
 import br.org.agroturtles.maestro.platform.WebSocketCommandTransport
 import br.org.agroturtles.maestro.platform.JevTestDiagnostics
+import br.org.agroturtles.maestro.platform.JevProxyChoiceEvaluator
 import br.org.agroturtles.maestro.ui.MaestroScreen
 import br.org.agroturtles.maestro.ui.MaestroTheme
 import br.org.agroturtles.maestro.ui.UnknownRobotPresentation
 import br.org.agroturtles.maestro.ui.robotPresentation
 import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicLong
 
 
 private const val DEFAULT_ENDPOINT = "ws://10.0.2.2:18765"
@@ -44,6 +48,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var frameSource: PlatformFrameSource
     private var qwenEngine: NativeQwenEngine? = null
     private var languageController: LanguageInteractionController? = null
+    private val jevExecutor = Executors.newSingleThreadExecutor()
+    private val jevRequest = AtomicLong(0)
     private var onMicrophoneGranted: (() -> Unit)? = null
     private val microphonePermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -58,6 +64,8 @@ class MainActivity : ComponentActivity() {
         val modelJson = assets.open("intent_model.json").bufferedReader().use { it.readText() }
         val targetMapJson = assets.open("targets.json").bufferedReader().use { it.readText() }
         val classifier = LocalIntentClassifier.fromJson(modelJson)
+        val jevEvaluator = JevProxyChoiceEvaluator()
+        val jevClassifier = JevIntentClassifier(jevEvaluator)
         val engine = InteractionEngine(
             classifier,
             TargetResolver.fromJson(targetMapJson),
@@ -83,21 +91,96 @@ class MainActivity : ComponentActivity() {
             var endpoint by remember { mutableStateOf(DEFAULT_ENDPOINT) }
             var robot by remember { mutableStateOf(UnknownRobotPresentation) }
             var secondsToExpire by remember { mutableIntStateOf(0) }
+            var jevRemoteEnabled by remember { mutableStateOf(false) }
+            var jevRemoteConsent by remember { mutableStateOf(false) }
+            var jevPending by remember { mutableStateOf(false) }
 
             fun apply(next: InteractionResult) {
-                result = next
-                if (next.state == InteractionState.ACCEPTED) {
-                    robot = robotPresentation(next.intent, next.targetId)
+                val displayed = if (jevRemoteEnabled && next.command != null) {
+                    engine.transportCompleted(
+                        accepted = false,
+                        reason = "Demonstração Jev: comando bloqueado antes do bridge",
+                    ).copy(
+                        speech = "Demonstração Jev: comando bloqueado antes do bridge",
+                    )
+                } else {
+                    next
                 }
-                next.speech?.let(voice::speak)
-                next.command?.let { command ->
+                result = displayed
+                if (displayed.state == InteractionState.ACCEPTED && displayed.command != null) {
+                    robot = robotPresentation(displayed.intent, displayed.targetId)
+                }
+                displayed.speech?.let(voice::speak)
+                displayed.command?.let { command ->
                     WebSocketCommandTransport(endpoint).send(command) { accepted, reason ->
                         runOnUiThread { apply(engine.transportCompleted(accepted, reason)) }
                     }
                 }
             }
 
+            fun applyDispatch(dispatch: LanguageDispatch) {
+                when (dispatch) {
+                    is LanguageDispatch.Operational -> apply(dispatch.result)
+                    is LanguageDispatch.AssistantPending -> {
+                        result = result.copy(
+                            message = ASSISTANT_PROCESSING_MESSAGE,
+                            speech = null,
+                            command = null,
+                            prediction = dispatch.prediction,
+                        )
+                    }
+                }
+            }
+
             fun interpret(text: String) {
+                if (jevPending) return
+                if (jevRemoteEnabled && BuildConfig.FRAME_SOURCE == "mock") {
+                    val requestId = jevRequest.incrementAndGet()
+                    jevPending = true
+                    result = result.copy(
+                        message = "Classificando com Jev remoto",
+                        speech = null,
+                        command = null,
+                    )
+                    jevExecutor.execute {
+                        val prediction = jevClassifier.classify(text)
+                        runOnUiThread {
+                            if (jevRequest.get() == requestId) {
+                                jevPending = false
+                                applyDispatch(
+                                    language.handlePrediction(text, prediction) { prediction, outcome ->
+                                        runOnUiThread {
+                                            outcome.fold(
+                                                onSuccess = { reply ->
+                                                    apply(
+                                                        result.copy(
+                                                            message = reply.response,
+                                                            speech = reply.response,
+                                                            command = null,
+                                                            prediction = prediction,
+                                                        )
+                                                    )
+                                                },
+                                                onFailure = {
+                                                    apply(
+                                                        result.copy(
+                                                            message = ASSISTANT_ERROR_MESSAGE,
+                                                            speech = ASSISTANT_ERROR_MESSAGE,
+                                                            command = null,
+                                                            prediction = prediction,
+                                                        )
+                                                    )
+                                                },
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    return
+                }
+
                 val dispatch = language.handle(text) { prediction, outcome ->
                     runOnUiThread {
                         outcome.fold(
@@ -125,17 +208,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                when (dispatch) {
-                    is LanguageDispatch.Operational -> apply(dispatch.result)
-                    is LanguageDispatch.AssistantPending -> {
-                        result = result.copy(
-                            message = ASSISTANT_PROCESSING_MESSAGE,
-                            speech = null,
-                            command = null,
-                            prediction = dispatch.prediction,
-                        )
-                    }
-                }
+                applyDispatch(dispatch)
             }
 
             LaunchedEffect(result.state) {
@@ -158,12 +231,32 @@ class MainActivity : ComponentActivity() {
                     frameSource = BuildConfig.FRAME_SOURCE,
                     jevScenarios = JevTestDiagnostics.scenarios(),
                     jevDiagnostic = JevTestDiagnostics.current(),
+                    jevRemoteEnabled = jevRemoteEnabled,
+                    jevRemoteConsent = jevRemoteConsent,
+                    onJevRemoteEnabledChange = { enabled ->
+                        jevRequest.incrementAndGet()
+                        jevPending = false
+                        jevRemoteEnabled = enabled && BuildConfig.FRAME_SOURCE == "mock"
+                        jevEvaluator.enabled = jevRemoteEnabled
+                    },
+                    onJevRemoteConsentChange = { consent ->
+                        jevRemoteConsent = consent
+                        if (!consent) {
+                            jevRequest.incrementAndGet()
+                            jevPending = false
+                            jevRemoteEnabled = false
+                            jevEvaluator.enabled = false
+                        }
+                    },
                     endpoint = endpoint,
                     onEndpointChange = { endpoint = it },
                     transcript = transcript,
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
+                    interactionPending = jevPending,
                     onLook = {
+                        jevRequest.incrementAndGet()
+                        jevPending = false
                         language.cancelAssistant()
                         frameSource.captureTarget { outcome ->
                             runOnUiThread {
@@ -178,6 +271,8 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onListen = {
+                        jevRequest.incrementAndGet()
+                        jevPending = false
                         language.cancelAssistant()
                         onMicrophoneGranted = {
                             voice.listen { outcome ->
@@ -200,6 +295,8 @@ class MainActivity : ComponentActivity() {
                     },
                     onInterpret = { interpret(transcript) },
                     onReset = {
+                        jevRequest.incrementAndGet()
+                        jevPending = false
                         language.cancelAssistant()
                         frameSource.cancelCapture()
                         apply(engine.reset())
@@ -211,6 +308,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         languageController?.cancelAssistant()
+        jevRequest.incrementAndGet()
+        jevExecutor.shutdownNow()
         qwenEngine?.close()
         if (::frameSource.isInitialized) frameSource.close()
         if (::voice.isInitialized) voice.close()

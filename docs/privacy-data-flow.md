@@ -26,7 +26,7 @@ Documentar separadamente os dados tratados pelo Maestro Agrícola, pelo Android,
 | Android | Áudio do microfone, transcrição, síntese de voz, permissões e sandbox | APIs nativas e provedor configurado no aparelho | O sistema operacional ou o provedor de reconhecimento/TTS pode tratar dados conforme sua configuração | Governada pelo Android/provedor, não pelo código do Maestro | Saída TTS física confirmada; provedor STT ainda pendente |
 | DAT/Meta | Registro, sessão, permissões, câmera e possível telemetria do SDK | Óculos ou MockDeviceKit e SDK | Fluxo definido pelo DAT e pela configuração da conta/app | Fora do controle direto do Maestro; analytics e crash reporting opcionais desabilitados | Adaptador 0.9.0 aprovado no MockDeviceKit; hardware real pendente |
 | Bridge ROS 2 | JSON de comando e ACK, IDs, estados e erros | App Android e simulador | Validação, deduplicação e conversão em meta Nav2 | Logs técnicos podem existir no ambiente da demo | Testes do núcleo aprovados |
-| Serviços externos de IA | Nenhum dado de inferência do Maestro | Não aplicável | O classificador de intenção não usa servidor externo | Não aplicável | Comprovado pelo artefato local |
+| Serviços externos de IA | Nenhum dado no caminho padrão; transcrição curta de teste no modo remoto `mockDebug` | Operador habilita explicitamente Jev remoto para demonstrar os mesmos seis rótulos | `adb reverse` leva o texto em memória a um proxy loopback; ele chama TypeSafe/Jev sem expor a chave ao APK | Nenhuma persistência pelo Maestro ou proxy; o serviço externo segue sua própria política | Implementação local em validação; não é uso operacional |
 
 ## Fluxo da câmera
 
@@ -55,12 +55,24 @@ Microfone/rota ativa -> SpeechRecognizer do Android -> transcrição em memória
 
 O app não chama APIs de arquivo no caminho de voz atual. A transcrição aparece no estado Compose para diagnóstico durante a interação e deve desaparecer com o ciclo da atividade; ela não deve ser copiada para log ou evidência.
 
+No `mockDebug`, existe uma exceção demonstrativa opt-in: depois da declaração
+visível de fala de teste sem dados pessoais, a transcrição pode seguir para
+`127.0.0.1:8787` por `adb reverse`, alcançar um proxy somente loopback e então
+o JEV. O APK não conhece a chave nem o endpoint externo. O proxy rejeita e-mail,
+telefone e URL evidentes, não registra a fala e tem teto de 24 tentativas HTTP,
+incluindo retry. Essa verificação é limitada: o operador continua responsável
+por não falar dado pessoal. `dat` e o caminho padrão permanecem locais.
+
 ## Fluxo do comando
 
 ```text
 transcrição operacional -> LocalIntentClassifier -> InteractionEngine
 -> confirmação explícita -> Command JSON -> WebSocket -> bridge ROS 2
 ```
+
+Na demonstração remota Jev, a classificação substitui localmente apenas o
+primeiro nó desse diagrama. Os gates restantes continuam iguais, mas um
+`Command` confirmado é bloqueado antes do WebSocket; não há ação física.
 
 O assistente Qwen não participa desse fluxo. O `LanguageInteractionController` envia somente `UNKNOWN`, em estado seguro para conversa, ao assistente e não oferece a ele referência para `Command`, WebSocket, ROS ou estado do robô.
 

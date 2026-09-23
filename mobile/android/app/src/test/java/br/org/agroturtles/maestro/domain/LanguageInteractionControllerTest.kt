@@ -122,6 +122,31 @@ class LanguageInteractionControllerTest {
     }
 
     @Test
+    fun externallyClassifiedUnknownUsesAssistantWithoutRunningLocalClassifier() {
+        val classifier = IntentClassifier {
+            throw AssertionError("a previsao Jev nao pode ser classificada de novo localmente")
+        }
+        val engine = InteractionEngine(classifier)
+        val controller = LanguageInteractionController(
+            classifier = classifier,
+            interactionEngine = engine,
+            assistant = DomainAssistant { _, completion ->
+                completion(Result.success(AssistantReply(AssistantReplyType.CHAT, "Resposta local")))
+            },
+        )
+        var reply: AssistantReply? = null
+
+        val dispatch = controller.handlePrediction(
+            text = "o que e o Maestro?",
+            prediction = IntentPrediction("UNKNOWN", 0.72, "JEV"),
+        ) { _, outcome -> reply = outcome.getOrThrow() }
+
+        assertTrue(dispatch is LanguageDispatch.AssistantPending)
+        assertEquals("Resposta local", reply?.response)
+        assertEquals(InteractionState.IDLE, engine.state)
+    }
+
+    @Test
     fun confirmationStateNeverUsesAssistant() {
         val labels = ArrayDeque(listOf("DOCK", "UNKNOWN"))
         val classifier = IntentClassifier {

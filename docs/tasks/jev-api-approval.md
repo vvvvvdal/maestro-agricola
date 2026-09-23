@@ -53,6 +53,20 @@ JEV-66 permanecem bloqueadas ate aprovacao humana de custo, dados ASR e
 condicoes de parada. A autorizacao anterior nao pode ser reaproveitada para
 uma nova rodada, mesmo que o painel da conta tenha credito disponivel.
 
+## Excecao mock local aprovada
+
+Em 23/09/2026, o operador aprovou uma demonstracao interativa limitada no
+`mockDebug`, via proxy loopback e `adb reverse`. O APK nunca recebe a chave nem
+acessa a TypeSafe diretamente. O subteto adicional e US$0,10, com no maximo 24
+tentativas HTTP externas por processo, inclusive retry. Antes de habilitar o
+modo, o operador declara no app que usara apenas fala de teste sem dados
+pessoais; o proxy recusa e-mail, telefone e URL evidentes, mas essa barreira
+nao e uma anonimização completa.
+
+Falha fecha em `UNKNOWN`. Mesmo apos confirmação, o modo remoto bloqueia o
+`Command` antes do bridge. A excecao nao autoriza dados pessoais, `dat`,
+adocao operacional, corpus novo ou rodada de benchmark.
+
 ## Recuperacao aprovada
 
 Em 22/09/2026, o operador aprovou uma avaliacao final de recuperacao apos a

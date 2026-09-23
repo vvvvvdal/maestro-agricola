@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -86,11 +87,16 @@ fun MaestroScreen(
     frameSource: String,
     jevScenarios: List<JevChoiceAnswer>,
     jevDiagnostic: JevChoiceAnswer?,
+    jevRemoteEnabled: Boolean,
+    jevRemoteConsent: Boolean,
+    onJevRemoteEnabledChange: (Boolean) -> Unit,
+    onJevRemoteConsentChange: (Boolean) -> Unit,
     endpoint: String,
     onEndpointChange: (String) -> Unit,
     transcript: String,
     onTranscriptChange: (String) -> Unit,
     secondsToExpire: Int,
+    interactionPending: Boolean,
     onLook: () -> Unit,
     onListen: () -> Unit,
     onInterpret: () -> Unit,
@@ -162,6 +168,7 @@ fun MaestroScreen(
 
             Actions(
                 state = result.state,
+                enabled = !interactionPending,
                 onLook = onLook,
                 onListen = onListen,
                 onReset = onReset,
@@ -173,12 +180,17 @@ fun MaestroScreen(
                 frameSource = frameSource,
                 jevScenarios = jevScenarios,
                 jevDiagnostic = jevDiagnostic,
+                jevRemoteEnabled = jevRemoteEnabled,
+                jevRemoteConsent = jevRemoteConsent,
+                onJevRemoteEnabledChange = onJevRemoteEnabledChange,
+                onJevRemoteConsentChange = onJevRemoteConsentChange,
                 selectedJevChoice = selectedJevChoice,
                 onJevScenarioSelected = { selectedJevChoice = it },
                 endpoint = endpoint,
                 onEndpointChange = onEndpointChange,
                 transcript = transcript,
                 onTranscriptChange = onTranscriptChange,
+                interactionPending = interactionPending,
                 onInterpret = onInterpret,
             )
         }
@@ -396,6 +408,7 @@ private fun FactCard(
 @Composable
 private fun Actions(
     state: InteractionState,
+    enabled: Boolean,
     onLook: () -> Unit,
     onListen: () -> Unit,
     onReset: () -> Unit,
@@ -403,6 +416,7 @@ private fun Actions(
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Button(
             onClick = onListen,
+            enabled = enabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp),
@@ -423,6 +437,7 @@ private fun Actions(
             SecondaryAction(
                 text = "Olhar para o alvo",
                 onClick = onLook,
+                enabled = enabled,
             )
             SecondaryAction(
                 text = if (state == InteractionState.AWAITING_CONFIRMATION) {
@@ -431,15 +446,17 @@ private fun Actions(
                     "Reiniciar"
                 },
                 onClick = onReset,
+                enabled = enabled,
             )
         }
     }
 }
 
 @Composable
-private fun RowScope.SecondaryAction(text: String, onClick: () -> Unit) {
+private fun RowScope.SecondaryAction(text: String, onClick: () -> Unit, enabled: Boolean = true) {
     OutlinedButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .weight(1f)
             .height(48.dp),
@@ -456,12 +473,17 @@ private fun ToolsPanel(
     frameSource: String,
     jevScenarios: List<JevChoiceAnswer>,
     jevDiagnostic: JevChoiceAnswer?,
+    jevRemoteEnabled: Boolean,
+    jevRemoteConsent: Boolean,
+    onJevRemoteEnabledChange: (Boolean) -> Unit,
+    onJevRemoteConsentChange: (Boolean) -> Unit,
     selectedJevChoice: String?,
     onJevScenarioSelected: (String?) -> Unit,
     endpoint: String,
     onEndpointChange: (String) -> Unit,
     transcript: String,
     onTranscriptChange: (String) -> Unit,
+    interactionPending: Boolean,
     onInterpret: () -> Unit,
 ) {
     val diagnostic = jevDiagnosticPresentation(jevDiagnostic)
@@ -493,6 +515,7 @@ private fun ToolsPanel(
                         label = { Text("Bridge WebSocket") },
                         supportingText = { Text("Em celular físico, use o IP do computador") },
                         singleLine = true,
+                        enabled = !interactionPending,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     OutlinedTextField(
@@ -502,11 +525,15 @@ private fun ToolsPanel(
                         supportingText = { Text("Contingência quando o microfone falhar") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                        keyboardActions = KeyboardActions(onSend = { onInterpret() }),
+                        keyboardActions = KeyboardActions(onSend = {
+                            if (!interactionPending) onInterpret()
+                        }),
+                        enabled = !interactionPending,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Button(
                         onClick = onInterpret,
+                        enabled = !interactionPending,
                         modifier = Modifier.fillMaxWidth(),
                         shape = CardShape,
                     ) {
@@ -517,7 +544,16 @@ private fun ToolsPanel(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaestroBlue,
                     )
-                    if (showsJevScenarios) {
+                    if (frameSource == MOCK_FRAME_SOURCE) {
+                        JevRemoteSelector(
+                            enabled = jevRemoteEnabled,
+                            consent = jevRemoteConsent,
+                            interactionsEnabled = !interactionPending,
+                            onEnabledChange = onJevRemoteEnabledChange,
+                            onConsentChange = onJevRemoteConsentChange,
+                        )
+                    }
+                    if (showsJevScenarios && !jevRemoteEnabled) {
                         JevScenarioSelector(
                             scenarios = jevScenarios,
                             selectedChoice = selectedJevChoice,
@@ -533,6 +569,49 @@ private fun ToolsPanel(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun JevRemoteSelector(
+    enabled: Boolean,
+    consent: Boolean,
+    interactionsEnabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    onConsentChange: (Boolean) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            text = "Fonte da intencao",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaestroBlue,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = !enabled,
+                onClick = { onEnabledChange(false) },
+                enabled = interactionsEnabled,
+                label = { Text("Local") },
+            )
+            FilterChip(
+                selected = enabled,
+                onClick = { onEnabledChange(true) },
+                enabled = interactionsEnabled && consent,
+                label = { Text("Jev remoto") },
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = consent,
+                onCheckedChange = onConsentChange,
+                enabled = interactionsEnabled,
+            )
+            Text(
+                text = "Fala de teste sem dados pessoais",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaestroBlue,
+            )
         }
     }
 }

@@ -89,6 +89,7 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-34 | DONE | 22/09 | JEV-32, JEV-33 | Testes focados, `assembleMockDebug` e inspecao no SM-X510 em paisagem: cartao, rolagem e arvore de acessibilidade aprovados. TalkBack audivel e complementar. |
 | JEV-35 | DONE | 22/09 | JEV-34 | Wordmark limitado a viewport responsivo de 480 x 88 dp, sem corte em paisagem e retrato no SM-X510 em `mockDebug`. |
 | JEV-36 | DONE | 22/09 | JEV-34 | `mock` tem selecao explicita de baseline, Jev `SPRAY` e Jev `UNKNOWN`; a selecao so altera o cartao `INTENCAO`. `dat`, classificador local, jornada, transporte e comandos permanecem inalterados. |
+| JEV-37 | NEXT | 23/09 | JEV-36, aprovacao mock | Demo interativa opt-in em `mockDebug`: proxy loopback fixo via `adb reverse`, chave fora do APK, teto de 24 tentativas, declaração de fala sem dado pessoal, falha fechada e bloqueio de `Command` antes do bridge. Só conclui com testes focados e validação no SM-X510. |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
 
