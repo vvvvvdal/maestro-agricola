@@ -5,11 +5,14 @@ Grupo de estudos de RL
 Data: 01/10/2026
 
 Status: planejamento ativo. Este material pertence ao grupo de estudos e nao
-ao pitch do Maestro Agricola. Nenhum deck e versionado nesta pasta ainda.
+ao pitch do Maestro Agricola.
 
 O roteiro falavel de 50 minutos esta em
 [`presentation-script.md`](presentation-script.md). Ele separa evidencia
 medida, resultados de terceiros e roadmap antes da criacao dos slides.
+O deck tecnico correspondente esta em
+[`slides/jev-rl-study.html`](slides/jev-rl-study.html); ele nao faz parte de
+`docs/pitch/` e preserva a decisao experimental `HOLD`.
 
 ## Como o estudo sera executado
 

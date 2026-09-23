@@ -16,6 +16,7 @@
 - [`jev-offline-reserve-demo.md`](jev-offline-reserve-demo.md): fixtures locais de reserva no SM-X510, capturadas com Wi-Fi desligado e sem executar o robo.
 - [`jev-presentation-script.md`](jev-presentation-script.md): roteiro falavel de 50 minutos para o grupo de estudos, com fontes, limites e debate final.
 - [`jev-presentation-slides.md`](jev-presentation-slides.md): SVGs 16:9 da comparacao, matrizes e reliability do experimento Jev, com limites de interpretacao.
+- [`jev-study-group-deck.md`](jev-study-group-deck.md): deck HTML tecnico de 50 minutos para o grupo de estudos de RL, separado do pitch e com evidencia etiquetada.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
 - [`android-demo-ui.md`](android-demo-ui.md): transformação da tela diagnóstica Android em interface de demonstração.

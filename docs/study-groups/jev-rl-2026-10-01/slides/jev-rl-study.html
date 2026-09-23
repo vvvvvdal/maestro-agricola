@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jev e decisoes com incerteza</title>
+<link rel="stylesheet" href="jev-rl-study.css">
+<style>
+/* === 1. STAGE MECHANICS === */
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this entire file in every presentation.
+   Slides are authored at 1920x1080 and scaled as a whole.
+   =========================================== */
+html, body { width:100%; height:100%; margin:0; overflow:hidden; background:var(--stage-bg,#000); }
+.deck-viewport { position:fixed; inset:0; overflow:hidden; background:var(--stage-bg,#000); }
+.deck-stage { position:absolute; left:0; top:0; width:1920px; height:1080px; overflow:hidden; transform-origin:0 0; background:var(--slide-bg,#fff); }
+.slide { position:absolute !important; inset:0; width:1920px; height:1080px; overflow:hidden; display:block; visibility:hidden; opacity:0; pointer-events:none; background:var(--slide-bg,#fff); }
+.slide.bg-field { background:#0e1510; color:#f4f2e9; }
+.slide.bg-paper { background:#f4f2e9; color:#0e1510; }
+.slide.active, .slide.visible { visibility:visible; opacity:1; pointer-events:auto; z-index:1; }
+img, video, canvas, svg { max-width:100%; max-height:100%; }
+.deck-controls { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:1000; }
+@media print {
+  html, body { width:1920px; height:auto; overflow:visible; background:#fff; }
+  .deck-viewport { position:static; overflow:visible; background:#fff; }
+  .deck-stage { position:static; width:auto; height:auto; transform:none !important; background:none; }
+  .slide { position:relative !important; display:block !important; visibility:visible !important; opacity:1 !important; pointer-events:auto !important; width:1920px; height:1080px; break-after:page; page-break-after:always; }
+  .slide:last-child { break-after:auto; page-break-after:auto; }
+  .deck-controls { display:none !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.2s !important; }
+}
+</style>
+<style>
+/* === 2. TOKEN DEFINITIONS === */
+:root { --stage-bg:#071009; --slide-bg:#0e1510; }
+</style>
+<style>
+/* === 3. PRESENTATION STATES === */
+.slide .reveal { opacity:1; transform:none; }
+.notes-panel { opacity:0; pointer-events:none; transform:translateY(14px); transition:opacity .2s ease,transform .2s ease; }
+.notes-panel.visible { opacity:1; pointer-events:auto; transform:translateY(0); }
+</style>
+</head>
+<body>
+<div class="deck-viewport"><main id="deckStage" class="deck-stage"></main></div>
+<div class="deck-controls flex items-center gap-3 border border-white/20 bg-black/75 px-3 py-2 font-mono text-xs text-white">
+  <button id="prevBtn" class="px-2 py-1" aria-label="Slide anterior">←</button>
+  <span id="pageIndicator">01 / 19</span>
+  <button id="nextBtn" class="px-2 py-1" aria-label="Proximo slide">→</button>
+  <button id="notesBtn" class="border-l border-white/20 pl-3 py-1" aria-label="Notas">N</button>
+  <button id="editBtn" class="border-l border-white/20 pl-3 py-1" aria-label="Editar">E</button>
+</div>
+<aside id="notesPanel" class="notes-panel fixed right-5 bottom-20 z-[1000] w-[420px] border border-white/20 bg-black/90 p-5 font-body text-sm leading-6 text-white">
+  <p class="font-mono text-xs tracking-[0.12em] text-[#FCC931]">NOTAS DO APRESENTADOR</p>
+  <p id="notesText" class="mt-3"></p>
+</aside>
+<script>
+const dark = 'bg-field text-paper';
+const light = 'bg-paper text-field';
+const logo = '../../../../mobile/android/app/src/main/res/drawable-nodpi/maestro_logo_horizontal.png';
+const slides = [
+  {
+    layout:'opening/dossier', tone:dark, tag:'GRUPO DE ESTUDOS DE RL', kind:'ESTUDO TECNICO', source:'MAESTRO AGRICOLA · TEST/JEV',
+    title:'Jev e decisoes<br>com incerteza', lead:'Quando uma probabilidade pode ajudar software sem virar permissao para mover um robo.',
+    body:"<div class='absolute left-[84px] top-[198px] grid w-[1752px] grid-cols-4 border-y border-fog/25'><div class='py-[24px] pr-[20px] border-r border-fog/25'><p class='font-mono text-[14px] tracking-[0.12em] text-fog'>ASSUNTO</p><p class='mt-[10px] font-body text-[25px]'>Decisao tipada</p></div><div class='p-[24px] border-r border-fog/25'><p class='font-mono text-[14px] tracking-[0.12em] text-fog'>RECORTE</p><p class='mt-[10px] font-body text-[25px]'>Jev + Maestro</p></div><div class='p-[24px] border-r border-fog/25'><p class='font-mono text-[14px] tracking-[0.12em] text-fog'>DURACAO</p><p class='mt-[10px] font-body text-[25px]'>50 minutos</p></div><div class='p-[24px]'><p class='font-mono text-[14px] tracking-[0.12em] text-fog'>STATUS</p><p class='mt-[10px] font-body text-[25px] text-sun'>NAO E PITCH</p></div></div><img src='"+logo+"' alt='Maestro Agricola' class='absolute right-[84px] top-[62px] h-[58px] w-[280px] object-contain'><p class='absolute left-[84px] top-[400px] border border-sun px-[18px] py-[10px] font-mono text-[17px] tracking-[0.13em] text-sun'>46 MIN + 4 MIN DE DEBATE</p>",
+    notes:'Abra com a tese: decisao tipada pode ser util sem dar controle ao modelo.'
+  },
+  {
+    layout:'process/circuit', tone:light, tag:'0:00 · A PERGUNTA', kind:'HIPOTESE DE ARQUITETURA', source:'HIPOTESE DE ARQUITETURA',
+    title:'Onde o julgamento termina?', lead:'O Jev pode existir na decisao tipada. Nao resolve alvo, estado, confirmacao ou movimento.',
+    body:"<div class='absolute left-[84px] top-[430px] flex items-center gap-[14px] font-mono text-[19px] tracking-[0.04em]'><span class='border-2 border-field px-[19px] py-[19px]'>FALA</span><span class='text-sun'>→</span><span class='bg-field px-[19px] py-[19px] text-paper'>DECISAO TIPADA</span><span class='text-sun'>→</span><span class='border-2 border-field px-[19px] py-[19px]'>REGRAS + ESTADO</span><span class='text-sun'>→</span><span class='border-2 border-field px-[19px] py-[19px]'>CONFIRMACAO</span><span class='text-sun'>→</span><span class='border-2 border-field px-[19px] py-[19px]'>ROBO</span></div>",
+    notes:'O modelo fica antes das barreiras fisicas. Esta e a fronteira de toda a apresentacao.'
+  },
+  {
+    layout:'list/rule-columns', tone:dark, tag:'1:45 · COMO LER', kind:'REGRA DE EVIDENCIA', source:'CONTRATO DA CONVERSA',
+    title:'Tres etiquetas.<br>Tres pesos.', lead:'',
+    body:"<div class='absolute left-[84px] top-[400px] grid w-[1752px] grid-cols-3 gap-[26px]'><div class='border-t-4 border-leaf pt-[24px]'><p class='font-mono text-[17px] tracking-[0.12em] text-leaf'>MEDIDO NO MAESTRO</p><p class='mt-[20px] font-display text-[45px] font-bold'>Artefato versionado</p><p class='mt-[18px] max-w-[430px] font-body text-[25px] leading-[1.45] text-fog'>Tem corpus, numero, escopo e limite.</p></div><div class='border-t-4 border-sun pt-[24px]'><p class='font-mono text-[17px] tracking-[0.12em] text-sun'>RESULTADO DE TERCEIROS</p><p class='mt-[20px] font-display text-[45px] font-bold'>Caso publico</p><p class='mt-[18px] max-w-[430px] font-body text-[25px] leading-[1.45] text-fog'>Ajuda a ler fronteiras. Nao prova o nosso dominio.</p></div><div class='border-t-4 border-fog pt-[24px]'><p class='font-mono text-[17px] tracking-[0.12em] text-fog'>HIPOTESE / ROADMAP</p><p class='mt-[20px] font-display text-[45px] font-bold'>Desenho futuro</p><p class='mt-[18px] max-w-[430px] font-body text-[25px] leading-[1.45] text-fog'>Nao e capacidade entregue nem contrato novo.</p></div></div>",
+    notes:'Fale a etiqueta antes de qualquer numero ou imagem.'
+  },
+  {
+    layout:'definition/lexicon', tone:light, tag:'3:00 · JEV', kind:'FONTE OFICIAL · S1, S2', source:'S1 · INTRODUCAO TYPESAFE · S2 · CHOICE',
+    title:'Choice e catalogo fechado.', lead:'Uma pergunta com opcoes declaradas devolve uma opcao vencedora e probabilidades para as opcoes.',
+    body:"<div class='absolute right-[84px] top-[330px] w-[600px] border-2 border-field p-[30px]'><p class='font-mono text-[16px] tracking-[0.12em] text-faint'>CATALOGO DO MAESTRO</p><div class='mt-[25px] grid grid-cols-2 gap-[12px] font-mono text-[24px]'><span class='bg-field px-[18px] py-[15px] text-paper'>SPRAY</span><span class='bg-field px-[18px] py-[15px] text-paper'>DOCK</span><span class='bg-field px-[18px] py-[15px] text-paper'>UNDOCK</span><span class='bg-field px-[18px] py-[15px] text-paper'>CONFIRM</span><span class='bg-field px-[18px] py-[15px] text-paper'>CANCEL</span><span class='border-2 border-field px-[18px] py-[15px]'>UNKNOWN</span></div></div><p class='absolute left-[84px] top-[700px] max-w-[1040px] border-l-4 border-sun pl-[22px] font-body text-[27px] leading-[1.45]'>A pergunta e pequena de proposito. A saida estruturada pode ser avaliada sem dar ferramentas livres ao modelo.</p>",
+    notes:'UNKNOWN e uma saida valida. O catalogo e pequeno para a comparacao ser honesta.'
+  },
+  {
+    layout:'comparison/fulcrum', tone:dark, tag:'6:00 · JEV', kind:'FONTE OFICIAL · S1-S3', source:'S1 · INTRODUCAO · S2 · CHOICE · S3 · CONFIDENCE',
+    title:'Tres primitivas.<br>Uma fronteira util.', lead:'',
+    body:"<div class='absolute right-[84px] top-[290px] grid w-[790px] grid-cols-3 gap-[14px]'><div class='bg-panel p-[24px]'><p class='font-mono text-[15px] text-leaf'>CHOICE</p><p class='mt-[22px] font-display text-[41px] font-bold'>Classe</p><p class='mt-[16px] font-body text-[21px] text-fog'>Entra no catalogo.</p></div><div class='border border-fog/35 p-[24px]'><p class='font-mono text-[15px] text-sun'>NOUL</p><p class='mt-[22px] font-display text-[41px] font-bold'>Sim/nao</p><p class='mt-[16px] font-body text-[21px] text-fog'>Sem confidence.</p></div><div class='border border-fog/35 p-[24px]'><p class='font-mono text-[15px] text-fog'>SCORE</p><p class='mt-[22px] font-display text-[41px] font-bold'>Escore</p><p class='mt-[16px] font-body text-[21px] text-fog'>Outro contrato.</p></div></div><p class='absolute left-[84px] right-[84px] bottom-[180px] border-t border-fog/35 pt-[28px] font-body text-[29px] leading-[1.45]'>No Maestro experimental, somente <span class='font-mono text-sun'>CHOICE</span> troca o classificador. Probabilidade nao remove confirmacao por audio.</p>",
+    notes:'Diferencie probabilidade da classe de confidence do Jev. Noul nao retorna confidence.'
+  },
+  {
+    layout:'risk/watchlist', tone:light, tag:'9:00 · RLCD', kind:'FONTE OFICIAL · S4', source:'S4 · AI PRIMER E RLCD',
+    title:'RLCD e contexto.<br>Nao e prova.', lead:'',
+    body:"<div class='absolute left-[84px] top-[425px] right-[84px] grid grid-cols-3 gap-[28px] border-y-2 border-field py-[30px]'><div><p class='font-mono text-[16px] text-agro'>PODE DIZER</p><p class='mt-[18px] font-body text-[27px] leading-[1.45]'>A TypeSafe descreve o treino como RLCD.</p></div><div><p class='font-mono text-[16px] text-sun'>NAO PODE DIZER</p><p class='mt-[18px] font-body text-[27px] leading-[1.45]'>Que receita, dados ou arquitetura estao auditados.</p></div><div><p class='font-mono text-[16px] text-risk'>PORTANTO</p><p class='mt-[18px] font-body text-[27px] leading-[1.45]'>A evidencia vem da avaliacao, nao da narrativa de treino.</p></div></div><p class='absolute left-[84px] top-[790px] font-display text-[48px] font-bold'>0,90 significa o que?</p>",
+    notes:'RLCD e linguagem do fornecedor. A avaliacao e o que pode sustentar uma decisao.'
+  },
+  {
+    layout:'chart/tideline', tone:dark, tag:'12:30 · CALIBRACAO', kind:'MEDIDO NO MAESTRO · E1, E2', source:'E1 · JEV-41R · E2 · VISUAL JEV-51',
+    title:'Probabilidade nao e permissao.', lead:'',
+    body:"<div class='absolute left-[84px] top-[315px] h-[555px] w-[1080px] bg-paper p-[14px]'><img src='../results/jev-final-recovery-reliability-slide.svg' alt='Reliability diagram' class='h-full w-full object-contain'></div><div class='absolute right-[84px] top-[360px] w-[535px] border-l-4 border-sun pl-[26px]'><p class='font-mono text-[16px] text-sun'>LEITURA CORRETA</p><p class='mt-[20px] font-body text-[27px] leading-[1.48] text-fog'>Brier avalia probabilidades. ECE compara confianca e frequencia por faixa. A diagonal e ideal.</p><p class='mt-[24px] font-body text-[25px] leading-[1.48] text-paper'>n=60, sintetico, uma rodada. Descritivo; nao calibracao geral.</p></div>",
+    notes:'Explique Brier e ECE sem vender o grafico. Leia o limite n=60 em voz alta.'
+  },
+  {
+    layout:'case/turnabout', tone:light, tag:'16:00 · XADREZ', kind:'RESULTADO DE TERCEIROS · S5', source:'S5 · THREAD DE XADREZ REPUBLICADA',
+    title:'O harness define<br>o que venceu.', lead:'',
+    body:"<div class='absolute left-[84px] top-[430px] grid w-[1752px] grid-cols-2 gap-[36px]'><div class='border-t-4 border-field pt-[25px]'><p class='font-mono text-[16px] text-agro'>JEV VS FABLE 5.1</p><p class='mt-[18px] font-display text-[45px] font-bold'>Venceu no tempo.</p><p class='mt-[18px] font-body text-[26px] leading-[1.45] text-agro'>Blitz 5+0, uma chamada por lance, sem busca. Fable tinha +16 de material e segunda dama no lance 29.</p></div><div class='border-t-4 border-risk pt-[25px]'><p class='font-mono text-[16px] text-risk'>JEV VS ASTRA</p><p class='mt-[18px] font-display text-[45px] font-bold'>Mate em 18.</p><p class='mt-[18px] font-body text-[26px] leading-[1.45] text-agro'>Astra terminou com 2:27. Calculo e busca continuam parte central do jogo.</p></div></div><p class='absolute left-[84px] top-[800px] border-l-4 border-sun pl-[22px] font-body text-[27px]'>Nao diga “Jev ganhou de Fable no xadrez” sem dizer que foi no relogio e naquele harness.</p>",
+    notes:'Este slide e sobre ler benchmarks, nao sobre xadrez.'
+  },
+  {
+    layout:'list/ledger-list', tone:dark, tag:'21:00 · CASOS PUBLICOS', kind:'RESULTADO DE TERCEIROS · S6-S8', source:'S6 · PLAYGROUND · S7 · JEV-BENCHMARKS · S8 · BANKING77',
+    title:'Catalogo conhecido.<br>Dominio diferente.', lead:'',
+    body:"<div class='absolute left-[84px] top-[400px] right-[84px]'><div class='grid grid-cols-[210px_500px_1fr] border-t-2 border-fog/35 py-[22px]'><p class='font-mono text-[18px] text-leaf'>SUPORTE</p><p class='font-display text-[34px] font-bold'>Choice + Noul + Score</p><p class='font-body text-[23px] text-fog'>Ilustra saidas pequenas; nao prova atendimento ou agricultura.</p></div><div class='grid grid-cols-[210px_500px_1fr] border-t-2 border-fog/35 py-[22px]'><p class='font-mono text-[18px] text-sun'>NPC / ASR</p><p class='font-display text-[34px] font-bold'>F1 0,96 / 0,93</p><p class='font-body text-[23px] text-fog'>Texto limpo e ASR ruidoso reportados; nao transferir para nosso ASR.</p></div><div class='grid grid-cols-[210px_500px_1fr] border-y-2 border-fog/35 py-[22px]'><p class='font-mono text-[18px] text-fog'>BANKING77</p><p class='font-display text-[34px] font-bold'>92,40% vs 93,66%</p><p class='font-body text-[23px] text-fog'>Jev versus BERT citado; nao elimina baseline local especializado.</p></div></div>",
+    notes:'Os tres casos defendem somente uma intuicao: catalogo pequeno pode ser uma boa fronteira.'
+  },
+  {
+    layout:'process/circuit', tone:light, tag:'27:00 · MAESTRO', kind:'ARQUITETURA ATUAL', source:'ARQUITETURA DO EXPERIMENTO',
+    title:'Classificacao e uma etapa.<br>Nao e o sistema.', lead:'',
+    body:"<div class='absolute left-[84px] top-[435px] flex items-center gap-[12px] font-mono text-[18px]'><span class='border-2 border-field px-[16px] py-[17px]'>TRANSCRICAO</span><span class='text-sun'>→</span><span class='bg-field px-[16px] py-[17px] text-paper'>LOCAL OU JEV</span><span class='text-sun'>→</span><span class='border-2 border-field px-[16px] py-[17px]'>INTENT</span><span class='text-sun'>→</span><span class='border-2 border-field px-[16px] py-[17px]'>ENGINE + ALVO</span><span class='text-sun'>→</span><span class='border-2 border-field px-[16px] py-[17px]'>AUDIO</span><span class='text-sun'>→</span><span class='border-2 border-field px-[16px] py-[17px]'>COMMAND + BRIDGE</span></div><div class='absolute left-[84px] top-[700px] grid grid-cols-3 gap-[24px]'><p class='border-t-4 border-leaf pt-[18px] font-body text-[24px]'>Nao recebe foto, audio ou resolucao de alvo.</p><p class='border-t-4 border-leaf pt-[18px] font-body text-[24px]'>Nao recebe Command, WebSocket, ROS ou estado do robo.</p><p class='border-t-4 border-leaf pt-[18px] font-body text-[24px]'>Nao remove confirmacao, expiracao ou validacao do bridge.</p></div>",
+    notes:'Percorra cada barreira. O ponto e que Jev nao vira um agente de controle.'
+  },
+  {
+    layout:'risk/watchlist', tone:dark, tag:'30:30 · SEGURANCA', kind:'REGRA DO PRODUTO', source:'CONFLITO DE ALVO FALHA FECHADO',
+    title:'Acertar a classe<br>ainda nao autoriza agir.', lead:'',
+    body:"<div class='absolute left-[84px] top-[432px] grid w-[1752px] grid-cols-3 gap-[22px]'><div class='border border-fog/35 p-[27px]'><p class='font-mono text-[15px] text-fog'>CAMERA</p><p class='mt-[22px] font-display text-[48px] font-bold'>plot-03</p><p class='mt-[17px] font-body text-[23px] text-fog'>alvo visual</p></div><div class='border border-fog/35 p-[27px]'><p class='font-mono text-[15px] text-fog'>FALA + CLASSE</p><p class='mt-[22px] font-display text-[48px] font-bold'>SPRAY<br>plot-01</p><p class='mt-[17px] font-body text-[23px] text-fog'>linguagem correta</p></div><div class='border-2 border-sun bg-panel p-[27px]'><p class='font-mono text-[15px] text-sun'>RESULTADO</p><p class='mt-[22px] font-display text-[48px] font-bold text-sun'>AMBIGUOUS</p><p class='mt-[17px] font-body text-[23px] text-fog'>sem Command</p></div></div><p class='absolute left-[84px] top-[810px] font-body text-[29px] text-paper'>TargetResolver continua deterministico. Jev nao inventa alvo, pose ou acao.</p>",
+    notes:'Este e o anti-exemplo obrigatorio. Classe correta com alvo conflitante ainda falha.'
+  },
+  {
+    layout:'comparison/fulcrum', tone:light, tag:'34:00 · DESENHO', kind:'MEDIDO NO MAESTRO · E1', source:'E1 · CORPUS INDEPENDENTE · n=60',
+    title:'Comparacao limpa:<br>um por vez.', lead:'',
+    body:"<div class='absolute left-[84px] top-[440px] grid w-[1752px] grid-cols-[1fr_180px_1fr] items-center'><div class='border-2 border-field p-[33px]'><p class='font-mono text-[16px] text-agro'>BASELINE</p><p class='mt-[18px] font-display text-[51px] font-bold'>LocalIntentClassifier</p><p class='mt-[16px] font-body text-[25px] text-agro'>mesmos seis rotulos<br>mesmo corpus</p></div><p class='text-center font-mono text-[39px] text-sun'>OU</p><div class='bg-field p-[33px] text-paper'><p class='font-mono text-[16px] text-leaf'>EXPERIMENTO</p><p class='mt-[18px] font-display text-[51px] font-bold'>JevIntentClassifier</p><p class='mt-[16px] font-body text-[25px] text-fog'>mesmos seis rotulos<br>mesmo corpus</p></div></div><p class='absolute left-[84px] top-[790px] max-w-[1350px] border-l-4 border-sun pl-[22px] font-body text-[27px]'>Sem voto, dupla classificacao da mesma fala, chave no Android ou ajuste posterior.</p>",
+    notes:'A comparacao e local OU Jev. Isto isola a pergunta de pesquisa.'
+  },
+  {
+    layout:'stats/ratio-split', tone:dark, tag:'35:30 · RESULTADO', kind:'MEDIDO NO MAESTRO · E1, E2', source:'E1 · JEV-41R · E2 · VISUAL JEV-51',
+    title:'Melhor resultado descritivo.<br>Nao adocao operacional.', lead:'',
+    body:"<div class='absolute left-[84px] top-[330px] h-[510px] w-[1170px] bg-paper p-[14px]'><img src='../results/jev-final-recovery-comparison-slide.svg' alt='Comparacao Jev e local' class='h-full w-full object-contain'></div><div class='absolute right-[84px] top-[385px] w-[475px] border-l-4 border-sun pl-[25px]'><p class='font-mono text-[15px] text-sun'>ESCOPO</p><p class='mt-[18px] font-body text-[26px] leading-[1.45] text-fog'>60 falas sinteticas. Uma rodada. Custo e latencia do host do harness.</p><p class='mt-[24px] font-display text-[42px] font-bold text-paper'>54/60 vs 48/60</p></div>",
+    notes:'Leia o escopo junto do numero. O diferencial nao autoriza integracao no Android.'
+  },
+  {
+    layout:'risk/watchlist', tone:light, tag:'37:30 · ERRO', kind:'MEDIDO NO MAESTRO · E1, E2', source:'E1 · RECOVERY-045 · E2 · MATRIZ JEV-51',
+    title:'O erro que bloqueia<br>a promocao.', lead:'',
+    body:"<div class='absolute left-[84px] top-[400px] h-[470px] w-[880px] border-2 border-field p-[12px]'><img src='../results/jev-final-recovery-confusion-slide.svg' alt='Matrizes de confusao' class='h-full w-full object-contain'></div><div class='absolute right-[84px] top-[430px] w-[700px] border-l-8 border-risk pl-[32px]'><p class='font-mono text-[17px] tracking-[0.12em] text-risk'>ACEITE INSEGURO JEV</p><p class='mt-[20px] font-display text-[63px] font-bold'>CANCEL<br>→ CONFIRM</p><p class='mt-[20px] font-body text-[30px] text-agro'>probabilidade 0,75</p><p class='mt-[24px] font-body text-[26px] leading-[1.45] text-agro'>Confianca aparente nao elimina uma fronteira de seguranca errada.</p></div>",
+    notes:'Pare neste erro. Ele nao deve virar rodape depois da comparacao.'
+  },
+  {
+    layout:'risk/watchlist', tone:dark, tag:'39:00 · DECISAO', kind:'MEDIDO NO MAESTRO · E3', source:'E3 · DECISAO EXPERIMENTAL JEV',
+    title:'HOLD', lead:'Sem adocao operacional.',
+    body:"<div class='absolute left-[84px] top-[420px] grid w-[1752px] grid-cols-3 gap-[26px]'><div class='border-t-4 border-risk pt-[22px]'><p class='font-display text-[42px] font-bold'>1 aceite inseguro</p><p class='mt-[15px] font-body text-[24px] text-fog'>CANCEL virou CONFIRM.</p></div><div class='border-t-4 border-sun pt-[22px]'><p class='font-display text-[42px] font-bold'>p95 2.100,575 ms</p><p class='mt-[15px] font-body text-[24px] text-fog'>Depende de rede, servico e credito.</p></div><div class='border-t-4 border-fog pt-[22px]'><p class='font-display text-[42px] font-bold'>Uma rodada</p><p class='mt-[15px] font-body text-[24px] text-fog'>Sintetica; sem Android, campo ou robo.</p></div></div><p class='absolute left-[84px] top-[780px] max-w-[1480px] font-body text-[29px] leading-[1.45] text-paper'>Sinal favoravel para continuar pesquisando. Evidencia insuficiente para trocar a autoridade operacional do baseline local.</p>",
+    notes:'HOLD e o ponto central. Pesquisa continua, promocao nao.'
+  },
+  {
+    layout:'image/triptych', tone:light, tag:'40:00 · APP', kind:'FIXTURE LOCAL · E4', source:'FIXTURE MOCK LOCAL - NAO EXECUTA O ROBO',
+    title:'A decisao fica visivel.<br>O controle nao muda.', lead:'',
+    body:"<div class='absolute left-[84px] top-[365px] grid w-[1752px] grid-cols-3 gap-[20px]'><figure><div class='h-[470px] border-2 border-field bg-panel'><img src='../results/app-captures/jev50-baseline-local.png' alt='Tela baseline local' class='h-full w-full object-contain'></div><figcaption class='mt-[12px] font-mono text-[16px] text-agro'>BASELINE · AGUARDANDO FALA</figcaption></figure><figure><div class='h-[470px] border-2 border-field bg-panel'><img src='../results/app-captures/jev50-jev-spray.png' alt='Tela mock Jev Spray' class='h-full w-full object-contain'></div><figcaption class='mt-[12px] font-mono text-[16px] text-agro'>SPRAY · 87% · JEV</figcaption></figure><figure><div class='h-[470px] border-2 border-field bg-panel'><img src='../results/app-captures/jev50-jev-unknown.png' alt='Tela mock Jev Unknown' class='h-full w-full object-contain'></div><figcaption class='mt-[12px] font-mono text-[16px] text-agro'>UNKNOWN · NENHUM COMANDO</figcaption></figure></div><p class='absolute left-[84px] top-[900px] font-mono text-[20px] tracking-[0.08em] text-risk'>FIXTURE MOCK LOCAL - NAO EXECUTA O ROBO</p>",
+    notes:'Leia a legenda inteira. As telas nao sao ASR, chamada Jev remota, alvo, confirmacao, bridge ou ROS.'
+  },
+  {
+    layout:'image/triptych', tone:dark, tag:'42:00 · CONTINGENCIA', kind:'FIXTURE LOCAL OFFLINE · E5', source:'E5 · DEMO DE RESERVA OFFLINE',
+    title:'Reserva para a rede cair.<br>Nao demo remota.', lead:'',
+    body:"<div class='absolute left-[84px] top-[365px] grid w-[1752px] grid-cols-3 gap-[20px]'><figure><div class='h-[470px] border border-fog/35 bg-panel'><img src='../results/offline-demo/jev52-offline-baseline-local.png' alt='Baseline offline' class='h-full w-full object-contain'></div><figcaption class='mt-[12px] font-mono text-[16px] text-fog'>BASELINE OFFLINE</figcaption></figure><figure><div class='h-[470px] border border-fog/35 bg-panel'><img src='../results/offline-demo/jev52-offline-jev-spray.png' alt='Mock Jev Spray offline' class='h-full w-full object-contain'></div><figcaption class='mt-[12px] font-mono text-[16px] text-fog'>SPRAY OFFLINE</figcaption></figure><figure><div class='h-[470px] border border-fog/35 bg-panel'><img src='../results/offline-demo/jev52-offline-jev-unknown.png' alt='Mock Jev Unknown offline' class='h-full w-full object-contain'></div><figcaption class='mt-[12px] font-mono text-[16px] text-fog'>UNKNOWN OFFLINE</figcaption></figure></div><p class='absolute left-[84px] top-[900px] font-body text-[25px] text-fog'>Wi-Fi desligado durante a coleta e restaurado depois. Sem chamada Jev, ASR, alvo, confirmacao, bridge ou ROS.</p>",
+    notes:'Reserve este slide para explicar contingencia. Nao o misture com a evidencia remota.'
+  },
+  {
+    layout:'roadmap/horizons', tone:light, tag:'44:00 · ROADMAP', kind:'HIPOTESE / ROADMAP', source:'HIPOTESE: NAO IMPLEMENTADO, NAO AUTORIZADO',
+    title:'Novas classes pedem<br>novas fronteiras.', lead:'',
+    body:"<div class='absolute left-[84px] top-[430px] grid w-[1752px] grid-cols-3 gap-[32px]'><div class='border-t-4 border-field pt-[23px]'><p class='font-mono text-[16px] text-agro'>PRIMEIRO · LEITURA</p><p class='mt-[18px] font-display text-[40px] font-bold'>STATUS_QUERY<br>INSPECT_TARGET</p><p class='mt-[18px] font-body text-[23px] text-agro'>Consulta sem Command, permissao e privacidade.</p></div><div class='border-t-4 border-field/60 pt-[23px] opacity-75'><p class='font-mono text-[16px] text-agro'>DEPOIS · HISTORICO</p><p class='mt-[18px] font-display text-[40px] font-bold'>PLOT_STATUS_QUERY</p><p class='mt-[18px] font-body text-[23px] text-agro'>Resultado, timestamp, talhao e origem.</p></div><div class='border-t-4 border-field/35 pt-[23px] opacity-50'><p class='font-mono text-[16px] text-agro'>FUTURO · PLANO</p><p class='mt-[18px] font-display text-[40px] font-bold'>COMPOUND_MISSION</p><p class='mt-[18px] font-body text-[23px] text-agro'>MissionPlan tipado, confirmacao e executor deterministico.</p></div></div><p class='absolute left-[84px] top-[845px] border-l-4 border-risk pl-[22px] font-body text-[26px]'>EMERGENCY_STOP fica fora de Jev e de reconhecimento de fala comum.</p>",
+    notes:'Roadmap nao e backlog entregue. Para cada classe, diga qual fronteira nova precisa existir.'
+  },
+  {
+    layout:'qa/colloquy', tone:dark, tag:'46:00-50:00 · DEBATE', kind:'QUATRO PERGUNTAS', source:'FONTES S1-S8 · E1-E5 NO ROTEIRO E NAS NOTAS',
+    title:'O que mudaria<br>o proximo passo?', lead:'',
+    body:"<div class='absolute left-[84px] top-[450px] grid w-[1752px] grid-cols-2 gap-x-[90px] gap-y-[36px]'><p class='border-t border-fog/35 pt-[18px] font-body text-[28px] leading-[1.42]'><span class='font-mono text-sun'>01</span> Qual falso aceite e inaceitavel, mesmo se a accuracy subir?</p><p class='border-t border-fog/35 pt-[18px] font-body text-[28px] leading-[1.42]'><span class='font-mono text-sun'>02</span> Como montar holdout com ASR real sem expor transcricoes?</p><p class='border-t border-fog/35 pt-[18px] font-body text-[28px] leading-[1.42]'><span class='font-mono text-sun'>03</span> STATUS_QUERY ou INSPECT_TARGET: qual leitura primeiro?</p><p class='border-t border-fog/35 pt-[18px] font-body text-[28px] leading-[1.42]'><span class='font-mono text-sun'>04</span> Que evidencia trocaria HOLD por integracao experimental?</p></div><p class='absolute bottom-[142px] left-[84px] font-display text-[48px] font-bold text-sun'>Obrigado.</p>",
+    notes:'Deixe a sala escolher uma pergunta. O objetivo e terminar com criterio de evidencia, nao com promessa.'
+  }
+];
+
+function header(slide, index) {
+  const inverse = slide.tone === dark;
+  const rule = inverse ? 'border-fog/35 text-fog' : 'border-field text-faint';
+  const tag = inverse ? 'text-leaf' : 'text-agro';
+  const titleTop = index === 0 ? 'top-[500px]' : 'top-[150px]';
+  return "<div class='absolute left-[84px] top-[60px] right-[84px] flex items-center justify-between border-b "+rule+" pb-[22px]'><p class='font-mono text-[16px] tracking-[0.17em] "+tag+"'>"+slide.tag+"</p><p class='font-mono text-[15px] tracking-[0.12em] "+(inverse ? 'text-fog' : 'text-faint')+"'>"+slide.kind+"</p></div><h1 data-editable class='reveal absolute left-[84px] "+titleTop+" max-w-[1460px] font-display text-[76px] font-bold leading-[0.93]'>"+slide.title+"</h1>";
+}
+function lead(slide) {
+  if (!slide.lead) return '';
+  const tone = slide.tone === dark ? 'text-fog' : 'text-agro';
+  const leadTop = slide.layout === 'opening/dossier' ? 'top-[720px]' : 'top-[300px]';
+  return "<p data-editable class='reveal absolute left-[84px] "+leadTop+" max-w-[900px] font-body text-[28px] leading-[1.45] "+tone+"'>"+slide.lead+"</p>";
+}
+function footer(slide, index) {
+  const inverse = slide.tone === dark;
+  return "<p class='absolute bottom-[50px] left-[84px] font-mono text-[14px] tracking-[0.11em] "+(inverse ? 'text-fog' : 'text-faint')+"'>"+slide.source+"</p><p class='absolute bottom-[50px] right-[84px] font-mono text-[14px] tracking-[0.11em] "+(inverse ? 'text-fog' : 'text-faint')+"'>"+String(index + 1).padStart(2,'0')+" / "+String(slides.length).padStart(2,'0')+"</p>";
+}
+document.getElementById('deckStage').innerHTML = slides.map(function(slide, index) {
+  return "<section class='slide "+slide.tone+"'>"+header(slide,index)+lead(slide)+slide.body+footer(slide,index)+"</section>";
+}).join('');
+
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll('.slide'));
+    this.current = 0;
+    this.stage = document.getElementById('deckStage');
+    this.editing = false;
+    this.scale();
+    this.bind();
+    this.show(this.startSlide());
+  }
+  startSlide() {
+    const number = Number(new URLSearchParams(location.search).get('slide'));
+    return Number.isFinite(number) && number > 0 ? number - 1 : 0;
+  }
+  scale() {
+    const factor = Math.min(innerWidth / 1920, innerHeight / 1080);
+    this.stage.style.transform = 'translate(' + ((innerWidth - 1920 * factor) / 2) + 'px,' + ((innerHeight - 1080 * factor) / 2) + 'px) scale(' + factor + ')';
+  }
+  bind() {
+    addEventListener('resize', () => this.scale());
+    document.getElementById('prevBtn').addEventListener('click', () => this.show(this.current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => this.show(this.current + 1));
+    document.getElementById('notesBtn').addEventListener('click', () => document.getElementById('notesPanel').classList.toggle('visible'));
+    document.getElementById('editBtn').addEventListener('click', () => this.toggleEdit());
+    document.addEventListener('keydown', event => {
+      if (event.target.isContentEditable) return;
+      if (['ArrowRight',' ','PageDown'].includes(event.key)) { event.preventDefault(); this.show(this.current + 1); }
+      if (['ArrowLeft','PageUp'].includes(event.key)) { event.preventDefault(); this.show(this.current - 1); }
+      if (event.key.toLowerCase() === 'n') document.getElementById('notesPanel').classList.toggle('visible');
+      if (event.key.toLowerCase() === 'e') this.toggleEdit();
+    });
+    let start = null;
+    addEventListener('touchstart', event => { start = event.changedTouches[0].clientX; }, {passive:true});
+    addEventListener('touchend', event => { if (start === null) return; const delta = event.changedTouches[0].clientX - start; if (Math.abs(delta) > 60) this.show(this.current + (delta < 0 ? 1 : -1)); start = null; }, {passive:true});
+  }
+  toggleEdit() {
+    this.editing = !this.editing;
+    document.querySelectorAll('[data-editable]').forEach(node => {
+      node.contentEditable = this.editing ? 'true' : 'false';
+      node.classList.toggle('outline', this.editing);
+      node.classList.toggle('outline-2', this.editing);
+      node.classList.toggle('outline-sun', this.editing);
+      node.classList.toggle('outline-offset-8', this.editing);
+    });
+    document.getElementById('editBtn').classList.toggle('text-[#FCC931]', this.editing);
+  }
+  show(index) {
+    this.current = Math.max(0, Math.min(index, this.slides.length - 1));
+    this.slides.forEach((slide, i) => { slide.classList.toggle('active', i === this.current); slide.classList.toggle('visible', i === this.current); });
+    document.getElementById('pageIndicator').textContent = String(this.current + 1).padStart(2,'0') + ' / ' + String(this.slides.length).padStart(2,'0');
+    document.getElementById('notesText').textContent = slides[this.current].notes;
+    history.replaceState(null, '', location.pathname + '?slide=' + (this.current + 1));
+  }
+}
+new SlidePresentation();
+</script>
+</body>
+</html>
