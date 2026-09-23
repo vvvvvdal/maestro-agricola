@@ -8,14 +8,14 @@ nao foi enviado ao Jev.
 
 ## Revisao humana
 
-Duas pessoas rotularam, de forma independente, os 18 cartoes em
+Duas pessoas rotularam, de forma independente, os 28 cartoes em
 `docs/tasks/jev-asr-review-cards.md`. Houve consenso integral em `gold_label` e
 `category`. Os revisores nao receberam identificador pessoal, audio, data/hora
 ou registro de sessao.
 
 ## Verificacao ASR
 
-No SM-X510, com Wi-Fi e dados moveis desligados, as 18 transcricoes exibidas
+No SM-X510, com Wi-Fi e dados moveis desligados, as 28 transcricoes exibidas
 pelo `mockDebug` corresponderam exatamente aos cartoes revisados. A coleta nao
 gravou audio, `logcat`, screenshot ou ADB. A jornada foi resetada entre frases;
 nenhum comando foi enviado.
@@ -28,12 +28,14 @@ Durante a mesma verificacao, o classificador local divergiu em duas fronteiras:
 | --- | --- | --- | --- |
 | `asr-dev-017` | `CANCEL` | `SPRAY` | Sem alvo e sem confirmacao; nenhum comando. |
 | `asr-dev-018` | `UNKNOWN` | `UNDOCK` | Sem confirmacao; nenhum comando. |
+| `asr-dev-019` | `UNKNOWN` | `CANCEL` | Intencao recusada no estado inicial; nenhum comando. |
+| `asr-dev-025` | `UNKNOWN` | `UNDOCK` | Sem confirmacao; nenhum comando. |
 
-As 16 demais predicoes observadas coincidiram com os cartoes. Isto e uma
+As 24 demais predicoes observadas coincidiram com os cartoes. Isto e uma
 observacao de desenvolvimento do baseline, nao uma comparacao Jev.
 
 ## Limites
 
 O corpus nao contem falante, sessao, aparelho, audio, texto descartado ou
-identificador pessoal. Ainda faltam variacao de ruido/ASR, uma forma coloquial
-de `CANCEL` e sessoes adicionais antes de encerrar JEV-62.
+identificador pessoal. Ainda faltam variacao de ruido/ASR antes de encerrar
+JEV-62.

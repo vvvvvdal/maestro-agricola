@@ -2,7 +2,7 @@
 
 ## Status
 
-Preparados em 23/09/2026. Duas pessoas revisaram os 18 textos de forma
+Preparados em 23/09/2026. Duas pessoas revisaram os 28 textos de forma
 independente e chegaram aos mesmos rotulos. Estes sao cartoes de fala para o
 corpus de desenvolvimento; nao sao transcricoes ASR nem holdout.
 
@@ -28,6 +28,16 @@ corpus de desenvolvimento; nao sao transcricoes ASR nem holdout.
 | R16 | talvez depois a gente faça isso | `UNKNOWN` | hesitacao |
 | R17 | não pulverize o plot de treinamento | `CANCEL` | negacao de acao |
 | R18 | quando o robô sai da doca? | `UNKNOWN` | pergunta sobre capacidade |
+| S01 | segura essa operação | `UNKNOWN` | coloquial ambiguo |
+| S02 | deixa pra lá | `CANCEL` | cancelamento coloquial |
+| S03 | não faz isso agora | `CANCEL` | negacao de execucao |
+| S04 | tá liberado | `CONFIRM` | confirmacao coloquial |
+| S05 | tá tudo certo | `CONFIRM` | confirmacao coloquial |
+| S06 | a pulverização terminou ontem? | `UNKNOWN` | pergunta historica |
+| S07 | o robô está fora da doca? | `UNKNOWN` | consulta de estado |
+| S08 | bota produto no talhão de teste | `SPRAY` | acao coloquial |
+| S09 | volta pra doca aí | `DOCK` | doca coloquial |
+| S10 | sai da base então | `UNDOCK` | saida coloquial |
 
 ## Uso na coleta
 

@@ -17,3 +17,13 @@ asr-dev-015	o talhão norte foi pulverizado ontem	UNKNOWN	historico
 asr-dev-016	talvez depois a gente faça isso	UNKNOWN	hesitacao
 asr-dev-017	não pulverize o plot de treinamento	CANCEL	negacao_de_acao
 asr-dev-018	quando o robô sai da doca?	UNKNOWN	pergunta_sobre_capacidade
+asr-dev-019	segura essa operação	UNKNOWN	coloquial_ambiguo
+asr-dev-020	deixa pra lá	CANCEL	cancelamento_coloquial
+asr-dev-021	não faz isso agora	CANCEL	negacao_de_execucao
+asr-dev-022	tá liberado	CONFIRM	confirmacao_coloquial
+asr-dev-023	tá tudo certo	CONFIRM	confirmacao_coloquial
+asr-dev-024	a pulverização terminou ontem?	UNKNOWN	pergunta_historica
+asr-dev-025	o robô está fora da doca?	UNKNOWN	consulta_de_estado
+asr-dev-026	bota produto no talhão de teste	SPRAY	acao_coloquial
+asr-dev-027	volta pra doca aí	DOCK	doca_coloquial
+asr-dev-028	sai da base então	UNDOCK	saida_coloquial
