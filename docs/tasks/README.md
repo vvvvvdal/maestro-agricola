@@ -20,6 +20,7 @@
 - [`jev-rehearsal-1.md`](jev-rehearsal-1.md): ficha do ensaio cronometrado JEV-55, ainda pendente de execucao falada.
 - [`jev-post-hold-protocol.md`](jev-post-hold-protocol.md): protocolo de reabertura com guard de cancelamento, ASR, dois holdouts e decisoes sem repeticao ad-hoc.
 - [`jev-explicit-cancel-guard.md`](jev-explicit-cancel-guard.md): politica local, desligada por padrao, que bloqueia cancelamentos explicitos sem chamar Jev.
+- [`jev-asr-collection.md`](jev-asr-collection.md): protocolo de coleta ASR no SM-X510 sem audio salvo, logcat ou dados identificaveis.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
 - [`android-demo-ui.md`](android-demo-ui.md): transformação da tela diagnóstica Android em interface de demonstração.
