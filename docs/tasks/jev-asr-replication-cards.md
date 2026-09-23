@@ -2,7 +2,7 @@
 
 ## Status
 
-Congelados em 24/09/2026, antes da coleta. Estes cartoes sao a entrada de uma
+Congelados em 23/09/2026, antes da coleta. Estes cartoes sao a entrada de uma
 pessoa nova e consentida, distinta de desenvolvimento e primaria, em sessao
 exclusiva. Eles nao sao corpus, nao sao mostrados com seus rotulos esperados a
 participante ou revisores e nao devem ser usados pelo Jev.
@@ -80,4 +80,4 @@ conjunto deve permanecer distinto, inclusive por variante proxima, de
 Metodo: SHA-256 dos bytes deste arquivo excluindo a linha que comeca por
 `SHA-256:`.
 
-SHA-256: `163b47314130f8c048fa291c5808fc418d973efe410585ceb7b6726a4af1d044`
+SHA-256: `4a35b249dcb8e2e5219f60ba097af8e08b3527017c6c10121867a2f44ce97d4d`

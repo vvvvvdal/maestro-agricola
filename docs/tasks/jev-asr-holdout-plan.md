@@ -3,10 +3,13 @@
 ## Status
 
 Atualizado em 23/09/2026 para JEV-63. O holdout primario foi congelado com 41
-transcricoes sanitizadas; somente a replicacao permanece bloqueada ate haver
-outra pessoa nova e consentida, distinta das vozes usadas no desenvolvimento e
-na primaria. Esta e uma avaliacao piloto: ela nao promove o Jev nem muda a
-decisao `HOLD`.
+transcricoes sanitizadas. A tentativa de replicacao foi encerrada antes de
+formar corpus e a fase pos-HOLD fica adiada ate depois da apresentacao de
+08/10. Esta e uma avaliacao piloto: ela nao promove o Jev nem muda a decisao
+`HOLD`.
+
+Os cartoes da tentativa nao podem ser retomados nem completados. O registro
+sanitizado esta em [`jev-asr-replication-attempt.md`](jev-asr-replication-attempt.md).
 
 ## Objetivo
 
@@ -53,7 +56,7 @@ evita escolher uma nova frase depois de observar o comportamento do baseline.
 
 ## Congelamento posterior
 
-So depois de ambas as revisoes humanas, criar para cada holdout:
+So depois de ambas as revisoes humanas, criar para cada holdout ativo:
 
 - TSV `id`, `text`, `gold_label`, `category`;
 - manifesto com contagens, estrato de seguranca, hash SHA-256, versao do

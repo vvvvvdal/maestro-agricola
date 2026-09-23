@@ -25,6 +25,7 @@
 - [`jev-asr-holdout-plan.md`](jev-asr-holdout-plan.md): plano piloto para dois holdouts ASR separados, sem HTTP ou dado pessoal.
 - [`jev-asr-primary-cards.md`](jev-asr-primary-cards.md): cartoes congelados antes da coleta do holdout ASR primario.
 - [`jev-asr-replication-cards.md`](jev-asr-replication-cards.md): cartoes congelados antes da coleta do holdout ASR de replicacao.
+- [`jev-asr-replication-attempt.md`](jev-asr-replication-attempt.md): encerramento da tentativa parcial de replicacao, sem corpus ou chamada remota.
 - [`../study-groups/jev-rl-2026-10-01/corpus/asr-primary-manifest.md`](../study-groups/jev-rl-2026-10-01/corpus/asr-primary-manifest.md): holdout primario sanitizado, congelado com hash antes de qualquer HTTP.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
