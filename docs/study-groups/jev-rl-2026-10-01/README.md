@@ -2,7 +2,7 @@
 
 Grupo de estudos de RL
 
-Data: 01/10/2026
+Data: 08/10/2026
 
 Status: planejamento ativo. Este material pertence ao grupo de estudos e nao
 ao pitch do Maestro Agricola.

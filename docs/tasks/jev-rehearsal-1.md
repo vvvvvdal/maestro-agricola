@@ -2,8 +2,9 @@
 
 ## Status
 
-Em andamento. Esta ficha so vira evidencia quando houver um ensaio falado,
-continuo e cronometrado por um apresentador humano.
+Agendado para 06/10/2026, dois dias antes da apresentacao. Esta ficha so vira
+evidencia quando houver um ensaio falado, continuo e cronometrado por um
+apresentador humano.
 
 ## Objetivo
 
