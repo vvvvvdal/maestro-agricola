@@ -87,6 +87,7 @@ class JourneyPresentationTest {
     @Test
     fun predictionDetailKeepsConfidenceAndSourceVisible() {
         assertEquals("SPRAY · 87% · Jev", predictionDetail("SPRAY", 0.87, "JEV"))
+        assertEquals("CANCEL · 100% · Jev + regra de cancelamento", predictionDetail("CANCEL", 1.0, "JEV_GUARD"))
         assertEquals("DOCK · 91% · Jev", predictionDetail("DOCK", 0.91, "JEV"))
         assertEquals("SPRAY · 97% · modelo local", predictionDetail("SPRAY", 0.9712, "MODEL"))
         assertEquals("CONFIRM · 100% · regra determinística", predictionDetail("CONFIRM", 1.0, "RULE"))

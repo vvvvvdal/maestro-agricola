@@ -121,8 +121,8 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
 | JEV-60 | DONE | 23/09 | JEV-43 | Protocolo pos-HOLD em [`../../tasks/jev-post-hold-protocol.md`](../../tasks/jev-post-hold-protocol.md): Jev bruto e Jev+guard separados, dois holdouts ASR, uma rodada reservada por corpus e `HOLD` para qualquer aceite guarded inseguro. Nenhuma chamada remota. |
-| JEV-61 | NEXT | - | JEV-60 | Implementar guard deterministico de cancelamento explicito, desligado por padrao para preservar Jev bruto; cobrir `recovery-045` como regressao de desenvolvimento e provar que nenhuma entrada cria rotulo positivo, `Command` ou chamada extra. Falha/indisponibilidade do guard retorna `CANCEL` sem fallback bruto ou Qwen. |
-| JEV-62 | TODO | - | JEV-61 | Coletar e revisar corpus ASR de desenvolvimento: transcricoes sanitizadas, dois revisores, sem audio salvo, negacao, ambiguidade, ruido e exclusoes auditaveis. |
+| JEV-61 | DONE | 23/09 | JEV-60 | Guard deterministico de cancelamento explicito, desligado por padrao para preservar Jev bruto, em [`../../tasks/jev-explicit-cancel-guard.md`](../../tasks/jev-explicit-cancel-guard.md). `recovery-045` e regressao de desenvolvimento; o guard ou sua falha retornam `CANCEL` sem evaluator, fallback bruto ou Qwen. Testes Kotlin focados aprovados. |
+| JEV-62 | NEXT | - | JEV-61 | Coletar e revisar corpus ASR de desenvolvimento: transcricoes sanitizadas, dois revisores, sem audio salvo, negacao, ambiguidade, ruido e exclusoes auditaveis. |
 | JEV-63 | TODO | - | JEV-62 | Congelar `asr-primary` e `asr-replication`: hashes, manifests, estrato de seguranca e separacao de falante/sessao antes de HTTP. |
 | JEV-64 | TODO | - | JEV-61, JEV-63 | Evoluir harness e metricas para relatar `local`, `jev_raw` e `jev_guarded` sem ocultar Choice ou probabilidades. |
 | JEV-65 | BLOCKED | - | JEV-60, JEV-63, JEV-64 | Rodada primaria unica, com script/reserva/custo novos. Bloqueada por aprovacao humana de custo e dados ASR. |

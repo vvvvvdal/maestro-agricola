@@ -19,6 +19,7 @@
 - [`jev-study-group-deck.md`](jev-study-group-deck.md): deck HTML tecnico de 50 minutos para o grupo de estudos de RL, separado do pitch e com evidencia etiquetada.
 - [`jev-rehearsal-1.md`](jev-rehearsal-1.md): ficha do ensaio cronometrado JEV-55, ainda pendente de execucao falada.
 - [`jev-post-hold-protocol.md`](jev-post-hold-protocol.md): protocolo de reabertura com guard de cancelamento, ASR, dois holdouts e decisoes sem repeticao ad-hoc.
+- [`jev-explicit-cancel-guard.md`](jev-explicit-cancel-guard.md): politica local, desligada por padrao, que bloqueia cancelamentos explicitos sem chamar Jev.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
 - [`android-demo-ui.md`](android-demo-ui.md): transformação da tela diagnóstica Android em interface de demonstração.

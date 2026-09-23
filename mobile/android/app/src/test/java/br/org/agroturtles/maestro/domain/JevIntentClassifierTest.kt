@@ -52,6 +52,68 @@ class JevIntentClassifierTest {
     }
 
     @Test
+    fun guardBlocksKnownCancelRegressionWithoutCallingJev() {
+        var evaluations = 0
+        val classifier = JevIntentClassifier(
+            evaluator = JevChoiceEvaluator {
+                evaluations += 1
+                successfulEvaluation(
+                    choice = "CONFIRM",
+                    probabilities = probabilities("CONFIRM" to 0.75, "CANCEL" to 0.25),
+                )
+            },
+            cancelGuard = ExplicitCancelGuard.developmentPolicy(),
+        )
+
+        val prediction = classifier.classify("segure essa operação")
+
+        assertEquals("CANCEL", prediction.label)
+        assertEquals(1.0, prediction.confidence, 0.0)
+        assertEquals("JEV_GUARD", prediction.source)
+        assertEquals(0, evaluations)
+    }
+
+    @Test
+    fun defaultModePreservesRawResultForKnownCancelRegression() {
+        var evaluations = 0
+        val classifier = JevIntentClassifier(
+            evaluator = JevChoiceEvaluator {
+                evaluations += 1
+                successfulEvaluation(
+                    choice = "CONFIRM",
+                    probabilities = probabilities("CONFIRM" to 0.75, "CANCEL" to 0.25),
+                )
+            },
+        )
+
+        val prediction = classifier.classify("segure essa operação")
+
+        assertEquals("CONFIRM", prediction.label)
+        assertEquals(0.75, prediction.confidence, 0.0)
+        assertEquals("JEV", prediction.source)
+        assertEquals(1, evaluations)
+    }
+
+    @Test
+    fun guardFailureCancelsWithoutCallingJev() {
+        var evaluations = 0
+        val classifier = JevIntentClassifier(
+            evaluator = JevChoiceEvaluator {
+                evaluations += 1
+                throw AssertionError("evaluator must not run")
+            },
+            cancelGuard = ExplicitCancelGuard { throw IllegalStateException("guard unavailable") },
+        )
+
+        val prediction = classifier.classify("qualquer entrada")
+
+        assertEquals("CANCEL", prediction.label)
+        assertEquals(1.0, prediction.confidence, 0.0)
+        assertEquals("JEV_GUARD", prediction.source)
+        assertEquals(0, evaluations)
+    }
+
+    @Test
     fun failsClosedForEvaluationFailuresAndInvalidChoices() {
         val classifier = classifierOf(
             "timeout" to failedEvaluation(JevErrorCode.TIMEOUT),
@@ -151,6 +213,37 @@ class JevIntentClassifierTest {
         assertNull(conflict.command)
         assertEquals(InteractionState.AMBIGUOUS, lateConfirmationAfterConflict.state)
         assertNull(lateConfirmationAfterConflict.command)
+    }
+
+    @Test
+    fun guardedCancellationClosesPendingInteractionWithoutCommand() {
+        val engine = InteractionEngine(
+            JevIntentClassifier(
+                evaluator = FakeJevChoiceEvaluator(
+                    mapOf(
+                        "pulverize" to successfulEvaluation(
+                            choice = "SPRAY",
+                            probabilities = probabilities("SPRAY" to 0.91, "UNKNOWN" to 0.09),
+                        ),
+                        "confirmar" to successfulEvaluation(
+                            choice = "CONFIRM",
+                            probabilities = probabilities("CONFIRM" to 0.91, "UNKNOWN" to 0.09),
+                        ),
+                    ),
+                ),
+                cancelGuard = ExplicitCancelGuard.developmentPolicy(),
+            ),
+        )
+        engine.observeTarget("plot-03")
+        engine.handleTranscript("pulverize")
+
+        val cancelled = engine.handleTranscript("segure essa operação")
+        val lateConfirmation = engine.handleTranscript("confirmar")
+
+        assertEquals(InteractionState.CANCELLED, cancelled.state)
+        assertNull(cancelled.command)
+        assertEquals(InteractionState.CANCELLED, lateConfirmation.state)
+        assertNull(lateConfirmation.command)
     }
 
     private fun classifierOf(vararg evaluations: Pair<String, JevEvaluation>): JevIntentClassifier =

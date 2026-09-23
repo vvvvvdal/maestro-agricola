@@ -3,12 +3,20 @@ package br.org.agroturtles.maestro.domain
 class JevIntentClassifier(
     private val evaluator: JevChoiceEvaluator,
     private val threshold: Double = DEFAULT_THRESHOLD,
+    private val cancelGuard: ExplicitCancelGuard = ExplicitCancelGuard.disabled(),
 ) : IntentClassifier {
     init {
         require(threshold in 0.0..1.0)
     }
 
     override fun classify(text: String): IntentPrediction {
+        val explicitCancel = try {
+            cancelGuard.matches(text)
+        } catch (_: Exception) {
+            return guardedCancel()
+        }
+        if (explicitCancel) return guardedCancel()
+
         val evaluation = try {
             evaluator.evaluate(text)
         } catch (_: Exception) {
@@ -42,9 +50,17 @@ class JevIntentClassifier(
         source = SOURCE,
     )
 
+    private fun guardedCancel(): IntentPrediction = IntentPrediction(
+        label = CANCEL,
+        confidence = 1.0,
+        source = GUARD_SOURCE,
+    )
+
     private companion object {
+        const val CANCEL = "CANCEL"
         const val UNKNOWN = "UNKNOWN"
         const val SOURCE = "JEV"
+        const val GUARD_SOURCE = "JEV_GUARD"
         const val DEFAULT_THRESHOLD = 0.40
         const val PROBABILITY_TOLERANCE = 0.001
 
