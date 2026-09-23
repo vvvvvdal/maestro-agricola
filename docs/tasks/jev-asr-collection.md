@@ -85,6 +85,10 @@ As transcricoes, os identificadores e os rotulos ainda nao foram versionados:
 dois revisores humanos devem atribuir `gold_label` e `category` de forma
 independente antes de qualquer entrada ir para `corpus/asr-development.tsv`.
 
+Os cartoes para a proxima sessao receberam consenso humano duplo e estao em
+[`jev-asr-review-cards.md`](jev-asr-review-cards.md). O consenso do cartao nao
+substitui a revisao da transcricao ASR real.
+
 Uma segunda rodada, com dez frases de fronteira, tambem teve transcricoes
 exatas e permaneceu sem rede. Nove predicoes locais coincidiram com os cartoes;
 uma frase historica de `UNKNOWN` recebeu `CONFIRM` com 55%. No estado inicial,
