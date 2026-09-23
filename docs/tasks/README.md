@@ -11,6 +11,7 @@
 - [`ai-device-eval.md`](ai-device-eval.md): gate de paridade Python/Kotlin e handoff do benchmark no Android.
 - [`qwen-android-runtime.md`](qwen-android-runtime.md): benchmark que rejeitou Qwen como controle, isolamento de domínio, runtime llama.cpp e smoke físico no SM-X510.
 - [`jev-ui-decision-visibility.md`](jev-ui-decision-visibility.md): apresentacao da classe, origem e probabilidade Jev no cartao de intencao, com detalhes tecnicos recolhidos.
+- [`jev-experimental-decision.md`](jev-experimental-decision.md): decisao HOLD do experimento Jev, seus limites e gates antes de qualquer adocao operacional.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
 - [`android-demo-ui.md`](android-demo-ui.md): transformação da tela diagnóstica Android em interface de demonstração.

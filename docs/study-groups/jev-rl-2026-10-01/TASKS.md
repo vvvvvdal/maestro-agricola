@@ -101,13 +101,13 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
 | JEV-41A | DONE | 22/09 | JEV-41 | Incidente registrado: reserva existente, fixture ausente e uso remoto indeterminado; nenhum corpus ou reserva original foi alterado. |
 | JEV-41R | DONE | 22/09 | JEV-27, JEV-40, JEV-41A | Rodada unica no corpus independente: Jev 54/60, 1 aceite inseguro, US$0,001472394 e p95 de 2.100,575 ms. Evidencia em [`../../tasks/jev-final-recovery-evaluation.md`](../../tasks/jev-final-recovery-evaluation.md); nenhuma repeticao autorizada. |
 | JEV-42 | DONE | 22/09 | JEV-41R | Tabela, matrizes, fonte sanitizada e reliability diagram gerados a partir das metricas, com `n=60`, limites e aceite inseguro explicitos. Evidencia em [`../../tasks/jev-presentation-evidence.md`](../../tasks/jev-presentation-evidence.md). |
-| JEV-43 | TODO | 28/09 | JEV-42 | Escrever decisao experimental: evidencia favoravel, contraria ou inconclusiva. Nenhum resultado promove Jev a producao. |
+| JEV-43 | DONE | 22/09 | JEV-42 | Decisao `HOLD` registrada em [`../../tasks/jev-experimental-decision.md`](../../tasks/jev-experimental-decision.md): evidencia descritiva favoravel, mas uma aceitacao insegura, latencia remota e amostra limitada impedem adocao operacional. |
 
 ## Fase 5 - Evidencias e apresentacao
 
 | ID | Status | Data | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- | --- |
-| JEV-50 | TODO | 28/09 | JEV-35, JEV-36, JEV-43 | Capturar app em baseline local, Jev `SPRAY` e Jev `UNKNOWN`; cada captura tem fonte e estado. |
+| JEV-50 | NEXT | 28/09 | JEV-35, JEV-36, JEV-43 | Capturar app em baseline local, Jev `SPRAY` e Jev `UNKNOWN`; cada captura tem fonte e estado. |
 | JEV-51 | TODO | 28/09 | JEV-42 | Preparar matriz, reliability diagram e tabela de custo/latencia legiveis; nao ocultar falhas. |
 | JEV-52 | TODO | 28/09 | JEV-50 | Gravar demo de reserva ou fixtures locais dos tres fluxos; reproduzir com internet desligada. |
 | JEV-53 | TODO | 29/09 | JEV-43, JEV-50, JEV-51 | Escrever roteiro final: RLCD/calibracao, xadrez, casos externos, Maestro e roadmap de classes. |
@@ -126,8 +126,10 @@ Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../ta
   somente apresentacao, nao constituem resultado experimental.
 - JEV-41 bloqueia qualquer reuso de `corpus/final.tsv`; somente JEV-41R pode
   produzir a medicao final, em corpus e reserva novos.
-- JEV-43 bloqueia slides que afirmem resultado do Maestro; sem medicao, o slide
-  usa somente a arquitetura proposta.
+- JEV-43 libera somente claims limitados da rodada independente: `n=60`, corpus
+  sintetico, uma rodada, resultado descritivo e decisao `HOLD`. Slides nao
+  podem alegar seguranca operacional, calibracao generalizavel ou promocao ao
+  APK.
 - Classes de roadmap nao autorizam mudanca no contrato ROS antes de uma nova
   task aprovada, especificacao versionada e testes proporcionais ao risco.
 

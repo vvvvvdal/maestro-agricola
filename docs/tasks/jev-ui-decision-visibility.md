@@ -1,6 +1,7 @@
 # Visualizacao da decisao Jev no Android
 
-Status: JEV-30 a JEV-36 concluidas; JEV-40 e a proxima task na `test/jev`
+Status: JEV-30 a JEV-36 concluidas; este documento e historico. A proxima task
+da `test/jev` esta em `docs/study-groups/jev-rl-2026-10-01/TASKS.md`.
 
 Responsavel sugerido: Atila (Android), com Rafael na evidencia do classificador
 

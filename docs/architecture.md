@@ -151,7 +151,7 @@ A avaliação histórica de 64 frases cobre as quatro classes originais e contin
 
 ### Experimento Jev em `test/jev`
 
-O experimento planejado para o grupo de estudos usa `JevIntentClassifier` como
+O experimento do grupo de estudos usa `JevIntentClassifier` como
 uma segunda implementacao de `IntentClassifier`. Ele recebe somente a
 transcricao aprovada para a rodada e escolhe entre os mesmos seis rotulos:
 `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`. O adaptador retorna
@@ -165,6 +165,13 @@ probabilidade da opcao escolhida alimenta a compatibilidade com
 `IntentPrediction.confidence`; a distribuicao completa e a metrica
 `confidence` propria do Jev ficam no registro experimental, pois representam
 coisas diferentes.
+
+A rodada independente de recuperacao registrou resultado descritivo favoravel
+ao Jev em 60 falas sinteticas, mas tambem um `CANCEL -> CONFIRM` inseguro e
+latencia remota p95 de 2.100,575 ms. A decisao e `HOLD`: ele nao esta ligado ao
+APK, e o classificador local continua a autoridade operacional. Metricas,
+limites e gates de uma futura reabertura estao em
+[`tasks/jev-experimental-decision.md`](tasks/jev-experimental-decision.md).
 
 `UNKNOWN` continua a seguir diretamente para `LanguageRouter` e
 `QwenDomainAssistant`. Nao existe filtro Jev de topico antes do Qwen e nao ha

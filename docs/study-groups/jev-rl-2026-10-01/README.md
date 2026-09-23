@@ -180,9 +180,11 @@ benchmark, em uma estrutura experimental separada, para permitir analise de
 calibracao e abstencao sem mudar o contrato operacional de modo silencioso.
 
 `JevIntentClassifier` ja existe como adaptador experimental injetavel na branch
-`test/jev`, validado por fakes locais. Ele nao esta ligado a `MainActivity`,
-nao contem cliente HTTP e ainda nao possui resultado remoto reproduzivel; a
-apresentacao deve descreve-lo como experimento em andamento.
+`test/jev`, validado por fakes locais. Ele nao esta ligado a `MainActivity` e
+nao contem cliente HTTP no app. A rodada independente de recuperacao produziu
+evidencia remota sanitizada e registrada para apresentacao, mas a decisao e `HOLD`: uma
+aceitacao insegura e os limites da amostra impedem adocao operacional. Ver
+[`../../tasks/jev-experimental-decision.md`](../../tasks/jev-experimental-decision.md).
 
 ### Visualizacao no app
 
@@ -219,13 +221,14 @@ em [`corpus/README.md`](corpus/README.md). O corpus final de seguranca esta em
 [`corpus/final.tsv`](corpus/final.tsv) e foi congelado antes da rodada remota
 final; seu manifesto registra as restricoes de reproducao. Ele foi reservado
 em uma rodada interrompida e permanece inelegivel para repeticao. A medicao
-final de recuperacao usara corpus independente, com manifest proprio, sem
-alterar os textos originais.
+final de recuperacao usou corpus independente, com manifest proprio, sem
+alterar os textos originais; sua evidencia nao promove o Jev ao APK.
 
 O harness [`../../../tools/jev_intent_harness.py`](../../../tools/jev_intent_harness.py)
 executa o baseline local e uma fixture Jev contra os mesmos IDs e produz um
-registro por caso sem repetir a fala. O cliente HTTP ainda nao existe: JEV-40
-somente podera preencher a fixture dentro do subteto remoto aprovado.
+registro por caso sem repetir a fala. Os runners remotos JEV-40 e JEV-41R
+preencheram fixtures somente dentro dos subtetos aprovados; o app Android
+continua sem cliente HTTP ou chave Jev.
 
 Os resultados que nunca podem criar `Command`, assim como a diferenca entre
 evidencia do baseline e requisitos pendentes do adaptador Jev, estao em
@@ -238,10 +241,10 @@ ou alto `confidence` nunca removem a confirmacao por audio para uma acao fisica.
 ## Orcamento de creditos
 
 O estudo tem US$5 de creditos. Antes de qualquer chamada remota, definir limite
-no console e registrar cada rodada. A alocacao inicial e US$0,50 para smoke e
-ajuste de criterios, ate US$3,00 para a rodada reproduzivel do corpus final,
-ate US$1,00 para gravacao ou repeticao da demo e US$0,50 de reserva. Nenhuma
-rodada deve continuar depois de atingir seu teto sem decisao humana.
+no console e registrar cada rodada. Foram consumidos US$0,000146832 no smoke e
+US$0,001472394 na recuperacao final independente. O corpus `final.tsv` segue
+inelegivel, e nenhuma nova rodada, gravacao remota ou repeticao pode ocorrer
+sem nova decisao humana e subteto registrado.
 
 ## Limites obrigatorios
 

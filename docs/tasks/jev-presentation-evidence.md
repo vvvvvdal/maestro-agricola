@@ -38,8 +38,9 @@ melhor accuracy autoriza movimento.
 - [`jev-final-recovery-presentation.json`](../study-groups/jev-rl-2026-10-01/results/jev-final-recovery-presentation.json): fonte sanitizada com SHA das metricas.
 - [`jev-final-recovery-reliability.svg`](../study-groups/jev-rl-2026-10-01/results/jev-final-recovery-reliability.svg): reliability diagram pareado.
 
-JEV-43 e a unica task que pode transformar esses achados em uma decisao
-experimental. A melhor accuracy observada nao altera o classificador do APK.
+A decisao JEV-43 foi `HOLD` e esta registrada em
+[`jev-experimental-decision.md`](jev-experimental-decision.md). A melhor
+accuracy observada nao altera o classificador do APK.
 
 ## Criterios de aceite
 
@@ -47,4 +48,4 @@ experimental. A melhor accuracy observada nao altera o classificador do APK.
 - Matriz usa ouro nas linhas e predicao nas colunas, para os seis rotulos.
 - Diagrama mostra apenas bins ocupados, `n` por ponto e diagonal ideal.
 - Artefatos nao contem texto do corpus, credencial, cabecalho ou corpo HTTP.
-- A conclusao sobre adocao permanece bloqueada em JEV-43.
+- A adocao permanece bloqueada pelos gates da decisao JEV-43.

@@ -42,7 +42,9 @@ O Maestro AgrÃ­cola permite que o operador olhe para um alvo no campo, diga a aÃ
 > `JevIntentClassifier` ao `LocalIntentClassifier` nos mesmos seis rotulos
 > operacionais. O experimento preserva alvo, confirmacao por audio, contrato e
 > bridge; a `main` continua local. Nao ha filtro Jev para Qwen nem RAG neste
-> recorte. Escopo, budget e gates:
+> recorte. A rodada sintetica independente teve resultado favoravel, mas a
+> decisao permanece `HOLD`, sem integracao operacional. Escopo, evidencia,
+> budget e gates:
 > [`docs/study-groups/jev-rl-2026-10-01/`](docs/study-groups/jev-rl-2026-10-01/).
 
 ## Jornada principal
