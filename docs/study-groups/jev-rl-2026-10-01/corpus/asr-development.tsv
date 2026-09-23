@@ -1,0 +1,19 @@
+id	text	gold_label	category
+asr-dev-001	pulverize o talhão de demonstração	SPRAY	acao_explicita
+asr-dev-002	aplique o produto no plot do norte	SPRAY	acao_explicita
+asr-dev-003	comece a pulverizar na área de treino	SPRAY	acao_explicita
+asr-dev-004	volte para a doca	DOCK	doca_explicita
+asr-dev-005	leve o robô de volta à base	DOCK	sinonimo_de_doca
+asr-dev-006	vá se recarregar na doca	DOCK	doca_e_recarga
+asr-dev-007	saia da doca	UNDOCK	saida_explicita
+asr-dev-008	desacople e deixe a base	UNDOCK	sinonimo_de_saida
+asr-dev-009	pode iniciar	CONFIRM	permissao_explicita
+asr-dev-010	isso está certo	CONFIRM	confirmacao_curta
+asr-dev-011	cancele essa ação	CANCEL	cancelamento_direto
+asr-dev-012	não siga com a operação	CANCEL	negacao_de_execucao
+asr-dev-013	deixa isso para amanhã	UNKNOWN	adiamento_ambiguo
+asr-dev-014	qual foi o último tratamento do plot 03?	UNKNOWN	consulta_de_status
+asr-dev-015	o talhão norte foi pulverizado ontem	UNKNOWN	historico
+asr-dev-016	talvez depois a gente faça isso	UNKNOWN	hesitacao
+asr-dev-017	não pulverize o plot de treinamento	CANCEL	negacao_de_acao
+asr-dev-018	quando o robô sai da doca?	UNKNOWN	pergunta_sobre_capacidade

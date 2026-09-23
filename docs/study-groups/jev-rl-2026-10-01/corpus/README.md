@@ -8,12 +8,20 @@ esta separado. Nao representa resultado, cobertura de campo ou calibracao.
 rotulo. Ele existe somente para a primeira rodada remota da JEV-40 e nao e o
 corpus final nem fonte para ajuste de limiar.
 
+`asr-development.tsv` contem transcricoes sanitizadas, obtidas offline no
+SM-X510 e revisadas por duas pessoas. Ele serve para desenvolver e revisar o
+guard; nao e holdout, nao mede adocao e nunca deve ser enviado ao Jev. A
+revisao e as observacoes do baseline local estao em
+[`asr-label-review.md`](asr-label-review.md).
+
 ## Dados e privacidade
 
-As frases sao sinteticas e sanitizadas. `<ALVO>` e um marcador generico: nao
-deve ser substituido por ID, localizacao, imagem, audio ou transcricao real do
-operador quando este corpus for enviado ao Jev. A primeira chamada remota segue
-bloqueada ate JEV-40 e usa somente os dados permitidos em
+As frases de `development.tsv` sao sinteticas e sanitizadas. `<ALVO>` e um
+marcador generico: nao deve ser substituido por ID, localizacao, imagem, audio
+ou transcricao real do operador quando este corpus for enviado ao Jev.
+`asr-development.tsv` segue uma regra mais restritiva: embora suas
+transcricoes sejam sanitizadas, ele nao sai do dispositivo nem e enviado ao
+Jev. A primeira chamada remota segue bloqueada ate JEV-40 e usa somente os dados permitidos em
 [`../../../tasks/jev-api-approval.md`](../../../tasks/jev-api-approval.md).
 
 ## Formato
