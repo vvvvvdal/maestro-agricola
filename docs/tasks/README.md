@@ -22,6 +22,7 @@
 - [`jev-explicit-cancel-guard.md`](jev-explicit-cancel-guard.md): politica local, desligada por padrao, que bloqueia cancelamentos explicitos sem chamar Jev.
 - [`jev-asr-collection.md`](jev-asr-collection.md): protocolo de coleta ASR no SM-X510 sem audio salvo, logcat ou dados identificaveis.
 - [`jev-asr-review-cards.md`](jev-asr-review-cards.md): cartoes sem dados pessoais, revisados por duas pessoas, para a coleta ASR de desenvolvimento.
+- [`jev-asr-holdout-plan.md`](jev-asr-holdout-plan.md): plano piloto para dois holdouts ASR separados, sem HTTP ou dado pessoal.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.
 - [`android-demo-ui.md`](android-demo-ui.md): transformação da tela diagnóstica Android em interface de demonstração.
