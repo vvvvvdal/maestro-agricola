@@ -53,7 +53,6 @@ import br.org.agroturtles.maestro.R
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
-import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 
 private const val MOCK_FRAME_SOURCE = "mock"
 
@@ -85,8 +84,6 @@ fun MaestroScreen(
     result: InteractionResult,
     robot: RobotPresentation,
     frameSource: String,
-    jevScenarios: List<JevChoiceAnswer>,
-    jevDiagnostic: JevChoiceAnswer?,
     jevRemoteEnabled: Boolean,
     jevRemoteConsent: Boolean,
     onJevRemoteEnabledChange: (Boolean) -> Unit,
@@ -103,8 +100,6 @@ fun MaestroScreen(
     onReset: () -> Unit,
 ) {
     var toolsExpanded by rememberSaveable { mutableStateOf(frameSource == MOCK_FRAME_SOURCE) }
-    var selectedJevChoice by rememberSaveable { mutableStateOf<String?>(null) }
-    val selectedJevScenario = jevScenarios.firstOrNull { it.choice == selectedJevChoice }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -125,14 +120,12 @@ fun MaestroScreen(
 
             JourneyStrip(steps = journeySteps(result.state, result.intent))
 
-            val localIntentPresentation = intentPresentation(
+            val intentPresentation = intentPresentation(
                 intent = result.intent,
                 label = result.prediction?.label,
                 confidence = result.prediction?.confidence,
                 source = result.prediction?.source,
             )
-            val intentPresentation = jevScenarioIntentPresentation(selectedJevScenario)
-                ?: localIntentPresentation
 
             Row(
                 modifier = Modifier.height(IntrinsicSize.Min),
@@ -178,14 +171,10 @@ fun MaestroScreen(
                 expanded = toolsExpanded,
                 onToggle = { toolsExpanded = !toolsExpanded },
                 frameSource = frameSource,
-                jevScenarios = jevScenarios,
-                jevDiagnostic = jevDiagnostic,
                 jevRemoteEnabled = jevRemoteEnabled,
                 jevRemoteConsent = jevRemoteConsent,
                 onJevRemoteEnabledChange = onJevRemoteEnabledChange,
                 onJevRemoteConsentChange = onJevRemoteConsentChange,
-                selectedJevChoice = selectedJevChoice,
-                onJevScenarioSelected = { selectedJevChoice = it },
                 endpoint = endpoint,
                 onEndpointChange = onEndpointChange,
                 transcript = transcript,
@@ -471,14 +460,10 @@ private fun ToolsPanel(
     expanded: Boolean,
     onToggle: () -> Unit,
     frameSource: String,
-    jevScenarios: List<JevChoiceAnswer>,
-    jevDiagnostic: JevChoiceAnswer?,
     jevRemoteEnabled: Boolean,
     jevRemoteConsent: Boolean,
     onJevRemoteEnabledChange: (Boolean) -> Unit,
     onJevRemoteConsentChange: (Boolean) -> Unit,
-    selectedJevChoice: String?,
-    onJevScenarioSelected: (String?) -> Unit,
     endpoint: String,
     onEndpointChange: (String) -> Unit,
     transcript: String,
@@ -486,15 +471,6 @@ private fun ToolsPanel(
     interactionPending: Boolean,
     onInterpret: () -> Unit,
 ) {
-    val diagnostic = jevDiagnosticPresentation(jevDiagnostic)
-    val showsJevScenarios = shouldShowJevScenarios(frameSource, jevScenarios)
-    val showsJevDiagnostics = shouldShowJevDiagnostics(
-        frameSource = frameSource,
-        diagnostic = diagnostic,
-        selectedChoice = selectedJevChoice,
-    )
-    var diagnosticsExpanded by rememberSaveable { mutableStateOf(false) }
-
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         TextButton(onClick = onToggle, modifier = Modifier.align(Alignment.Start)) {
             Text(
@@ -553,20 +529,6 @@ private fun ToolsPanel(
                             onConsentChange = onJevRemoteConsentChange,
                         )
                     }
-                    if (showsJevScenarios && !jevRemoteEnabled) {
-                        JevScenarioSelector(
-                            scenarios = jevScenarios,
-                            selectedChoice = selectedJevChoice,
-                            onSelected = onJevScenarioSelected,
-                        )
-                        if (showsJevDiagnostics) {
-                            JevDiagnostics(
-                                diagnostic = requireNotNull(diagnostic),
-                                expanded = diagnosticsExpanded,
-                                onToggle = { diagnosticsExpanded = !diagnosticsExpanded },
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -612,89 +574,6 @@ private fun JevRemoteSelector(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaestroBlue,
             )
-        }
-    }
-}
-
-@Composable
-private fun JevScenarioSelector(
-    scenarios: List<JevChoiceAnswer>,
-    selectedChoice: String?,
-    onSelected: (String?) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = "Cenário Jev · somente mock",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaestroBlue,
-        )
-        Text(
-            text = "Altera somente o cartão INTENÇÃO · sem rede ou comando",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaestroBlue,
-        )
-        FilterChip(
-            selected = selectedChoice == null,
-            onClick = { onSelected(null) },
-            label = { Text("Baseline local") },
-        )
-        scenarios.forEach { scenario ->
-            FilterChip(
-                selected = selectedChoice == scenario.choice,
-                onClick = { onSelected(scenario.choice) },
-                label = { Text(jevScenarioLabel(scenario.choice)) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun JevDiagnostics(
-    diagnostic: JevDiagnosticPresentation,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        TextButton(onClick = onToggle, modifier = Modifier.align(Alignment.Start)) {
-            Text(
-                text = if (expanded) "Ocultar diagnóstico Jev" else "Ver diagnóstico Jev",
-                style = MaterialTheme.typography.labelLarge,
-            )
-        }
-
-        if (expanded) {
-            Text(
-                text = "Fixture local do mock · não participa da decisão operacional",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaestroBlue,
-            )
-            Text(
-                text = "Escolha: ${diagnostic.choice} · probabilidade: ${diagnostic.selectedProbability}",
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.SemiBold,
-                color = MaestroBlue,
-            )
-            Text(
-                text = "Confidence do Jev: ${diagnostic.confidence}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaestroBlue,
-            )
-            diagnostic.rows.forEach { row ->
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = row.label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaestroBlue,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        text = row.probability,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaestroBlue,
-                    )
-                }
-            }
         }
     }
 }

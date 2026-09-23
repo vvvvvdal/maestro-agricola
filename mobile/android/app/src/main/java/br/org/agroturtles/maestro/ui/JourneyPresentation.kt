@@ -1,7 +1,6 @@
 package br.org.agroturtles.maestro.ui
 
 import br.org.agroturtles.maestro.domain.InteractionState
-import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 import br.org.agroturtles.maestro.domain.actionLabel
 import br.org.agroturtles.maestro.domain.plotLabel
 import kotlin.math.roundToInt
@@ -155,23 +154,6 @@ fun intentPresentation(
     )
 }
 
-fun jevScenarioIntentPresentation(answer: JevChoiceAnswer?): IntentPresentation? {
-    val validAnswer = answer ?: return null
-    val diagnostic = jevDiagnosticPresentation(validAnswer) ?: return null
-    return intentPresentation(
-        intent = validAnswer.choice.takeUnless { it == "UNKNOWN" },
-        label = validAnswer.choice,
-        confidence = validAnswer.probabilities.getValue(diagnostic.choice),
-        source = "JEV",
-    )
-}
-
-fun jevScenarioLabel(choice: String): String = when (choice) {
-    "SPRAY" -> "Jev · Pulverizar"
-    "UNKNOWN" -> "Jev · Não reconhecida"
-    else -> "Jev · $choice"
-}
-
 fun predictionDetail(label: String?, confidence: Double?, source: String?): String {
     if (label == null || confidence == null) return "aguardando fala"
     return "$label · ${(confidence * 100).roundToInt()}% · ${predictionSourceLabel(source)}"
@@ -188,59 +170,8 @@ fun predictionSourceLabel(source: String?): String = when (source) {
 private fun isJevUnavailable(label: String?, confidence: Double?, source: String?): Boolean =
     label == "UNKNOWN" && confidence == 0.0 && source == "JEV"
 
-data class JevDiagnosticRow(
-    val label: String,
-    val probability: String,
-)
-
-data class JevDiagnosticPresentation(
-    val choice: String,
-    val selectedProbability: String,
-    val confidence: String,
-    val rows: List<JevDiagnosticRow>,
-)
-
-private val JEV_DIAGNOSTIC_LABELS = listOf(
-    "SPRAY",
-    "DOCK",
-    "UNDOCK",
-    "CONFIRM",
-    "CANCEL",
-    "UNKNOWN",
-)
-
-fun jevDiagnosticPresentation(answer: JevChoiceAnswer?): JevDiagnosticPresentation? {
-    if (answer == null || answer.choice !in JEV_DIAGNOSTIC_LABELS) return null
-    if (answer.probabilities.keys != JEV_DIAGNOSTIC_LABELS.toSet()) return null
-    if (!answer.confidence.isFinite() || answer.confidence !in 0.0..1.0) return null
-
-    val probabilities = JEV_DIAGNOSTIC_LABELS.map { label ->
-        val probability = answer.probabilities.getValue(label)
-        if (!probability.isFinite() || probability !in 0.0..1.0) return null
-        JevDiagnosticRow(label, probability.asPercent())
-    }
-
-    return JevDiagnosticPresentation(
-        choice = answer.choice,
-        selectedProbability = answer.probabilities.getValue(answer.choice).asPercent(),
-        confidence = answer.confidence.asPercent(),
-        rows = probabilities,
-    )
-}
-
-fun shouldShowJevScenarios(frameSource: String, scenarios: List<JevChoiceAnswer>): Boolean =
-    frameSource == "mock" && scenarios.isNotEmpty()
-
-fun shouldShowJevDiagnostics(
-    frameSource: String,
-    diagnostic: JevDiagnosticPresentation?,
-    selectedChoice: String?,
-): Boolean = frameSource == "mock" && selectedChoice == null && diagnostic != null
-
 fun factCardContentDescription(title: String, value: String, detail: String): String =
     "$title: $value. $detail."
-
-private fun Double.asPercent(): String = "${(this * 100).roundToInt()}%"
 
 data class RobotPresentation(
     val title: String,

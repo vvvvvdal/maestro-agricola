@@ -25,7 +25,6 @@ import br.org.agroturtles.maestro.platform.NativeQwenEngine
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
 import br.org.agroturtles.maestro.platform.VoiceIO
 import br.org.agroturtles.maestro.platform.WebSocketCommandTransport
-import br.org.agroturtles.maestro.platform.JevTestDiagnostics
 import br.org.agroturtles.maestro.platform.JevProxyChoiceEvaluator
 import br.org.agroturtles.maestro.ui.MaestroScreen
 import br.org.agroturtles.maestro.ui.MaestroTheme
@@ -229,8 +228,6 @@ class MainActivity : ComponentActivity() {
                     result = result,
                     robot = robot,
                     frameSource = BuildConfig.FRAME_SOURCE,
-                    jevScenarios = JevTestDiagnostics.scenarios(),
-                    jevDiagnostic = JevTestDiagnostics.current(),
                     jevRemoteEnabled = jevRemoteEnabled,
                     jevRemoteConsent = jevRemoteConsent,
                     onJevRemoteEnabledChange = { enabled ->

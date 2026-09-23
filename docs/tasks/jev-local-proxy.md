@@ -41,6 +41,10 @@ No `mockDebug`, abra `Ajustes de teste`, marque a fala de teste sem dados
 pessoais e selecione `Jev remoto`. Para encerrar, selecione `Local`, pare o
 proxy e execute `adb reverse --remove tcp:8787`.
 
+Os cenarios visuais estaticos e o diagnostico de fixture foram removidos:
+`Local` usa o classificador local real e `Jev remoto` usa somente a resposta
+real do proxy. O cartao `INTENCAO` identifica a origem escolhida.
+
 ## Evidência de validação
 
 No SM-X510, com o APK `mockDebug` e o proxy loopback ativos, uma fala curta e

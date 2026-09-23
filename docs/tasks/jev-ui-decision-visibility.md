@@ -111,6 +111,14 @@ fixture ou diagnostico Jev. Os testes por flavor verificam essa separacao; no
 SM-X510, as capturas de `SPRAY` e `UNKNOWN` mostraram os dois cartoes sem
 sobreposicao e a arvore de acessibilidade preservou a frase completa do cartao.
 
+## Simplificacao apos JEV-37
+
+As fixtures de cenario e o diagnostico estatico foram removidos do app em
+23/09/2026. Eles eram uteis antes de existir uma chamada remota real, mas
+passaram a competir visualmente com ela. No `mockDebug`, a fonte de intencao
+agora oferece apenas `Local` ou `Jev remoto`; o cartao `INTENCAO` sempre mostra
+o resultado do caminho realmente escolhido. `dat` continua sem Jev remoto.
+
 ## Objetivo
 
 Permitir que a demonstracao mostre, no mesmo app do Maestro, o que o

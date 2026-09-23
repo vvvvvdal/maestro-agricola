@@ -1,9 +1,7 @@
 package br.org.agroturtles.maestro.ui
 
 import br.org.agroturtles.maestro.domain.InteractionState
-import br.org.agroturtles.maestro.domain.JevChoiceAnswer
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -121,80 +119,6 @@ class JourneyPresentationTest {
             ),
             intentPresentation(null, "UNKNOWN", 0.0, "JEV"),
         )
-    }
-
-    @Test
-    fun jevDiagnosticsAreStructuredAndRestrictedToMock() {
-        val answer = JevChoiceAnswer(
-            choice = "SPRAY",
-            probabilities = linkedMapOf(
-                "SPRAY" to 0.87,
-                "DOCK" to 0.03,
-                "UNDOCK" to 0.02,
-                "CONFIRM" to 0.01,
-                "CANCEL" to 0.01,
-                "UNKNOWN" to 0.06,
-            ),
-            confidence = 0.74,
-        )
-
-        val diagnostic = requireNotNull(jevDiagnosticPresentation(answer))
-        assertEquals("SPRAY", diagnostic.choice)
-        assertEquals("87%", diagnostic.selectedProbability)
-        assertEquals("74%", diagnostic.confidence)
-        assertEquals(
-            listOf("SPRAY", "DOCK", "UNDOCK", "CONFIRM", "CANCEL", "UNKNOWN"),
-            diagnostic.rows.map { it.label },
-        )
-        assertFalse(shouldShowJevScenarios("dat", listOf(answer)))
-        assertFalse(shouldShowJevScenarios("mock", emptyList()))
-        assertTrue(shouldShowJevScenarios("mock", listOf(answer)))
-        assertTrue(shouldShowJevDiagnostics("mock", diagnostic, null))
-        assertFalse(shouldShowJevDiagnostics("mock", diagnostic, "SPRAY"))
-        assertFalse(shouldShowJevDiagnostics("dat", diagnostic, null))
-    }
-
-    @Test
-    fun jevScenariosOnlyOverrideIntentPresentation() {
-        val spray = JevChoiceAnswer(
-            choice = "SPRAY",
-            probabilities = linkedMapOf(
-                "SPRAY" to 0.87,
-                "DOCK" to 0.03,
-                "UNDOCK" to 0.02,
-                "CONFIRM" to 0.01,
-                "CANCEL" to 0.01,
-                "UNKNOWN" to 0.06,
-            ),
-            confidence = 0.74,
-        )
-        val unknown = JevChoiceAnswer(
-            choice = "UNKNOWN",
-            probabilities = linkedMapOf(
-                "SPRAY" to 0.05,
-                "DOCK" to 0.04,
-                "UNDOCK" to 0.03,
-                "CONFIRM" to 0.02,
-                "CANCEL" to 0.01,
-                "UNKNOWN" to 0.85,
-            ),
-            confidence = 0.81,
-        )
-
-        assertEquals(
-            IntentPresentation("Pulverizar", "SPRAY · 87% · Jev", Tone.INFO),
-            jevScenarioIntentPresentation(spray),
-        )
-        assertEquals(
-            IntentPresentation(
-                "Não reconhecida",
-                "UNKNOWN · 85% · Jev · nenhum comando enviado",
-                Tone.ATTENTION,
-            ),
-            jevScenarioIntentPresentation(unknown),
-        )
-        assertEquals("Jev · Pulverizar", jevScenarioLabel("SPRAY"))
-        assertEquals("Jev · Não reconhecida", jevScenarioLabel("UNKNOWN"))
     }
 
     @Test
