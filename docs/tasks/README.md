@@ -14,6 +14,7 @@
 - [`jev-experimental-decision.md`](jev-experimental-decision.md): decisao HOLD do experimento Jev, seus limites e gates antes de qualquer adocao operacional.
 - [`jev-app-captures.md`](jev-app-captures.md): capturas do `mockDebug` no SM-X510 para baseline local, Jev `SPRAY` e Jev `UNKNOWN`, sem rede ou comando.
 - [`jev-offline-reserve-demo.md`](jev-offline-reserve-demo.md): fixtures locais de reserva no SM-X510, capturadas com Wi-Fi desligado e sem executar o robo.
+- [`jev-presentation-script.md`](jev-presentation-script.md): roteiro falavel de 50 minutos para o grupo de estudos, com fontes, limites e debate final.
 - [`jev-presentation-slides.md`](jev-presentation-slides.md): SVGs 16:9 da comparacao, matrizes e reliability do experimento Jev, com limites de interpretacao.
 - [`visual-identity.md`](visual-identity.md): aplicação da marca AgroTurtles nos apps e no pitch.
 - [`visual-identity-v2.md`](visual-identity-v2.md): atualização dos lockups no repositório, Android, pitch e propostas.

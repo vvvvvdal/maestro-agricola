@@ -7,6 +7,10 @@ Data: 01/10/2026
 Status: planejamento ativo. Este material pertence ao grupo de estudos e nao
 ao pitch do Maestro Agricola. Nenhum deck e versionado nesta pasta ainda.
 
+O roteiro falavel de 50 minutos esta em
+[`presentation-script.md`](presentation-script.md). Ele separa evidencia
+medida, resultados de terceiros e roadmap antes da criacao dos slides.
+
 ## Como o estudo sera executado
 
 Todo trabalho do estudo fica em `test/jev`. Terra planeja as tasks com effort
@@ -31,17 +35,20 @@ alegacoes como resultado academico estabelecido.
 
 | Tempo | Assunto | Pergunta que o bloco responde |
 | --- | --- | --- |
-| 0:00-4:00 | Decisoes pequenas em software | Quando um `if` precisa de julgamento sem virar um agente? |
-| 4:00-11:00 | Jev | O que `Choice`, `Noul` e `Score` retornam? |
-| 11:00-19:00 | Calibracao e RL | Quando a probabilidade de 0,90 da classe escolhida corresponde a cerca de 90% de acertos? |
-| 19:00-27:00 | Xadrez | O que Jev vs Fable vs Astra realmente mediu? |
-| 27:00-34:00 | Casos publicos | Onde decisao rapida parece uma boa fronteira? |
-| 34:00-41:00 | Maestro atual | Quais barreiras separam linguagem de movimento? |
-| 41:00-47:00 | Jev no intent e no app | Como trocar somente o classificador e mostrar a decisao sem liberar acoes? |
-| 47:00-50:00 | Roadmap e debate | Que novas classes exigiriam contrato e qual evidencia escolheria o caminho? |
+| 0:00-3:00 | Decisoes pequenas em software | Quando um `if` precisa de julgamento sem virar um agente? |
+| 3:00-9:00 | Jev | O que `Choice`, `Noul` e `Score` retornam? |
+| 9:00-16:00 | Calibracao e RL | Quando a probabilidade de 0,90 da classe escolhida corresponde a cerca de 90% de acertos? |
+| 16:00-21:00 | Xadrez | O que Jev vs Fable vs Astra realmente mediu? |
+| 21:00-27:00 | Casos publicos | Onde decisao rapida parece uma boa fronteira? |
+| 27:00-34:00 | Maestro atual | Quais barreiras separam linguagem de movimento? |
+| 34:00-40:00 | Jev no intent e no app | Como trocar somente o classificador e mostrar a decisao sem liberar acoes? |
+| 40:00-44:00 | App e reserva local | Como mostrar a decisao sem alegar chamada remota ou comando? |
+| 44:00-46:00 | Roadmap de classes | Que novas classes exigiriam contrato? |
+| 46:00-50:00 | Debate | Qual evidencia escolheria o proximo caminho? |
 
-O encerramento deve deixar quatro minutos para perguntas. Nao e uma defesa do
-Jev como substituto automatico do classificador local.
+O encerramento reserva quatro minutos para debate. O roteiro falavel e a fonte
+canonica de tempo, transicoes e limites; nao e uma defesa do Jev como
+substituto automatico do classificador local.
 
 ## Xadrez como caso de leitura de benchmark
 
