@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementacao em andamento em 23/09/2026. O modo e somente demonstrativo no
+Implementacao validada em 23/09/2026. O modo e somente demonstrativo no
 `mockDebug`; nao promove o Jev ao APK de producao nem revoga `HOLD`.
 
 ## Fluxo e limites
@@ -40,3 +40,18 @@ python3 tools/jev_local_proxy.py --max-requests 24
 No `mockDebug`, abra `Ajustes de teste`, marque a fala de teste sem dados
 pessoais e selecione `Jev remoto`. Para encerrar, selecione `Local`, pare o
 proxy e execute `adb reverse --remove tcp:8787`.
+
+## Evidência de validação
+
+No SM-X510, com o APK `mockDebug` e o proxy loopback ativos, uma fala curta e
+consentida de comando de doca foi classificada pela chamada remota como `DOCK`
+com origem visível `Jev` e 100% para a opção escolhida. Ela entrou em
+confirmação e expirou sem confirmação. O cartão do robô permaneceu
+"Aguardando comando"; nenhum `Command`, WebSocket ou ROS foi executado.
+
+Os testes portáteis do proxy (4), os testes Kotlin focados (17) e
+`assembleMockDebug` passaram antes da instalação. A revisão Terra high aprovou
+o endpoint fixo, o teto sincronizado, a declaração de dados, o bloqueio de
+controles e o caminho sem bridge. A evidência não registra a fala, chave,
+captura, logcat ou custo exato; o painel de uso do provedor é a fonte para
+consumo acumulado.
