@@ -73,3 +73,14 @@ O servico selecionado era
 versao `googletts.google-speech-apk_20260817.01_p0.966249458`. Esta verificacao
 nao e corpus: nao recebeu identificador, `gold_label`, categoria ou texto de
 holdout, e nao autoriza chamada Jev.
+
+## Sessao de desenvolvimento pendente de revisao
+
+Em 23/09/2026, uma pessoa consentida realizou uma sessao offline com seis
+frases neutras, uma por rotulo. As seis transcricoes corresponderam exatamente
+aos cartoes lidos. As acoes `SPRAY`, `DOCK` e `UNDOCK` pararam antes de enviar
+comando; a jornada foi resetada entre frases.
+
+As transcricoes, os identificadores e os rotulos ainda nao foram versionados:
+dois revisores humanos devem atribuir `gold_label` e `category` de forma
+independente antes de qualquer entrada ir para `corpus/asr-development.tsv`.
