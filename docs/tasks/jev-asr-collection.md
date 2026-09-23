@@ -2,8 +2,9 @@
 
 ## Status
 
-Preparada em 23/09/2026. A coleta e revisao continuam bloqueadas ate haver
-falantes consentidos no SM-X510 e a separacao de sessoes definida.
+Preparada em 23/09/2026. O preflight local passou, mas a coleta e revisao
+continuam bloqueadas ate haver falantes consentidos no SM-X510 e a separacao de
+sessoes definida.
 
 ## Objetivo
 
@@ -60,3 +61,15 @@ de nenhum holdout futuro.
 
 Esta task nao envia texto para a API. JEV-65 e JEV-66 seguem bloqueadas por
 subteto humano novo e por dois holdouts ASR congelados.
+
+## Evidencia de preflight local
+
+Em 23/09/2026, no SM-X510 com Android 16, o `mockDebug` reconheceu a frase
+neutra `teste de reconhecimento em português` exatamente, com Wi-Fi e dados
+moveis desligados. O app apresentou `UNKNOWN` e nenhum comando foi enviado.
+
+O servico selecionado era
+`com.google.android.tts/com.google.android.apps.speech.tts.googletts.service.GoogleTTSRecognitionService`,
+versao `googletts.google-speech-apk_20260817.01_p0.966249458`. Esta verificacao
+nao e corpus: nao recebeu identificador, `gold_label`, categoria ou texto de
+holdout, e nao autoriza chamada Jev.
