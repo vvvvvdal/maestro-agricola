@@ -84,3 +84,10 @@ comando; a jornada foi resetada entre frases.
 As transcricoes, os identificadores e os rotulos ainda nao foram versionados:
 dois revisores humanos devem atribuir `gold_label` e `category` de forma
 independente antes de qualquer entrada ir para `corpus/asr-development.tsv`.
+
+Uma segunda rodada, com dez frases de fronteira, tambem teve transcricoes
+exatas e permaneceu sem rede. Nove predicoes locais coincidiram com os cartoes;
+uma frase historica de `UNKNOWN` recebeu `CONFIRM` com 55%. No estado inicial,
+o motor recusou a intencao e nao enviou comando. Este e um achado de
+desenvolvimento do baseline local, nao uma medicao Jev nem um resultado de
+holdout.
