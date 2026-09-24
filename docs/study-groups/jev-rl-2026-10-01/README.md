@@ -119,9 +119,10 @@ As fronteiras de linguagem que alimentarao os corpora ficam em
 classe reconhece um pedido atual de pulverizacao, sem resolver alvo nem criar
 autorizacao de movimento.
 
-As classes abaixo sao roadmap de produto e viram o bloco final da
-apresentacao. Elas mostram onde uma `Choice` tipada pode ser util sem alegar
-que ja estao implementadas.
+As classes abaixo nasceram como roadmap de produto e viram o bloco final da
+apresentacao. Apos JEV-38, elas tambem tem uma sequencia de implementacao em
+[`TASKS.md`](TASKS.md): primeiro leitura e historico, depois inspecao e, por
+ultimo, preview e execucao de missao. Nenhuma esta implementada ainda.
 
 Jev permite alterar a lista de opcoes de uma pergunta `Choice`. Isso acelera o
 experimento de uma nova classe, mas nao cria um comando seguro por si so. Cada
@@ -149,6 +150,19 @@ ser mostradas como desenho de futuras acoes, nao como capacidades entregues.
 Quando forem independentes, como "o usuario pediu status?" e "o usuario pediu
 inspecao?", elas podem ser perguntas atomicas paralelas; o codigo resolve
 conflitos e decide quais respostas usar.
+
+`PLOT_STATUS_QUERY` foi priorizada antes das outras consultas por representar
+uma pergunta agricola concreta: "qual foi a ultima pulverizacao do plot-03?".
+Ela precisa de historico de operacoes concluidas; essa infraestrutura e valor
+do Maestro e existe independentemente de Jev. Para qualquer classe nova, o
+primeiro roteador sera local e separado do benchmark congelado dos seis
+intents. Jev so entra em uma comparacao posterior, no mesmo corpus e contra o
+mesmo contrato.
+
+`COMPOUND_MISSION` passa a se chamar `MISSION_PREVIEW` na fronteira de
+linguagem: ela reconhece que o operador pediu uma missao composta, mas nao
+produz a missao. O Maestro faz parser e validacao deterministica para um
+`MissionPlan`, mostra as etapas e exige confirmacao antes de cada acao fisica.
 
 ## Arquitetura do experimento
 

@@ -41,8 +41,9 @@ do Qwen e ausencia de RAG neste experimento.
 - `TODO`: aguardando dependencias.
 - `BLOCKED`: depende de decisao humana, servico ou ambiente externo.
 - Fase 1: somente `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e
-  `UNKNOWN`. `STATUS_QUERY`, `PLOT_STATUS_QUERY`, `INSPECT_TARGET` e
-  `COMPOUND_MISSION` sao roadmap para slides, nao entregas antes de 08/10.
+  `UNKNOWN`. Capacidades novas do Maestro so iniciam apos JEV-38 e nao alteram
+  essa comparacao: cada uma ganha baseline local, contrato, corpus e testes
+  proprios antes de uma comparacao JEV opcional.
 
 ## Fase 0 - Base do estudo
 
@@ -90,9 +91,35 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-35 | DONE | 22/09 | JEV-34 | Wordmark limitado a viewport responsivo de 480 x 88 dp, sem corte em paisagem e retrato no SM-X510 em `mockDebug`. |
 | JEV-36 | DONE | 22/09 | JEV-34 | `mock` tem selecao explicita de baseline, Jev `SPRAY` e Jev `UNKNOWN`; a selecao so altera o cartao `INTENCAO`. `dat`, classificador local, jornada, transporte e comandos permanecem inalterados. |
 | JEV-37 | DONE | 23/09 | JEV-36, aprovacao mock | Demo interativa opt-in em `mockDebug`: proxy loopback fixo via `adb reverse`, chave fora do APK, teto de 24 tentativas, declaração de fala sem dado pessoal, falha fechada e bloqueio de `Command` antes do bridge. Testes focados passaram; no SM-X510 uma fala curta de doca foi classificada remotamente como `DOCK` com origem `Jev`, ficou pendente e expirou sem comando. Evidência em [`../../tasks/jev-local-proxy.md`](../../tasks/jev-local-proxy.md). |
-| JEV-38 | TODO | 23/09 | JEV-37 | No `mockDebug`, `Jev remoto (Gazebo)` envia o `Command` estruturado ao bridge apenas após confirmação por voz; `dat` permanece sem Jev remoto. Teste unitário passou e APK foi instalado no SM-X510; falta uma única jornada E2E consentida no Gazebo antes de marcar DONE. Evidência em [`../../tasks/jev-local-proxy.md`](../../tasks/jev-local-proxy.md). |
+| JEV-38 | NEXT | 23/09 | JEV-37 | No `mockDebug`, `Jev remoto (Gazebo)` envia o `Command` estruturado ao bridge apenas após confirmação por voz; `dat` permanece sem Jev remoto. Teste unitário passou e APK foi instalado no SM-X510; falta uma única jornada E2E consentida no Gazebo antes de marcar DONE. Evidência em [`../../tasks/jev-local-proxy.md`](../../tasks/jev-local-proxy.md). |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
+
+## Fase 3.5 - Capacidades do Maestro apos JEV-38
+
+Estas tasks entregam valor do Maestro, mesmo se Jev nunca for adotado. Elas nao
+alteram a avaliacao congelada de seis labels, nao enviam transcricoes ao Jev e
+nao usam Jev para criar plano, resolver alvo ou controlar o robo. A primeira
+comparacao de uma capacidade nova so pode ocorrer com corpus novo, pareado e
+aprovado contra seu baseline local.
+
+| ID | Status | Dependencia | Entrega e criterio de aceite |
+| --- | --- | --- | --- |
+| JEV-70 | TODO | JEV-38 | Especificar o caminho somente leitura: `ReadOnlyQuery`, `OperationRecord` e resposta narravel. Define `plot`, resultado final, timestamp, origem e retencao; nao armazena foto, audio ou transcricao. Define tambem o limite entre roteamento de linguagem, consulta e `Command`. |
+| JEV-71 | TODO | JEV-70 | Implementar o historico de operacoes concluidas no simulador: uma pulverizacao so cria `OperationRecord` apos resultado final do bridge, com talhao e timestamp verificaveis. Falha, cancelamento e expiracao nao criam registro. Testes focados de sucesso e recusas passam. |
+| JEV-72 | TODO | JEV-70, JEV-71 | Implementar `PLOT_STATUS_QUERY` com baseline local separado do catalogo original: fala pede a ultima pulverizacao de um talhao, o Maestro consulta o historico e responde sem `Command`, WebSocket de comando ou ROS de movimento. Testar talhao encontrado, inexistente, sem historico e fala ambigua. |
+| JEV-73 | TODO | JEV-70 | Implementar `STATUS_QUERY`: leitura narravel do estado do robo por interface de consulta, sem emissao de `Command`. Testar estados conectado, aguardando, pendente, executando, desconectado e falha fechada. |
+| JEV-74 | TODO | JEV-70 | Especificar e implementar `INSPECT_TARGET` no caminho de captura sob demanda: QR/marcador em memoria, permissao explicita, resultado tipado e descarte da imagem. Sem persistencia de imagem e sem movimento. Testar permissao negada, QR valido, QR invalido e timeout. |
+| JEV-75 | TODO | JEV-70, JEV-72, JEV-73, JEV-74 | Criar corpus e benchmark locais para as tres consultas. Somente depois de passar no baseline local, decidir explicitamente se vale comparar Jev contra o mesmo corpus e o mesmo contrato. |
+| JEV-76 | TODO | JEV-70, JEV-72 | Especificar `MISSION_PREVIEW` e `MissionPlan` versionado. O roteador apenas reconhece pedido de missao; parser e validacao deterministica extraem passos permitidos, alvos e consultas. Entrada invalida ou ambigua falha fechada, sem `Command`. |
+| JEV-77 | TODO | JEV-76 | Implementar preview de missao no app: mostrar etapas e pedir confirmacao antes de cada acao fisica. Consultas podem ser exibidas, mas nao autorizam acao subsequente. Testar revisao, cancelamento, timeout e plano invalido. |
+| JEV-78 | TODO | JEV-77 | Implementar executor deterministico no Gazebo para `MissionPlan`: executa somente etapas confirmadas, pausa em falha ou alvo invalido e preserva rastreabilidade por etapa. Exige contrato ROS versionado e E2E proprio; nao usar Jev como planejador. |
+
+Ordem de produto decidida: `PLOT_STATUS_QUERY` primeiro, depois
+`STATUS_QUERY` e `INSPECT_TARGET`; `MISSION_PREVIEW` so inicia quando as
+consultas e seus contratos estiverem testados. `PAUSE`, `RESUME` e `SCOUT`
+permanecem fora desta fase. A apresentacao pode mostrar esta sequencia como
+roadmap; uma task so vira evidencia de produto apos seus testes.
 
 ## Fase 4 - Medicao e decisao experimental
 
