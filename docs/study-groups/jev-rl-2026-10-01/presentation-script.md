@@ -107,22 +107,25 @@ de busca definem a conclusao."
 
 **Fonte**: [S5], resultado de terceiros.
 
-## 21:00-27:00 - Outros casos publicos
+## 21:00-27:00 - Direcao em simulador e triagem de PR
 
-Usar uma tabela, nao uma colecao de demos. Cada linha e resultado de terceiros
-em dominio diferente.
+Usar dois casos com limites claros. Cada linha e resultado de terceiros em
+dominio diferente.
 
 | Caso | O que ilustra | O que nao permite concluir |
 | --- | --- | --- |
-| Ticket de suporte | Uma entrada pode alimentar departamento (`Choice`), urgencia (`Noul`) e severidade (`Score`). | Que Jev domina atendimento ou esta pronto para o Maestro. |
-| Destinatario de NPC apos ASR | Benchmark reportou F1 0,96 em texto limpo e 0,93 em transcricoes ruidosas. | Que esses valores se transferem para portugues, agricultura ou nosso ASR. |
-| BANKING77 | Avaliacao reportou 92,40% para Jev contra 93,66% para BERT fine-tuned citado, em 3.080 mensagens e 77 intents. | Que um modelo hospedado elimina o baseline local especializado. |
+| Direcao no HighwayEnv | Um estado fechado pode alimentar uma escolha entre acoes permitidas; o autor reporta 60 segundos sem colisao. | Que Jev foi validado em carro real, com camera real, ou que a comparacao contra Codex e um benchmark controlado. |
+| Triagem de PR | Um diff limitado pode virar `SAFE / REVIEW / BLOCK`, risco e checks, sem gerar uma longa resenha. | Que a ferramenta le o repositorio inteiro, executa testes, substitui revisao humana ou economiza uma quantidade geral de tokens. |
 
-**Fala-guia**: "O padrao comum e um catalogo conhecido e uma saida pequena.
-Isso sugere uma boa fronteira para experimentar, nao uma garantia de que o
-modelo seja melhor para qualquer tarefa."
+**Fala-guia**: "No simulador, o estado e as acoes ja sao fechados. Na triagem
+de PR, o artefato de entrada e limitado e a saida pode ser uma decisao curta.
+Esse segundo caso e interessante porque evita gerar uma resenha longa quando o
+primeiro passo e so encaminhar o PR. A pagina da demo anuncia cerca de 300 ms
+e US$0,00003 por chamada; trate isso como alegacao da demo, nao como comparacao
+de tokens ou benchmark independente. Ela mesma diz que nao le o repo inteiro
+nem roda testes."
 
-**Fontes**: [S6]-[S8], resultados de terceiros.
+**Fontes**: [S6]-[S7], resultados de terceiros.
 
 ## 27:00-34:00 - Maestro: onde a decisao para
 
@@ -250,9 +253,8 @@ Projetar quatro perguntas e deixar a sala escolher a ordem:
 - **[S3]** [TypeSafe: Confidence](https://docs.typesafe.ai/confidence)
 - **[S4]** [TypeSafe: AI primer e RLCD](https://docs.typesafe.ai/introduction/machine-learning-primer)
 - **[S5]** [Thread de xadrez republicada](https://threadnavigator.com/thread/2100372930282573876/)
-- **[S6]** [Jev Benchmark & Playground](https://github.com/wondertwins/jev-benchmark)
-- **[S7]** [jev-benchmarks](https://github.com/AbdelStark/jev-benchmarks)
-- **[S8]** [Experimento Jev em BANKING77](https://github.com/simonmesmith/jev-banking77-experiment)
+- **[S6]** [Jev x HighwayEnv: 60 segundos sem colisao](https://dev.to/trknhr/jev-x-highwayenv-60-seconds-without-a-crash-30ig)
+- **[S7]** [Demo Jev PR Judge](https://jevtypesafeai.com/tools/pr-judge)
 - **[E1]** [Comparacao medida JEV-41R](results/jev-final-recovery-presentation.md)
 - **[E2]** [Visuais de comparacao, matriz e reliability JEV-51](../../tasks/jev-presentation-slides.md)
 - **[E3]** [Decisao experimental `HOLD`](../../tasks/jev-experimental-decision.md)

@@ -2,7 +2,7 @@
 
 ## Status
 
-Concluida em 23/09/2026.
+Concluida em 23/09/2026 e revisada em 24/09/2026.
 
 ## Objetivo
 
@@ -20,6 +20,9 @@ discussao de evidencia, nao uma venda do projeto.
 - Evidencias medidas, resultados de terceiros e hipoteses/roadmap recebem
   etiquetas visiveis e fontes numeradas.
 - As capturas JEV-50 dizem literalmente `fixture mock local - nao executa o robo`.
+- O bloco de casos externos usa xadrez, direcao no HighwayEnv e triagem de PR.
+  O caso de PR e apresentado como roteamento inicial por decisao tipada, nunca
+  como revisao completa ou economia geral de tokens.
 
 ## Limites
 
@@ -27,6 +30,10 @@ discussao de evidencia, nao uma venda do projeto.
 - O deck nao afirma integracao Android remota, execucao de ROS, ASR, resolucao
   de alvo, confirmacao ou controle do robo nas capturas locais.
 - A evidencia JEV-41R continua limitada a uma rodada de 60 falas sinteticas.
+- O caso HighwayEnv e uma simulacao de terceiro; nao e validacao em veiculo
+  real nem benchmark controlado contra outro agente.
+- A demo de PR nao le o repositorio inteiro nem executa testes. Seus numeros de
+  custo e latencia sao alegacoes da propria demo por chamada.
 
 ## Validacao
 
