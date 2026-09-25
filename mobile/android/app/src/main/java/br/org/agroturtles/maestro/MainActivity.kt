@@ -228,17 +228,24 @@ class MainActivity : ComponentActivity() {
                 next.speech?.let(voice::speak)
             }
 
-            fun executeMissionAction(action: MissionExecutionAction) {
+            fun executeMissionAction(
+                action: MissionExecutionAction,
+                precedingReadOnlyMessage: String? = null,
+            ) {
                 missionExecution = missionExecutionController.current()
                 when (action) {
                     is MissionExecutionAction.AwaitingConfirmation -> {
                         val current = checkNotNull(missionExecution)
                         val name = missionStepName(action.step)
+                        val prompt = "Etapa ${current.currentStepIndex + 1}: $name?"
+                        val spokenPrompt = "Etapa ${current.currentStepIndex + 1} da missão: $name. Confirmar?"
                         applyMission(
                             InteractionResult(
                                 state = InteractionState.AWAITING_CONFIRMATION,
-                                message = "Etapa ${current.currentStepIndex + 1}: $name?",
-                                speech = "Etapa ${current.currentStepIndex + 1} da missão: $name. Confirmar?",
+                                message = listOfNotNull(precedingReadOnlyMessage, prompt)
+                                    .joinToString("\n"),
+                                speech = listOfNotNull(precedingReadOnlyMessage, spokenPrompt)
+                                    .joinToString(" "),
                                 intent = "MISSION_PREVIEW",
                             )
                         )
@@ -250,13 +257,15 @@ class MainActivity : ComponentActivity() {
                         val pending = plotStatusQueries.queryPlot(targetId) { succeeded, queryResult ->
                             runOnUiThread {
                                 readOnlyPending = false
-                                applyMission(queryResult)
-                                executeMissionAction(
-                                    missionExecutionController.queryFinished(
-                                        succeeded,
-                                        queryResult.message,
-                                    )
+                                val next = missionExecutionController.queryFinished(
+                                    succeeded,
+                                    queryResult.message,
                                 )
+                                if (succeeded) {
+                                    executeMissionAction(next, queryResult.message)
+                                } else {
+                                    executeMissionAction(next)
+                                }
                             }
                         }
                         applyMission(pending)
@@ -303,11 +312,14 @@ class MainActivity : ComponentActivity() {
                     MissionExecutionAction.Completed -> {
                         missionPreview = null
                         missionExecution = null
+                        val completionMessage = "Missão concluída no Gazebo."
                         applyMission(
                             InteractionResult(
                                 state = InteractionState.COMPLETED,
-                                message = "Missão concluída no Gazebo.",
-                                speech = "Missão concluída no Gazebo.",
+                                message = listOfNotNull(precedingReadOnlyMessage, completionMessage)
+                                    .joinToString("\n"),
+                                speech = listOfNotNull(precedingReadOnlyMessage, completionMessage)
+                                    .joinToString(" "),
                                 intent = "MISSION_PREVIEW",
                             )
                         )

@@ -112,6 +112,9 @@ individual, com `command_id` proprio, apenas apos a confirmacao daquela etapa.
 `PLOT_STATUS_QUERY` usa somente `/read-only`; uma resposta indisponivel ou
 invalida pausa o plano e nao libera a acao seguinte. O bridge continua
 recebendo somente o contrato `Command` ja versionado, sem payload de missao.
+Quando a consulta e valida, sua resposta e preservada na tela e na fala junto
+com a confirmacao da proxima etapa fisica; ela nao pode ser sobrescrita por
+esse prompt.
 
 Evidencia tecnica inicial: os testes unitarios do controlador cobrem sequencia
 confirmada, consulta antes da proxima acao, alvo invalido, recusa e timeout. No
