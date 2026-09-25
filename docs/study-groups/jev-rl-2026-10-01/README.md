@@ -144,7 +144,7 @@ e aprovacao humana antes de entrar no catalogo operacional.
 | `STATUS_QUERY` | Ler e narrar estado atual do robo; acompanhar uma operacao aceita ate termino | Implementada localmente no `mockDebug` | Rota `/read-only`, correlacao pelo `command_id` e estados terminais sem novo `Command` |
 | `PLOT_STATUS_QUERY` | Informar a ultima missao simulada `SPRAY` concluida para um talhao | Implementada localmente no `mockDebug` | Historico em memoria, rota `/read-only` e resposta sem `Command`; nao afirma aplicacao fisica |
 | `INSPECT_TARGET` | Capturar sob demanda e reportar marcador/QR | Implementada localmente no `mockDebug` | Imagem em memoria, permissao, politica de QR e nenhum `Command` |
-| `COMPOUND_MISSION` | Plano tipado, por exemplo `UNDOCK -> SPRAY(plot-02) -> PLOT_STATUS(plot-03) -> DOCK` | Roadmap; nao entra no benchmark inicial | Novo `MissionPlan` versionado, confirmacao explicita do plano, executor deterministico e pause em falha |
+| `MISSION_PREVIEW` | Reconhecer pedido composto e mostrar `MissionPlan` tipado | Especificada; ainda nao existe no app ou bridge | Parser deterministico, alvo mapeado, confirmacao por etapa e executor que pausa em falha |
 | `PAUSE` | Pedir pausa de missao em andamento | Candidata, mas nao usar na demo fisica | Bridge precisa de primitive de pausa segura e estado `PAUSED` |
 | `RESUME` | Retomar apenas uma missao pausada valida | Candidata dependente de `PAUSE` | Revalidar missao, alvo, expiracao e confirmacao explicita |
 | `SCOUT` | Navegar por rota mapeada para inspecao | Apenas ideia de produto | Novo contrato, rota permitida, alvo mapeado, confirmacao e E2E proprio |
@@ -166,10 +166,11 @@ primeiro roteador sera local e separado do benchmark congelado dos seis
 intents. Jev so entra em uma comparacao posterior, no mesmo corpus e contra o
 mesmo contrato.
 
-`COMPOUND_MISSION` passa a se chamar `MISSION_PREVIEW` na fronteira de
-linguagem: ela reconhece que o operador pediu uma missao composta, mas nao
+`MISSION_PREVIEW` reconhece que o operador pediu uma missao composta, mas nao
 produz a missao. O Maestro faz parser e validacao deterministica para um
 `MissionPlan`, mostra as etapas e exige confirmacao antes de cada acao fisica.
+O contrato e o schema estao em
+[`../../tasks/mission-preview-contract.md`](../../tasks/mission-preview-contract.md).
 
 ## Arquitetura do experimento
 

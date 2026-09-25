@@ -214,13 +214,14 @@ Apresentar como mapa de fronteiras, nao como backlog entregue.
 | `STATUS_QUERY` | Consulta somente leitura do estado do robo. | Interface de consulta sem `Command`. |
 | `PLOT_STATUS_QUERY` | Responder ultima missao simulada de pulverizacao de um talhao. | Historico efemero de resultado Nav2, timestamp, talhao e origem; nao comprova aplicacao fisica. |
 | `INSPECT_TARGET` | Reutiliza captura sob demanda para reportar QR/marcador. | Privacidade, permissao e imagem somente em memoria. |
-| `COMPOUND_MISSION` | Transforma fala longa em `MissionPlan` tipado. | Plano confirmado, executor deterministico e pausa/falha segura. |
+| `MISSION_PREVIEW` | Reconhece fala longa que pede uma missao composta. | Parser deterministico, plano revisado, confirmacao por etapa e executor com pausa/falha segura. |
 | `PAUSE`, `RESUME`, `SCOUT` | Ideias futuras com fronteiras mais sensiveis. | Contrato, estado, revalidacao e E2E proprio. |
 
 Exemplo: "Saia da doca, pulverize o plot-02, informe a ultima pulverizacao do
-plot-03 e volte." Jev poderia reconhecer `COMPOUND_MISSION` e extrair um plano
-tipado. Ele nao escolhe movimentos: o plano precisa ser mostrado, confirmado e
-executado de forma deterministica.
+plot-03 e volte." Um roteador poderia reconhecer `MISSION_PREVIEW`; o Maestro
+extrairia o plano com parser deterministico. Ele nao escolhe movimentos: o
+plano precisa ser mostrado, confirmado por etapa e executado de forma
+deterministica.
 
 Fechar: "`EMERGENCY_STOP` fica fora de Jev e de reconhecimento de fala comum;
 seguranca precisa de cadeia fisica independente do modelo."

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "plan_id": "92dd362b-2f76-4b60-a0e2-cd3c6fc07d78",
+  "created_at": "2026-09-25T20:00:00Z",
+  "steps": [
+    {
+      "step_id": "step-01",
+      "intent": "UNDOCK",
+      "target": null
+    },
+    {
+      "step_id": "step-02",
+      "intent": "SPRAY",
+      "target": {
+        "type": "MAPPED_PLOT",
+        "id": "plot-02"
+      }
+    },
+    {
+      "step_id": "step-03",
+      "intent": "PLOT_STATUS_QUERY",
+      "target": {
+        "type": "MAPPED_PLOT",
+        "id": "plot-03"
+      }
+    },
+    {
+      "step_id": "step-04",
+      "intent": "DOCK",
+      "target": null
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://maestro-agricola.local/contracts/mission-plan.schema.json",
+  "title": "MaestroMissionPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_id",
+    "created_at",
+    "steps"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "plan_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step_id", "intent", "target"],
+            "properties": {
+              "step_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]{1,64}$"
+              },
+              "intent": {
+                "const": "UNDOCK"
+              },
+              "target": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step_id", "intent", "target"],
+            "properties": {
+              "step_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]{1,64}$"
+              },
+              "intent": {
+                "const": "SPRAY"
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "id"],
+                "properties": {
+                  "type": {
+                    "const": "MAPPED_PLOT"
+                  },
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9-]{1,64}$"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step_id", "intent", "target"],
+            "properties": {
+              "step_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]{1,64}$"
+              },
+              "intent": {
+                "const": "PLOT_STATUS_QUERY"
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "id"],
+                "properties": {
+                  "type": {
+                    "const": "MAPPED_PLOT"
+                  },
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9-]{1,64}$"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step_id", "intent", "target"],
+            "properties": {
+              "step_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]{1,64}$"
+              },
+              "intent": {
+                "const": "DOCK"
+              },
+              "target": {
+                "type": "null"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

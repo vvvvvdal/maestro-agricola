@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "plan_id": "4bd2dc2f-d353-4eff-8327-9fc4ad2f4ec6",
+  "created_at": "2026-09-25T20:00:00Z",
+  "steps": [
+    {
+      "step_id": "step-01",
+      "intent": "SPRAY",
+      "target": null
+    },
+    {
+      "step_id": "step-02",
+      "intent": "DOCK",
+      "target": null
+    }
+  ]
+}
