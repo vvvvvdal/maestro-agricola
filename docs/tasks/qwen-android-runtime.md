@@ -99,6 +99,12 @@ Esse gate comprova convivência de código/build; não comprova inferência Qwen
 
 Em 22/08/2026, o fallback foi ligado à tela principal por `LanguageInteractionController`. Operações e confirmações permanecem no `InteractionEngine`; somente `UNKNOWN` em `IDLE` ou `TARGET_READY` pode iniciar `QwenDomainAssistant`. A tela mostra `Processando resposta local…`, e callbacks antigos são ignorados quando outra operação, escuta, captura ou reinício invalida a conversa.
 
+Antes de entregar uma pergunta `UNKNOWN` ao Qwen local, `LanguageRouter` corrige
+somente variantes conhecidas do nome do projeto produzidas pelo ASR, como
+`extra agrícola` ou `mestra agrícola`, para `Maestro Agrícola`. A normalização
+não altera a classificação operacional, não cria uma classe de tópico e não é
+executada pelo Jev remoto.
+
 No Edge 40 Neo/API 35:
 
 - pergunta sobre o Maestro retornou `CHAT` na `MainActivity` e citou a AgroTurtles;

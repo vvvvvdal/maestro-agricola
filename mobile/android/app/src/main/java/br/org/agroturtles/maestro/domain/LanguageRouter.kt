@@ -21,7 +21,7 @@ class LanguageRouter(
             LanguageRoute(
                 type = LanguageRouteType.ASSISTANT,
                 prediction = prediction,
-                assistantText = text,
+                assistantText = MaestroProjectNameNormalizer.normalizeForAssistant(text),
             )
         } else {
             LanguageRoute(

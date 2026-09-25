@@ -49,6 +49,22 @@ class LanguageRouterTest {
     }
 
     @Test
+    fun normalizesCommonAsrProjectNameVariantsForAssistantOnly() {
+        val router = LanguageRouter(
+            IntentClassifier { IntentPrediction("UNKNOWN", 1.0, "MODEL") }
+        )
+
+        val result = router.route("o que é uma extra agricola?")
+
+        assertEquals(LanguageRouteType.ASSISTANT, result.type)
+        assertEquals("o que é o Maestro Agrícola?", result.assistantText)
+        assertEquals(
+            "como funciona o Maestro Agrícola?",
+            router.route("como funciona a mestra agrícola?").assistantText,
+        )
+    }
+
+    @Test
     fun cancelNeverGoesToAssistant() {
         val router = LanguageRouter(
             IntentClassifier {
