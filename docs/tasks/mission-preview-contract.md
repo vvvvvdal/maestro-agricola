@@ -116,6 +116,8 @@ recebendo somente o contrato `Command` ja versionado, sem payload de missao.
 Evidencia tecnica inicial: os testes unitarios do controlador cobrem sequencia
 confirmada, consulta antes da proxima acao, alvo invalido, recusa e timeout. No
 SM-X510 com `mockDebug`, `UNDOCK` foi aceito pelo bridge/Gazebo somente depois
-da confirmacao da etapa. O E2E completo `UNDOCK -> SPRAY -> consulta -> DOCK`
-permanece pendente de uma rodada dedicada com confirmacoes por voz; uma tentativa
-manual chegou ao limite do timeout e pausou sem enviar etapa seguinte.
+da confirmacao da etapa. No modo visual, `SPRAY plot-02` chegou ao destino e o
+bridge registrou `COMPLETED` em 33 s; o teto anterior de 30 consultas do app
+expirou antes desse terminal, por isso JEV-78 elevou somente o acompanhamento
+para 60 consultas. O E2E completo `UNDOCK -> SPRAY -> consulta -> DOCK`
+continua pendente.

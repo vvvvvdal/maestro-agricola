@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicLong
 private const val DEFAULT_ENDPOINT = "ws://10.0.2.2:18765"
 private const val TEST_SETTINGS = "maestro_test_settings"
 private const val ENDPOINT_PREFERENCE = "bridge_endpoint"
-private const val OPERATION_STATUS_MAX_POLLS = 30
+private const val OPERATION_STATUS_MAX_POLLS = 60
 private const val QWEN_MODEL_FILENAME = "qwen2.5-1.5b-q4_k_m.gguf"
 private const val ASSISTANT_PROCESSING_MESSAGE = "Processando resposta local…"
 private const val ASSISTANT_ERROR_MESSAGE =
