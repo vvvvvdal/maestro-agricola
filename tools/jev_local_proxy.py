@@ -9,6 +9,7 @@ import os
 import re
 import threading
 import time
+import unicodedata
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -21,15 +22,23 @@ HOST = "127.0.0.1"
 ENDPOINT = "https://api.typesafe.ai/v1/systemone"
 MODEL = "jev-1.13.0"
 MAX_BODY_BYTES = 1024
-MAX_TRANSCRIPT_CHARS = 512
+MAX_TRANSCRIPT_CHARS = 180
 REQUEST_TIMEOUT_SECONDS = 2
 MAX_ATTEMPTS = 2
 QUESTION_KEY = "operational_intent"
 
 OBVIOUS_PERSONAL_DATA_PATTERNS = (
     re.compile(r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b"),
-    re.compile(r"\b(?:\+?\d[ .()-]*){8,}\d\b"),
-    re.compile(r"\b(?:https?://|www\.)", re.IGNORECASE),
+    re.compile(r"(?<!\d)(?:\+?\d[ .()-]*){8,}\d(?!\d)"),
+    re.compile(r"(?<!\d)\d{3}[.\s]?\d{3}[.\s]?\d{3}[-\s]?\d{2}(?!\d)"),
+    re.compile(r"(?<!\d)\d{2}[.\s]?\d{3}[.\s]?\d{3}[-/\s]?\d{4}[-\s]?\d{2}(?!\d)"),
+)
+URL_PATTERN = re.compile(r"\b(?:https?://|www\.)", re.IGNORECASE)
+REMOTE_SCOPE_TERMS = (
+    "pulveriz", "apli", "defensiv", "trat", "produto", "talhao", "plot",
+    "doca", "base", "carreg", "retorn", "volt", "sai", "desacopl",
+    "confirm", "cance", "cancel", "nao", "deixa", "pare", "segur",
+    "sim", "isso", "liberad", "certo", "pode",
 )
 
 CRITERIA = {
@@ -62,9 +71,20 @@ def parse_client_request(raw: bytes) -> str:
         raise ProxyError(HTTPStatus.BAD_REQUEST, "invalid_transcript")
     if len(transcript) > MAX_TRANSCRIPT_CHARS:
         raise ProxyError(HTTPStatus.BAD_REQUEST, "transcript_too_long")
+    if URL_PATTERN.search(transcript):
+        raise ProxyError(HTTPStatus.BAD_REQUEST, "url_transcript")
     if any(pattern.search(transcript) for pattern in OBVIOUS_PERSONAL_DATA_PATTERNS):
         raise ProxyError(HTTPStatus.BAD_REQUEST, "sensitive_transcript")
+    if not any(term in normalize_transcript(transcript) for term in REMOTE_SCOPE_TERMS):
+        raise ProxyError(HTTPStatus.BAD_REQUEST, "outside_remote_scope")
     return transcript
+
+
+def normalize_transcript(transcript: str) -> str:
+    return "".join(
+        char for char in unicodedata.normalize("NFD", transcript.lower())
+        if unicodedata.category(char) != "Mn"
+    )
 
 
 def request_payload(transcript: str) -> dict[str, Any]:

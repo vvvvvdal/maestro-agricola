@@ -20,6 +20,9 @@ import br.org.agroturtles.maestro.domain.LanguageDispatch
 import br.org.agroturtles.maestro.domain.LanguageInteractionController
 import br.org.agroturtles.maestro.domain.LocalIntentClassifier
 import br.org.agroturtles.maestro.domain.QwenDomainAssistant
+import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
+import br.org.agroturtles.maestro.domain.RemoteTranscriptDecision
+import br.org.agroturtles.maestro.domain.RemoteTranscriptGate
 import br.org.agroturtles.maestro.domain.TargetResolver
 import br.org.agroturtles.maestro.platform.NativeQwenEngine
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
@@ -93,6 +96,8 @@ class MainActivity : ComponentActivity() {
             var jevRemoteEnabled by remember { mutableStateOf(false) }
             var jevRemoteConsent by remember { mutableStateOf(false) }
             var jevPending by remember { mutableStateOf(false) }
+            var remoteTranscriptForConsent by remember { mutableStateOf<String?>(null) }
+            var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
 
             fun apply(next: InteractionResult) {
                 result = next
@@ -121,54 +126,53 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            fun interpret(text: String) {
-                if (jevPending) return
-                if (jevRemoteEnabled && BuildConfig.FRAME_SOURCE == "mock") {
-                    val requestId = jevRequest.incrementAndGet()
-                    jevPending = true
-                    result = result.copy(
-                        message = "Classificando com Jev remoto",
-                        speech = null,
-                        command = null,
-                    )
-                    jevExecutor.execute {
-                        val prediction = jevClassifier.classify(text)
-                        runOnUiThread {
-                            if (jevRequest.get() == requestId) {
-                                jevPending = false
-                                applyDispatch(
-                                    language.handlePrediction(text, prediction) { prediction, outcome ->
-                                        runOnUiThread {
-                                            outcome.fold(
-                                                onSuccess = { reply ->
-                                                    apply(
-                                                        result.copy(
-                                                            message = reply.response,
-                                                            speech = reply.response,
-                                                            command = null,
-                                                            prediction = prediction,
-                                                        )
+            fun classifyRemotely(text: String) {
+                val requestId = jevRequest.incrementAndGet()
+                jevPending = true
+                result = result.copy(
+                    message = "Classificando com Jev remoto",
+                    speech = null,
+                    command = null,
+                )
+                jevExecutor.execute {
+                    val prediction = jevClassifier.classify(text)
+                    runOnUiThread {
+                        if (jevRequest.get() == requestId) {
+                            jevPending = false
+                            applyDispatch(
+                                language.handlePrediction(text, prediction) { prediction, outcome ->
+                                    runOnUiThread {
+                                        outcome.fold(
+                                            onSuccess = { reply ->
+                                                apply(
+                                                    result.copy(
+                                                        message = reply.response,
+                                                        speech = reply.response,
+                                                        command = null,
+                                                        prediction = prediction,
                                                     )
-                                                },
-                                                onFailure = {
-                                                    apply(
-                                                        result.copy(
-                                                            message = ASSISTANT_ERROR_MESSAGE,
-                                                            speech = ASSISTANT_ERROR_MESSAGE,
-                                                            command = null,
-                                                            prediction = prediction,
-                                                        )
+                                                )
+                                            },
+                                            onFailure = {
+                                                apply(
+                                                    result.copy(
+                                                        message = ASSISTANT_ERROR_MESSAGE,
+                                                        speech = ASSISTANT_ERROR_MESSAGE,
+                                                        command = null,
+                                                        prediction = prediction,
                                                     )
-                                                },
-                                            )
-                                        }
+                                                )
+                                            },
+                                        )
                                     }
-                                )
-                            }
+                                }
+                            )
                         }
                     }
-                    return
                 }
+            }
+
+            fun interpretLocally(text: String) {
 
                 val dispatch = language.handle(text) { prediction, outcome ->
                     runOnUiThread {
@@ -198,6 +202,28 @@ class MainActivity : ComponentActivity() {
                 }
 
                 applyDispatch(dispatch)
+            }
+
+            fun interpret(text: String) {
+                if (jevPending || remoteTranscriptForConsent != null) return
+                if (jevRemoteEnabled && BuildConfig.FRAME_SOURCE == "mock") {
+                    when (val decision = RemoteTranscriptGate.evaluate(text)) {
+                        RemoteTranscriptDecision.Allowed -> remoteTranscriptForConsent = text
+                        is RemoteTranscriptDecision.Blocked -> {
+                            transcript = ""
+                            remoteBlockReason = decision.reason
+                            apply(
+                                engine.reset().copy(
+                                    message = "Fala descartada localmente. Nenhum dado foi enviado ao Jev.",
+                                    speech = null,
+                                )
+                            )
+                        }
+                    }
+                    return
+                }
+
+                interpretLocally(text)
             }
 
             LaunchedEffect(result.state) {
@@ -241,6 +267,24 @@ class MainActivity : ComponentActivity() {
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
                     interactionPending = jevPending,
+                    remoteTranscriptForConsent = remoteTranscriptForConsent,
+                    remoteBlockReason = remoteBlockReason,
+                    onConfirmRemoteTranscript = {
+                        remoteTranscriptForConsent?.let { text ->
+                            remoteTranscriptForConsent = null
+                            transcript = ""
+                            classifyRemotely(text)
+                        }
+                    },
+                    onDismissRemoteTranscript = {
+                        remoteTranscriptForConsent = null
+                        transcript = ""
+                        apply(engine.reset().copy(
+                            message = "Envio ao Jev cancelado. Nada foi enviado.",
+                            speech = null,
+                        ))
+                    },
+                    onDismissRemoteBlock = { remoteBlockReason = null },
                     onLook = {
                         jevRequest.incrementAndGet()
                         jevPending = false
@@ -284,6 +328,8 @@ class MainActivity : ComponentActivity() {
                     onReset = {
                         jevRequest.incrementAndGet()
                         jevPending = false
+                        remoteTranscriptForConsent = null
+                        remoteBlockReason = null
                         language.cancelAssistant()
                         frameSource.cancelCapture()
                         apply(engine.reset())

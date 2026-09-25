@@ -105,9 +105,9 @@ nao transforma o consentimento geral atual em autorizacao para qualquer fala.
 
 | ID | Status | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- |
-| JEV-69 | DONE | JEV-38 | Fronteira de minimizacao especificada em [`../../tasks/jev-remote-privacy-gate.md`](../../tasks/jev-remote-privacy-gate.md): mapa de dados, ameacas, UX de confirmacao por turno, fallback local e criterios de bloqueio antes da rede. O caminho padrao continua local e `dat` nunca usa Jev remoto. |
-| JEV-69A | NEXT | JEV-69 | Implementar `RemoteTranscriptGate` no `mockDebug` e no proxy: dados pessoais evidentes, URL, comprimento ou fala fora do escopo remoto bloqueiam antes de `JevChoiceEvaluator`; a UI informa `nao enviado ao Jev` e oferece processamento local. A permissao para enviar uma transcricao deve ser por turno, visivel e revogavel. Testes comprovam zero chamada ao evaluator e zero `Command` no bloqueio. |
-| JEV-69B | TODO | JEV-69A | Validar no SM-X510 com frases sinteticas e sem dado real: envio consentido, bloqueio local, fallback local e limpeza do estado da tela. Atualizar fluxo de dados, evidencias e deck com claim limitado: minimizacao preventiva, nao anonimização nem conformidade integral. |
+| JEV-69 | DONE | JEV-38 | Fronteira de minimizacao especificada em [`../../tasks/jev-remote-privacy-gate.md`](../../tasks/jev-remote-privacy-gate.md): mapa de dados, ameacas, UX de confirmacao por turno, retorno ao modo Local e criterios de bloqueio antes da rede. O caminho padrao continua local e `dat` nunca usa Jev remoto. |
+| JEV-69A | DONE | JEV-69 | `RemoteTranscriptGate` no `mockDebug` e defesa equivalente no proxy bloqueiam dados pessoais evidentes, URL, comprimento ou fala fora do escopo antes do HTTP. A permissao remota e por turno, visivel e descartavel; uma fala bloqueada nao reutiliza Qwen, WebSocket ou `Command`. Testes Kotlin/Python focados e `assembleMockDebug` passaram. |
+| JEV-69B | NEXT | JEV-69A | Validar no SM-X510 com frases sinteticas e sem dado real: envio consentido, bloqueio local, retorno ao modo Local para nova fala e limpeza do estado da tela. Atualizar fluxo de dados, evidencias e deck com claim limitado: minimizacao preventiva, nao anonimização nem conformidade integral. |
 
 ## Fase 3.5 - Capacidades do Maestro apos JEV-38
 

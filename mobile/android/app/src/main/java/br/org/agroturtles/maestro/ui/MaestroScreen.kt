@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -53,6 +54,7 @@ import br.org.agroturtles.maestro.R
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
 
 private const val MOCK_FRAME_SOURCE = "mock"
 
@@ -94,6 +96,11 @@ fun MaestroScreen(
     onTranscriptChange: (String) -> Unit,
     secondsToExpire: Int,
     interactionPending: Boolean,
+    remoteTranscriptForConsent: String?,
+    remoteBlockReason: RemoteTranscriptBlockReason?,
+    onConfirmRemoteTranscript: () -> Unit,
+    onDismissRemoteTranscript: () -> Unit,
+    onDismissRemoteBlock: () -> Unit,
     onLook: () -> Unit,
     onListen: () -> Unit,
     onInterpret: () -> Unit,
@@ -181,6 +188,20 @@ fun MaestroScreen(
                 onTranscriptChange = onTranscriptChange,
                 interactionPending = interactionPending,
                 onInterpret = onInterpret,
+            )
+        }
+
+        remoteTranscriptForConsent?.let { transcriptForConsent ->
+            RemoteTranscriptConsentDialog(
+                transcript = transcriptForConsent,
+                onConfirm = onConfirmRemoteTranscript,
+                onDismiss = onDismissRemoteTranscript,
+            )
+        }
+        remoteBlockReason?.let { reason ->
+            RemoteTranscriptBlockedDialog(
+                reason = reason,
+                onDismiss = onDismissRemoteBlock,
             )
         }
     }
@@ -570,10 +591,79 @@ private fun JevRemoteSelector(
                 enabled = interactionsEnabled,
             )
             Text(
-                text = "Fala de teste sem dados pessoais",
+                text = "Usar somente fala de teste sem dados pessoais",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaestroBlue,
             )
         }
     }
+}
+
+@Composable
+private fun RemoteTranscriptConsentDialog(
+    transcript: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Enviar fala de teste ao Jev?") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "Esta transcrição curta será enviada ao serviço externo apenas para classificar uma intenção.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = transcript,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaestroGreen,
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Enviar ao Jev")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Descartar")
+            }
+        },
+    )
+}
+
+@Composable
+private fun RemoteTranscriptBlockedDialog(
+    reason: RemoteTranscriptBlockReason,
+    onDismiss: () -> Unit,
+) {
+    val explanation = when (reason) {
+        RemoteTranscriptBlockReason.PERSONAL_DATA ->
+            "A fala contém um padrão de dado pessoal evidente e foi descartada localmente."
+        RemoteTranscriptBlockReason.URL ->
+            "A fala contém um endereço de internet e foi descartada localmente."
+        RemoteTranscriptBlockReason.TOO_LONG ->
+            "A fala excede o limite de uma frase curta de teste e foi descartada localmente."
+        RemoteTranscriptBlockReason.OUTSIDE_REMOTE_SCOPE ->
+            "A fala não corresponde ao escopo de comando do Jev remoto e foi descartada localmente."
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Fala não enviada ao Jev") },
+        text = {
+            Text(
+                text = "$explanation Use Local para fazer uma nova interação fora da demonstração remota.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Entendi")
+            }
+        },
+    )
 }
