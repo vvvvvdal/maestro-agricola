@@ -51,6 +51,9 @@ Existe uma única implementação nativa Android/Kotlin. Na entrega pré-hardwar
 - Rejeita duplicatas e comandos expirados.
 - Mapeia `target_id` para uma pose conhecida no cenário.
 - Publica a meta para o stack de navegação.
+- Mantém até 100 registros em memória de chegadas Nav2 bem-sucedidas para
+  missões `SPRAY` simuladas. O registro não prova acionamento físico de
+  pulverizador e é descartado ao reiniciar o bridge.
 
 ## Decisão técnica: alvo do MVP
 

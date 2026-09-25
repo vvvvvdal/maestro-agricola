@@ -2,8 +2,9 @@
 
 ## Status
 
-Especificada em 25/09/2026. JEV-71 implementa primeiro o historico em memoria
-do simulador; JEV-72 consome esse contrato para `PLOT_STATUS_QUERY`.
+Especificada e implementada parcialmente em 25/09/2026. JEV-71 criou o
+historico em memoria do simulador; JEV-72 consome esse contrato para
+`PLOT_STATUS_QUERY`.
 
 ## Objetivo
 
@@ -49,9 +50,9 @@ Nav2 diferente de sucesso nao criam nem atualizam historico.
 
 Os registros existem somente na memoria do processo do bridge durante a sessao
 do simulador. Sao descartados ao reiniciar o bridge, ao encerrar a demo ou ao
-ultrapassar o limite de 100, quando o mais antigo e removido. Nao armazenam
-foto, frame, audio, transcricao, nome de operador, produto, dose ou coordenada
-bruta.
+ultrapassar o limite de 100, quando o mais antigo e removido. A implementacao
+fica em `OperationHistory`; nao armazena foto, frame, audio, transcricao, nome
+de operador, produto, dose ou coordenada bruta.
 
 ### `ReadOnlyQuery`
 

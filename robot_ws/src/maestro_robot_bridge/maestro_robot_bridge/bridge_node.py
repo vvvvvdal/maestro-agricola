@@ -19,6 +19,7 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy
 from .bridge_core import BridgeCore
 from .mission_cycle import MissionCycle, MissionPhase
 from .models import PoseTarget
+from .operation_history import OperationHistory
 from .target_map import TargetMap
 from .websocket_server import BridgeWebSocketServer
 
@@ -55,6 +56,7 @@ class MaestroBridgeNode(Node):
             yaw=float(self.get_parameter("dock_approach_yaw").value),
         )
         self._pending: Queue[tuple[PoseTarget, str]] = Queue(maxsize=16)
+        self._operation_history = OperationHistory()
         self._mission = MissionCycle()
         self._mission_lock = Lock()
         self._phase_started_at = self._clock_seconds()
@@ -281,6 +283,11 @@ class MaestroBridgeNode(Node):
     def _complete_navigation(self, succeeded: bool, failure_reason: str) -> None:
         pose, command_id = self._current_navigation()
         if succeeded:
+            self._operation_history.record_navigation_completion(
+                succeeded=True,
+                command_id=command_id,
+                plot_id=pose.id,
+            )
             self.get_logger().info(
                 f"Nav2 completed command {command_id} for target {pose.id}"
             )

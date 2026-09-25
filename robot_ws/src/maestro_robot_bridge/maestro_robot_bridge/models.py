@@ -21,6 +21,16 @@ class Command:
 
 
 @dataclass(frozen=True)
+class OperationRecord:
+    schema_version: str
+    operation_id: str
+    kind: str
+    plot_id: str
+    completed_at: str
+    origin: str
+
+
+@dataclass(frozen=True)
 class PoseTarget:
     id: str
     x: float
