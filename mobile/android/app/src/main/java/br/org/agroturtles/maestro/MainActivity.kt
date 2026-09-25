@@ -256,10 +256,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 if (succeeded) {
                                     applyMission(queryResult) {
-                                        if (
-                                            missionExecutionController.current()?.state ==
-                                            MissionExecutionState.AWAITING_QUERY
-                                        ) {
+                                        if (missionPreview != null) {
                                             executeMissionAction(next)
                                         }
                                     }
