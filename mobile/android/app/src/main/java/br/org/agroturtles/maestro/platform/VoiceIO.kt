@@ -3,20 +3,47 @@ package br.org.agroturtles.maestro.platform
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicLong
 
 
 class VoiceIO(context: Context) : RecognitionListener, TextToSpeech.OnInitListener {
     private val recognizer = SpeechRecognizer.createSpeechRecognizer(context)
     private val tts = TextToSpeech(context, this)
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val speechRequest = AtomicLong(0)
     private var completion: ((Result<String>) -> Unit)? = null
+    private var spokenCompletion: (() -> Unit)? = null
+    private var activeUtteranceId: String? = null
 
     init {
         recognizer.setRecognitionListener(this)
+        tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String) = Unit
+
+            override fun onDone(utteranceId: String) = finishSpeech(utteranceId)
+
+            @Suppress("OVERRIDE_DEPRECATION")
+            @Deprecated("Deprecated in Java")
+            override fun onError(utteranceId: String) = finishSpeech(utteranceId)
+
+            override fun onError(utteranceId: String, errorCode: Int) = finishSpeech(utteranceId)
+
+            private fun finishSpeech(utteranceId: String) {
+                if (utteranceId != activeUtteranceId) return
+                val callback = spokenCompletion ?: return
+                activeUtteranceId = null
+                spokenCompletion = null
+                mainHandler.post(callback)
+            }
+        })
     }
 
     fun listen(completion: (Result<String>) -> Unit) {
@@ -29,8 +56,11 @@ class VoiceIO(context: Context) : RecognitionListener, TextToSpeech.OnInitListen
         recognizer.startListening(intent)
     }
 
-    fun speak(text: String) {
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "maestro")
+    fun speak(text: String, onFinished: (() -> Unit)? = null) {
+        val utteranceId = "maestro-${speechRequest.incrementAndGet()}"
+        activeUtteranceId = utteranceId
+        spokenCompletion = onFinished
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
 
     fun close() {

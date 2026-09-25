@@ -114,7 +114,8 @@ invalida pausa o plano e nao libera a acao seguinte. O bridge continua
 recebendo somente o contrato `Command` ja versionado, sem payload de missao.
 Quando a consulta e valida, sua resposta e preservada na tela e na fala junto
 com a confirmacao da proxima etapa fisica; ela nao pode ser sobrescrita por
-esse prompt.
+esse prompt. A confirmacao seguinte so e liberada quando a narracao da consulta
+terminar, para que seu timeout nao concorra com a informacao solicitada.
 
 Evidencia tecnica inicial: os testes unitarios do controlador cobrem sequencia
 confirmada, consulta antes da proxima acao, alvo invalido, recusa e timeout. No

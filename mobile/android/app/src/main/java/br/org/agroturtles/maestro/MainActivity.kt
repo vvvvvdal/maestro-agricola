@@ -223,29 +223,22 @@ class MainActivity : ComponentActivity() {
                 MissionStepIntent.DOCK -> "voltar para a doca"
             }
 
-            fun applyMission(next: InteractionResult) {
+            fun applyMission(next: InteractionResult, onSpeechFinished: (() -> Unit)? = null) {
                 result = next
-                next.speech?.let(voice::speak)
+                next.speech?.let { voice.speak(it, onSpeechFinished) }
             }
 
-            fun executeMissionAction(
-                action: MissionExecutionAction,
-                precedingReadOnlyMessage: String? = null,
-            ) {
+            fun executeMissionAction(action: MissionExecutionAction) {
                 missionExecution = missionExecutionController.current()
                 when (action) {
                     is MissionExecutionAction.AwaitingConfirmation -> {
                         val current = checkNotNull(missionExecution)
                         val name = missionStepName(action.step)
-                        val prompt = "Etapa ${current.currentStepIndex + 1}: $name?"
-                        val spokenPrompt = "Etapa ${current.currentStepIndex + 1} da missão: $name. Confirmar?"
                         applyMission(
                             InteractionResult(
                                 state = InteractionState.AWAITING_CONFIRMATION,
-                                message = listOfNotNull(precedingReadOnlyMessage, prompt)
-                                    .joinToString("\n"),
-                                speech = listOfNotNull(precedingReadOnlyMessage, spokenPrompt)
-                                    .joinToString(" "),
+                                message = "Etapa ${current.currentStepIndex + 1}: $name?",
+                                speech = "Etapa ${current.currentStepIndex + 1} da missão: $name. Confirmar?",
                                 intent = "MISSION_PREVIEW",
                             )
                         )
@@ -262,7 +255,14 @@ class MainActivity : ComponentActivity() {
                                     queryResult.message,
                                 )
                                 if (succeeded) {
-                                    executeMissionAction(next, queryResult.message)
+                                    applyMission(queryResult) {
+                                        if (
+                                            missionExecutionController.current()?.state ==
+                                            MissionExecutionState.AWAITING_QUERY
+                                        ) {
+                                            executeMissionAction(next)
+                                        }
+                                    }
                                 } else {
                                     executeMissionAction(next)
                                 }
@@ -312,14 +312,11 @@ class MainActivity : ComponentActivity() {
                     MissionExecutionAction.Completed -> {
                         missionPreview = null
                         missionExecution = null
-                        val completionMessage = "Missão concluída no Gazebo."
                         applyMission(
                             InteractionResult(
                                 state = InteractionState.COMPLETED,
-                                message = listOfNotNull(precedingReadOnlyMessage, completionMessage)
-                                    .joinToString("\n"),
-                                speech = listOfNotNull(precedingReadOnlyMessage, completionMessage)
-                                    .joinToString(" "),
+                                message = "Missão concluída no Gazebo.",
+                                speech = "Missão concluída no Gazebo.",
                                 intent = "MISSION_PREVIEW",
                             )
                         )
