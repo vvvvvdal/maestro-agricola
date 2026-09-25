@@ -36,7 +36,8 @@ class ReadOnlyQuery:
     request_id: str
     requested_at: str
     kind: str
-    plot_id: str
+    plot_id: str | None = None
+    command_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -47,12 +48,21 @@ class ReadOnlyOperationSummary:
 
 
 @dataclass(frozen=True)
+class ReadOnlyOperationStatus:
+    command_id: str
+    intent: str
+    target_id: str | None
+    state: str
+
+
+@dataclass(frozen=True)
 class ReadOnlyResponse:
     schema_version: str
     request_id: str
     kind: str
     status: str
     record: ReadOnlyOperationSummary | None = None
+    operation: ReadOnlyOperationStatus | None = None
 
     def to_dict(self) -> dict:
         return asdict(self)

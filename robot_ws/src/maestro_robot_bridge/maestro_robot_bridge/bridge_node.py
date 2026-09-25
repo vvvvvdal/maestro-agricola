@@ -20,6 +20,7 @@ from .bridge_core import BridgeCore
 from .mission_cycle import MissionCycle, MissionPhase
 from .models import PoseTarget
 from .operation_history import OperationHistory
+from .operation_status import OperationStatusTracker
 from .read_only_query_service import ReadOnlyQueryService
 from .target_map import TargetMap
 from .websocket_server import BridgeWebSocketServer
@@ -58,6 +59,7 @@ class MaestroBridgeNode(Node):
         )
         self._pending: Queue[tuple[PoseTarget, str]] = Queue(maxsize=16)
         self._operation_history = OperationHistory()
+        self._operation_status = OperationStatusTracker()
         self._mission = MissionCycle()
         self._mission_lock = Lock()
         self._phase_started_at = self._clock_seconds()
@@ -93,10 +95,11 @@ class MaestroBridgeNode(Node):
             self._queue_navigation,
             self._request_dock,
             self._request_undock,
+            self._operation_status.accepted,
         )
         self._server = BridgeWebSocketServer(
             self._core,
-            ReadOnlyQueryService(target_map, self._operation_history),
+            ReadOnlyQueryService(target_map, self._operation_history, self._operation_status),
             str(self.get_parameter("host").value),
             int(self.get_parameter("port").value),
         )
@@ -183,6 +186,7 @@ class MaestroBridgeNode(Node):
             return
         if not self._transition(self._mission.begin_undock):
             return
+        self._operation_status.executing_latest("UNDOCK")
         self._undock_attempts += 1
         self.get_logger().info("Requesting explicit undock action")
         try:
@@ -224,6 +228,7 @@ class MaestroBridgeNode(Node):
         ):
             self._undock_goal_handle = None
             self._undock_attempts = 0
+            self._operation_status.completed_latest("UNDOCK")
             self.get_logger().info("Undock completed: robot is clear of dock")
         else:
             self._fail_mission(
@@ -244,6 +249,7 @@ class MaestroBridgeNode(Node):
             return
 
         self._active_navigation = (pose, command_id)
+        self._operation_status.executing(command_id)
         goal = self._navigation_goal(pose)
         try:
             future = self._nav_client.send_goal_async(goal)
@@ -293,8 +299,10 @@ class MaestroBridgeNode(Node):
             self.get_logger().info(
                 f"Nav2 completed command {command_id} for target {pose.id}"
             )
+            self._operation_status.completed(command_id)
         else:
             self.get_logger().error(f"{failure_reason} ({command_id}, {pose.id})")
+            self._operation_status.failed(command_id)
         self._nav_goal_handle = None
         self._active_navigation = None
         self._transition(
@@ -308,6 +316,7 @@ class MaestroBridgeNode(Node):
             return
         if not self._transition(self._mission.begin_return_to_dock):
             return
+        self._operation_status.executing_latest("DOCK")
         self.get_logger().info(
             "Requesting Nav2 return to dock approach "
             f"({self._dock_approach.x}, {self._dock_approach.y}, "
@@ -429,6 +438,7 @@ class MaestroBridgeNode(Node):
         ):
             self._dock_goal_handle = None
             self._dock_attempts = 0
+            self._operation_status.completed_latest("DOCK")
             self.get_logger().info("Dock completed: robot is docked")
         else:
             self._fail_mission(
@@ -468,6 +478,7 @@ class MaestroBridgeNode(Node):
         ):
             self._undock_goal_handle = None
             self._undock_attempts = 0
+            self._operation_status.completed_latest("UNDOCK")
             self.get_logger().info(
                 f"Undock completed: robot is clear of dock ({reason})"
             )
@@ -496,6 +507,7 @@ class MaestroBridgeNode(Node):
         ):
             self._dock_goal_handle = None
             self._dock_attempts = 0
+            self._operation_status.completed_latest("DOCK")
             self.get_logger().info(f"Dock completed: robot is docked ({reason})")
             return
         self._fail_mission("could not record confirmed docked state")
@@ -565,6 +577,7 @@ class MaestroBridgeNode(Node):
     def _fail_mission(self, reason: str) -> None:
         if self._phase() != MissionPhase.FAILED:
             self._transition(self._mission.fail, reason)
+        self._operation_status.fail_in_flight()
         self.get_logger().error(f"Mission lifecycle failed closed: {reason}")
 
     def _current_navigation(self) -> tuple[PoseTarget, str]:

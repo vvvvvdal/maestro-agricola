@@ -1,10 +1,12 @@
 package br.org.agroturtles.maestro.platform
 
 import br.org.agroturtles.maestro.domain.ReadOnlyOperationRecord
+import br.org.agroturtles.maestro.domain.ReadOnlyRobotOperation
 import br.org.agroturtles.maestro.domain.ReadOnlyQuery
 import br.org.agroturtles.maestro.domain.ReadOnlyQueryResponse
 import br.org.agroturtles.maestro.domain.ReadOnlyQueryStatus
 import br.org.agroturtles.maestro.domain.ReadOnlyQueryTransport
+import br.org.agroturtles.maestro.domain.RobotOperationState
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -53,11 +55,20 @@ class WebSocketReadOnlyQueryTransport(
                     origin = it.getString("origin"),
                 )
             }
+            val operation = payload.optJSONObject("operation")?.let {
+                ReadOnlyRobotOperation(
+                    commandId = it.getString("command_id"),
+                    intent = it.getString("intent"),
+                    targetId = it.optString("target_id").takeIf(String::isNotBlank),
+                    state = RobotOperationState.valueOf(it.getString("state")),
+                )
+            }
             ReadOnlyQueryResponse(
                 requestId = payload.getString("request_id"),
                 kind = payload.getString("kind"),
                 status = status,
                 record = record,
+                operation = operation,
             )
         }.getOrElse { unavailable(query) }
 
@@ -72,7 +83,10 @@ class WebSocketReadOnlyQueryTransport(
         .put("request_id", requestId)
         .put("requested_at", requestedAt)
         .put("kind", kind)
-        .put("plot_id", plotId)
+        .also { payload ->
+            plotId?.let { payload.put("plot_id", it) }
+            commandId?.let { payload.put("command_id", it) }
+        }
         .toString()
 
     private companion object {

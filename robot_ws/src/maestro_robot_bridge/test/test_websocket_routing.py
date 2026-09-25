@@ -4,6 +4,7 @@ import unittest
 from maestro_robot_bridge.bridge_core import BridgeCore
 from maestro_robot_bridge.models import PoseTarget
 from maestro_robot_bridge.operation_history import OperationHistory
+from maestro_robot_bridge.operation_status import OperationStatusTracker
 from maestro_robot_bridge.read_only_query_service import ReadOnlyQueryService
 from maestro_robot_bridge.target_map import TargetMap
 from maestro_robot_bridge.websocket_server import BridgeWebSocketServer
@@ -26,7 +27,7 @@ class WebSocketRoutingTest(unittest.TestCase):
         )
         server = BridgeWebSocketServer(
             command_core,
-            ReadOnlyQueryService(target_map, history),
+            ReadOnlyQueryService(target_map, history, OperationStatusTracker()),
             "127.0.0.1",
             0,
         )

@@ -20,11 +20,13 @@ class BridgeCore:
         navigation_callback: Callable,
         dock_callback: Callable | None = None,
         undock_callback: Callable | None = None,
+        accepted_callback: Callable[[Command], None] | None = None,
     ):
         self._target_map = target_map
         self._navigation_callback = navigation_callback
         self._dock_callback = dock_callback
         self._undock_callback = undock_callback
+        self._accepted_callback = accepted_callback
         self._dedupe_lock = Lock()
         self._responses: OrderedDict[str, Response] = OrderedDict()
         self._response_cache_limit = 1024
@@ -64,6 +66,8 @@ class BridgeCore:
                 return previous
 
             response = self._dispatch_command(command)
+            if response.status == "ACCEPTED" and self._accepted_callback is not None:
+                self._accepted_callback(command)
 
             self._responses[command.command_id] = response
             self._responses.move_to_end(command.command_id)

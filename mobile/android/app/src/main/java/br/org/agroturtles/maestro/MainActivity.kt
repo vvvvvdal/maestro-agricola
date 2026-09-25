@@ -2,6 +2,8 @@ package br.org.agroturtles.maestro
 
 import android.Manifest
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +17,7 @@ import kotlinx.coroutines.delay
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.Command
 import br.org.agroturtles.maestro.domain.JevIntentClassifier
 import br.org.agroturtles.maestro.domain.LanguageDispatch
 import br.org.agroturtles.maestro.domain.LanguageInteractionController
@@ -24,6 +27,7 @@ import br.org.agroturtles.maestro.domain.QwenDomainAssistant
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
 import br.org.agroturtles.maestro.domain.RemoteTranscriptDecision
 import br.org.agroturtles.maestro.domain.RemoteTranscriptGate
+import br.org.agroturtles.maestro.domain.RobotStatusQueryController
 import br.org.agroturtles.maestro.domain.TargetResolver
 import br.org.agroturtles.maestro.platform.NativeQwenEngine
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
@@ -41,6 +45,9 @@ import java.util.concurrent.atomic.AtomicLong
 
 
 private const val DEFAULT_ENDPOINT = "ws://10.0.2.2:18765"
+private const val TEST_SETTINGS = "maestro_test_settings"
+private const val ENDPOINT_PREFERENCE = "bridge_endpoint"
+private const val OPERATION_STATUS_MAX_POLLS = 30
 private const val QWEN_MODEL_FILENAME = "qwen2.5-1.5b-q4_k_m.gguf"
 private const val ASSISTANT_PROCESSING_MESSAGE = "Processando resposta local…"
 private const val ASSISTANT_ERROR_MESSAGE =
@@ -54,6 +61,8 @@ class MainActivity : ComponentActivity() {
     private var languageController: LanguageInteractionController? = null
     private val jevExecutor = Executors.newSingleThreadExecutor()
     private val jevRequest = AtomicLong(0)
+    private val operationRequest = AtomicLong(0)
+    private val uiHandler = Handler(Looper.getMainLooper())
     private var onMicrophoneGranted: (() -> Unit)? = null
     private val microphonePermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -90,16 +99,21 @@ class MainActivity : ComponentActivity() {
         )
         languageController = language
         frameSource = PlatformFrameSource(this, targetMapJson)
+        val testSettings = getSharedPreferences(TEST_SETTINGS, MODE_PRIVATE)
+        val savedEndpoint = testSettings.getString(ENDPOINT_PREFERENCE, DEFAULT_ENDPOINT)
+            ?: DEFAULT_ENDPOINT
         setContent {
             var result by remember { mutableStateOf(engine.reset()) }
             var transcript by remember { mutableStateOf("") }
-            var endpoint by remember { mutableStateOf(DEFAULT_ENDPOINT) }
+            var endpoint by remember { mutableStateOf(savedEndpoint) }
             var robot by remember { mutableStateOf(UnknownRobotPresentation) }
             var secondsToExpire by remember { mutableIntStateOf(0) }
             var jevRemoteEnabled by remember { mutableStateOf(false) }
             var jevRemoteConsent by remember { mutableStateOf(false) }
             var jevPending by remember { mutableStateOf(false) }
             var readOnlyPending by remember { mutableStateOf(false) }
+            var operationTracking by remember { mutableStateOf<Command?>(null) }
+            var operationSafetyHold by remember { mutableStateOf(false) }
             var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
             val readOnlyRequest = remember { AtomicLong(0) }
@@ -108,6 +122,51 @@ class MainActivity : ComponentActivity() {
                     targetResolver = targetResolver,
                     transportFactory = { WebSocketReadOnlyQueryTransport(endpoint) },
                 )
+            }
+            val robotStatusQueries = remember(endpoint) {
+                RobotStatusQueryController(
+                    transportFactory = { WebSocketReadOnlyQueryTransport(endpoint) },
+                )
+            }
+
+            fun trackAcceptedOperation(command: Command) {
+                val requestId = operationRequest.incrementAndGet()
+                operationTracking = command
+                result = robotStatusQueries.trackingStarted(command)
+                var pollsRemaining = OPERATION_STATUS_MAX_POLLS
+
+                fun poll() {
+                    if (pollsRemaining-- <= 0) {
+                        if (
+                            operationRequest.get() == requestId &&
+                            operationTracking?.commandId == command.commandId
+                        ) {
+                            result = robotStatusQueries.trackingTimedOut(command).result
+                            operationTracking = null
+                            operationSafetyHold = true
+                        }
+                        return
+                    }
+                    robotStatusQueries.track(command) { update ->
+                        runOnUiThread {
+                            if (
+                                operationRequest.get() != requestId ||
+                                operationTracking?.commandId != command.commandId
+                            ) {
+                                return@runOnUiThread
+                            }
+                            result = update.result
+                            update.result.speech?.let(voice::speak)
+                            if (update.terminal) {
+                                operationTracking = null
+                            } else {
+                                uiHandler.postDelayed({ poll() }, 1_000)
+                            }
+                        }
+                    }
+                }
+
+                poll()
             }
 
             fun apply(next: InteractionResult) {
@@ -118,7 +177,10 @@ class MainActivity : ComponentActivity() {
                 next.speech?.let(voice::speak)
                 next.command?.let { command ->
                     WebSocketCommandTransport(endpoint).send(command) { accepted, reason ->
-                        runOnUiThread { apply(engine.transportCompleted(accepted, reason)) }
+                        runOnUiThread {
+                            apply(engine.transportCompleted(accepted, reason))
+                            if (accepted) trackAcceptedOperation(command)
+                        }
                     }
                 }
             }
@@ -216,7 +278,7 @@ class MainActivity : ComponentActivity() {
             }
 
             fun interpret(text: String) {
-                if (jevPending || readOnlyPending) return
+                if (jevPending || readOnlyPending || operationTracking != null) return
                 if (engine.state in setOf(InteractionState.IDLE, InteractionState.TARGET_READY)) {
                     val requestId = readOnlyRequest.incrementAndGet()
                     val queryResult = plotStatusQueries.handle(text) { response ->
@@ -230,6 +292,19 @@ class MainActivity : ComponentActivity() {
                     if (queryResult != null) {
                         readOnlyPending = queryResult.state == InteractionState.QUERYING
                         apply(queryResult)
+                        return
+                    }
+                    val statusResult = robotStatusQueries.handle(text) { response ->
+                        runOnUiThread {
+                            if (readOnlyRequest.get() == requestId) {
+                                readOnlyPending = false
+                                apply(response)
+                            }
+                        }
+                    }
+                    if (statusResult != null) {
+                        readOnlyPending = statusResult.state == InteractionState.QUERYING
+                        apply(statusResult)
                         return
                     }
                 }
@@ -295,11 +370,15 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     endpoint = endpoint,
-                    onEndpointChange = { endpoint = it },
+                    onEndpointChange = {
+                        endpoint = it
+                        testSettings.edit().putString(ENDPOINT_PREFERENCE, it).apply()
+                    },
                     transcript = transcript,
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
-                    interactionPending = jevPending || readOnlyPending,
+                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold,
+                    resetEnabled = !jevPending && !readOnlyPending && operationTracking == null,
                     remoteSessionConsentPrompt = remoteSessionConsentPrompt,
                     remoteBlockReason = remoteBlockReason,
                     onConfirmRemoteSession = {
@@ -353,6 +432,9 @@ class MainActivity : ComponentActivity() {
                         jevPending = false
                         readOnlyRequest.incrementAndGet()
                         readOnlyPending = false
+                        operationRequest.incrementAndGet()
+                        operationTracking = null
+                        operationSafetyHold = false
                         remoteSessionConsentPrompt = false
                         remoteBlockReason = null
                         language.cancelAssistant()
@@ -367,6 +449,8 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         languageController?.cancelAssistant()
         jevRequest.incrementAndGet()
+        operationRequest.incrementAndGet()
+        uiHandler.removeCallbacksAndMessages(null)
         jevExecutor.shutdownNow()
         qwenEngine?.close()
         if (::frameSource.isInitialized) frameSource.close()

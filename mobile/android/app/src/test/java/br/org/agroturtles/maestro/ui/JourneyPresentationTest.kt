@@ -61,6 +61,9 @@ class JourneyPresentationTest {
         )
         assertEquals(Tone.SUCCESS, statusHeadline(InteractionState.ACCEPTED).tone)
         assertEquals(Tone.DANGER, statusHeadline(InteractionState.ERROR).tone)
+        assertEquals(Tone.INFO, statusHeadline(InteractionState.EXECUTING).tone)
+        assertEquals(Tone.SUCCESS, statusHeadline(InteractionState.COMPLETED).tone)
+        assertEquals(Tone.DANGER, statusHeadline(InteractionState.OPERATION_FAILED).tone)
     }
 
     @Test
@@ -78,6 +81,15 @@ class JourneyPresentationTest {
             Tone.SUCCESS,
             statusHeadline(InteractionState.QUERY_COMPLETED).tone,
         )
+        assertEquals(
+            listOf("Robô", "Consulta", "Buscar", "Resposta"),
+            journeySteps(InteractionState.QUERYING, "STATUS_QUERY").map { it.label },
+        )
+    }
+
+    @Test
+    fun statusQueryHasAReadableIntentLabel() {
+        assertEquals("Consultar estado do robô", intentValue("STATUS_QUERY"))
     }
 
     @Test

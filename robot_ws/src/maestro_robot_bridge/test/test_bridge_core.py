@@ -4,10 +4,10 @@ from maestro_robot_bridge.bridge_core import BridgeCore
 from maestro_robot_bridge.models import Command, Target
 
 
-def command(intent, target=None):
+def command(intent, target=None, command_id="123e4567-e89b-12d3-a456-426614174000"):
     return Command(
         schema_version="1.0",
-        command_id="123e4567-e89b-12d3-a456-426614174000",
+        command_id=command_id,
         created_at="2026-08-20T12:00:00Z",
         expires_in_ms=5000,
         confirmed=True,
@@ -47,6 +47,29 @@ class BridgeCoreTest(unittest.TestCase):
         self.assertEqual(response.status, "ACCEPTED")
         self.assertEqual(response.reason, "navigation queued")
         self.assertEqual(len(calls), 1)
+
+    def test_notifies_status_tracker_only_for_accepted_command(self):
+        accepted = []
+        bridge = BridgeCore(
+            target_map={"plot-01": {"x": 1.0, "y": 2.0}},
+            navigation_callback=lambda *_: (True, "navigation queued"),
+            accepted_callback=accepted.append,
+        )
+
+        response = bridge.handle_command(command("SPRAY", Target("MAPPED_PLOT", "plot-01")))
+
+        self.assertEqual(response.status, "ACCEPTED")
+        self.assertEqual([item.command_id for item in accepted], [response.command_id])
+
+        rejected = bridge.handle_command(
+            command(
+                "SPRAY",
+                Target("MAPPED_PLOT", "plot-99"),
+                command_id="123e4567-e89b-12d3-a456-426614174001",
+            )
+        )
+        self.assertEqual(rejected.status, "REJECTED")
+        self.assertEqual(len(accepted), 1)
 
 
     def test_deduplicates_command_id_without_repeating_navigation(self):

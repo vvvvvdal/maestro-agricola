@@ -96,6 +96,7 @@ fun MaestroScreen(
     onTranscriptChange: (String) -> Unit,
     secondsToExpire: Int,
     interactionPending: Boolean,
+    resetEnabled: Boolean,
     remoteSessionConsentPrompt: Boolean,
     remoteBlockReason: RemoteTranscriptBlockReason?,
     onConfirmRemoteSession: () -> Unit,
@@ -169,6 +170,7 @@ fun MaestroScreen(
             Actions(
                 state = result.state,
                 enabled = !interactionPending,
+                resetEnabled = resetEnabled,
                 onLook = onLook,
                 onListen = onListen,
                 onReset = onReset,
@@ -253,7 +255,7 @@ private fun Chip(
 
 @Composable
 private fun StatusCard(result: InteractionResult, secondsToExpire: Int) {
-    val headline = statusHeadline(result.state)
+    val headline = statusHeadline(result.state, result.intent)
     val colors = toneColors(headline.tone)
 
     Surface(
@@ -418,6 +420,7 @@ private fun FactCard(
 private fun Actions(
     state: InteractionState,
     enabled: Boolean,
+    resetEnabled: Boolean,
     onLook: () -> Unit,
     onListen: () -> Unit,
     onReset: () -> Unit,
@@ -455,7 +458,7 @@ private fun Actions(
                     "Reiniciar"
                 },
                 onClick = onReset,
-                enabled = enabled,
+                enabled = if (state == InteractionState.AWAITING_CONFIRMATION) enabled else resetEnabled,
             )
         }
     }

@@ -13,8 +13,8 @@ App companion Android/Kotlin
   |      +-> intenção operacional -> InteractionEngine -> confirmação -> Command
   |      +-> UNKNOWN -> LanguageRouter -> QwenDomainAssistant -> CHAT | OUT_OF_SCOPE
   |
-  +-> PlotStatusQueryController -> ReadOnlyQuery -> WebSocket `/read-only`
-  |                                                     -> histórico em memória
+  +-> PlotStatusQueryController / RobotStatusQueryController
+  |   -> ReadOnlyQuery -> WebSocket `/read-only` -> histórico e status em memória
   |
   +-> `Command` confirmado -> WebSocket `/` -> Bridge ROS 2 -> Nav2 / Gazebo
 ```
@@ -77,9 +77,11 @@ Poeira e obstrução continuam sendo riscos do marcador. Uma evolução posterio
 - `QwenEngine`: fronteira assíncrona do runtime local; não conhece `Command` nem transporte do robô.
 - `CommandTransport`: envia somente o `Command` confirmado produzido pelo `InteractionEngine` e correlaciona a resposta por `command_id`.
 - `ReadOnlyQuery`/`ReadOnlyQueryTransport`: fronteira separada para
-  consultas sem efeito físico. `PLOT_STATUS_QUERY` local usa a rota
-  `/read-only`, não aceita campos de `Command`, não chama o `InteractionEngine`
-  e não compartilha a rota de comando. O contrato está em
+  consultas sem efeito físico. `PLOT_STATUS_QUERY` e `STATUS_QUERY` locais usam
+  a rota `/read-only`, não aceitam campos de `Command`, não chamam o
+  `InteractionEngine` e não compartilham a rota de comando. Após um ACK, o app
+  consulta o estado da mesma operação por `command_id`; somente a resposta
+  terminal do bridge permite mostrar conclusão. O contrato está em
   [`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md).
 
 Essas fronteiras permitem desenvolver mobile, IA, visão e ROS 2 em paralelo sem esperar pelos óculos.
@@ -185,9 +187,10 @@ reabertura estao em [`tasks/jev-experimental-decision.md`](tasks/jev-experimenta
 
 `UNKNOWN` continua a seguir diretamente para `LanguageRouter` e
 `QwenDomainAssistant`. Nao existe filtro Jev de topico antes do Qwen e nao ha
-RAG neste experimento. `PLOT_STATUS_QUERY` local ja usa interface de leitura
-separada, sem comando; `STATUS_QUERY`, `INSPECT_TARGET` e `COMPOUND_MISSION`
-continuam roadmap e exigem contratos e testes proprios. O contrato de leitura
+RAG neste experimento. `PLOT_STATUS_QUERY` e `STATUS_QUERY` locais usam
+interfaces de leitura separadas, sem comando; `INSPECT_TARGET` e
+`COMPOUND_MISSION` continuam roadmap e exigem contratos e testes proprios. O
+contrato de leitura
 define `OperationRecord` e deixa explicito que o simulador comprova chegada
 Nav2, nao aplicacao fisica, em
 [`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md). Essas

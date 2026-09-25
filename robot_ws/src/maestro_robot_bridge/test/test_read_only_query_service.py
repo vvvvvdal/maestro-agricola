@@ -1,8 +1,13 @@
 import json
 import unittest
 
-from maestro_robot_bridge.models import PoseTarget
+from maestro_robot_bridge.models import Command, PoseTarget, Target
 from maestro_robot_bridge.operation_history import OperationHistory
+from maestro_robot_bridge.operation_status import (
+    COMPLETED,
+    EXECUTING,
+    OperationStatusTracker,
+)
 from maestro_robot_bridge.read_only_query_service import ReadOnlyQueryService
 from maestro_robot_bridge.target_map import TargetMap
 
@@ -22,9 +27,21 @@ def query_payload(**overrides):
     return json.dumps(payload)
 
 
+def status_payload(**overrides):
+    payload = {
+        "schema_version": "1.0",
+        "request_id": REQUEST_ID,
+        "requested_at": "2026-09-25T15:34:00Z",
+        "kind": "ROBOT_STATUS",
+    }
+    payload.update(overrides)
+    return json.dumps(payload)
+
+
 class ReadOnlyQueryServiceTest(unittest.TestCase):
     def setUp(self):
         self.history = OperationHistory(timestamp=lambda: "2026-09-25T15:32:18Z")
+        self.status = OperationStatusTracker()
         self.service = ReadOnlyQueryService(
             TargetMap(
                 {
@@ -33,6 +50,7 @@ class ReadOnlyQueryServiceTest(unittest.TestCase):
                 }
             ),
             self.history,
+            self.status,
         )
 
     def test_returns_found_for_completed_simulated_spray(self):
@@ -67,6 +85,44 @@ class ReadOnlyQueryServiceTest(unittest.TestCase):
 
         self.assertEqual(response.status, "INVALID_QUERY")
         self.assertIsNone(response.record)
+
+    def test_returns_status_for_the_same_accepted_command(self):
+        command = Command(
+            schema_version="1.0",
+            command_id=REQUEST_ID,
+            created_at="2026-09-25T15:34:00Z",
+            expires_in_ms=5000,
+            intent="SPRAY",
+            target=Target(type="MAPPED_PLOT", id="plot-02"),
+            confirmed=True,
+        )
+        self.status.accepted(command)
+        self.status.executing(REQUEST_ID)
+
+        response = self.service.handle(status_payload(command_id=REQUEST_ID))
+
+        self.assertEqual(response.status, "FOUND")
+        self.assertEqual(response.kind, "ROBOT_STATUS")
+        self.assertEqual(response.operation.command_id, REQUEST_ID)
+        self.assertEqual(response.operation.intent, "SPRAY")
+        self.assertEqual(response.operation.target_id, "plot-02")
+        self.assertEqual(response.operation.state, EXECUTING)
+
+        self.status.completed(REQUEST_ID)
+        completed = self.service.handle(status_payload(command_id=REQUEST_ID))
+        self.assertEqual(completed.operation.state, COMPLETED)
+
+    def test_returns_latest_status_without_command_id(self):
+        response = self.service.handle(status_payload())
+
+        self.assertEqual(response.status, "NOT_FOUND")
+        self.assertIsNone(response.operation)
+
+    def test_rejects_plot_id_on_robot_status_query(self):
+        response = self.service.handle(status_payload(plot_id="plot-02"))
+
+        self.assertEqual(response.status, "INVALID_QUERY")
+        self.assertIsNone(response.operation)
 
 
 if __name__ == "__main__":

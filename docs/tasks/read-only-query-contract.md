@@ -10,8 +10,9 @@ e a resposta narravel no Android `mockDebug`.
 
 Criar uma fronteira de consulta que agregue valor ao Maestro sem transformar
 pergunta em comando. O primeiro caso e informar a ultima missao simulada de
-pulverizacao concluida para um talhao. `STATUS_QUERY` reutilizara a mesma
-fronteira, mas nao e implementada nesta task.
+pulverizacao concluida para um talhao. `STATUS_QUERY` reutiliza a mesma
+fronteira em JEV-73. Ele tambem permite que a tela acompanhe, sem criar novo
+comando, a conclusao da operacao que acabou de ser aceita pelo bridge.
 
 ## Decisoes
 
@@ -150,6 +151,52 @@ deterministicas do contrato.
   doubles que falham caso algum `CommandTransport` seja chamado.
 - Nenhum teste usa transcricao, audio, imagem ou dado pessoal real como
   evidencia.
+
+## JEV-73: status da operacao e do robo
+
+`ACCEPTED` no WebSocket de comando nao e conclusao. Ele prova somente que o
+bridge enfileirou a acao. Para que a interface nao diga que o robo terminou
+antes de Nav2, Dock ou Undock retornarem, JEV-73 adiciona leitura por
+`STATUS_QUERY` na mesma rota `/read-only`.
+
+O bridge mantem em memoria o estado da operacao confirmada, indexado pelo
+`command_id` que o app ja possui. A consulta recebe o identificador tecnico,
+mas a interface nunca o exibe nem o envia ao modelo de linguagem. A resposta
+projetada contem apenas o tipo de operacao, alvo logico quando aplicavel e um
+dos estados:
+
+| Estado | Significado visivel |
+| --- | --- |
+| `QUEUED` | Operacao aceita e aguardando inicio seguro. |
+| `EXECUTING` | Nav2, Dock ou Undock esta em execucao. |
+| `COMPLETED` | A acao simulada terminou com sucesso. |
+| `FAILED` | O bridge fechou a missao por erro, timeout ou recusa posterior. |
+| `UNAVAILABLE` | Nao foi possivel consultar o bridge; nao se infere conclusao. |
+
+Depois de uma resposta `ACCEPTED`, o app consulta somente leitura em intervalo
+curto ate receber um estado terminal. Durante isso, apresenta feedback de
+operacao em andamento e bloqueia uma segunda acao. A conclusao normal vem do
+bridge, nao de um temporizador da UI. Se o bridge nao responder em 30
+consultas, o app encerra somente o acompanhamento com falha fechada, mantem os
+novos comandos bloqueados e oferece apenas `Reiniciar` depois da verificacao
+do operador no simulador. `STATUS_QUERY` falado, por exemplo `qual o status
+do robo?`, usa a mesma resposta mas nao exige `command_id` e apenas narra o
+estado atual. Nenhuma variante recebe confirmacao, entra em `CommandTransport`,
+publica ROS ou chama Jev/Qwen.
+
+O acompanhamento e somente da sessao atual do bridge. Reiniciar o simulador
+descarta o estado; nesse caso o app mostra indisponibilidade em vez de afirmar
+que uma operacao antiga terminou.
+
+### Evidencia JEV-73
+
+No `SM-X510`, com `adb reverse` e `ws://127.0.0.1:18765`, a pergunta local
+`qual o status do robo?` recebeu `EXECUTING` do bridge e narrou a saida da
+doca, sem enviar `Command`. Em uma sessao em que o Gazebo nao devolveu estado
+terminal para `UNDOCK`, o app encerrou apos 30 consultas com falha fechada e
+bloqueou novas acoes ate `Reiniciar`. A conclusao normal esta coberta nos
+testes unitarios; a demonstracao E2E de chegada no Gazebo sera repetida em uma
+sessao dedicada, em vez de ser forçada durante o teste de interface.
 
 ## Fora de escopo
 

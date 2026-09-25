@@ -20,7 +20,7 @@ data class StatusHeadline(
     val tone: Tone,
 )
 
-fun statusHeadline(state: InteractionState): StatusHeadline = when (state) {
+fun statusHeadline(state: InteractionState, intent: String? = null): StatusHeadline = when (state) {
     InteractionState.IDLE ->
         StatusHeadline("PASSO 1", "Olhe para o alvo ou fale o talhão", Tone.NEUTRAL)
 
@@ -36,8 +36,21 @@ fun statusHeadline(state: InteractionState): StatusHeadline = when (state) {
     InteractionState.ACCEPTED ->
         StatusHeadline("COMANDO ENVIADO", "Aceito pelo robô", Tone.SUCCESS)
 
+    InteractionState.EXECUTING ->
+        StatusHeadline("EM EXECUÇÃO", "Acompanhando o robô", Tone.INFO)
+
+    InteractionState.COMPLETED ->
+        StatusHeadline("OPERAÇÃO CONCLUÍDA", "Concluída no simulador", Tone.SUCCESS)
+
+    InteractionState.OPERATION_FAILED ->
+        StatusHeadline("OPERAÇÃO INTERROMPIDA", "Verifique o robô antes de continuar", Tone.DANGER)
+
     InteractionState.QUERYING ->
-        StatusHeadline("CONSULTANDO", "Buscando histórico do talhão", Tone.INFO)
+        StatusHeadline(
+            "CONSULTANDO",
+            if (intent == "STATUS_QUERY") "Buscando estado do robô" else "Buscando histórico do talhão",
+            Tone.INFO,
+        )
 
     InteractionState.QUERY_COMPLETED ->
         StatusHeadline("CONSULTA CONCLUÍDA", "Nenhum comando enviado", Tone.SUCCESS)
@@ -61,12 +74,14 @@ data class JourneyStep(
 
 private val STEP_LABELS = listOf("Alvo", "Intenção", "Confirmar", "Executar")
 private val QUERY_STEP_LABELS = listOf("Talhão", "Consulta", "Buscar", "Resposta")
+private val ROBOT_QUERY_STEP_LABELS = listOf("Robô", "Consulta", "Buscar", "Resposta")
 private const val PLOT_STATUS_QUERY = "PLOT_STATUS_QUERY"
+private const val STATUS_QUERY = "STATUS_QUERY"
 
 private val TARGETLESS_INTENTS = setOf("DOCK", "UNDOCK")
 
 fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
-    if (intent == PLOT_STATUS_QUERY) {
+    if (intent == PLOT_STATUS_QUERY || intent == STATUS_QUERY) {
         val statuses = when (state) {
             InteractionState.QUERYING -> listOf(
                 StepStatus.DONE, StepStatus.DONE, StepStatus.ACTIVE, StepStatus.PENDING,
@@ -80,7 +95,8 @@ fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
                 StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING,
             )
         }
-        return QUERY_STEP_LABELS.mapIndexed { index, label ->
+        val labels = if (intent == STATUS_QUERY) ROBOT_QUERY_STEP_LABELS else QUERY_STEP_LABELS
+        return labels.mapIndexed { index, label ->
             JourneyStep(label, statuses[index])
         }
     }
@@ -106,6 +122,18 @@ fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
 
         InteractionState.ACCEPTED -> listOf(
             target, StepStatus.DONE, StepStatus.DONE, StepStatus.DONE,
+        )
+
+        InteractionState.EXECUTING -> listOf(
+            target, StepStatus.DONE, StepStatus.DONE, StepStatus.ACTIVE,
+        )
+
+        InteractionState.COMPLETED -> listOf(
+            target, StepStatus.DONE, StepStatus.DONE, StepStatus.DONE,
+        )
+
+        InteractionState.OPERATION_FAILED -> listOf(
+            target, StepStatus.DONE, StepStatus.DONE, StepStatus.BLOCKED,
         )
 
         InteractionState.QUERYING,
@@ -148,8 +176,12 @@ fun targetSourceLabel(source: String?): String = when (source) {
     else -> "origem indefinida"
 }
 
-fun intentValue(intent: String?): String =
-    if (intent == null) "—" else actionLabel(intent)
+fun intentValue(intent: String?): String = when (intent) {
+    null -> "—"
+    STATUS_QUERY -> "Consultar estado do robô"
+    PLOT_STATUS_QUERY -> "Consultar histórico do talhão"
+    else -> actionLabel(intent)
+}
 
 data class IntentPresentation(
     val value: String,
@@ -167,6 +199,12 @@ fun intentPresentation(
     confidence: Double?,
     source: String?,
 ): IntentPresentation = when {
+    intent != null && label == null -> IntentPresentation(
+        value = intentValue(intent),
+        detail = "comando confirmado",
+        tone = Tone.INFO,
+    )
+
     isJevUnavailable(label, confidence, source) -> IntentPresentation(
         value = "Classificação indisponível",
         detail = "sem decisão remota · nenhum comando enviado",

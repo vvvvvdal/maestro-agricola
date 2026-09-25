@@ -135,7 +135,7 @@ e aprovacao humana antes de entrar no catalogo operacional.
 
 | Classe candidata | Efeito pretendido | Situacao para o estudo | Condicao para virar operacao |
 | --- | --- | --- | --- |
-| `STATUS_QUERY` | Ler e narrar estado atual do robo | Boa primeira classe; somente leitura | Criar interface de consulta que nao emite `Command` |
+| `STATUS_QUERY` | Ler e narrar estado atual do robo; acompanhar uma operacao aceita ate termino | Implementada localmente no `mockDebug` | Rota `/read-only`, correlacao pelo `command_id` e estados terminais sem novo `Command` |
 | `PLOT_STATUS_QUERY` | Informar a ultima missao simulada `SPRAY` concluida para um talhao | Implementada localmente no `mockDebug` | Historico em memoria, rota `/read-only` e resposta sem `Command`; nao afirma aplicacao fisica |
 | `INSPECT_TARGET` | Capturar sob demanda e reportar marcador/QR | Boa primeira classe; sem movimento | Manter imagem em memoria, permissao e politica de privacidade |
 | `COMPOUND_MISSION` | Plano tipado, por exemplo `UNDOCK -> SPRAY(plot-02) -> PLOT_STATUS(plot-03) -> DOCK` | Roadmap; nao entra no benchmark inicial | Novo `MissionPlan` versionado, confirmacao explicita do plano, executor deterministico e pause em falha |
