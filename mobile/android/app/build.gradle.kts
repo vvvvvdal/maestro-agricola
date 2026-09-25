@@ -95,6 +95,9 @@ android {
         getByName("main").assets.srcDir("../../../robot_ws/src/maestro_robot_bridge/config")
         getByName("test").resources.srcDir("../../../shared/ai")
         getByName("test").resources.srcDir("../../../shared/target")
+        getByName("test").resources.srcDir(
+            "../../../docs/study-groups/jev-rl-2026-10-01/corpus"
+        )
         getByName("dat").assets.srcDir(
             "../../../robot_ws/src/maestro_simulation/models/plot_marker/materials/textures"
         )

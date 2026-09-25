@@ -1,8 +1,6 @@
 package br.org.agroturtles.maestro.domain
 
-import java.text.Normalizer
 import java.time.Instant
-import java.util.Locale
 import java.util.UUID
 
 data class OperationStatusUpdate(
@@ -12,6 +10,7 @@ data class OperationStatusUpdate(
 
 class RobotStatusQueryController(
     private val transportFactory: () -> ReadOnlyQueryTransport,
+    private val languageRouter: ReadOnlyLanguageRouter = ReadOnlyLanguageRouter(),
     private val requestId: () -> String = { UUID.randomUUID().toString() },
     private val requestedAt: () -> String = { Instant.now().toString() },
 ) {
@@ -19,7 +18,7 @@ class RobotStatusQueryController(
         text: String,
         completion: (InteractionResult) -> Unit,
     ): InteractionResult? {
-        if (!looksLikeRobotStatusQuestion(text)) return null
+        if (languageRouter.route(text) != ReadOnlyLanguageRoute.STATUS_QUERY) return null
         val prediction = IntentPrediction("STATUS_QUERY", 1.0, "RULE")
         send(command = null) { response -> completion(manualResult(response, prediction)) }
         return InteractionResult(
@@ -170,10 +169,4 @@ class RobotStatusQueryController(
         else -> "a operação solicitada"
     }
 
-    private fun looksLikeRobotStatusQuestion(text: String): Boolean {
-        val normalized = Normalizer.normalize(text.lowercase(Locale.ROOT), Normalizer.Form.NFKD)
-            .replace(Regex("\\p{M}+"), "")
-        val asksForStatus = listOf("status", "como esta", "situacao", "estado").any(normalized::contains)
-        return asksForStatus && (normalized.contains("robo") || normalized.contains("operacao"))
-    }
 }

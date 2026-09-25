@@ -1,0 +1,33 @@
+id	text	expected_route	category
+read-only-001	qual foi a ultima pulverizacao no talhao dois?	PLOT_STATUS_QUERY	plot-history
+read-only-002	me diga o historico de aplicacao do plot 03	PLOT_STATUS_QUERY	plot-history
+read-only-003	quando trataram o talhao um?	PLOT_STATUS_QUERY	plot-history
+read-only-004	informe a ultima operacao no plot dois	PLOT_STATUS_QUERY	plot-history
+read-only-005	quando mexeram no talhao tres?	PLOT_STATUS_QUERY	plot-history
+read-only-006	qual a ultima aplicacao no plot 01?	PLOT_STATUS_QUERY	plot-history
+read-only-007	me diga quando aplicaram no talhao dois	PLOT_STATUS_QUERY	plot-history
+read-only-008	informe o historico de tratamento do plot 03	PLOT_STATUS_QUERY	plot-history
+read-only-009	qual o status do robo?	STATUS_QUERY	robot-status
+read-only-010	como esta o robo?	STATUS_QUERY	robot-status
+read-only-011	qual a situacao da operacao?	STATUS_QUERY	robot-status
+read-only-012	me diga o estado do robo	STATUS_QUERY	robot-status
+read-only-013	status da operacao	STATUS_QUERY	robot-status
+read-only-014	o robo esta em qual estado?	STATUS_QUERY	robot-status
+read-only-015	preciso do status do robo	STATUS_QUERY	robot-status
+read-only-016	me informe a situacao da operacao	STATUS_QUERY	robot-status
+read-only-017	inspecione o marcador	INSPECT_TARGET	inspection
+read-only-018	leia o qr code	INSPECT_TARGET	inspection
+read-only-019	identifique a placa	INSPECT_TARGET	inspection
+read-only-020	capture a etiqueta	INSPECT_TARGET	inspection
+read-only-021	escaneie o qr code	INSPECT_TARGET	inspection
+read-only-022	leia a placa do talhao	INSPECT_TARGET	inspection
+read-only-023	inspecione o qr	INSPECT_TARGET	inspection
+read-only-024	identifique o marcador	INSPECT_TARGET	inspection
+read-only-025	volte para a doca	NONE	reject
+read-only-026	saia da doca	NONE	reject
+read-only-027	pulverize o plot 02	NONE	reject
+read-only-028	sim pode continuar	NONE	reject
+read-only-029	deixa pra la	NONE	reject
+read-only-030	o produto foi pulverizado ontem	NONE	reject
+read-only-031	qual a cotacao do dolar	NONE	reject
+read-only-032	conte sobre a fazenda	NONE	reject

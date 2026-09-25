@@ -126,9 +126,10 @@ autorizacao de movimento.
 
 As classes abaixo nasceram como roadmap de produto e viram o bloco final da
 apresentacao. Apos JEV-38, elas tambem tem uma sequencia de implementacao em
-[`TASKS.md`](TASKS.md): primeiro leitura e historico, depois inspecao e, por
-ultimo, preview e execucao de missao. `PLOT_STATUS_QUERY` ja existe como
-consulta local no `mockDebug`; as demais continuam no roadmap.
+[`TASKS.md`](TASKS.md): leitura, historico e inspecao ja existem localmente no
+`mockDebug`; preview e execucao de missao continuam no roadmap. O corpus de
+desenvolvimento das tres rotas locais passou 32/32, mas nao e uma comparacao
+com Jev nem evidencia de campo.
 
 Jev permite alterar a lista de opcoes de uma pergunta `Choice`. Isso acelera o
 experimento de uma nova classe, mas nao cria um comando seguro por si so. Cada
@@ -142,7 +143,7 @@ e aprovacao humana antes de entrar no catalogo operacional.
 | --- | --- | --- | --- |
 | `STATUS_QUERY` | Ler e narrar estado atual do robo; acompanhar uma operacao aceita ate termino | Implementada localmente no `mockDebug` | Rota `/read-only`, correlacao pelo `command_id` e estados terminais sem novo `Command` |
 | `PLOT_STATUS_QUERY` | Informar a ultima missao simulada `SPRAY` concluida para um talhao | Implementada localmente no `mockDebug` | Historico em memoria, rota `/read-only` e resposta sem `Command`; nao afirma aplicacao fisica |
-| `INSPECT_TARGET` | Capturar sob demanda e reportar marcador/QR | Boa primeira classe; sem movimento | Manter imagem em memoria, permissao e politica de privacidade |
+| `INSPECT_TARGET` | Capturar sob demanda e reportar marcador/QR | Implementada localmente no `mockDebug` | Imagem em memoria, permissao, politica de QR e nenhum `Command` |
 | `COMPOUND_MISSION` | Plano tipado, por exemplo `UNDOCK -> SPRAY(plot-02) -> PLOT_STATUS(plot-03) -> DOCK` | Roadmap; nao entra no benchmark inicial | Novo `MissionPlan` versionado, confirmacao explicita do plano, executor deterministico e pause em falha |
 | `PAUSE` | Pedir pausa de missao em andamento | Candidata, mas nao usar na demo fisica | Bridge precisa de primitive de pausa segura e estado `PAUSED` |
 | `RESUME` | Retomar apenas uma missao pausada valida | Candidata dependente de `PAUSE` | Revalidar missao, alvo, expiracao e confirmacao explicita |

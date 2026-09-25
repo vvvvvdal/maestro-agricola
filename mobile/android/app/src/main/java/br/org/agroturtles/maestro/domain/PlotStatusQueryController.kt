@@ -1,6 +1,5 @@
 package br.org.agroturtles.maestro.domain
 
-import java.text.Normalizer
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -10,6 +9,7 @@ import java.util.UUID
 class PlotStatusQueryController(
     private val targetResolver: TargetResolver,
     private val transportFactory: () -> ReadOnlyQueryTransport,
+    private val languageRouter: ReadOnlyLanguageRouter = ReadOnlyLanguageRouter(),
     private val requestId: () -> String = { UUID.randomUUID().toString() },
     private val requestedAt: () -> String = { Instant.now().toString() },
 ) {
@@ -17,7 +17,7 @@ class PlotStatusQueryController(
         text: String,
         completion: (InteractionResult) -> Unit,
     ): InteractionResult? {
-        if (!looksLikePlotHistoryQuestion(text)) return null
+        if (languageRouter.route(text) != ReadOnlyLanguageRoute.PLOT_STATUS_QUERY) return null
 
         val prediction = IntentPrediction(
             label = "PLOT_STATUS_QUERY",
@@ -106,16 +106,6 @@ class PlotStatusQueryController(
             targetId = plotId,
             targetSource = if (plotId == null) null else "VOICE",
         )
-    }
-
-    private fun looksLikePlotHistoryQuestion(text: String): Boolean {
-        val normalized = Normalizer.normalize(text.lowercase(Locale.ROOT), Normalizer.Form.NFKD)
-            .replace(Regex("\\p{M}+"), "")
-        val asksForHistory = listOf("ultima", "historico", "quando", "me diga", "informe")
-            .any(normalized::contains)
-        val refersToOperation = listOf("pulveriz", "aplic", "trat", "operacao", "mexeram")
-            .any(normalized::contains)
-        return asksForHistory && refersToOperation
     }
 
     private fun formatCompletedAt(value: String): String? = runCatching {

@@ -27,6 +27,8 @@ import br.org.agroturtles.maestro.domain.QwenDomainAssistant
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
 import br.org.agroturtles.maestro.domain.RemoteTranscriptDecision
 import br.org.agroturtles.maestro.domain.RemoteTranscriptGate
+import br.org.agroturtles.maestro.domain.ReadOnlyLanguageRoute
+import br.org.agroturtles.maestro.domain.ReadOnlyLanguageRouter
 import br.org.agroturtles.maestro.domain.RobotStatusQueryController
 import br.org.agroturtles.maestro.domain.TargetResolver
 import br.org.agroturtles.maestro.platform.NativeQwenEngine
@@ -119,15 +121,18 @@ class MainActivity : ComponentActivity() {
             var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
             val readOnlyRequest = remember { AtomicLong(0) }
+            val readOnlyLanguageRouter = remember { ReadOnlyLanguageRouter() }
             val plotStatusQueries = remember(endpoint) {
                 PlotStatusQueryController(
                     targetResolver = targetResolver,
                     transportFactory = { WebSocketReadOnlyQueryTransport(endpoint) },
+                    languageRouter = readOnlyLanguageRouter,
                 )
             }
             val robotStatusQueries = remember(endpoint) {
                 RobotStatusQueryController(
                     transportFactory = { WebSocketReadOnlyQueryTransport(endpoint) },
+                    languageRouter = readOnlyLanguageRouter,
                 )
             }
 
@@ -279,9 +284,35 @@ class MainActivity : ComponentActivity() {
                 applyDispatch(dispatch)
             }
 
+            fun inspectMarker() {
+                val requestId = inspectionRequest.incrementAndGet()
+                inspectionPending = true
+                jevRequest.incrementAndGet()
+                jevPending = false
+                language.cancelAssistant()
+                apply(engine.inspectionStarted())
+                frameSource.captureTarget { outcome ->
+                    runOnUiThread {
+                        if (inspectionRequest.get() != requestId) return@runOnUiThread
+                        inspectionPending = false
+                        outcome
+                            .onSuccess { apply(engine.inspectionCompleted(it.targetId)) }
+                            .onFailure {
+                                apply(engine.targetCaptureFailed(
+                                    it.message ?: "Falha ao capturar o alvo"
+                                ))
+                            }
+                    }
+                }
+            }
+
             fun interpret(text: String) {
                 if (jevPending || readOnlyPending || operationTracking != null) return
                 if (engine.state in setOf(InteractionState.IDLE, InteractionState.TARGET_READY)) {
+                    if (readOnlyLanguageRouter.route(text) == ReadOnlyLanguageRoute.INSPECT_TARGET) {
+                        inspectMarker()
+                        return
+                    }
                     val requestId = readOnlyRequest.incrementAndGet()
                     val queryResult = plotStatusQueries.handle(text) { response ->
                         runOnUiThread {
@@ -389,27 +420,7 @@ class MainActivity : ComponentActivity() {
                     },
                     onDismissRemoteSession = { remoteSessionConsentPrompt = false },
                     onDismissRemoteBlock = { remoteBlockReason = null },
-                    onLook = {
-                        val requestId = inspectionRequest.incrementAndGet()
-                        inspectionPending = true
-                        jevRequest.incrementAndGet()
-                        jevPending = false
-                        language.cancelAssistant()
-                        apply(engine.inspectionStarted())
-                        frameSource.captureTarget { outcome ->
-                            runOnUiThread {
-                                if (inspectionRequest.get() != requestId) return@runOnUiThread
-                                inspectionPending = false
-                                outcome
-                                    .onSuccess { apply(engine.inspectionCompleted(it.targetId)) }
-                                    .onFailure {
-                                        apply(engine.targetCaptureFailed(
-                                            it.message ?: "Falha ao capturar o alvo"
-                                        ))
-                                    }
-                            }
-                        }
-                    },
+                    onLook = ::inspectMarker,
                     onListen = {
                         jevRequest.incrementAndGet()
                         jevPending = false

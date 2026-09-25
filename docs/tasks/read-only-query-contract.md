@@ -198,6 +198,19 @@ bloqueou novas acoes ate `Reiniciar`. A conclusao normal esta coberta nos
 testes unitarios; a demonstracao E2E de chegada no Gazebo sera repetida em uma
 sessao dedicada, em vez de ser forçada durante o teste de interface.
 
+## JEV-75: roteador local de linguagem
+
+`PLOT_STATUS_QUERY`, `STATUS_QUERY` e `INSPECT_TARGET` usam
+`ReadOnlyLanguageRouter`, uma fronteira local de texto separada dos seis
+labels Jev. As duas primeiras seguem para seus controladores somente leitura;
+`INSPECT_TARGET` reaproveita a captura local sob demanda. Nenhuma rota cria
+`Command`, chama Jev ou Qwen, ou recebe permissao para iniciar movimento.
+
+O corpus e o resultado 32/32 de desenvolvimento estao em
+[`read-only-language-router-benchmark.md`](read-only-language-router-benchmark.md).
+Ele e evidencia de contrato e regressao; nao e holdout, medicao de ASR ou
+justificativa para ampliar o experimento Jev.
+
 ## Fora de escopo
 
 Persistencia em banco, historico de aplicacao fisica, dose/produto, telemetria
