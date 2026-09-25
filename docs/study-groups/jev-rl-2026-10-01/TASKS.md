@@ -107,7 +107,7 @@ nao transforma o consentimento geral atual em autorizacao para qualquer fala.
 | --- | --- | --- | --- |
 | JEV-69 | DONE | JEV-38 | Fronteira de minimizacao especificada em [`../../tasks/jev-remote-privacy-gate.md`](../../tasks/jev-remote-privacy-gate.md): mapa de dados, ameacas, UX de autorizacao de sessao, retorno ao modo Local e criterios de bloqueio antes da rede. O caminho padrao continua local e `dat` nunca usa Jev remoto. |
 | JEV-69A | DONE | JEV-69 | `RemoteTranscriptGate` no `mockDebug` e defesa equivalente no proxy bloqueiam dados pessoais evidentes, URL, comprimento ou fala fora do escopo antes do HTTP. O aviso de ativacao explicita o que nao compartilhar e a permissao vale somente na sessao, podendo ser revogada. Uma fala bloqueada nao reutiliza Qwen, WebSocket ou `Command`. Testes Kotlin/Python focados e `assembleMockDebug` passaram. |
-| JEV-69B | NEXT | JEV-69A | Validar no SM-X510 com frases sinteticas e sem dado real: aceite/revogacao da sessao, envio consentido, bloqueio local, retorno ao modo Local para nova fala e limpeza do estado da tela. Atualizar fluxo de dados, evidencias e deck com claim limitado: minimizacao preventiva, nao anonimização nem conformidade integral. |
+| JEV-69B | DONE | JEV-69A | Validada no SM-X510 em 25/09/2026 com frases sinteticas: aceite de sessao, fala operacional aceita pelo caminho remoto sem novo aviso, CPF sintetico bloqueado localmente como `Fala nao enviada ao Jev` e revogacao de volta para `Local`. A evidencia limita a afirmacao a minimizacao preventiva; nao e anonimização nem conformidade integral. |
 
 ## Fase 3.5 - Capacidades do Maestro apos JEV-38
 
@@ -119,7 +119,7 @@ aprovado contra seu baseline local.
 
 | ID | Status | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- |
-| JEV-70 | TODO | JEV-69B | Especificar o caminho somente leitura: `ReadOnlyQuery`, `OperationRecord` e resposta narravel. Define `plot`, resultado final, timestamp, origem e retencao; nao armazena foto, audio ou transcricao. Define tambem o limite entre roteamento de linguagem, consulta e `Command`. |
+| JEV-70 | NEXT | JEV-69B | Especificar o caminho somente leitura: `ReadOnlyQuery`, `OperationRecord` e resposta narravel. Define `plot`, resultado final, timestamp, origem e retencao; nao armazena foto, audio ou transcricao. Define tambem o limite entre roteamento de linguagem, consulta e `Command`. |
 | JEV-71 | TODO | JEV-70 | Implementar o historico de operacoes concluidas no simulador: uma pulverizacao so cria `OperationRecord` apos resultado final do bridge, com talhao e timestamp verificaveis. Falha, cancelamento e expiracao nao criam registro. Testes focados de sucesso e recusas passam. |
 | JEV-72 | TODO | JEV-70, JEV-71 | Implementar `PLOT_STATUS_QUERY` com baseline local separado do catalogo original: fala pede a ultima pulverizacao de um talhao, o Maestro consulta o historico e responde sem `Command`, WebSocket de comando ou ROS de movimento. Testar talhao encontrado, inexistente, sem historico e fala ambigua. |
 | JEV-73 | TODO | JEV-70 | Implementar `STATUS_QUERY`: leitura narravel do estado do robo por interface de consulta, sem emissao de `Command`. Testar estados conectado, aguardando, pendente, executando, desconectado e falha fechada. |

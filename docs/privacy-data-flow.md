@@ -55,13 +55,14 @@ Microfone/rota ativa -> SpeechRecognizer do Android -> transcrição em memória
 
 O app não chama APIs de arquivo no caminho de voz atual. A transcrição aparece no estado Compose para diagnóstico durante a interação e deve desaparecer com o ciclo da atividade; ela não deve ser copiada para log ou evidência.
 
-No `mockDebug`, existe uma exceção demonstrativa opt-in: depois da declaração
-visível de fala de teste sem dados pessoais, a transcrição pode seguir para
+No `mockDebug`, existe uma exceção demonstrativa opt-in: depois do aviso e do
+aceite remoto revogável para a sessão, a transcrição pode seguir para
 `127.0.0.1:8787` por `adb reverse`, alcançar um proxy somente loopback e então
-o JEV. O APK não conhece a chave nem o endpoint externo. O proxy rejeita e-mail,
-telefone e URL evidentes, não registra a fala e tem teto de 24 tentativas HTTP,
-incluindo retry. Essa verificação é limitada: o operador continua responsável
-por não falar dado pessoal. `dat` e o caminho padrão permanecem locais.
+o JEV. O APK não conhece a chave nem o endpoint externo. Antes da rede, app e
+proxy bloqueiam e-mail, telefone, CPF/CNPJ, URL, texto excessivo ou fala fora do
+escopo; não registram a fala e o proxy tem teto de 24 tentativas HTTP, incluindo
+retry. Essa verificação é limitada: o operador continua responsável por não
+falar dado pessoal. `dat` e o caminho padrão permanecem locais.
 
 ## Fluxo do comando
 

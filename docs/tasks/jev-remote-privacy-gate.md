@@ -3,7 +3,7 @@
 ## Status
 
 JEV-69A foi implementada em 24/09/2026 e recebeu ajuste de UX de consentimento
-na mesma data; JEV-69B ainda valida o comportamento no SM-X510. Esta e uma
+na mesma data. JEV-69B foi validada no SM-X510 em 25/09/2026. Esta e uma
 melhoria do modo demonstrativo `mockDebug`, nao uma auditoria LGPD completa nem
 uma conclusao juridica.
 
@@ -35,6 +35,20 @@ nomes completos, e-mail, telefone, CPF/CNPJ, link, senha, endereco ou qualquer
 informacao pessoal/confidencial. O filtro nao tentara decidir que todo texto
 “agricola” e seguro: uma fala pode misturar comando e dado pessoal. O app e o
 proxy nao gravam a transcricao; o estado Compose e descartado no fim do turno.
+
+## Evidencia JEV-69B - 25/09/2026
+
+No `mockDebug` instalado no SM-X510, com proxy loopback ativo e somente frases
+sinteticas:
+
+- a demonstracao remota exigiu o aceite de sessao uma vez;
+- `volte para a doca` foi aceita no caminho Jev sem exibir novo aviso;
+- `meu cpf e 000.000.000-00` foi bloqueada localmente com a mensagem `Fala nao
+  enviada ao Jev`;
+- ao desmarcar a demonstracao, a fonte voltou para `Local`.
+
+Nao foram usados dados pessoais reais nem foi persistida fala, imagem ou audio
+como evidencia.
 
 ## Criterios de aceite
 
