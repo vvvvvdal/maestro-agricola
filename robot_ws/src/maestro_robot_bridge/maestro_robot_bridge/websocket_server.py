@@ -6,11 +6,19 @@ from threading import Thread
 from websockets.sync.server import Server, ServerConnection, serve
 
 from .bridge_core import BridgeCore
+from .read_only_query_service import ReadOnlyQueryService
 
 
 class BridgeWebSocketServer:
-    def __init__(self, core: BridgeCore, host: str, port: int):
+    def __init__(
+        self,
+        core: BridgeCore,
+        read_only_query_service: ReadOnlyQueryService,
+        host: str,
+        port: int,
+    ):
         self._core = core
+        self._read_only_query_service = read_only_query_service
         self._host = host
         self._port = port
         self._server: Server | None = None
@@ -33,5 +41,10 @@ class BridgeWebSocketServer:
 
     def _handle_connection(self, connection: ServerConnection) -> None:
         for message in connection:
-            response = self._core.handle(message)
+            response = self._response_for(connection.request.path, message)
             connection.send(json.dumps(response.to_dict(), separators=(",", ":")))
+
+    def _response_for(self, path: str, message: str):
+        if path == "/read-only":
+            return self._read_only_query_service.handle(message)
+        return self._core.handle(message)

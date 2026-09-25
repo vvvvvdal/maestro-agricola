@@ -31,6 +31,34 @@ class OperationRecord:
 
 
 @dataclass(frozen=True)
+class ReadOnlyQuery:
+    schema_version: str
+    request_id: str
+    requested_at: str
+    kind: str
+    plot_id: str
+
+
+@dataclass(frozen=True)
+class ReadOnlyOperationSummary:
+    plot_id: str
+    completed_at: str
+    origin: str
+
+
+@dataclass(frozen=True)
+class ReadOnlyResponse:
+    schema_version: str
+    request_id: str
+    kind: str
+    status: str
+    record: ReadOnlyOperationSummary | None = None
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class PoseTarget:
     id: str
     x: float

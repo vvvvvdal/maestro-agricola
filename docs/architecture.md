@@ -9,16 +9,14 @@ AI Glasses
           v
 App companion Android/Kotlin
   alvo + voz local
-          |
-          +-> LocalIntentClassifier
-          |      +-> intenção operacional -> InteractionEngine -> confirmação -> Command
-          |      +-> UNKNOWN -> LanguageRouter -> QwenDomainAssistant -> CHAT | OUT_OF_SCOPE
-          |
-          v
-WebSocket / JSON versionado (somente Command confirmado)
-          |
-          v
-Bridge ROS 2 -> Nav2 / Gazebo -> robô simulado
+  +-> LocalIntentClassifier
+  |      +-> intenção operacional -> InteractionEngine -> confirmação -> Command
+  |      +-> UNKNOWN -> LanguageRouter -> QwenDomainAssistant -> CHAT | OUT_OF_SCOPE
+  |
+  +-> PlotStatusQueryController -> ReadOnlyQuery -> WebSocket `/read-only`
+  |                                                     -> histórico em memória
+  |
+  +-> `Command` confirmado -> WebSocket `/` -> Bridge ROS 2 -> Nav2 / Gazebo
 ```
 
 A separação entre controle e conversa é uma restrição arquitetural. O Qwen não tem acesso a `CommandTransport`, ROS, WebSocket, pose, alvo resolvido nem estado do robô. A `MainActivity` usa `LanguageInteractionController` para manter operações e confirmações no `InteractionEngine` e encaminhar somente `UNKNOWN`, nos estados seguros `IDLE` ou `TARGET_READY`, ao assistente.
@@ -78,10 +76,11 @@ Poeira e obstrução continuam sendo riscos do marcador. Uma evolução posterio
 - `DomainAssistant`/`QwenDomainAssistant`: retorna somente `CHAT` ou `OUT_OF_SCOPE`; saída inválida falha para `OUT_OF_SCOPE`.
 - `QwenEngine`: fronteira assíncrona do runtime local; não conhece `Command` nem transporte do robô.
 - `CommandTransport`: envia somente o `Command` confirmado produzido pelo `InteractionEngine` e correlaciona a resposta por `command_id`.
-- `ReadOnlyQuery`/`ReadOnlyQueryTransport`: fronteira planejada e separada para
-  consultas sem efeito físico. Não aceita campos de `Command`, não chama o
-  `InteractionEngine` e não compartilha a rota de comando. O contrato inicial
-  está em [`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md).
+- `ReadOnlyQuery`/`ReadOnlyQueryTransport`: fronteira separada para
+  consultas sem efeito físico. `PLOT_STATUS_QUERY` local usa a rota
+  `/read-only`, não aceita campos de `Command`, não chama o `InteractionEngine`
+  e não compartilha a rota de comando. O contrato está em
+  [`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md).
 
 Essas fronteiras permitem desenvolver mobile, IA, visão e ROS 2 em paralelo sem esperar pelos óculos.
 
@@ -186,11 +185,11 @@ reabertura estao em [`tasks/jev-experimental-decision.md`](tasks/jev-experimenta
 
 `UNKNOWN` continua a seguir diretamente para `LanguageRouter` e
 `QwenDomainAssistant`. Nao existe filtro Jev de topico antes do Qwen e nao ha
-RAG neste experimento. Classes como `STATUS_QUERY`, `PLOT_STATUS_QUERY`,
-`INSPECT_TARGET` e `COMPOUND_MISSION` sao roadmap de produto; exigem interfaces
-separadas e, quando tiverem efeito fisico, novo contrato e testes. O primeiro
-contrato de leitura, que define `OperationRecord` e deixa explicito que o
-simulador comprova chegada Nav2, nao aplicacao fisica, esta em
+RAG neste experimento. `PLOT_STATUS_QUERY` local ja usa interface de leitura
+separada, sem comando; `STATUS_QUERY`, `INSPECT_TARGET` e `COMPOUND_MISSION`
+continuam roadmap e exigem contratos e testes proprios. O contrato de leitura
+define `OperationRecord` e deixa explicito que o simulador comprova chegada
+Nav2, nao aplicacao fisica, em
 [`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md). Essas
 classes nao entram no catalogo inicial do Jev.
 

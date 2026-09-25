@@ -122,7 +122,8 @@ autorizacao de movimento.
 As classes abaixo nasceram como roadmap de produto e viram o bloco final da
 apresentacao. Apos JEV-38, elas tambem tem uma sequencia de implementacao em
 [`TASKS.md`](TASKS.md): primeiro leitura e historico, depois inspecao e, por
-ultimo, preview e execucao de missao. Nenhuma esta implementada ainda.
+ultimo, preview e execucao de missao. `PLOT_STATUS_QUERY` ja existe como
+consulta local no `mockDebug`; as demais continuam no roadmap.
 
 Jev permite alterar a lista de opcoes de uma pergunta `Choice`. Isso acelera o
 experimento de uma nova classe, mas nao cria um comando seguro por si so. Cada
@@ -135,7 +136,7 @@ e aprovacao humana antes de entrar no catalogo operacional.
 | Classe candidata | Efeito pretendido | Situacao para o estudo | Condicao para virar operacao |
 | --- | --- | --- | --- |
 | `STATUS_QUERY` | Ler e narrar estado atual do robo | Boa primeira classe; somente leitura | Criar interface de consulta que nao emite `Command` |
-| `PLOT_STATUS_QUERY` | Informar a ultima missao `SPRAY` concluida para um talhao | Boa ideia de produto; ainda nao existe historico | Registrar resultado final, timestamp, plot e origem sem persistir midia |
+| `PLOT_STATUS_QUERY` | Informar a ultima missao simulada `SPRAY` concluida para um talhao | Implementada localmente no `mockDebug` | Historico em memoria, rota `/read-only` e resposta sem `Command`; nao afirma aplicacao fisica |
 | `INSPECT_TARGET` | Capturar sob demanda e reportar marcador/QR | Boa primeira classe; sem movimento | Manter imagem em memoria, permissao e politica de privacidade |
 | `COMPOUND_MISSION` | Plano tipado, por exemplo `UNDOCK -> SPRAY(plot-02) -> PLOT_STATUS(plot-03) -> DOCK` | Roadmap; nao entra no benchmark inicial | Novo `MissionPlan` versionado, confirmacao explicita do plano, executor deterministico e pause em falha |
 | `PAUSE` | Pedir pausa de missao em andamento | Candidata, mas nao usar na demo fisica | Bridge precisa de primitive de pausa segura e estado `PAUSED` |

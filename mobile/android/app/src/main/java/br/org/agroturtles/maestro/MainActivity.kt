@@ -19,6 +19,7 @@ import br.org.agroturtles.maestro.domain.JevIntentClassifier
 import br.org.agroturtles.maestro.domain.LanguageDispatch
 import br.org.agroturtles.maestro.domain.LanguageInteractionController
 import br.org.agroturtles.maestro.domain.LocalIntentClassifier
+import br.org.agroturtles.maestro.domain.PlotStatusQueryController
 import br.org.agroturtles.maestro.domain.QwenDomainAssistant
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
 import br.org.agroturtles.maestro.domain.RemoteTranscriptDecision
@@ -28,6 +29,7 @@ import br.org.agroturtles.maestro.platform.NativeQwenEngine
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
 import br.org.agroturtles.maestro.platform.VoiceIO
 import br.org.agroturtles.maestro.platform.WebSocketCommandTransport
+import br.org.agroturtles.maestro.platform.WebSocketReadOnlyQueryTransport
 import br.org.agroturtles.maestro.platform.JevProxyChoiceEvaluator
 import br.org.agroturtles.maestro.ui.MaestroScreen
 import br.org.agroturtles.maestro.ui.MaestroTheme
@@ -68,9 +70,10 @@ class MainActivity : ComponentActivity() {
         val classifier = LocalIntentClassifier.fromJson(modelJson)
         val jevEvaluator = JevProxyChoiceEvaluator()
         val jevClassifier = JevIntentClassifier(jevEvaluator)
+        val targetResolver = TargetResolver.fromJson(targetMapJson)
         val engine = InteractionEngine(
             classifier,
-            TargetResolver.fromJson(targetMapJson),
+            targetResolver,
         )
         val qwenModel = File(filesDir, QWEN_MODEL_FILENAME)
         val assistant = qwenModel
@@ -96,8 +99,16 @@ class MainActivity : ComponentActivity() {
             var jevRemoteEnabled by remember { mutableStateOf(false) }
             var jevRemoteConsent by remember { mutableStateOf(false) }
             var jevPending by remember { mutableStateOf(false) }
+            var readOnlyPending by remember { mutableStateOf(false) }
             var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
+            val readOnlyRequest = remember { AtomicLong(0) }
+            val plotStatusQueries = remember(endpoint) {
+                PlotStatusQueryController(
+                    targetResolver = targetResolver,
+                    transportFactory = { WebSocketReadOnlyQueryTransport(endpoint) },
+                )
+            }
 
             fun apply(next: InteractionResult) {
                 result = next
@@ -205,7 +216,23 @@ class MainActivity : ComponentActivity() {
             }
 
             fun interpret(text: String) {
-                if (jevPending) return
+                if (jevPending || readOnlyPending) return
+                if (engine.state in setOf(InteractionState.IDLE, InteractionState.TARGET_READY)) {
+                    val requestId = readOnlyRequest.incrementAndGet()
+                    val queryResult = plotStatusQueries.handle(text) { response ->
+                        runOnUiThread {
+                            if (readOnlyRequest.get() == requestId) {
+                                readOnlyPending = false
+                                apply(response)
+                            }
+                        }
+                    }
+                    if (queryResult != null) {
+                        readOnlyPending = queryResult.state == InteractionState.QUERYING
+                        apply(queryResult)
+                        return
+                    }
+                }
                 if (jevRemoteEnabled && BuildConfig.FRAME_SOURCE == "mock") {
                     when (val decision = RemoteTranscriptGate.evaluate(text)) {
                         RemoteTranscriptDecision.Allowed -> {
@@ -272,7 +299,7 @@ class MainActivity : ComponentActivity() {
                     transcript = transcript,
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
-                    interactionPending = jevPending,
+                    interactionPending = jevPending || readOnlyPending,
                     remoteSessionConsentPrompt = remoteSessionConsentPrompt,
                     remoteBlockReason = remoteBlockReason,
                     onConfirmRemoteSession = {
@@ -324,6 +351,8 @@ class MainActivity : ComponentActivity() {
                     onReset = {
                         jevRequest.incrementAndGet()
                         jevPending = false
+                        readOnlyRequest.incrementAndGet()
+                        readOnlyPending = false
                         remoteSessionConsentPrompt = false
                         remoteBlockReason = null
                         language.cancelAssistant()

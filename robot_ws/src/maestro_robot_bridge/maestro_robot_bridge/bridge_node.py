@@ -20,6 +20,7 @@ from .bridge_core import BridgeCore
 from .mission_cycle import MissionCycle, MissionPhase
 from .models import PoseTarget
 from .operation_history import OperationHistory
+from .read_only_query_service import ReadOnlyQueryService
 from .target_map import TargetMap
 from .websocket_server import BridgeWebSocketServer
 
@@ -95,6 +96,7 @@ class MaestroBridgeNode(Node):
         )
         self._server = BridgeWebSocketServer(
             self._core,
+            ReadOnlyQueryService(target_map, self._operation_history),
             str(self.get_parameter("host").value),
             int(self.get_parameter("port").value),
         )

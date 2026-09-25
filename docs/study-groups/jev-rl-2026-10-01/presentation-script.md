@@ -201,7 +201,7 @@ Apresentar como mapa de fronteiras, nao como backlog entregue.
 | Classe | Por que pode fazer sentido | O que falta antes de operar |
 | --- | --- | --- |
 | `STATUS_QUERY` | Consulta somente leitura do estado do robo. | Interface de consulta sem `Command`. |
-| `PLOT_STATUS_QUERY` | Responder ultima pulverizacao de um talhao. | Historico de resultado, timestamp, talhao e origem. |
+| `PLOT_STATUS_QUERY` | Responder ultima missao simulada de pulverizacao de um talhao. | Historico efemero de resultado Nav2, timestamp, talhao e origem; nao comprova aplicacao fisica. |
 | `INSPECT_TARGET` | Reutiliza captura sob demanda para reportar QR/marcador. | Privacidade, permissao e imagem somente em memoria. |
 | `COMPOUND_MISSION` | Transforma fala longa em `MissionPlan` tipado. | Plano confirmado, executor deterministico e pausa/falha segura. |
 | `PAUSE`, `RESUME`, `SCOUT` | Ideias futuras com fronteiras mais sensiveis. | Contrato, estado, revalidacao e E2E proprio. |

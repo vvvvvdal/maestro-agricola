@@ -9,6 +9,8 @@ enum class InteractionState {
     AWAITING_CONFIRMATION,
     SENDING,
     ACCEPTED,
+    QUERYING,
+    QUERY_COMPLETED,
     CANCELLED,
     AMBIGUOUS,
     ERROR,

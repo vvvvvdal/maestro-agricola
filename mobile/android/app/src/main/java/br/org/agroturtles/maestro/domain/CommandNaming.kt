@@ -23,5 +23,6 @@ fun actionLabel(intent: String?): String = when (intent) {
     "UNDOCK" -> "Sair da doca"
     "CONFIRM" -> "Confirmar"
     "CANCEL" -> "Cancelar"
+    "PLOT_STATUS_QUERY" -> "Consultar histórico"
     else -> "Ação não reconhecida"
 }

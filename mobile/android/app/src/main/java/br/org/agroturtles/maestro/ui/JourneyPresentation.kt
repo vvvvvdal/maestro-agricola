@@ -36,6 +36,12 @@ fun statusHeadline(state: InteractionState): StatusHeadline = when (state) {
     InteractionState.ACCEPTED ->
         StatusHeadline("COMANDO ENVIADO", "Aceito pelo robô", Tone.SUCCESS)
 
+    InteractionState.QUERYING ->
+        StatusHeadline("CONSULTANDO", "Buscando histórico do talhão", Tone.INFO)
+
+    InteractionState.QUERY_COMPLETED ->
+        StatusHeadline("CONSULTA CONCLUÍDA", "Nenhum comando enviado", Tone.SUCCESS)
+
     InteractionState.CANCELLED ->
         StatusHeadline("CANCELADO", "Nada foi enviado ao robô", Tone.NEUTRAL)
 
@@ -54,10 +60,31 @@ data class JourneyStep(
 )
 
 private val STEP_LABELS = listOf("Alvo", "Intenção", "Confirmar", "Executar")
+private val QUERY_STEP_LABELS = listOf("Talhão", "Consulta", "Buscar", "Resposta")
+private const val PLOT_STATUS_QUERY = "PLOT_STATUS_QUERY"
 
 private val TARGETLESS_INTENTS = setOf("DOCK", "UNDOCK")
 
 fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
+    if (intent == PLOT_STATUS_QUERY) {
+        val statuses = when (state) {
+            InteractionState.QUERYING -> listOf(
+                StepStatus.DONE, StepStatus.DONE, StepStatus.ACTIVE, StepStatus.PENDING,
+            )
+
+            InteractionState.QUERY_COMPLETED -> listOf(
+                StepStatus.DONE, StepStatus.DONE, StepStatus.DONE, StepStatus.DONE,
+            )
+
+            else -> listOf(
+                StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING,
+            )
+        }
+        return QUERY_STEP_LABELS.mapIndexed { index, label ->
+            JourneyStep(label, statuses[index])
+        }
+    }
+
     val target = if (intent in TARGETLESS_INTENTS) StepStatus.SKIPPED else StepStatus.DONE
 
     val statuses = when (state) {
@@ -79,6 +106,11 @@ fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
 
         InteractionState.ACCEPTED -> listOf(
             target, StepStatus.DONE, StepStatus.DONE, StepStatus.DONE,
+        )
+
+        InteractionState.QUERYING,
+        InteractionState.QUERY_COMPLETED -> listOf(
+            StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING,
         )
 
         InteractionState.CANCELLED -> listOf(

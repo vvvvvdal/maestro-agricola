@@ -64,6 +64,23 @@ class JourneyPresentationTest {
     }
 
     @Test
+    fun readOnlyQueryUsesItsOwnJourneyWithoutConfirmation() {
+        assertEquals(
+            listOf("Talhão", "Consulta", "Buscar", "Resposta"),
+            journeySteps(InteractionState.QUERYING, "PLOT_STATUS_QUERY").map { it.label },
+        )
+        assertEquals(
+            listOf(StepStatus.DONE, StepStatus.DONE, StepStatus.DONE, StepStatus.DONE),
+            journeySteps(InteractionState.QUERY_COMPLETED, "PLOT_STATUS_QUERY")
+                .map { it.status },
+        )
+        assertEquals(
+            Tone.SUCCESS,
+            statusHeadline(InteractionState.QUERY_COMPLETED).tone,
+        )
+    }
+
+    @Test
     fun targetDetailExposesResolutionSource() {
         assertEquals("talhão 3 · câmera", targetDetail("SPRAY", "plot-03", "VISUAL"))
         assertEquals("talhão 2 · voz", targetDetail("SPRAY", "plot-02", "VOICE"))

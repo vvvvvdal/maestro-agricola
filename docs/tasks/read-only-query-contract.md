@@ -2,9 +2,9 @@
 
 ## Status
 
-Especificada e implementada parcialmente em 25/09/2026. JEV-71 criou o
-historico em memoria do simulador; JEV-72 consome esse contrato para
-`PLOT_STATUS_QUERY`.
+Especificada e implementada em 25/09/2026. JEV-71 criou o historico em memoria
+do simulador; JEV-72 adicionou `PLOT_STATUS_QUERY` local, a rota `/read-only`
+e a resposta narravel no Android `mockDebug`.
 
 ## Objetivo
 
@@ -73,10 +73,10 @@ admitida e:
 consulta nao aceita alvo implicito como "aqui", nao recebe `confirmed`, nao
 possui intencao operacional e nao pode conter campos de `Command`.
 
-O futuro `ReadOnlyQueryTransport` usa contrato/versionamento proprio e uma rota
-de leitura distinta de `CommandTransport`. Sua implementacao deve aceitar
-somente queries permitidas, nao publicar metas ROS, nao chamar Dock/Undock e
-nao compartilhar a fila nem o parser de comandos.
+`ReadOnlyQueryTransport` usa contrato/versionamento proprio e a rota
+`/read-only`, distinta de `CommandTransport`, que permanece em `/`. A rota de
+leitura aceita somente queries permitidas, nao publica metas ROS, nao chama
+Dock/Undock e nao compartilha fila nem parser de comandos.
 
 ### Resposta narravel
 
@@ -124,6 +124,21 @@ WebSocket de comando, `Dock`, `Undock`, Nav2 ou `TargetResolver.observeTarget`.
 Uma resposta de leitura nao pode confirmar, encadear ou disparar uma acao
 fisica; uma nova operacao exige uma nova fala operacional e a confirmacao ja
 existente.
+
+## Implementacao JEV-72
+
+`PlotStatusQueryController` reconhece localmente perguntas de historico que
+combinam uma pista de pergunta e uma de operacao, por exemplo `qual foi a
+ultima pulverizacao no talhao dois?`. O `TargetResolver` exige `plot` ou
+`talhao` explicito e cadastrado; falta ou erro de alvo retorna `INVALID_QUERY`
+sem abrir transporte. Relato de fato passado, como `o produto foi pulverizado
+ontem`, continua no caminho `UNKNOWN` existente.
+
+Quando reconhecida, a consulta gera uma trilha de interface propria:
+`Talhao -> Consulta -> Buscar -> Resposta`. Ela nao pede confirmacao, nao muda
+o ultimo comando aceito pelo robo e bloqueia nova interacao enquanto a resposta
+da consulta estiver pendente. A tela e o TTS mostram somente frases
+deterministicas do contrato.
 
 ## Criterios para as tasks seguintes
 
