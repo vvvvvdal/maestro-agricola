@@ -91,7 +91,7 @@ do Qwen e ausencia de RAG neste experimento.
 | JEV-35 | DONE | 22/09 | JEV-34 | Wordmark limitado a viewport responsivo de 480 x 88 dp, sem corte em paisagem e retrato no SM-X510 em `mockDebug`. |
 | JEV-36 | DONE | 22/09 | JEV-34 | `mock` tem selecao explicita de baseline, Jev `SPRAY` e Jev `UNKNOWN`; a selecao so altera o cartao `INTENCAO`. `dat`, classificador local, jornada, transporte e comandos permanecem inalterados. |
 | JEV-37 | DONE | 23/09 | JEV-36, aprovacao mock | Demo interativa opt-in em `mockDebug`: proxy loopback fixo via `adb reverse`, chave fora do APK, teto de 24 tentativas, declaração de fala sem dado pessoal, falha fechada e bloqueio de `Command` antes do bridge. Testes focados passaram; no SM-X510 uma fala curta de doca foi classificada remotamente como `DOCK` com origem `Jev`, ficou pendente e expirou sem comando. Evidência em [`../../tasks/jev-local-proxy.md`](../../tasks/jev-local-proxy.md). |
-| JEV-38 | NEXT | 23/09 | JEV-37 | No `mockDebug`, `Jev remoto (Gazebo)` envia o `Command` estruturado ao bridge apenas após confirmação por voz; `dat` permanece sem Jev remoto. Teste unitário passou e APK foi instalado no SM-X510; falta uma única jornada E2E consentida no Gazebo antes de marcar DONE. Evidência em [`../../tasks/jev-local-proxy.md`](../../tasks/jev-local-proxy.md). |
+| JEV-38 | DONE | 24/09 | JEV-37 | No SM-X510, `Jev remoto (Gazebo)` classificou, esperou confirmação por voz e enviou `UNDOCK` estruturado ao bridge. O bridge aceitou a ação explícita e ROS reportou `is_docked: false`; `dat` permanece sem Jev remoto. Nenhuma mídia, transcrição ou chave foi persistida. Evidência em [`../../tasks/jev-local-proxy.md`](../../tasks/jev-local-proxy.md). |
 
 Detalhes de UI e estados: [`../../tasks/jev-ui-decision-visibility.md`](../../tasks/jev-ui-decision-visibility.md).
 
@@ -105,7 +105,7 @@ aprovado contra seu baseline local.
 
 | ID | Status | Dependencia | Entrega e criterio de aceite |
 | --- | --- | --- | --- |
-| JEV-70 | TODO | JEV-38 | Especificar o caminho somente leitura: `ReadOnlyQuery`, `OperationRecord` e resposta narravel. Define `plot`, resultado final, timestamp, origem e retencao; nao armazena foto, audio ou transcricao. Define tambem o limite entre roteamento de linguagem, consulta e `Command`. |
+| JEV-70 | NEXT | JEV-38 | Especificar o caminho somente leitura: `ReadOnlyQuery`, `OperationRecord` e resposta narravel. Define `plot`, resultado final, timestamp, origem e retencao; nao armazena foto, audio ou transcricao. Define tambem o limite entre roteamento de linguagem, consulta e `Command`. |
 | JEV-71 | TODO | JEV-70 | Implementar o historico de operacoes concluidas no simulador: uma pulverizacao so cria `OperationRecord` apos resultado final do bridge, com talhao e timestamp verificaveis. Falha, cancelamento e expiracao nao criam registro. Testes focados de sucesso e recusas passam. |
 | JEV-72 | TODO | JEV-70, JEV-71 | Implementar `PLOT_STATUS_QUERY` com baseline local separado do catalogo original: fala pede a ultima pulverizacao de um talhao, o Maestro consulta o historico e responde sem `Command`, WebSocket de comando ou ROS de movimento. Testar talhao encontrado, inexistente, sem historico e fala ambigua. |
 | JEV-73 | TODO | JEV-70 | Implementar `STATUS_QUERY`: leitura narravel do estado do robo por interface de consulta, sem emissao de `Command`. Testar estados conectado, aguardando, pendente, executando, desconectado e falha fechada. |

@@ -2,8 +2,9 @@
 
 ## Status
 
-Implementacao validada em 23/09/2026. O modo e somente demonstrativo no
-`mockDebug`; nao promove o Jev ao APK de producao nem revoga `HOLD`.
+Implementacao e jornada E2E no Gazebo validadas em 24/09/2026. O modo e
+somente demonstrativo no `mockDebug`; nao promove o Jev ao APK de producao nem
+revoga `HOLD`.
 
 ## Fluxo e limites
 
@@ -75,8 +76,16 @@ focado `JevIntentClassifierTest` passou com nove testes, incluindo
 no SM-X510. O ambiente headless do Gazebo e o bridge WebSocket em `18765`
 foram iniciados, com `adb reverse tcp:18765 tcp:18765` configurado.
 
-Pendência: executar uma única jornada E2E consentida no tablet com o proxy
-Jev ativo, confirmação por voz e bridge Gazebo disponível. O resultado deve
-provar envio aceito ou recusado pelo simulador, sem áudio, texto, chave ou
-captura persistidos. Até essa evidência, a implementação não pode ser descrita
-como E2E aprovada.
+Em 24/09/2026, no SM-X510 com consentimento de fala sem dados pessoais, a
+jornada `Jev remoto (Gazebo) -> confirmacao por voz -> UNDOCK` foi executada
+uma vez. O app informou que o comando foi aceito e que sairia da doca. O
+bridge registrou `Requesting explicit undock action`, o simulador recebeu o
+goal e o bridge confirmou `Undock goal accepted`. A consulta ROS posterior
+reportou `is_docked: false`.
+
+Nao foram persistidos audio, transcricao, chave, captura de tela ou logcat. Um
+probe TCP local usado antes da jornada nao completou handshake WebSocket e
+gerou um aviso isolado no log do bridge; ele nao veio do app e nao afetou o
+aceite do comando. A evidencia E2E prova somente o caminho `mockDebug` para o
+Gazebo; nao prova controle fisico, hardware DAT real ou adocao operacional do
+Jev.
