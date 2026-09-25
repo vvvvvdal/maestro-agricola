@@ -5,6 +5,7 @@ import java.util.UUID
 
 enum class InteractionState {
     IDLE,
+    INSPECTING,
     TARGET_READY,
     AWAITING_CONFIRMATION,
     SENDING,
@@ -66,6 +67,26 @@ class InteractionEngine(
         return result(
             "Alvo $id identificado",
             "Alvo ${plotLabel(id)}. Diga a ação desejada."
+        )
+    }
+
+    fun inspectionStarted(): InteractionResult {
+        clearTargetContext()
+        pendingIntent = "INSPECT_TARGET"
+        state = InteractionState.INSPECTING
+        return result(
+            "Lendo marcador",
+            "Lendo o marcador.",
+        )
+    }
+
+    fun inspectionCompleted(id: String): InteractionResult {
+        val observation = observeTarget(id)
+        pendingIntent = "INSPECT_TARGET"
+        return observation.copy(
+            message = "Marcador $id identificado",
+            speech = "Marcador ${plotLabel(id)} identificado.",
+            intent = "INSPECT_TARGET",
         )
     }
 

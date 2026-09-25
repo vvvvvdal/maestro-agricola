@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
     private val jevExecutor = Executors.newSingleThreadExecutor()
     private val jevRequest = AtomicLong(0)
     private val operationRequest = AtomicLong(0)
+    private val inspectionRequest = AtomicLong(0)
     private val uiHandler = Handler(Looper.getMainLooper())
     private var onMicrophoneGranted: (() -> Unit)? = null
     private val microphonePermission = registerForActivityResult(
@@ -114,6 +115,7 @@ class MainActivity : ComponentActivity() {
             var readOnlyPending by remember { mutableStateOf(false) }
             var operationTracking by remember { mutableStateOf<Command?>(null) }
             var operationSafetyHold by remember { mutableStateOf(false) }
+            var inspectionPending by remember { mutableStateOf(false) }
             var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
             val readOnlyRequest = remember { AtomicLong(0) }
@@ -377,7 +379,7 @@ class MainActivity : ComponentActivity() {
                     transcript = transcript,
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
-                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold,
+                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold || inspectionPending,
                     resetEnabled = !jevPending && !readOnlyPending && operationTracking == null,
                     remoteSessionConsentPrompt = remoteSessionConsentPrompt,
                     remoteBlockReason = remoteBlockReason,
@@ -388,13 +390,18 @@ class MainActivity : ComponentActivity() {
                     onDismissRemoteSession = { remoteSessionConsentPrompt = false },
                     onDismissRemoteBlock = { remoteBlockReason = null },
                     onLook = {
+                        val requestId = inspectionRequest.incrementAndGet()
+                        inspectionPending = true
                         jevRequest.incrementAndGet()
                         jevPending = false
                         language.cancelAssistant()
+                        apply(engine.inspectionStarted())
                         frameSource.captureTarget { outcome ->
                             runOnUiThread {
+                                if (inspectionRequest.get() != requestId) return@runOnUiThread
+                                inspectionPending = false
                                 outcome
-                                    .onSuccess { apply(engine.observeTarget(it.targetId)) }
+                                    .onSuccess { apply(engine.inspectionCompleted(it.targetId)) }
                                     .onFailure {
                                         apply(engine.targetCaptureFailed(
                                             it.message ?: "Falha ao capturar o alvo"
@@ -435,6 +442,8 @@ class MainActivity : ComponentActivity() {
                         operationRequest.incrementAndGet()
                         operationTracking = null
                         operationSafetyHold = false
+                        inspectionRequest.incrementAndGet()
+                        inspectionPending = false
                         remoteSessionConsentPrompt = false
                         remoteBlockReason = null
                         language.cancelAssistant()
@@ -450,6 +459,7 @@ class MainActivity : ComponentActivity() {
         languageController?.cancelAssistant()
         jevRequest.incrementAndGet()
         operationRequest.incrementAndGet()
+        inspectionRequest.incrementAndGet()
         uiHandler.removeCallbacksAndMessages(null)
         jevExecutor.shutdownNow()
         qwenEngine?.close()

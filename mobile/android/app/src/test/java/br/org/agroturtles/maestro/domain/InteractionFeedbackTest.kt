@@ -181,6 +181,22 @@ class InteractionFeedbackTest {
     }
 
     @Test
+    fun inspectionIdentifiesTheMarkerWithoutCreatingACommand() {
+        val engine = InteractionEngine { IntentPrediction("SPRAY", 0.99) }
+
+        val started = engine.inspectionStarted()
+        val completed = engine.inspectionCompleted("plot-03")
+
+        assertEquals(InteractionState.INSPECTING, started.state)
+        assertEquals("INSPECT_TARGET", started.intent)
+        assertNull(started.command)
+        assertEquals(InteractionState.TARGET_READY, completed.state)
+        assertEquals("INSPECT_TARGET", completed.intent)
+        assertEquals("plot-03", completed.targetId)
+        assertNull(completed.command)
+    }
+
+    @Test
     fun plotLabelReadsAsSpokenPortuguese() {
         assertEquals("talhão 3", plotLabel("plot-03"))
         assertEquals("talhão 12", plotLabel("plot-12"))

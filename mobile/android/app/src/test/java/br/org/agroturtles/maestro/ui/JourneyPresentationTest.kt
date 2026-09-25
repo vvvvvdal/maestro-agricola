@@ -93,6 +93,16 @@ class JourneyPresentationTest {
     }
 
     @Test
+    fun inspectionHasItsOwnReadOnlyJourney() {
+        assertEquals(
+            listOf("Captura", "Leitura", "Talhão", "Pronto"),
+            journeySteps(InteractionState.INSPECTING, "INSPECT_TARGET").map { it.label },
+        )
+        assertEquals(Tone.INFO, statusHeadline(InteractionState.INSPECTING).tone)
+        assertEquals("Inspecionar marcador", intentValue("INSPECT_TARGET"))
+    }
+
+    @Test
     fun targetDetailExposesResolutionSource() {
         assertEquals("talhão 3 · câmera", targetDetail("SPRAY", "plot-03", "VISUAL"))
         assertEquals("talhão 2 · voz", targetDetail("SPRAY", "plot-02", "VOICE"))

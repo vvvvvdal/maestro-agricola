@@ -447,7 +447,7 @@ private fun Actions(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             SecondaryAction(
-                text = "Olhar para o alvo",
+                text = "Inspecionar marcador",
                 onClick = onLook,
                 enabled = enabled,
             )
