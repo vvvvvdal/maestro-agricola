@@ -66,7 +66,7 @@ Com o proxy aberto, em outro terminal conecte o tablet por USB:
 ```
 
 No app `mockDebug`, abra **Ajustes de teste**, ative a demonstração remota e
-leia o aviso antes de selecionar `Jev remoto (Gazebo)`. Para encerrar, selecione
+leia o aviso antes de selecionar `Jev remoto`. Para encerrar, selecione
 `Local`, pare o proxy com `Ctrl+C` e execute `adb reverse --remove tcp:8787`.
 O runbook completo, limites e evidências estão em
 [`docs/tasks/jev-local-proxy.md`](docs/tasks/jev-local-proxy.md).

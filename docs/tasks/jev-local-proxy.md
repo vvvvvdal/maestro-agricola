@@ -45,14 +45,14 @@ python3 tools/jev_local_proxy.py --max-requests 24
 ```
 
 No `mockDebug`, abra `Ajustes de teste`, ative a demonstracao remota da sessao,
-leia o aviso e selecione `Jev remoto (Gazebo)`. Para usar um tablet sem Wi-Fi,
+leia o aviso e selecione `Jev remoto`. Para usar um tablet sem Wi-Fi,
 execute também `adb reverse tcp:18765 tcp:18765` e informe
 `ws://127.0.0.1:18765` no endpoint do app. Para encerrar, selecione `Local`,
 pare o proxy e execute `adb reverse --remove tcp:8787` e
 `adb reverse --remove tcp:18765`.
 
 Os cenarios visuais estaticos e o diagnostico de fixture foram removidos:
-`Local` usa o classificador local real e `Jev remoto (Gazebo)` usa somente a resposta
+`Local` usa o classificador local real e `Jev remoto` usa somente a resposta
 real do proxy. O cartao `INTENCAO` identifica a origem escolhida.
 
 ## Evidência de validação
@@ -81,7 +81,7 @@ no SM-X510. O ambiente headless do Gazebo e o bridge WebSocket em `18765`
 foram iniciados, com `adb reverse tcp:18765 tcp:18765` configurado.
 
 Em 24/09/2026, no SM-X510 com consentimento de fala sem dados pessoais, a
-jornada `Jev remoto (Gazebo) -> confirmacao por voz -> UNDOCK` foi executada
+jornada `Jev remoto -> confirmacao por voz -> UNDOCK` foi executada
 uma vez. O app informou que o comando foi aceito e que sairia da doca. O
 bridge registrou `Requesting explicit undock action`, o simulador recebeu o
 goal e o bridge confirmou `Undock goal accepted`. A consulta ROS posterior
