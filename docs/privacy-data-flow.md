@@ -83,11 +83,12 @@ O assistente Qwen não participa desse fluxo. O `LanguageInteractionController` 
 O checkbox de fala de teste limita a demonstração, mas não é uma garantia de
 anonimização. A JEV-69 adiciona uma barreira preventiva antes do proxy: bloqueio
 determinístico de padrões evidentes de dado pessoal, CPF/CNPJ, telefone, URL,
-tamanho excessivo ou fora do escopo remoto; confirmação por turno mostrando a
-transcrição que será enviada; e limpeza do estado transitório. Uma fala bloqueada
-é descartada localmente, não é enviada ao Jev, não chama Qwen e não pode criar
-`Command`. Para seguir localmente, o operador troca para **Local** e inicia uma
-nova interação; a fala bloqueada não é reaproveitada.
+tamanho excessivo ou fora do escopo remoto; e uma autorização remota de sessão,
+com aviso explícito sobre o que não dizer, escrever ou compartilhar. A
+autorização pode ser revogada e não sobrevive ao encerramento do app. Uma fala
+bloqueada é descartada localmente, não é enviada ao Jev, não chama Qwen e não
+pode criar `Command`. Para seguir localmente, o operador troca para **Local** e
+inicia uma nova interação; a fala bloqueada não é reaproveitada.
 
 Um filtro de “assunto agrícola” não será apresentado como detector confiável de
 dado pessoal: conteúdo pessoal pode estar misturado a uma fala operacional. O

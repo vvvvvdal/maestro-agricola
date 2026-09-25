@@ -2,25 +2,27 @@
 
 ## Status
 
-JEV-69A foi implementada em 24/09/2026; JEV-69B ainda valida o comportamento
-no SM-X510. Esta e uma melhoria do modo demonstrativo `mockDebug`, nao uma
-auditoria LGPD completa nem uma conclusao juridica.
+JEV-69A foi implementada em 24/09/2026 e recebeu ajuste de UX de consentimento
+na mesma data; JEV-69B ainda valida o comportamento no SM-X510. Esta e uma
+melhoria do modo demonstrativo `mockDebug`, nao uma auditoria LGPD completa nem
+uma conclusao juridica.
 
 ## Problema
 
 O modo Jev remoto envia uma transcricao curta ao proxy loopback e este a um
-servico externo. O checkbox `Fala de teste sem dados pessoais` reduz o risco,
-mas nao impede que uma fala contenha identificador, URL, relato pessoal ou
-conteudo fora do escopo. Depois de transmitido, apagar a string local nao
-desfaz a divulgacao externa.
+servico externo. Uma autorizacao de sessao reduz a friccao da demonstracao, mas
+nao impede que uma fala contenha identificador, URL, relato pessoal ou conteudo
+fora do escopo. Depois de transmitido, apagar a string local nao desfaz a
+divulgacao externa.
 
 ## Decisao
 
 Criar `RemoteTranscriptGate` antes de `JevChoiceEvaluator`. A ordem sera:
 
 ```text
-fala -> transcricao em memoria -> gate deterministico local
-     -> confirmacao de envio por turno -> proxy loopback -> Jev
+ativar demonstracao -> aviso e autorizacao de sessao revogavel
+     -> fala -> transcricao em memoria -> gate deterministico local
+     -> proxy loopback -> Jev
 ```
 
 O gate bloqueia antes da rede quando encontrar e-mail, telefone, CPF/CNPJ,
@@ -28,15 +30,17 @@ URL, tamanho excessivo ou formato fora do escopo remoto. A UI deve dizer que a
 fala nao foi enviada e orientar o operador a voltar ao modo Local para uma nova
 interacao. O bloqueio nao vai chamar Jev, Qwen, WebSocket ou `Command`.
 
-O filtro nao tentara decidir que todo texto “agricola” e seguro: uma fala pode
-misturar comando e dado pessoal. Por isso, a confirmacao por turno mostra que
-o texto sera enviado e permite recusa. O app e o proxy nao gravam a
-transcricao; o estado Compose e descartado no fim do turno.
+O aviso de ativacao enumera o que nao deve ser dito, escrito ou compartilhado:
+nomes completos, e-mail, telefone, CPF/CNPJ, link, senha, endereco ou qualquer
+informacao pessoal/confidencial. O filtro nao tentara decidir que todo texto
+“agricola” e seguro: uma fala pode misturar comando e dado pessoal. O app e o
+proxy nao gravam a transcricao; o estado Compose e descartado no fim do turno.
 
 ## Criterios de aceite
 
 - O caminho padrao continua local; `dat` nunca habilita Jev remoto.
-- Cada envio remoto exige declaracao visivel e confirmacao no turno atual.
+- Ativar o modo remoto exige declaracao visivel, autorizacao de sessao
+  revogavel e alerta sobre o que nao compartilhar.
 - Padroes bloqueados falham localmente, sem chamada HTTP externa.
 - O bloqueio descarta o turno, permite retornar ao modo Local e nao pode
   produzir `Command`.

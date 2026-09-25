@@ -96,10 +96,10 @@ fun MaestroScreen(
     onTranscriptChange: (String) -> Unit,
     secondsToExpire: Int,
     interactionPending: Boolean,
-    remoteTranscriptForConsent: String?,
+    remoteSessionConsentPrompt: Boolean,
     remoteBlockReason: RemoteTranscriptBlockReason?,
-    onConfirmRemoteTranscript: () -> Unit,
-    onDismissRemoteTranscript: () -> Unit,
+    onConfirmRemoteSession: () -> Unit,
+    onDismissRemoteSession: () -> Unit,
     onDismissRemoteBlock: () -> Unit,
     onLook: () -> Unit,
     onListen: () -> Unit,
@@ -191,11 +191,10 @@ fun MaestroScreen(
             )
         }
 
-        remoteTranscriptForConsent?.let { transcriptForConsent ->
-            RemoteTranscriptConsentDialog(
-                transcript = transcriptForConsent,
-                onConfirm = onConfirmRemoteTranscript,
-                onDismiss = onDismissRemoteTranscript,
+        if (remoteSessionConsentPrompt) {
+            RemoteSessionConsentDialog(
+                onConfirm = onConfirmRemoteSession,
+                onDismiss = onDismissRemoteSession,
             )
         }
         remoteBlockReason?.let { reason ->
@@ -590,41 +589,51 @@ private fun JevRemoteSelector(
                 onCheckedChange = onConsentChange,
                 enabled = interactionsEnabled,
             )
-            Text(
-                text = "Usar somente fala de teste sem dados pessoais",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaestroBlue,
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = "Ativar demonstração remota nesta sessão",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaestroBlue,
+                )
+                Text(
+                    text = "Mostra um aviso antes de ativar.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaestroBlue.copy(alpha = 0.75f),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun RemoteTranscriptConsentDialog(
-    transcript: String,
+private fun RemoteSessionConsentDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Enviar fala de teste ao Jev?") },
+        title = { Text("Ativar demonstração remota?") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "Esta transcrição curta será enviada ao serviço externo apenas para classificar uma intenção.",
+                    text = "No modo Jev remoto, falas digitadas ou reconhecidas serão enviadas ao serviço externo apenas para classificar uma intenção.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = transcript,
+                    text = "Não diga, escreva ou compartilhe nomes completos, e-mails, telefones, CPF/CNPJ, links, senhas, endereços ou qualquer informação pessoal ou confidencial.",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaestroGreen,
+                )
+                Text(
+                    text = "O app bloqueia alguns padrões evidentes, mas isso não substitui sua revisão. Desmarque para revogar a autorização ou selecione Local para classificar sem envio.",
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text("Enviar ao Jev")
+                Text("Ativar Jev remoto")
             }
         },
         dismissButton = {

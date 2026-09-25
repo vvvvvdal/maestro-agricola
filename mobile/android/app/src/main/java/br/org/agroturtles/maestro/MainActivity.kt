@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
             var jevRemoteEnabled by remember { mutableStateOf(false) }
             var jevRemoteConsent by remember { mutableStateOf(false) }
             var jevPending by remember { mutableStateOf(false) }
-            var remoteTranscriptForConsent by remember { mutableStateOf<String?>(null) }
+            var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
 
             fun apply(next: InteractionResult) {
@@ -205,10 +205,13 @@ class MainActivity : ComponentActivity() {
             }
 
             fun interpret(text: String) {
-                if (jevPending || remoteTranscriptForConsent != null) return
+                if (jevPending) return
                 if (jevRemoteEnabled && BuildConfig.FRAME_SOURCE == "mock") {
                     when (val decision = RemoteTranscriptGate.evaluate(text)) {
-                        RemoteTranscriptDecision.Allowed -> remoteTranscriptForConsent = text
+                        RemoteTranscriptDecision.Allowed -> {
+                            transcript = ""
+                            classifyRemotely(text)
+                        }
                         is RemoteTranscriptDecision.Blocked -> {
                             transcript = ""
                             remoteBlockReason = decision.reason
@@ -253,8 +256,11 @@ class MainActivity : ComponentActivity() {
                         jevEvaluator.enabled = jevRemoteEnabled
                     },
                     onJevRemoteConsentChange = { consent ->
-                        jevRemoteConsent = consent
-                        if (!consent) {
+                        if (consent) {
+                            remoteSessionConsentPrompt = true
+                        } else {
+                            remoteSessionConsentPrompt = false
+                            jevRemoteConsent = false
                             jevRequest.incrementAndGet()
                             jevPending = false
                             jevRemoteEnabled = false
@@ -267,23 +273,13 @@ class MainActivity : ComponentActivity() {
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
                     interactionPending = jevPending,
-                    remoteTranscriptForConsent = remoteTranscriptForConsent,
+                    remoteSessionConsentPrompt = remoteSessionConsentPrompt,
                     remoteBlockReason = remoteBlockReason,
-                    onConfirmRemoteTranscript = {
-                        remoteTranscriptForConsent?.let { text ->
-                            remoteTranscriptForConsent = null
-                            transcript = ""
-                            classifyRemotely(text)
-                        }
+                    onConfirmRemoteSession = {
+                        remoteSessionConsentPrompt = false
+                        jevRemoteConsent = true
                     },
-                    onDismissRemoteTranscript = {
-                        remoteTranscriptForConsent = null
-                        transcript = ""
-                        apply(engine.reset().copy(
-                            message = "Envio ao Jev cancelado. Nada foi enviado.",
-                            speech = null,
-                        ))
-                    },
+                    onDismissRemoteSession = { remoteSessionConsentPrompt = false },
                     onDismissRemoteBlock = { remoteBlockReason = null },
                     onLook = {
                         jevRequest.incrementAndGet()
@@ -328,7 +324,7 @@ class MainActivity : ComponentActivity() {
                     onReset = {
                         jevRequest.incrementAndGet()
                         jevPending = false
-                        remoteTranscriptForConsent = null
+                        remoteSessionConsentPrompt = false
                         remoteBlockReason = null
                         language.cancelAssistant()
                         frameSource.cancelCapture()
