@@ -165,6 +165,38 @@ class InteractionFeedbackTest {
     }
 
     @Test
+    fun missionPreviewNeverCreatesACommandAndCanBeCancelledOrTimedOut() {
+        val engine = InteractionEngine { IntentPrediction("UNKNOWN", 0.0) }
+
+        val preview = engine.missionPreviewed(stepCount = 4)
+        assertEquals(InteractionState.MISSION_PREVIEW, preview.state)
+        assertEquals(MISSION_PREVIEW_INTENT, preview.intent)
+        assertNull(preview.command)
+        assertTrue(preview.speech!!.contains("confirmação"))
+
+        val cancelled = engine.missionPreviewCancelled()
+        assertEquals(InteractionState.CANCELLED, cancelled.state)
+        assertNull(cancelled.command)
+        assertTrue(cancelled.speech!!.contains("Nenhuma ação"))
+
+        val expired = engine.missionPreviewCancelled(expired = true)
+        assertEquals(InteractionState.CANCELLED, expired.state)
+        assertNull(expired.command)
+        assertTrue(expired.message.contains("expirada"))
+    }
+
+    @Test
+    fun rejectedMissionFailsClosedWithoutACommand() {
+        val engine = InteractionEngine { IntentPrediction("UNKNOWN", 0.0) }
+
+        val rejected = engine.missionPreviewRejected("Voltar para a doca precisa ser a última etapa.")
+
+        assertEquals(InteractionState.AMBIGUOUS, rejected.state)
+        assertNull(rejected.command)
+        assertTrue(rejected.speech!!.contains("Nada foi enviado"))
+    }
+
+    @Test
     fun targetCaptureFailureIsFailClosedAndCanBeReset() {
         val engine = InteractionEngine { IntentPrediction("SPRAY", 0.99) }
 

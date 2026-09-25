@@ -54,7 +54,11 @@ import br.org.agroturtles.maestro.R
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.MissionPlan
+import br.org.agroturtles.maestro.domain.MissionStep
+import br.org.agroturtles.maestro.domain.MissionStepIntent
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
+import br.org.agroturtles.maestro.domain.plotLabel
 
 private const val MOCK_FRAME_SOURCE = "mock"
 
@@ -97,6 +101,7 @@ fun MaestroScreen(
     secondsToExpire: Int,
     interactionPending: Boolean,
     resetEnabled: Boolean,
+    missionPreview: MissionPlan?,
     remoteSessionConsentPrompt: Boolean,
     remoteBlockReason: RemoteTranscriptBlockReason?,
     onConfirmRemoteSession: () -> Unit,
@@ -105,6 +110,7 @@ fun MaestroScreen(
     onLook: () -> Unit,
     onListen: () -> Unit,
     onInterpret: () -> Unit,
+    onCancelMissionPreview: () -> Unit,
     onReset: () -> Unit,
 ) {
     var toolsExpanded by rememberSaveable { mutableStateOf(frameSource == MOCK_FRAME_SOURCE) }
@@ -167,6 +173,13 @@ fun MaestroScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            missionPreview?.let { plan ->
+                MissionPreviewCard(
+                    plan = plan,
+                    onCancel = onCancelMissionPreview,
+                )
+            }
+
             Actions(
                 state = result.state,
                 enabled = !interactionPending,
@@ -206,6 +219,84 @@ fun MaestroScreen(
             )
         }
     }
+}
+
+@Composable
+private fun MissionPreviewCard(plan: MissionPlan, onCancel: () -> Unit) {
+    Surface(
+        color = MaestroYellowSoft,
+        shape = CardShape,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text(
+                text = "PREVIEW DE MISSÃO",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaestroGreen.copy(alpha = 0.7f),
+            )
+            Text(
+                text = "Revise as etapas",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaestroGreen,
+            )
+            Text(
+                text = "Nenhuma ação foi enviada. Cada ação física pedirá confirmação por voz quando o executor existir.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaestroGreen.copy(alpha = 0.85f),
+            )
+            plan.steps.forEachIndexed { index, step ->
+                MissionPreviewStep(index = index, step = step)
+            }
+            OutlinedButton(
+                onClick = onCancel,
+                modifier = Modifier.fillMaxWidth(),
+                shape = CardShape,
+            ) {
+                Text("Cancelar plano")
+            }
+        }
+    }
+}
+
+@Composable
+private fun MissionPreviewStep(index: Int, step: MissionStep) {
+    val physical = step.intent in setOf(
+        MissionStepIntent.UNDOCK,
+        MissionStepIntent.SPRAY,
+        MissionStepIntent.DOCK,
+    )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Chip(text = "${index + 1}", tone = Tone.ATTENTION)
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = missionStepLabel(step),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaestroGreen,
+            )
+            Text(
+                text = if (physical) "confirmação por voz por etapa" else "consulta somente leitura",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaestroGreen.copy(alpha = 0.75f),
+            )
+        }
+    }
+}
+
+private fun missionStepLabel(step: MissionStep): String = when (step.intent) {
+    MissionStepIntent.UNDOCK -> "Sair da doca"
+    MissionStepIntent.SPRAY -> "Pulverizar ${plotLabel(step.targetId)}"
+    MissionStepIntent.PLOT_STATUS_QUERY -> "Consultar histórico de ${plotLabel(step.targetId)}"
+    MissionStepIntent.DOCK -> "Voltar para a doca"
 }
 
 @Composable

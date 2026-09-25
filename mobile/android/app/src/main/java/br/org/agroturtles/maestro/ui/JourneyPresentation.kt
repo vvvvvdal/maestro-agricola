@@ -58,6 +58,9 @@ fun statusHeadline(state: InteractionState, intent: String? = null): StatusHeadl
     InteractionState.QUERY_COMPLETED ->
         StatusHeadline("CONSULTA CONCLUÍDA", "Nenhum comando enviado", Tone.SUCCESS)
 
+    InteractionState.MISSION_PREVIEW ->
+        StatusHeadline("PLANO PARA REVISÃO", "Nenhuma ação foi enviada", Tone.ATTENTION)
+
     InteractionState.CANCELLED ->
         StatusHeadline("CANCELADO", "Nada foi enviado ao robô", Tone.NEUTRAL)
 
@@ -81,10 +84,29 @@ private val ROBOT_QUERY_STEP_LABELS = listOf("Robô", "Consulta", "Buscar", "Res
 private const val PLOT_STATUS_QUERY = "PLOT_STATUS_QUERY"
 private const val STATUS_QUERY = "STATUS_QUERY"
 private const val INSPECT_TARGET = "INSPECT_TARGET"
+private const val MISSION_PREVIEW = "MISSION_PREVIEW"
 
 private val TARGETLESS_INTENTS = setOf("DOCK", "UNDOCK")
 
 fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
+    if (intent == MISSION_PREVIEW) {
+        val statuses = when (state) {
+            InteractionState.MISSION_PREVIEW -> listOf(
+                StepStatus.DONE, StepStatus.ACTIVE, StepStatus.PENDING, StepStatus.PENDING,
+            )
+
+            InteractionState.CANCELLED -> listOf(
+                StepStatus.DONE, StepStatus.BLOCKED, StepStatus.PENDING, StepStatus.PENDING,
+            )
+
+            else -> listOf(
+                StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING,
+            )
+        }
+        return listOf("Plano", "Revisar", "Por etapa", "Executar").mapIndexed { index, label ->
+            JourneyStep(label, statuses[index])
+        }
+    }
     if (intent == INSPECT_TARGET) {
         val statuses = when (state) {
             InteractionState.INSPECTING -> listOf(StepStatus.ACTIVE, StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING)
@@ -156,7 +178,8 @@ fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
         )
 
         InteractionState.QUERYING,
-        InteractionState.QUERY_COMPLETED -> listOf(
+        InteractionState.QUERY_COMPLETED,
+        InteractionState.MISSION_PREVIEW -> listOf(
             StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING, StepStatus.PENDING,
         )
 
@@ -177,12 +200,14 @@ fun journeySteps(state: InteractionState, intent: String?): List<JourneyStep> {
 }
 
 fun targetValue(intent: String?, targetId: String?): String = when {
+    intent == MISSION_PREVIEW -> "ver etapas"
     intent in TARGETLESS_INTENTS -> "não requer alvo"
     targetId.isNullOrBlank() -> "—"
     else -> targetId
 }
 
 fun targetDetail(intent: String?, targetId: String?, targetSource: String?): String = when {
+    intent == MISSION_PREVIEW -> "alvos definidos no plano"
     intent in TARGETLESS_INTENTS -> "comando de doca"
     targetId.isNullOrBlank() -> "olhe para a placa ou diga o ID"
     else -> "${plotLabel(targetId)} · ${targetSourceLabel(targetSource)}"
@@ -200,6 +225,7 @@ fun intentValue(intent: String?): String = when (intent) {
     STATUS_QUERY -> "Consultar estado do robô"
     PLOT_STATUS_QUERY -> "Consultar histórico do talhão"
     INSPECT_TARGET -> "Inspecionar marcador"
+    MISSION_PREVIEW -> "Revisar missão"
     else -> actionLabel(intent)
 }
 
@@ -219,6 +245,12 @@ fun intentPresentation(
     confidence: Double?,
     source: String?,
 ): IntentPresentation = when {
+    intent == MISSION_PREVIEW -> IntentPresentation(
+        value = "Revisar missão",
+        detail = "plano local · nenhum comando enviado",
+        tone = Tone.ATTENTION,
+    )
+
     intent != null && label == null -> IntentPresentation(
         value = intentValue(intent),
         detail = "comando confirmado",

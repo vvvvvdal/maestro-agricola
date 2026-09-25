@@ -15,6 +15,7 @@ enum class InteractionState {
     OPERATION_FAILED,
     QUERYING,
     QUERY_COMPLETED,
+    MISSION_PREVIEW,
     CANCELLED,
     AMBIGUOUS,
     ERROR,
@@ -162,6 +163,38 @@ class InteractionEngine(
         return result(
             "Confirmação expirada",
             "Tempo esgotado. Operação cancelada e nada foi enviado."
+        )
+    }
+
+    fun missionPreviewed(stepCount: Int): InteractionResult {
+        clearTargetContext()
+        pendingIntent = MISSION_PREVIEW_INTENT
+        state = InteractionState.MISSION_PREVIEW
+        return result(
+            "Plano com $stepCount etapas. Revise antes de executar.",
+            "Plano com $stepCount etapas. Revise as etapas. Cada ação física pedirá confirmação antes de executar.",
+        )
+    }
+
+    fun missionPreviewCancelled(expired: Boolean = false): InteractionResult {
+        clearTargetContext()
+        state = InteractionState.CANCELLED
+        return result(
+            if (expired) "Revisão do plano expirada" else "Plano cancelado",
+            if (expired) {
+                "Tempo de revisão esgotado. Nenhuma ação foi enviada ao robô."
+            } else {
+                "Plano cancelado. Nenhuma ação foi enviada ao robô."
+            },
+        )
+    }
+
+    fun missionPreviewRejected(reason: String): InteractionResult {
+        clearTargetContext()
+        state = InteractionState.AMBIGUOUS
+        return result(
+            "Missão não criada: $reason",
+            "Não criei a missão. $reason Nada foi enviado ao robô.",
         )
     }
 

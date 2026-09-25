@@ -60,8 +60,9 @@ persistidos com o plano.
 ## Confirmacao e execucao futura
 
 Um preview nao contem `confirmed` e nunca pode reutilizar uma confirmacao de
-plano como confirmacao de movimento. Em JEV-77, o operador revisa o plano. Em
-JEV-78, antes de cada `UNDOCK`, `SPRAY` ou `DOCK`, o app pede nova confirmacao
+plano como confirmacao de movimento. Em JEV-77, o operador somente revisa ou
+ancela o plano. Em JEV-78, antes de cada `UNDOCK`, `SPRAY` ou `DOCK`, o app
+pede nova confirmacao
 por audio e gera um `Command` individual ja existente. `PLOT_STATUS_QUERY` nao
 autoriza o proximo passo: resposta invalida, indisponivel ou qualquer falha
 pausa o plano e exige revisao do operador.
@@ -78,11 +79,33 @@ as etapas seguintes e nao tenta dock, undock ou spray implicitos.
   mapa, verbo nao permitido, ordem invalida ou ambiguidade.
 - O preview nao chama `CommandTransport`, `/read-only`, Jev, Qwen, WebSocket ou
   ROS.
-- Cada acao fisica exige confirmacao por audio individual no momento da etapa.
+- O preview mostra que cada acao fisica exigira confirmacao por audio individual
+  no momento da etapa; essa confirmacao e o executor pertencem a JEV-78.
 - O executor para na primeira falha e registra apenas estado minimo da sessao.
 
 ## Fora de escopo
 
-Implementar parser, UI, confirmacao, transporte, executor, Gazebo ou hardware.
-Esta task nao altera `command.schema.json` e nao autoriza `MissionPlan` como
-payload de ROS.
+JEV-76 nao implementa parser, UI, confirmacao, transporte, executor, Gazebo ou
+hardware. Esta task nao altera `command.schema.json` e nao autoriza
+`MissionPlan` como payload de ROS.
+
+## Entrega JEV-77
+
+O `mockDebug` agora reconhece localmente uma fala composta pela gramatica
+fechada e produz um `MissionPlan` somente em memoria. O preview mostra as
+etapas, identifica quais dependem de confirmacao por voz futura e permite
+cancelamento explicito. Ele expira em 60 segundos; expirar e cancelar mantem o
+robo em espera e nao chamam Jev, Qwen, `CommandTransport`, WebSocket, ROS ou
+`/read-only`.
+
+Evidencias:
+
+- `MissionPreviewParserTest`, `InteractionFeedbackTest` e
+  `JourneyPresentationTest` passaram no `mockDebug`;
+- `assembleMockDebug` passou;
+- no SM-X510, a fala digitada equivalente ao exemplo criou as quatro etapas
+  esperadas e `Cancelar plano` voltou ao estado sem preview, com o cartao do
+  robo em `Aguardando comando`.
+
+JEV-78 continua sendo a unica task autorizada a transformar etapas em
+`Command` individuais e validar o fluxo com Gazebo.

@@ -103,6 +103,33 @@ class JourneyPresentationTest {
     }
 
     @Test
+    fun missionPreviewIsReviewNotExecution() {
+        assertEquals(
+            listOf("Plano", "Revisar", "Por etapa", "Executar"),
+            journeySteps(InteractionState.MISSION_PREVIEW, "MISSION_PREVIEW").map { it.label },
+        )
+        assertEquals(
+            listOf(StepStatus.DONE, StepStatus.ACTIVE, StepStatus.PENDING, StepStatus.PENDING),
+            journeySteps(InteractionState.MISSION_PREVIEW, "MISSION_PREVIEW").map { it.status },
+        )
+        assertEquals(Tone.ATTENTION, statusHeadline(InteractionState.MISSION_PREVIEW).tone)
+        assertEquals("Revisar missão", intentValue("MISSION_PREVIEW"))
+        assertEquals("ver etapas", targetValue("MISSION_PREVIEW", null))
+        assertEquals(
+            "alvos definidos no plano",
+            targetDetail("MISSION_PREVIEW", null, null),
+        )
+        assertEquals(
+            IntentPresentation(
+                "Revisar missão",
+                "plano local · nenhum comando enviado",
+                Tone.ATTENTION,
+            ),
+            intentPresentation("MISSION_PREVIEW", null, null, null),
+        )
+    }
+
+    @Test
     fun targetDetailExposesResolutionSource() {
         assertEquals("talhão 3 · câmera", targetDetail("SPRAY", "plot-03", "VISUAL"))
         assertEquals("talhão 2 · voz", targetDetail("SPRAY", "plot-02", "VOICE"))

@@ -22,6 +22,9 @@ import br.org.agroturtles.maestro.domain.JevIntentClassifier
 import br.org.agroturtles.maestro.domain.LanguageDispatch
 import br.org.agroturtles.maestro.domain.LanguageInteractionController
 import br.org.agroturtles.maestro.domain.LocalIntentClassifier
+import br.org.agroturtles.maestro.domain.MissionPlan
+import br.org.agroturtles.maestro.domain.MissionPreviewParseResult
+import br.org.agroturtles.maestro.domain.MissionPreviewParser
 import br.org.agroturtles.maestro.domain.PlotStatusQueryController
 import br.org.agroturtles.maestro.domain.QwenDomainAssistant
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
@@ -54,6 +57,7 @@ private const val QWEN_MODEL_FILENAME = "qwen2.5-1.5b-q4_k_m.gguf"
 private const val ASSISTANT_PROCESSING_MESSAGE = "Processando resposta local…"
 private const val ASSISTANT_ERROR_MESSAGE =
     "Assistente local indisponível. Nada foi enviado ao robô."
+private const val MISSION_PREVIEW_TIMEOUT_MILLIS = 60_000L
 
 
 class MainActivity : ComponentActivity() {
@@ -83,6 +87,7 @@ class MainActivity : ComponentActivity() {
         val jevEvaluator = JevProxyChoiceEvaluator()
         val jevClassifier = JevIntentClassifier(jevEvaluator)
         val targetResolver = TargetResolver.fromJson(targetMapJson)
+        val missionPreviewParser = MissionPreviewParser(targetResolver)
         val engine = InteractionEngine(
             classifier,
             targetResolver,
@@ -120,6 +125,7 @@ class MainActivity : ComponentActivity() {
             var inspectionPending by remember { mutableStateOf(false) }
             var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
+            var missionPreview by remember { mutableStateOf<MissionPlan?>(null) }
             val readOnlyRequest = remember { AtomicLong(0) }
             val readOnlyLanguageRouter = remember { ReadOnlyLanguageRouter() }
             val plotStatusQueries = remember(endpoint) {
@@ -307,8 +313,23 @@ class MainActivity : ComponentActivity() {
             }
 
             fun interpret(text: String) {
-                if (jevPending || readOnlyPending || operationTracking != null) return
+                if (jevPending || readOnlyPending || operationTracking != null || missionPreview != null) return
                 if (engine.state in setOf(InteractionState.IDLE, InteractionState.TARGET_READY)) {
+                    when (val missionResult = missionPreviewParser.parse(text)) {
+                        MissionPreviewParseResult.NotApplicable -> Unit
+                        is MissionPreviewParseResult.Preview -> {
+                            transcript = ""
+                            missionPreview = missionResult.plan
+                            apply(engine.missionPreviewed(missionResult.plan.steps.size))
+                            return
+                        }
+
+                        is MissionPreviewParseResult.Rejected -> {
+                            transcript = ""
+                            apply(engine.missionPreviewRejected(missionResult.reason))
+                            return
+                        }
+                    }
                     if (readOnlyLanguageRouter.route(text) == ReadOnlyLanguageRoute.INSPECT_TARGET) {
                         inspectMarker()
                         return
@@ -377,6 +398,15 @@ class MainActivity : ComponentActivity() {
                 apply(engine.confirmationTimedOut())
             }
 
+            LaunchedEffect(missionPreview?.planId) {
+                val currentPlan = missionPreview ?: return@LaunchedEffect
+                delay(MISSION_PREVIEW_TIMEOUT_MILLIS)
+                if (missionPreview?.planId == currentPlan.planId) {
+                    missionPreview = null
+                    apply(engine.missionPreviewCancelled(expired = true))
+                }
+            }
+
             MaestroTheme {
                 MaestroScreen(
                     result = result,
@@ -410,8 +440,9 @@ class MainActivity : ComponentActivity() {
                     transcript = transcript,
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
-                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold || inspectionPending,
-                    resetEnabled = !jevPending && !readOnlyPending && operationTracking == null,
+                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold || inspectionPending || missionPreview != null,
+                    resetEnabled = !jevPending && !readOnlyPending && operationTracking == null && missionPreview == null,
+                    missionPreview = missionPreview,
                     remoteSessionConsentPrompt = remoteSessionConsentPrompt,
                     remoteBlockReason = remoteBlockReason,
                     onConfirmRemoteSession = {
@@ -445,6 +476,10 @@ class MainActivity : ComponentActivity() {
                         microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
                     },
                     onInterpret = { interpret(transcript) },
+                    onCancelMissionPreview = {
+                        missionPreview = null
+                        apply(engine.missionPreviewCancelled())
+                    },
                     onReset = {
                         jevRequest.incrementAndGet()
                         jevPending = false
@@ -457,6 +492,7 @@ class MainActivity : ComponentActivity() {
                         inspectionPending = false
                         remoteSessionConsentPrompt = false
                         remoteBlockReason = null
+                        missionPreview = null
                         language.cancelAssistant()
                         frameSource.cancelCapture()
                         apply(engine.reset())
