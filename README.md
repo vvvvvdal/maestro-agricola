@@ -47,6 +47,30 @@ O Maestro Agrícola permite que o operador olhe para um alvo no campo, diga a a�
 > budget e gates:
 > [`docs/study-groups/jev-rl-2026-10-01/`](docs/study-groups/jev-rl-2026-10-01/).
 
+### Demo Jev remota (`test/jev`)
+
+Somente para o `mockDebug` e frases sintéticas, sem dados pessoais. No terminal
+do operador, a chave fica apenas na sessão atual:
+
+```bash
+read -rsp 'TYPESAFE_API_KEY: ' TYPESAFE_API_KEY
+echo
+export TYPESAFE_API_KEY
+python3 tools/jev_local_proxy.py --max-requests 24
+```
+
+Com o proxy aberto, em outro terminal conecte o tablet por USB:
+
+```bash
+/home/felipe/Android/Sdk/platform-tools/adb reverse tcp:8787 tcp:8787
+```
+
+No app `mockDebug`, abra **Ajustes de teste**, ative a demonstração remota e
+leia o aviso antes de selecionar `Jev remoto (Gazebo)`. Para encerrar, selecione
+`Local`, pare o proxy com `Ctrl+C` e execute `adb reverse --remove tcp:8787`.
+O runbook completo, limites e evidências estão em
+[`docs/tasks/jev-local-proxy.md`](docs/tasks/jev-local-proxy.md).
+
 ## Jornada principal
 
 1. **Olhar:** no produto, a câmera dos óculos captura o alvo centralizado; no MVP pré-hardware, o DAT 0.9.0 usa o MockDeviceKit explicitamente identificado.

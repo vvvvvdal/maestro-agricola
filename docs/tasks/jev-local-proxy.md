@@ -19,11 +19,12 @@ criterios, nao registra texto ou chave e conta no maximo 24 tentativas HTTP
 externas por processo, incluindo retry. O Android nao recebe
 `TYPESAFE_API_KEY`; falha retorna `UNKNOWN`.
 
-O operador precisa marcar no app que usara fala de teste sem dados pessoais.
-Como barreira complementar, o proxy recusa e-mail, telefone e URL evidentes;
-isso nao substitui julgamento humano nem anonimização completa. Alvo,
-estado do robô, `Command`, WebSocket e ROS nunca seguem para o Jev. O Jev
-devolve somente uma escolha entre os seis rótulos. No flavor `mock`, uma
+O operador precisa ativar a demonstracao remota da sessao e ler o aviso sobre o
+que nao deve dizer, escrever ou compartilhar. Como barreira complementar, o
+app e o proxy recusam e-mail, telefone, CPF/CNPJ, URL, texto longo e fala fora
+do escopo remoto; isso nao substitui julgamento humano nem anonimização
+completa. Alvo, estado do robô, `Command`, WebSocket e ROS nunca seguem para o
+Jev. O Jev devolve somente uma escolha entre os seis rótulos. No flavor `mock`, uma
 escolha remota que atravesse a confirmação explícita gera o mesmo `Command`
 estruturado do classificador local e o envia ao bridge do Gazebo. `dat` não
 oferece Jev remoto; hardware físico não faz parte desta demonstração.
@@ -36,12 +37,15 @@ pendente, evitando chamadas concorrentes acidentais.
 ## Operação local após a validação
 
 ```bash
+read -rsp 'TYPESAFE_API_KEY: ' TYPESAFE_API_KEY
+echo
+export TYPESAFE_API_KEY
 python3 tools/jev_local_proxy.py --max-requests 24
 /home/felipe/Android/Sdk/platform-tools/adb reverse tcp:8787 tcp:8787
 ```
 
-No `mockDebug`, abra `Ajustes de teste`, marque a fala de teste sem dados
-pessoais e selecione `Jev remoto (Gazebo)`. Para usar um tablet sem Wi-Fi,
+No `mockDebug`, abra `Ajustes de teste`, ative a demonstracao remota da sessao,
+leia o aviso e selecione `Jev remoto (Gazebo)`. Para usar um tablet sem Wi-Fi,
 execute também `adb reverse tcp:18765 tcp:18765` e informe
 `ws://127.0.0.1:18765` no endpoint do app. Para encerrar, selecione `Local`,
 pare o proxy e execute `adb reverse --remove tcp:8787` e
