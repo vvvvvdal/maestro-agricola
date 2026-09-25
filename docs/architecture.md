@@ -75,6 +75,10 @@ Poeira e obstrução continuam sendo riscos do marcador. Uma evolução posterio
 - `DomainAssistant`/`QwenDomainAssistant`: retorna somente `CHAT` ou `OUT_OF_SCOPE`; saída inválida falha para `OUT_OF_SCOPE`.
 - `QwenEngine`: fronteira assíncrona do runtime local; não conhece `Command` nem transporte do robô.
 - `CommandTransport`: envia somente o `Command` confirmado produzido pelo `InteractionEngine` e correlaciona a resposta por `command_id`.
+- `ReadOnlyQuery`/`ReadOnlyQueryTransport`: fronteira planejada e separada para
+  consultas sem efeito físico. Não aceita campos de `Command`, não chama o
+  `InteractionEngine` e não compartilha a rota de comando. O contrato inicial
+  está em [`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md).
 
 Essas fronteiras permitem desenvolver mobile, IA, visão e ROS 2 em paralelo sem esperar pelos óculos.
 
@@ -181,8 +185,11 @@ reabertura estao em [`tasks/jev-experimental-decision.md`](tasks/jev-experimenta
 `QwenDomainAssistant`. Nao existe filtro Jev de topico antes do Qwen e nao ha
 RAG neste experimento. Classes como `STATUS_QUERY`, `PLOT_STATUS_QUERY`,
 `INSPECT_TARGET` e `COMPOUND_MISSION` sao roadmap de produto; exigem interfaces
-separadas e, quando tiverem efeito fisico, novo contrato e testes. Elas nao
-entram no catalogo inicial do Jev.
+separadas e, quando tiverem efeito fisico, novo contrato e testes. O primeiro
+contrato de leitura, que define `OperationRecord` e deixa explicito que o
+simulador comprova chegada Nav2, nao aplicacao fisica, esta em
+[`tasks/read-only-query-contract.md`](tasks/read-only-query-contract.md). Essas
+classes nao entram no catalogo inicial do Jev.
 
 ### Assistente Qwen isolado
 
