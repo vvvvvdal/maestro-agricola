@@ -26,7 +26,7 @@ Documentar separadamente os dados tratados pelo Maestro Agrícola, pelo Android,
 | Android | Áudio do microfone, transcrição, síntese de voz, permissões e sandbox | APIs nativas e provedor configurado no aparelho | O sistema operacional ou o provedor de reconhecimento/TTS pode tratar dados conforme sua configuração | Governada pelo Android/provedor, não pelo código do Maestro | Saída TTS física confirmada; provedor STT ainda pendente |
 | DAT/Meta | Registro, sessão, permissões, câmera e possível telemetria do SDK | Óculos ou MockDeviceKit e SDK | Fluxo definido pelo DAT e pela configuração da conta/app | Fora do controle direto do Maestro; analytics e crash reporting opcionais desabilitados | Adaptador 0.9.0 aprovado no MockDeviceKit; hardware real pendente |
 | Bridge ROS 2 | JSON de comando e ACK, IDs, estados e erros | App Android e simulador | Validação, deduplicação e conversão em meta Nav2 | Logs técnicos podem existir no ambiente da demo | Testes do núcleo aprovados |
-| Serviços externos de IA | Nenhum dado no caminho padrão; transcrição curta de teste no modo remoto `mockDebug` | Operador habilita explicitamente Jev remoto para demonstrar os mesmos seis rótulos | `adb reverse` leva o texto em memória a um proxy loopback; ele chama TypeSafe/Jev sem expor a chave ao APK | Nenhuma persistência pelo Maestro ou proxy; o serviço externo segue sua própria política | Implementação local em validação; não é uso operacional |
+| Serviços externos de IA | Nenhum dado no caminho padrão; transcrição curta de teste no modo remoto `mockDebug` | Operador habilita explicitamente Jev remoto para demonstrar os mesmos seis rótulos | `adb reverse` leva o texto em memória a um proxy loopback; ele chama TypeSafe/Jev sem expor a chave ao APK | Nenhuma persistência pelo Maestro ou proxy; o serviço externo segue sua própria política | E2E `mockDebug -> Gazebo` validado; não é uso operacional |
 
 ## Fluxo da câmera
 
@@ -70,11 +70,28 @@ transcrição operacional -> LocalIntentClassifier -> InteractionEngine
 -> confirmação explícita -> Command JSON -> WebSocket -> bridge ROS 2
 ```
 
-Na demonstração remota Jev, a classificação substitui localmente apenas o
-primeiro nó desse diagrama. Os gates restantes continuam iguais, mas um
-`Command` confirmado é bloqueado antes do WebSocket; não há ação física.
+Na demonstração remota Jev em `mockDebug`, a classificação substitui localmente
+apenas o primeiro nó desse diagrama. Os gates restantes continuam iguais e,
+após confirmação, o mesmo `Command` estruturado pode seguir ao bridge do
+Gazebo. Isso foi validado somente na simulação; `dat` não oferece Jev remoto e
+nenhuma ação física foi demonstrada.
 
 O assistente Qwen não participa desse fluxo. O `LanguageInteractionController` envia somente `UNKNOWN`, em estado seguro para conversa, ao assistente e não oferece a ele referência para `Command`, WebSocket, ROS ou estado do robô.
+
+### Evolução planejada do envio remoto
+
+O checkbox atual de fala de teste limita a demonstração, mas não é uma garantia
+de anonimização. A fase JEV-69 adicionará uma barreira preventiva antes do
+proxy: confirmação por turno mostrando que a transcrição será enviada, bloqueio
+determinístico de padrões evidentes de dado pessoal e URL, teto de tamanho,
+fallback local e limpeza do estado transitório. Uma fala bloqueada não será
+enviada ao Jev e não poderá criar `Command`.
+
+Um filtro de “assunto agrícola” não será apresentado como detector confiável de
+dado pessoal: conteúdo pessoal pode estar misturado a uma fala operacional. O
+operador continuará tendo que revisar a fala antes do envio. Essa é uma medida
+de minimização e segurança, não uma declaração de anonimização ou de
+conformidade integral com a LGPD.
 
 ### Fluxo do assistente Qwen
 

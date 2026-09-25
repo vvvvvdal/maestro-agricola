@@ -63,9 +63,10 @@ modo, o operador declara no app que usara apenas fala de teste sem dados
 pessoais; o proxy recusa e-mail, telefone e URL evidentes, mas essa barreira
 nao e uma anonimização completa.
 
-Falha fecha em `UNKNOWN`. Mesmo apos confirmação, o modo remoto bloqueia o
-`Command` antes do bridge. A excecao nao autoriza dados pessoais, `dat`,
-adocao operacional, corpus novo ou rodada de benchmark.
+Falha fecha em `UNKNOWN`. No `mockDebug`, uma escolha Jev confirmada pode gerar
+o mesmo `Command` estruturado do caminho local e enviá-lo somente ao bridge do
+Gazebo; `dat` continua sem Jev remoto. A excecao nao autoriza dados pessoais,
+hardware fisico, adocao operacional, corpus novo ou rodada de benchmark.
 
 ## Recuperacao aprovada
 
