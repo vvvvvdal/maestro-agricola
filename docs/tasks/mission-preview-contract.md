@@ -119,9 +119,10 @@ terminar, para que seu timeout nao concorra com a informacao solicitada.
 
 Evidencia tecnica inicial: os testes unitarios do controlador cobrem sequencia
 confirmada, consulta antes da proxima acao, alvo invalido, recusa e timeout. No
-SM-X510 com `mockDebug`, `UNDOCK` foi aceito pelo bridge/Gazebo somente depois
-da confirmacao da etapa. No modo visual, `SPRAY plot-02` chegou ao destino e o
-bridge registrou `COMPLETED` em 33 s; o teto anterior de 30 consultas do app
-expirou antes desse terminal, por isso JEV-78 elevou somente o acompanhamento
-para 60 consultas. O E2E completo `UNDOCK -> SPRAY -> consulta -> DOCK`
-continua pendente.
+SM-X510 com `mockDebug`, o E2E executou `UNDOCK -> SPRAY plot-02 -> consulta
+plot-03 -> DOCK`, com confirmacao individual das tres acoes fisicas. A consulta
+foi narrada antes de liberar a confirmacao do `DOCK`, e o robo voltou para a
+doca. O bridge registrou `SPRAY` em 43 s e `DOCK` em 79 s. Como a janela uniforme
+de 60 consultas produziu um falso timeout apenas no retorno, o acompanhamento
+agora preserva 60 consultas para as demais operacoes e permite 120 para `DOCK`.
+Falta repetir o `DOCK` para confirmar que o app observa o terminal sem aviso.

@@ -41,6 +41,7 @@ import br.org.agroturtles.maestro.domain.ReadOnlyLanguageRoute
 import br.org.agroturtles.maestro.domain.ReadOnlyLanguageRouter
 import br.org.agroturtles.maestro.domain.RobotStatusQueryController
 import br.org.agroturtles.maestro.domain.TargetResolver
+import br.org.agroturtles.maestro.domain.operationStatusMaxPolls
 import br.org.agroturtles.maestro.platform.NativeQwenEngine
 import br.org.agroturtles.maestro.platform.PlatformFrameSource
 import br.org.agroturtles.maestro.platform.VoiceIO
@@ -59,7 +60,6 @@ import java.util.concurrent.atomic.AtomicLong
 private const val DEFAULT_ENDPOINT = "ws://10.0.2.2:18765"
 private const val TEST_SETTINGS = "maestro_test_settings"
 private const val ENDPOINT_PREFERENCE = "bridge_endpoint"
-private const val OPERATION_STATUS_MAX_POLLS = 60
 private const val QWEN_MODEL_FILENAME = "qwen2.5-1.5b-q4_k_m.gguf"
 private const val ASSISTANT_PROCESSING_MESSAGE = "Processando resposta local…"
 private const val ASSISTANT_ERROR_MESSAGE =
@@ -158,7 +158,7 @@ class MainActivity : ComponentActivity() {
                 val requestId = operationRequest.incrementAndGet()
                 operationTracking = command
                 result = robotStatusQueries.trackingStarted(command)
-                var pollsRemaining = OPERATION_STATUS_MAX_POLLS
+                var pollsRemaining = operationStatusMaxPolls(command)
 
                 fun poll() {
                     if (pollsRemaining-- <= 0) {
