@@ -17,14 +17,21 @@ import kotlinx.coroutines.delay
 import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
+import br.org.agroturtles.maestro.domain.IntentPrediction
 import br.org.agroturtles.maestro.domain.Command
 import br.org.agroturtles.maestro.domain.JevIntentClassifier
 import br.org.agroturtles.maestro.domain.LanguageDispatch
 import br.org.agroturtles.maestro.domain.LanguageInteractionController
 import br.org.agroturtles.maestro.domain.LocalIntentClassifier
 import br.org.agroturtles.maestro.domain.MissionPlan
+import br.org.agroturtles.maestro.domain.MissionExecutionAction
+import br.org.agroturtles.maestro.domain.MissionExecutionController
+import br.org.agroturtles.maestro.domain.MissionExecutionSnapshot
+import br.org.agroturtles.maestro.domain.MissionExecutionState
 import br.org.agroturtles.maestro.domain.MissionPreviewParseResult
 import br.org.agroturtles.maestro.domain.MissionPreviewParser
+import br.org.agroturtles.maestro.domain.MissionStep
+import br.org.agroturtles.maestro.domain.MissionStepIntent
 import br.org.agroturtles.maestro.domain.PlotStatusQueryController
 import br.org.agroturtles.maestro.domain.QwenDomainAssistant
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
@@ -88,6 +95,7 @@ class MainActivity : ComponentActivity() {
         val jevClassifier = JevIntentClassifier(jevEvaluator)
         val targetResolver = TargetResolver.fromJson(targetMapJson)
         val missionPreviewParser = MissionPreviewParser(targetResolver)
+        val missionExecutionController = MissionExecutionController(targetResolver)
         val engine = InteractionEngine(
             classifier,
             targetResolver,
@@ -126,6 +134,7 @@ class MainActivity : ComponentActivity() {
             var remoteSessionConsentPrompt by remember { mutableStateOf(false) }
             var remoteBlockReason by remember { mutableStateOf<RemoteTranscriptBlockReason?>(null) }
             var missionPreview by remember { mutableStateOf<MissionPlan?>(null) }
+            var missionExecution by remember { mutableStateOf<MissionExecutionSnapshot?>(null) }
             val readOnlyRequest = remember { AtomicLong(0) }
             val readOnlyLanguageRouter = remember { ReadOnlyLanguageRouter() }
             val plotStatusQueries = remember(endpoint) {
@@ -142,7 +151,10 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            fun trackAcceptedOperation(command: Command) {
+            fun trackAcceptedOperation(
+                command: Command,
+                onTerminal: ((InteractionResult) -> Unit)? = null,
+            ) {
                 val requestId = operationRequest.incrementAndGet()
                 operationTracking = command
                 result = robotStatusQueries.trackingStarted(command)
@@ -154,9 +166,14 @@ class MainActivity : ComponentActivity() {
                             operationRequest.get() == requestId &&
                             operationTracking?.commandId == command.commandId
                         ) {
-                            result = robotStatusQueries.trackingTimedOut(command).result
+                            val timedOut = robotStatusQueries.trackingTimedOut(command).result
+                            result = timedOut
                             operationTracking = null
-                            operationSafetyHold = true
+                            if (onTerminal == null) {
+                                operationSafetyHold = true
+                            } else {
+                                onTerminal(timedOut)
+                            }
                         }
                         return
                     }
@@ -172,6 +189,7 @@ class MainActivity : ComponentActivity() {
                             update.result.speech?.let(voice::speak)
                             if (update.terminal) {
                                 operationTracking = null
+                                onTerminal?.invoke(update.result)
                             } else {
                                 uiHandler.postDelayed({ poll() }, 1_000)
                             }
@@ -196,6 +214,115 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+
+            fun missionStepName(step: MissionStep): String = when (step.intent) {
+                MissionStepIntent.UNDOCK -> "sair da doca"
+                MissionStepIntent.SPRAY -> "pulverizar ${step.targetId}"
+                MissionStepIntent.PLOT_STATUS_QUERY -> "consultar o histórico de ${step.targetId}"
+                MissionStepIntent.DOCK -> "voltar para a doca"
+            }
+
+            fun applyMission(next: InteractionResult) {
+                result = next
+                next.speech?.let(voice::speak)
+            }
+
+            fun executeMissionAction(action: MissionExecutionAction) {
+                missionExecution = missionExecutionController.current()
+                when (action) {
+                    is MissionExecutionAction.AwaitingConfirmation -> {
+                        val current = checkNotNull(missionExecution)
+                        val name = missionStepName(action.step)
+                        applyMission(
+                            InteractionResult(
+                                state = InteractionState.AWAITING_CONFIRMATION,
+                                message = "Etapa ${current.currentStepIndex + 1}: $name?",
+                                speech = "Etapa ${current.currentStepIndex + 1} da missão: $name. Confirmar?",
+                                intent = "MISSION_PREVIEW",
+                            )
+                        )
+                    }
+
+                    is MissionExecutionAction.ExecuteQuery -> {
+                        readOnlyPending = true
+                        val targetId = checkNotNull(action.step.targetId)
+                        val pending = plotStatusQueries.queryPlot(targetId) { succeeded, queryResult ->
+                            runOnUiThread {
+                                readOnlyPending = false
+                                applyMission(queryResult)
+                                executeMissionAction(
+                                    missionExecutionController.queryFinished(
+                                        succeeded,
+                                        queryResult.message,
+                                    )
+                                )
+                            }
+                        }
+                        applyMission(pending)
+                    }
+
+                    is MissionExecutionAction.SendCommand -> {
+                        applyMission(
+                            InteractionResult(
+                                state = InteractionState.SENDING,
+                                message = "Enviando etapa da missão: ${missionStepName(action.step)}.",
+                                intent = "MISSION_PREVIEW",
+                            )
+                        )
+                        WebSocketCommandTransport(endpoint).send(action.command) { accepted, reason ->
+                            runOnUiThread {
+                                if (!accepted) {
+                                    executeMissionAction(missionExecutionController.commandRejected(reason))
+                                    return@runOnUiThread
+                                }
+                                robot = robotPresentation(action.command.intent, action.command.targetId)
+                                trackAcceptedOperation(action.command) { terminal ->
+                                    executeMissionAction(
+                                        missionExecutionController.operationFinished(
+                                            succeeded = terminal.state == InteractionState.COMPLETED,
+                                            reason = terminal.message,
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    is MissionExecutionAction.Paused -> {
+                        applyMission(
+                            InteractionResult(
+                                state = InteractionState.OPERATION_FAILED,
+                                message = "Missão pausada: ${action.reason}",
+                                speech = "Missão pausada. ${action.reason} Nenhuma etapa seguinte foi enviada.",
+                                intent = "MISSION_PREVIEW",
+                            )
+                        )
+                    }
+
+                    MissionExecutionAction.Completed -> {
+                        missionPreview = null
+                        missionExecution = null
+                        applyMission(
+                            InteractionResult(
+                                state = InteractionState.COMPLETED,
+                                message = "Missão concluída no Gazebo.",
+                                speech = "Missão concluída no Gazebo.",
+                                intent = "MISSION_PREVIEW",
+                            )
+                        )
+                    }
+
+                    MissionExecutionAction.Cancelled -> {
+                        missionPreview = null
+                        missionExecution = null
+                        apply(engine.missionPreviewCancelled())
+                    }
+                }
+            }
+
+            fun handleMissionPrediction(prediction: IntentPrediction) {
+                executeMissionAction(missionExecutionController.confirm(prediction))
             }
 
             fun applyDispatch(dispatch: LanguageDispatch) {
@@ -225,6 +352,10 @@ class MainActivity : ComponentActivity() {
                     runOnUiThread {
                         if (jevRequest.get() == requestId) {
                             jevPending = false
+                            if (missionExecution?.state == MissionExecutionState.AWAITING_CONFIRMATION) {
+                                handleMissionPrediction(prediction)
+                                return@runOnUiThread
+                            }
                             applyDispatch(
                                 language.handlePrediction(text, prediction) { prediction, outcome ->
                                     runOnUiThread {
@@ -313,7 +444,25 @@ class MainActivity : ComponentActivity() {
             }
 
             fun interpret(text: String) {
-                if (jevPending || readOnlyPending || operationTracking != null || missionPreview != null) return
+                if (jevPending || readOnlyPending || operationTracking != null) return
+                if (missionExecution?.state == MissionExecutionState.AWAITING_CONFIRMATION) {
+                    if (jevRemoteEnabled && BuildConfig.FRAME_SOURCE == "mock") {
+                        when (val decision = RemoteTranscriptGate.evaluate(text)) {
+                            RemoteTranscriptDecision.Allowed -> {
+                                transcript = ""
+                                classifyRemotely(text)
+                            }
+                            is RemoteTranscriptDecision.Blocked -> {
+                                transcript = ""
+                                remoteBlockReason = decision.reason
+                            }
+                        }
+                    } else {
+                        handleMissionPrediction(classifier.classify(text))
+                    }
+                    return
+                }
+                if (missionPreview != null) return
                 if (engine.state in setOf(InteractionState.IDLE, InteractionState.TARGET_READY)) {
                     when (val missionResult = missionPreviewParser.parse(text)) {
                         MissionPreviewParseResult.NotApplicable -> Unit
@@ -395,19 +544,32 @@ class MainActivity : ComponentActivity() {
                     delay(1_000)
                 }
                 secondsToExpire = 0
-                apply(engine.confirmationTimedOut())
+                if (missionExecution?.state == MissionExecutionState.AWAITING_CONFIRMATION) {
+                    executeMissionAction(missionExecutionController.confirmationTimedOut())
+                } else {
+                    apply(engine.confirmationTimedOut())
+                }
             }
 
-            LaunchedEffect(missionPreview?.planId) {
+            LaunchedEffect(missionPreview?.planId, missionExecution?.state) {
                 val currentPlan = missionPreview ?: return@LaunchedEffect
+                val currentState = missionExecution?.state
+                if (currentState != null && currentState != MissionExecutionState.REVIEW) {
+                    return@LaunchedEffect
+                }
                 delay(MISSION_PREVIEW_TIMEOUT_MILLIS)
-                if (missionPreview?.planId == currentPlan.planId) {
+                if (
+                    missionPreview?.planId == currentPlan.planId &&
+                    (missionExecution == null || missionExecution?.state == MissionExecutionState.REVIEW)
+                ) {
                     missionPreview = null
                     apply(engine.missionPreviewCancelled(expired = true))
                 }
             }
 
             MaestroTheme {
+                val missionBlocksInput = missionPreview != null &&
+                    missionExecution?.state != MissionExecutionState.AWAITING_CONFIRMATION
                 MaestroScreen(
                     result = result,
                     robot = robot,
@@ -440,9 +602,10 @@ class MainActivity : ComponentActivity() {
                     transcript = transcript,
                     onTranscriptChange = { transcript = it },
                     secondsToExpire = secondsToExpire,
-                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold || inspectionPending || missionPreview != null,
+                    interactionPending = jevPending || readOnlyPending || operationTracking != null || operationSafetyHold || inspectionPending || missionBlocksInput,
                     resetEnabled = !jevPending && !readOnlyPending && operationTracking == null && missionPreview == null,
                     missionPreview = missionPreview,
+                    missionExecution = missionExecution,
                     remoteSessionConsentPrompt = remoteSessionConsentPrompt,
                     remoteBlockReason = remoteBlockReason,
                     onConfirmRemoteSession = {
@@ -476,9 +639,13 @@ class MainActivity : ComponentActivity() {
                         microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
                     },
                     onInterpret = { interpret(transcript) },
+                    onStartMission = {
+                        missionPreview?.let { plan ->
+                            executeMissionAction(missionExecutionController.begin(plan))
+                        }
+                    },
                     onCancelMissionPreview = {
-                        missionPreview = null
-                        apply(engine.missionPreviewCancelled())
+                        executeMissionAction(missionExecutionController.cancel())
                     },
                     onReset = {
                         jevRequest.incrementAndGet()
@@ -493,6 +660,7 @@ class MainActivity : ComponentActivity() {
                         remoteSessionConsentPrompt = false
                         remoteBlockReason = null
                         missionPreview = null
+                        missionExecution = null
                         language.cancelAssistant()
                         frameSource.cancelCapture()
                         apply(engine.reset())

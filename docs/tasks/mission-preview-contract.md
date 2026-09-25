@@ -67,7 +67,7 @@ por audio e gera um `Command` individual ja existente. `PLOT_STATUS_QUERY` nao
 autoriza o proximo passo: resposta invalida, indisponivel ou qualquer falha
 pausa o plano e exige revisao do operador.
 
-O executor futuro espera o estado terminal do bridge para cada acao fisica. Se
+O executor espera o estado terminal do bridge para cada acao fisica. Se
 uma etapa falhar, expirar, for recusada ou tiver alvo invalido, ele nao executa
 as etapas seguintes e nao tenta dock, undock ou spray implicitos.
 
@@ -107,5 +107,15 @@ Evidencias:
   esperadas e `Cancelar plano` voltou ao estado sem preview, com o cartao do
   robo em `Aguardando comando`.
 
-JEV-78 continua sendo a unica task autorizada a transformar etapas em
-`Command` individuais e validar o fluxo com Gazebo.
+JEV-78 implementa o executor no Android: cada etapa fisica gera um `Command`
+individual, com `command_id` proprio, apenas apos a confirmacao daquela etapa.
+`PLOT_STATUS_QUERY` usa somente `/read-only`; uma resposta indisponivel ou
+invalida pausa o plano e nao libera a acao seguinte. O bridge continua
+recebendo somente o contrato `Command` ja versionado, sem payload de missao.
+
+Evidencia tecnica inicial: os testes unitarios do controlador cobrem sequencia
+confirmada, consulta antes da proxima acao, alvo invalido, recusa e timeout. No
+SM-X510 com `mockDebug`, `UNDOCK` foi aceito pelo bridge/Gazebo somente depois
+da confirmacao da etapa. O E2E completo `UNDOCK -> SPRAY -> consulta -> DOCK`
+permanece pendente de uma rodada dedicada com confirmacoes por voz; uma tentativa
+manual chegou ao limite do timeout e pausou sem enviar etapa seguinte.

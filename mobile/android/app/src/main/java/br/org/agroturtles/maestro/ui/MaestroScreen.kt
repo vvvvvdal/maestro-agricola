@@ -55,6 +55,8 @@ import br.org.agroturtles.maestro.domain.InteractionEngine
 import br.org.agroturtles.maestro.domain.InteractionResult
 import br.org.agroturtles.maestro.domain.InteractionState
 import br.org.agroturtles.maestro.domain.MissionPlan
+import br.org.agroturtles.maestro.domain.MissionExecutionSnapshot
+import br.org.agroturtles.maestro.domain.MissionExecutionState
 import br.org.agroturtles.maestro.domain.MissionStep
 import br.org.agroturtles.maestro.domain.MissionStepIntent
 import br.org.agroturtles.maestro.domain.RemoteTranscriptBlockReason
@@ -102,6 +104,7 @@ fun MaestroScreen(
     interactionPending: Boolean,
     resetEnabled: Boolean,
     missionPreview: MissionPlan?,
+    missionExecution: MissionExecutionSnapshot?,
     remoteSessionConsentPrompt: Boolean,
     remoteBlockReason: RemoteTranscriptBlockReason?,
     onConfirmRemoteSession: () -> Unit,
@@ -110,6 +113,7 @@ fun MaestroScreen(
     onLook: () -> Unit,
     onListen: () -> Unit,
     onInterpret: () -> Unit,
+    onStartMission: () -> Unit,
     onCancelMissionPreview: () -> Unit,
     onReset: () -> Unit,
 ) {
@@ -176,6 +180,8 @@ fun MaestroScreen(
             missionPreview?.let { plan ->
                 MissionPreviewCard(
                     plan = plan,
+                    execution = missionExecution,
+                    onStart = onStartMission,
                     onCancel = onCancelMissionPreview,
                 )
             }
@@ -222,7 +228,25 @@ fun MaestroScreen(
 }
 
 @Composable
-private fun MissionPreviewCard(plan: MissionPlan, onCancel: () -> Unit) {
+private fun MissionPreviewCard(
+    plan: MissionPlan,
+    execution: MissionExecutionSnapshot?,
+    onStart: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    val state = execution?.state
+    val currentStepNumber = execution?.currentStepIndex?.plus(1)
+    val status = when (state) {
+        null -> "Revise as etapas antes de iniciar."
+        MissionExecutionState.AWAITING_CONFIRMATION ->
+            "Etapa $currentStepNumber aguardando confirmação por voz."
+        MissionExecutionState.AWAITING_QUERY -> "Consultando a etapa $currentStepNumber."
+        MissionExecutionState.AWAITING_OPERATION -> "Acompanhando a etapa $currentStepNumber no simulador."
+        MissionExecutionState.PAUSED -> "Missão pausada: ${execution.reason}"
+        MissionExecutionState.COMPLETED -> "Missão concluída no simulador."
+        MissionExecutionState.CANCELLED -> "Missão cancelada."
+        MissionExecutionState.REVIEW -> "Revise as etapas antes de iniciar."
+    }
     Surface(
         color = MaestroYellowSoft,
         shape = CardShape,
@@ -239,25 +263,36 @@ private fun MissionPreviewCard(plan: MissionPlan, onCancel: () -> Unit) {
                 color = MaestroGreen.copy(alpha = 0.7f),
             )
             Text(
-                text = "Revise as etapas",
+                text = if (state == MissionExecutionState.COMPLETED) "Missão concluída" else "Revise as etapas",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaestroGreen,
             )
             Text(
-                text = "Nenhuma ação foi enviada. Cada ação física pedirá confirmação por voz quando o executor existir.",
+                text = status,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaestroGreen.copy(alpha = 0.85f),
             )
             plan.steps.forEachIndexed { index, step ->
                 MissionPreviewStep(index = index, step = step)
             }
-            OutlinedButton(
-                onClick = onCancel,
-                modifier = Modifier.fillMaxWidth(),
-                shape = CardShape,
-            ) {
-                Text("Cancelar plano")
+            if (state == null || state == MissionExecutionState.REVIEW) {
+                Button(
+                    onClick = onStart,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = CardShape,
+                ) {
+                    Text("Iniciar missão")
+                }
+            }
+            if (state != MissionExecutionState.COMPLETED && state != MissionExecutionState.CANCELLED) {
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = CardShape,
+                ) {
+                    Text("Cancelar plano")
+                }
             }
         }
     }

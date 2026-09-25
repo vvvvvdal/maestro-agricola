@@ -144,7 +144,7 @@ e aprovacao humana antes de entrar no catalogo operacional.
 | `STATUS_QUERY` | Ler e narrar estado atual do robo; acompanhar uma operacao aceita ate termino | Implementada localmente no `mockDebug` | Rota `/read-only`, correlacao pelo `command_id` e estados terminais sem novo `Command` |
 | `PLOT_STATUS_QUERY` | Informar a ultima missao simulada `SPRAY` concluida para um talhao | Implementada localmente no `mockDebug` | Historico em memoria, rota `/read-only` e resposta sem `Command`; nao afirma aplicacao fisica |
 | `INSPECT_TARGET` | Capturar sob demanda e reportar marcador/QR | Implementada localmente no `mockDebug` | Imagem em memoria, permissao, politica de QR e nenhum `Command` |
-| `MISSION_PREVIEW` | Reconhecer pedido composto e mostrar `MissionPlan` tipado | Preview local implementado no `mockDebug`; sem executor | Parser deterministico, alvo mapeado, revisao/cancelamento e confirmacao por etapa futura |
+| `MISSION_PREVIEW` | Reconhecer pedido composto e mostrar `MissionPlan` tipado | Executor local implementado no `mockDebug`; E2E completo pendente | Parser deterministico, alvo mapeado, revisao/cancelamento, `Command` por etapa confirmada e pausa fechada |
 | `PAUSE` | Pedir pausa de missao em andamento | Candidata, mas nao usar na demo fisica | Bridge precisa de primitive de pausa segura e estado `PAUSED` |
 | `RESUME` | Retomar apenas uma missao pausada valida | Candidata dependente de `PAUSE` | Revalidar missao, alvo, expiracao e confirmacao explicita |
 | `SCOUT` | Navegar por rota mapeada para inspecao | Apenas ideia de produto | Novo contrato, rota permitida, alvo mapeado, confirmacao e E2E proprio |
@@ -169,7 +169,8 @@ mesmo contrato.
 `MISSION_PREVIEW` reconhece que o operador pediu uma missao composta, mas nao
 e o planejador nem o executor. O Maestro faz parser e validacao deterministica
 para um `MissionPlan`, mostra as etapas e permite revisao/cancelamento. A
-confirmacao por voz antes de cada acao fisica e a execucao ficam em JEV-78. O
+confirmacao por voz antes de cada acao fisica e a execucao por etapa ficam em
+JEV-78. O
 contrato e o schema estao em
 [`../../tasks/mission-preview-contract.md`](../../tasks/mission-preview-contract.md).
 

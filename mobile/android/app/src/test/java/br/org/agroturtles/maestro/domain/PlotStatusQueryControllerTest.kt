@@ -119,6 +119,32 @@ class PlotStatusQueryControllerTest {
         assertNull(completed?.command)
     }
 
+    @Test
+    fun missionPlanQueryRequiresAValidResponseBeforeTheExecutorCanAdvance() {
+        val transport = FakeReadOnlyQueryTransport()
+        val controller = controller(transport)
+        var succeeded: Boolean? = null
+        var completed: InteractionResult? = null
+
+        val pending = controller.queryPlot("plot-03") { success, result ->
+            succeeded = success
+            completed = result
+        }
+        assertEquals(InteractionState.QUERYING, pending.state)
+        assertEquals("plot-03", transport.lastQuery?.plotId)
+
+        transport.respond(
+            ReadOnlyQueryResponse(
+                requestId = checkNotNull(transport.lastQuery).requestId,
+                kind = LAST_SIMULATED_SPRAY_FOR_PLOT,
+                status = ReadOnlyQueryStatus.UNAVAILABLE,
+            )
+        )
+
+        assertFalse(checkNotNull(succeeded))
+        assertEquals(InteractionState.QUERY_COMPLETED, completed?.state)
+    }
+
     private fun controller(transport: FakeReadOnlyQueryTransport) = PlotStatusQueryController(
         targetResolver = TargetResolver(setOf("plot-01", "plot-02", "plot-03")),
         transportFactory = { transport },

@@ -54,6 +54,43 @@ class PlotStatusQueryController(
         )
     }
 
+    fun queryPlot(
+        plotId: String,
+        completion: (succeeded: Boolean, result: InteractionResult) -> Unit,
+    ): InteractionResult {
+        val resolution = targetResolver.resolve(visualTargetId = null, transcript = plotId)
+        if (resolution.status != TargetResolutionStatus.RESOLVED || resolution.targetId != plotId) {
+            return queryResult(
+                status = ReadOnlyQueryStatus.INVALID_QUERY,
+                prediction = IntentPrediction("PLOT_STATUS_QUERY", 1.0, "RULE"),
+            )
+        }
+        val prediction = IntentPrediction("PLOT_STATUS_QUERY", 1.0, "RULE")
+        val query = ReadOnlyQuery(
+            requestId = requestId(),
+            requestedAt = requestedAt(),
+            kind = LAST_SIMULATED_SPRAY_FOR_PLOT,
+            plotId = plotId,
+        )
+        transportFactory().send(query) { response ->
+            val verified = response.requestId == query.requestId && response.kind == query.kind
+            val result = queryResult(response, query, prediction)
+            completion(
+                verified && response.status in setOf(ReadOnlyQueryStatus.FOUND, ReadOnlyQueryStatus.NOT_FOUND),
+                result,
+            )
+        }
+        return InteractionResult(
+            state = InteractionState.QUERYING,
+            message = "Consultando o histórico de ${plotLabel(plotId)}",
+            speech = "Consultando o histórico de ${plotLabel(plotId)}.",
+            prediction = prediction,
+            intent = prediction.label,
+            targetId = plotId,
+            targetSource = "MISSION_PLAN",
+        )
+    }
+
     private fun queryResult(
         response: ReadOnlyQueryResponse,
         query: ReadOnlyQuery,
