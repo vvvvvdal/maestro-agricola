@@ -60,6 +60,17 @@ uma opcao vencedora e probabilidades para as opcoes. `Noul` responde uma
 pergunta booleana; `Score` produz um escore. Para o Maestro, a primitiva
 relevante e `Choice`.
 
+**Ponto central sobre tokens**: um `Choice` nao escreve uma resposta em texto
+token a token. A resposta e uma decisao fechada, com `choice`, distribuicao e
+confianca; no contrato da API, o campo observado e `output_tokens: 0`. Isso
+nao significa custo ou latencia zero: ainda ha estado de entrada, chamada
+remota e cobranca associada. A diferenca e que a saida nao cresce como uma
+resposta generativa longa de LLM.
+
+Fala curta: "Em vez de pedir um paragrafo e depois tentar interpreta-lo, damos
+seis alternativas permitidas e recebemos uma escolha. Nao ha texto de saida
+para ser gerado, parseado ou usado como comando."
+
 Explicar uma distincao importante: a probabilidade da classe escolhida e o
 valor preservado em `IntentPrediction.confidence`. O campo `confidence` do Jev
 descreve concentracao da distribuicao; nao deve ser apresentado como se fosse a
@@ -245,6 +256,7 @@ Projetar quatro perguntas e deixar a sala escolher a ordem:
 - "RLCD prova que o Jev e superior" ou que sua receita de treinamento e publica.
 - "A p95 e o custo medidos representam Android, campo ou robo."
 - "Jev controla ROS, resolve alvo, remove confirmacao, filtra o Qwen ou usa RAG."
+- "`output_tokens: 0` significa que uma chamada Jev e gratuita ou instantanea."
 
 ## Fontes e evidencia para a numeracao dos slides
 

@@ -29,6 +29,11 @@ probabilidades. O estudo pergunta como usar essa probabilidade de forma
 responsavel em software e, em especial, por que ela nao e uma autorizacao
 suficiente para controlar um robo.
 
+Para uma pergunta `Choice`, a saida e estruturada (`choice`, probabilidades e
+confianca), e nao texto gerado token a token. O contrato registra
+`output_tokens: 0`; isso reduz uma diferenca importante em relacao a um LLM
+generativo, mas nao elimina tokens de entrada, custo remoto ou latencia.
+
 O termo RLCD e uma descricao da TypeSafe para o treino do Jev. A empresa nao
 publicou arquitetura, dados ou receita de treino. A apresentacao usa o caso
 para discutir calibracao, risco seletivo e avaliacao, sem tratar essas
