@@ -125,4 +125,5 @@ foi narrada antes de liberar a confirmacao do `DOCK`, e o robo voltou para a
 doca. O bridge registrou `SPRAY` em 43 s e `DOCK` em 79 s. Como a janela uniforme
 de 60 consultas produziu um falso timeout apenas no retorno, o acompanhamento
 agora preserva 60 consultas para as demais operacoes e permite 120 para `DOCK`.
-Falta repetir o `DOCK` para confirmar que o app observa o terminal sem aviso.
+Em 25/09, o operador repetiu a missao com o APK corrigido e confirmou sua
+conclusao no simulador.
