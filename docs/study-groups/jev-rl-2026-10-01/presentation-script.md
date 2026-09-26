@@ -21,20 +21,20 @@ Antes de iniciar, distinguir tres tipos de afirmacao:
 
 | Tempo | Bloco | Tipo dominante | Visual previsto |
 | --- | --- | --- | --- |
-| 0:00-3:00 | A pergunta | Hipotese de arquitetura | Diagrama de fronteira |
-| 3:00-9:00 | O que o Jev retorna | Fonte oficial | `Choice`, `Noul`, `Score` |
-| 9:00-16:00 | RLCD, probabilidade e calibracao | Fonte oficial + medido | reliability diagram JEV-51 |
-| 16:00-21:00 | Xadrez: Fable e Astra | Terceiros | relogio e harness |
-| 21:00-27:00 | Outros casos publicos | Terceiros | tabela de tres casos |
-| 27:00-34:00 | Maestro: onde a decisao para | Produto e contrato atual | pipeline e anti-exemplo |
-| 34:00-40:00 | Experimento Jev no Maestro | Medido | comparacao e matriz JEV-51 |
+| 0:00-4:00 | A pergunta e a metafora do `if` | Hipotese + terceiro | fronteira e decisao probabilistica |
+| 4:00-10:00 | Jev, LLM e contrato | Fonte oficial | `Choice`, `Noul`, `Score`, `output_tokens: 0` |
+| 10:00-19:00 | RL, RLHF, RLVR, RLCD e calibracao | Fonte oficial + medido | taxonomia e reliability diagram JEV-51 |
+| 19:00-24:00 | Xadrez: Fable e Astra | Terceiros | relogio e harness |
+| 24:00-29:00 | Casos externos e Laya | Terceiros + fonte primaria | simulador, PR, skills, compaction, contraponto local |
+| 29:00-35:00 | Maestro: fronteira e privacidade | Produto e contrato atual | pipeline, anti-exemplo e minimizacao |
+| 35:00-40:00 | Experimento Jev no Maestro | Medido | comparacao e matriz JEV-51 |
 | 40:00-44:00 | App e demo de reserva | Fixture local | tres capturas JEV-50/JEV-52 |
-| 44:00-46:00 | Roadmap de classes | Hipotese de produto | tabela de fronteiras |
+| 44:00-46:00 | Missao entregue no simulador | E2E mockDebug + Gazebo | plano tipado e confirmacao por etapa |
 | 46:00-50:00 | Debate | Perguntas abertas | tela de perguntas |
 
 Total: **46 minutos de conteudo + 4 minutos de debate = 50 minutos**.
 
-## 0:00-3:00 - A pergunta
+## 0:00-2:30 - A pergunta
 
 **Fala-guia**: "Quero discutir um problema menor que um agente geral, mas maior
 que um `if`: como transformar linguagem em uma decisao estruturada quando ha
@@ -52,7 +52,22 @@ fala -> decisao tipada -> regras e estado deterministico -> confirmacao -> robo
 Transicao: "O Jev entra somente no segundo termo dessa linha. Entao vamos ver
 o que ele devolve e o que ele nao promete."
 
-## 3:00-9:00 - O que o Jev retorna
+## 2:30-4:00 - A metafora do `if`
+
+Depois da fronteira, usar a frase publica "Jev e um `if` com IA" apenas como
+intuicao. Um `if` classico e uma regra deterministica escrita pela equipe; uma
+decisao Jev devolve uma distribuicao sobre alternativas de catalogo fechado.
+Portanto, alguem ainda precisa escrever a politica: limiar, recusa,
+confirmacao, efeito permitido e acao para falha remota.
+
+Fala-guia: "A metafora fica boa quando ela nos lembra de manter a saida
+pequena. Ela fica ruim se esconder que probabilidade nao escolhe sozinha a
+acao do sistema. No Maestro, essa politica continua em codigo deterministico."
+
+**Fonte**: [S8], resultado de terceiro usado como metafora, nao como definicao
+formal.
+
+## 4:00-10:00 - O que o Jev retorna e como difere de LLM
 
 Apresentar `Choice` como uma pergunta de catalogo fechado: por exemplo,
 `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL` e `UNKNOWN`. A resposta contem
@@ -71,6 +86,14 @@ Fala curta: "Em vez de pedir um paragrafo e depois tentar interpreta-lo, damos
 seis alternativas permitidas e recebemos uma escolha. Nao ha texto de saida
 para ser gerado, parseado ou usado como comando."
 
+Comparar sem hierarquia: LLM generativo produz texto aberto, normalmente token
+a token. E o contrato adequado para conversa, explicacao e escrita, mas exige
+schema e validacao antes de entrar em um fluxo operacional. `Choice` faz uma
+selecao em catalogo fechado. A pergunta nao e qual e "mais inteligente"; e
+qual contrato torna a proxima decisao mais auditavel. No Maestro, Qwen continua
+no caminho `UNKNOWN` de conversa e nao recebe ferramentas; Jev so e avaliado
+como substituto do roteador de seis intents.
+
 Explicar uma distincao importante: a probabilidade da classe escolhida e o
 valor preservado em `IntentPrediction.confidence`. O campo `confidence` do Jev
 descreve concentracao da distribuicao; nao deve ser apresentado como se fosse a
@@ -81,7 +104,17 @@ viram que nao deveria virar um agente com ferramentas livres?"
 
 **Fonte**: [S1]-[S3].
 
-## 9:00-16:00 - RLCD, probabilidade e calibracao
+## 10:00-19:00 - RL, RLHF, RLVR, RLCD e calibracao
+
+Antes de RLCD, situar os nomes sem forcar equivalencia:
+
+- **RL**: aprender uma politica a partir de retorno/recompensa de um ambiente.
+- **RLHF**: usar preferencias ou feedback humano como sinal de treino.
+- **RLVR**: usar um verificador objetivo como sinal de treino para tarefas que
+  o admitem.
+- **RLCD**: nome que a TypeSafe usa para o objetivo de decisoes calibradas; nao
+  e receita publica o bastante para auditoria nem uma taxonomia academica
+  universal.
 
 **Fala-guia**: "A TypeSafe descreve o treinamento como RLCD. Podemos usar isso
 como motivacao da ferramenta, mas nao como receita academica auditavel: a
@@ -103,7 +136,7 @@ negacao, hesitacao e conflito de alvo seriam obrigatorios?"
 
 **Fonte**: [S4] para RLCD; evidencia medida em [E1] e [E2].
 
-## 16:00-21:00 - Xadrez: Fable e Astra
+## 19:00-24:00 - Xadrez: Fable e Astra
 
 **Fala-guia**: "Este e o caso chamativo, mas e principalmente uma licao de
 leitura de benchmark. Em uma partida blitz 5+0, com uma chamada de API por
@@ -118,15 +151,16 @@ de busca definem a conclusao."
 
 **Fonte**: [S5], resultado de terceiros.
 
-## 21:00-27:00 - Direcao em simulador e triagem de PR
+## 24:00-29:00 - Direcao, PR, selecao de skills, compaction e Laya
 
-Usar dois casos com limites claros. Cada linha e resultado de terceiros em
+Usar casos com limites claros. Cada linha e resultado de terceiros em
 dominio diferente.
 
 | Caso | O que ilustra | O que nao permite concluir |
 | --- | --- | --- |
-| Direcao no HighwayEnv | Um estado fechado pode alimentar uma escolha entre acoes permitidas; o autor reporta 60 segundos sem colisao. | Que Jev foi validado em carro real, com camera real, ou que a comparacao contra Codex e um benchmark controlado. |
+| Direcao no HighwayEnv / JevPilot | Um estado fechado pode alimentar uma escolha entre acoes permitidas; o autor reporta 60 segundos sem colisao. | Que Jev foi validado em carro real, com camera real, ou que a comparacao contra Codex e um benchmark controlado. |
 | Triagem de PR | Um diff limitado pode virar `SAFE / REVIEW / BLOCK`, risco e checks, sem gerar uma longa resenha. | Que a ferramenta le o repositorio inteiro, executa testes, substitui revisao humana ou economiza uma quantidade geral de tokens. |
+| Skills e compaction | Escolher uma skill relevante, ou manter/descartar contexto de tool calls, pode ser uma decisao pequena antes de uma chamada cara. | Que a decisao esta sempre certa; "nenhuma skill" e fallback para sumario ainda sao necessarios. |
 
 **Fala-guia**: "No simulador, o estado e as acoes ja sao fechados. Na triagem
 de PR, o artefato de entrada e limitado e a saida pode ser uma decisao curta.
@@ -136,9 +170,16 @@ e US$0,00003 por chamada; trate isso como alegacao da demo, nao como comparacao
 de tokens ou benchmark independente. Ela mesma diz que nao le o repo inteiro
 nem roda testes."
 
-**Fontes**: [S6]-[S7], resultados de terceiros.
+**Fala sobre Laya**: "Laya-MLX e o contraponto interessante: pesos abertos e
+runtime local para Apple Silicon. O repositorio reporta latencias locais em M3
+Max, mas isso nao o torna 'melhor' que Jev nem candidato Android sem medicao.
+Ele muda custo, privacidade, operacao e hardware. A comparacao correta comeca
+pela fronteira, nao pelo slogan."
 
-## 27:00-34:00 - Maestro: onde a decisao para
+**Fontes**: [S6]-[S12], resultados de terceiros; [S12] e fonte primaria do
+projeto Laya.
+
+## 29:00-35:00 - Maestro: onde a decisao para e como os dados sao minimizados
 
 Mostrar a cadeia real:
 
@@ -164,7 +205,25 @@ e `AMBIGUOUS`, sem `Command`, porque o alvo esta em conflito.
 `UNKNOWN` segue inalterado para `LanguageRouter -> QwenDomainAssistant -> CHAT
 | OUT_OF_SCOPE`. Nao ha filtro Jev para o Qwen nem RAG neste experimento.
 
-## 34:00-40:00 - Experimento Jev no Maestro
+### Privacidade: o que realmente acontece
+
+Nao dizer que o app "so le QR Code". No caminho de camera, ele solicita uma
+foto sob demanda, processa o QR/marcador localmente em memoria e reduz o frame
+a `target_id`; o Maestro nao preve gravar imagem, audio ou transcricao por
+padrao. A validacao de camera nos oculos Meta reais continua pendente.
+
+No caminho padrao, a transcricao curta fica na memoria da atividade e entra no
+classificador local. No modo remoto de demonstracao, restrito a `mockDebug`, o
+operador da consentimento de sessao e app/proxy bloqueiam antes da rede alguns
+padroes evidentes: e-mail, telefone, CPF/CNPJ, URL, texto longo ou fora do
+escopo. A fala bloqueada e descartada localmente, sem Jev, Qwen ou `Command`.
+
+Isso e **minimizacao preventiva**, nao anonimizacao, detector perfeito de dado
+pessoal, auditoria juridica ou declaracao de conformidade LGPD integral. Essa
+honestidade e parte da demonstracao: privacidade e uma fronteira de sistema,
+nao um aviso decorativo.
+
+## 35:00-40:00 - Experimento Jev no Maestro
 
 Mostrar o SVG de comparacao e depois a matriz. Falar os numeros com o escopo:
 
@@ -205,26 +264,25 @@ simulam um resultado remoto.
 
 **Evidencia de UI local**: [E4] e [E5].
 
-## 44:00-46:00 - Roadmap de classes
+## 44:00-46:00 - Missao composta entregue: Maestro, nao Jev
 
-Apresentar como mapa de fronteiras, nao como backlog entregue.
+Exemplo validado: "Saia da doca, pulverize o plot-02, informe a ultima
+pulverizacao do plot-03 e volte." Um roteador **local** reconhece
+`MISSION_PREVIEW`; parser e validador deterministico produzem um plano tipado.
+No SM-X510/Gazebo, a execucao chegou a `UNDOCK -> SPRAY plot-02 -> consulta
+plot-03 -> DOCK`, com confirmacao individual para cada acao fisica. A consulta
+nao cria `Command`; se ela ou qualquer etapa falhar, o plano pausa e nao emite a
+proxima acao. O resultado e simulacao Gazebo, nao aplicacao fisica comprovada.
 
-| Classe | Por que pode fazer sentido | O que falta antes de operar |
-| --- | --- | --- |
-| `STATUS_QUERY` | Consulta somente leitura do estado do robo. | Interface de consulta sem `Command`. |
-| `PLOT_STATUS_QUERY` | Responder ultima missao simulada de pulverizacao de um talhao. | Historico efemero de resultado Nav2, timestamp, talhao e origem; nao comprova aplicacao fisica. |
-| `INSPECT_TARGET` | Reutiliza captura sob demanda para reportar QR/marcador. | Privacidade, permissao e imagem somente em memoria. |
-| `MISSION_PREVIEW` | Reconhece fala longa que pede uma missao composta. | Parser deterministico, plano revisado, confirmacao por etapa e executor com pausa/falha segura. |
-| `PAUSE`, `RESUME`, `SCOUT` | Ideias futuras com fronteiras mais sensiveis. | Contrato, estado, revalidacao e E2E proprio. |
-
-Exemplo: "Saia da doca, pulverize o plot-02, informe a ultima pulverizacao do
-plot-03 e volte." Um roteador poderia reconhecer `MISSION_PREVIEW`; o Maestro
-extrairia o plano com parser deterministico. Ele nao escolhe movimentos: o
-plano precisa ser mostrado, confirmado por etapa e executado de forma
-deterministica.
+Essa demonstracao e exatamente a separacao que queremos defender: Jev nao
+cria historico, nao le QR, nao gera `MissionPlan` e nao move o robo. Essas
+capacidades sao valor do Maestro. Jev continua uma hipotese mensuravel para a
+seta de linguagem em um catalogo equivalente.
 
 Fechar: "`EMERGENCY_STOP` fica fora de Jev e de reconhecimento de fala comum;
 seguranca precisa de cadeia fisica independente do modelo."
+
+**Evidencia de missao**: [E8].
 
 ## 46:00-50:00 - Debate
 
@@ -248,6 +306,10 @@ Projetar quatro perguntas e deixar a sala escolher a ordem:
 - "Os casos externos mostram catalogos fechados em outros dominios e devem ser
   lidos junto de seus harnesses."
 - "As imagens do app mostram uma fixture local de UI, nao uma execucao."
+- "O modo Jev remoto tem consentimento de sessao e um gate local preventivo;
+  isso reduz risco, mas nao prova anonimizacao nem conformidade LGPD integral."
+- "A missao composta foi validada em `mockDebug` e Gazebo com confirmacao por
+  etapa; nao e evidencia de aplicacao agricola fisica."
 
 ### Nao dizer
 
@@ -258,6 +320,9 @@ Projetar quatro perguntas e deixar a sala escolher a ordem:
 - "A p95 e o custo medidos representam Android, campo ou robo."
 - "Jev controla ROS, resolve alvo, remove confirmacao, filtra o Qwen ou usa RAG."
 - "`output_tokens: 0` significa que uma chamada Jev e gratuita ou instantanea."
+- "Laya e melhor que Jev" ou que ele e uma alternativa Android sem benchmark.
+- "O Maestro so le QR Code"; ha foto sob demanda, embora ela seja processada em
+  memoria e nao persistida pelo app por padrao.
 
 ## Fontes e evidencia para a numeracao dos slides
 
@@ -268,11 +333,19 @@ Projetar quatro perguntas e deixar a sala escolher a ordem:
 - **[S5]** [Thread de xadrez republicada](https://threadnavigator.com/thread/2100372930282573876/)
 - **[S6]** [Jev x HighwayEnv: 60 segundos sem colisao](https://dev.to/trknhr/jev-x-highwayenv-60-seconds-without-a-crash-30ig)
 - **[S7]** [Demo Jev PR Judge](https://jevtypesafeai.com/tools/pr-judge)
+- **[S8]** [Metafora "if com IA" no X](https://x.com/humbertocortezi/status/2101493117165666714?s=20)
+- **[S9]** [JevPilot no X](https://x.com/jpschroeder/status/2100347770867458384?s=20)
+- **[S10]** [Selecao de skills para Claude Code no X](https://x.com/dani_avila7/status/2101885477158547753?s=20)
+- **[S11]** [Compaction por relevancia no X](https://x.com/tamarajtran/status/2100694549362553153?s=20)
+- **[S12]** [Laya-MLX](https://github.com/mizorewww/laya-mlx)
 - **[E1]** [Comparacao medida JEV-41R](results/jev-final-recovery-presentation.md)
 - **[E2]** [Visuais de comparacao, matriz e reliability JEV-51](../../tasks/jev-presentation-slides.md)
 - **[E3]** [Decisao experimental `HOLD`](../../tasks/jev-experimental-decision.md)
 - **[E4]** [Capturas do app JEV-50](../../tasks/jev-app-captures.md)
 - **[E5]** [Demo de reserva offline JEV-52](../../tasks/jev-offline-reserve-demo.md)
+- **[E6]** [Fluxo de privacidade](../../privacy-data-flow.md)
+- **[E7]** [Gate remoto e evidencia JEV-69](../../tasks/jev-remote-privacy-gate.md)
+- **[E8]** [Missao composta e validacao JEV-78](TASKS.md)
 
 Todos os casos [S] sao de terceiros ou documentacao do fornecedor. Os itens
 [E] sao artefatos versionados do experimento Maestro e carregam seus proprios

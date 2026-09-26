@@ -43,15 +43,15 @@ alegacoes como resultado academico estabelecido.
 
 | Tempo | Assunto | Pergunta que o bloco responde |
 | --- | --- | --- |
-| 0:00-3:00 | Decisoes pequenas em software | Quando um `if` precisa de julgamento sem virar um agente? |
-| 3:00-9:00 | Jev | O que `Choice`, `Noul` e `Score` retornam? |
-| 9:00-16:00 | Calibracao e RL | Quando a probabilidade de 0,90 da classe escolhida corresponde a cerca de 90% de acertos? |
-| 16:00-21:00 | Xadrez | O que Jev vs Fable vs Astra realmente mediu? |
-| 21:00-27:00 | Casos publicos | Onde decisao rapida parece uma boa fronteira? |
-| 27:00-34:00 | Maestro atual | Quais barreiras separam linguagem de movimento? |
-| 34:00-40:00 | Jev no intent e no app | Como trocar somente o classificador e mostrar a decisao sem liberar acoes? |
+| 0:00-4:00 | Decisoes pequenas em software | Quando um `if` precisa de julgamento sem virar um agente? |
+| 4:00-10:00 | Jev e LLM | Qual contrato devolve texto aberto e qual devolve escolha tipada? |
+| 10:00-19:00 | RL, RLHF, RLVR, RLCD e calibracao | Quando a probabilidade de 0,90 da classe escolhida corresponde a cerca de 90% de acertos? |
+| 19:00-24:00 | Xadrez | O que Jev vs Fable vs Astra realmente mediu? |
+| 24:00-29:00 | Casos publicos e Laya | Onde uma decisao pequena parece boa e quando local/remoto importa? |
+| 29:00-35:00 | Maestro e privacidade | Quais barreiras separam linguagem, dados e movimento? |
+| 35:00-40:00 | Jev no intent e no app | Como trocar somente o classificador e mostrar a decisao sem liberar acoes? |
 | 40:00-44:00 | App e reserva local | Como mostrar a decisao sem alegar chamada remota ou comando? |
-| 44:00-46:00 | Roadmap de classes | Que novas classes exigiriam contrato? |
+| 44:00-46:00 | Missao composta | Como o Maestro executa um plano tipado sem usar Jev como planejador? |
 | 46:00-50:00 | Debate | Qual evidencia escolheria o proximo caminho? |
 
 O encerramento reserva quatro minutos para debate. O roteiro falavel e a fonte
@@ -124,12 +124,11 @@ As fronteiras de linguagem que alimentarao os corpora ficam em
 classe reconhece um pedido atual de pulverizacao, sem resolver alvo nem criar
 autorizacao de movimento.
 
-As classes abaixo nasceram como roadmap de produto e viram o bloco final da
-apresentacao. Apos JEV-38, elas tambem tem uma sequencia de implementacao em
-[`TASKS.md`](TASKS.md): leitura, historico e inspecao ja existem localmente no
-`mockDebug`; preview e execucao de missao continuam no roadmap. O corpus de
-desenvolvimento das tres rotas locais passou 32/32, mas nao e uma comparacao
-com Jev nem evidencia de campo.
+As capacidades abaixo sao valor do produto, nao uma consequencia do Jev. Leitura,
+historico, inspecao e missao composta existem localmente no `mockDebug`; a
+missao completa foi validada no Gazebo com confirmacao individual por acao. O
+corpus de desenvolvimento das tres rotas locais passou 32/32, mas nao e uma
+comparacao com Jev nem evidencia de campo.
 
 Jev permite alterar a lista de opcoes de uma pergunta `Choice`. Isso acelera o
 experimento de uma nova classe, mas nao cria um comando seguro por si so. Cada
