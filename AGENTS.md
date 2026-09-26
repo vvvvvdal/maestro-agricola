@@ -4,6 +4,12 @@
 
 Maestro Agrícola é uma interface hands-free para comandar robôs agrícolas com câmera, voz e confirmação por áudio.
 
+## Ponytail local
+
+Para tarefas de código, aplique as regras em `.agents/rules/ponytail.md`.
+Elas são locais deste repositório e devem ser usadas por Codex e Antigravity;
+não pressupõem plugin ou configuração global.
+
 ## Regras permanentes
 
 - Aplicativo do MVP: Android nativo em Kotlin.
