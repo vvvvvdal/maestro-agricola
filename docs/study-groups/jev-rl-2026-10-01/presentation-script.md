@@ -1,6 +1,6 @@
 # Roteiro: Jev, Reinforcement Learning e decisões calibradas em um sistema robótico
 
-Duração alvo: **52 minutos de apresentação + 5 minutos de debate**. A fala integral está em [presentation-speech.md](presentation-speech.md). Este roteiro é a fonte da ordem e dos limites de cada afirmação.
+Duração alvo: **58 minutos de apresentação + 5 minutos de debate**. A fala integral está em [presentation-speech.md](presentation-speech.md). Este roteiro é a fonte da ordem e dos limites de cada afirmação.
 
 ## Tese
 
@@ -17,90 +17,67 @@ Jev oferece uma interface para decisões tipadas e probabilísticas. A TypeSafe 
 
 | Slides | Tempo | Assunto |
 | --- | --- | --- |
-| 1–4 | 0:00–4:00 | Problema do bot de WhatsApp, `if` e Jev, origem |
-| 5–9 | 4:00–9:00 | Primitivas, tokens, LLM x Jev e documentação oficial |
-| 10–12 | 9:00–13:00 | Playground ao vivo e request em código |
-| 13–19 | 13:00–25:00 | RL, RLHF, RLVR, RLCD, calibração, avaliação e comparação |
-| 20–24 | 25:00–30:00 | Emojis, skills, PR, xadrez e JevPilot |
-| 25–26 | 30:00–32:00 | Surgimento de Laya e comparação com Jev |
-| 27–35 | 32:00–39:00 | Julia-1, CLM, Span-01, notas sobre agentes e comparação justa |
-| 36–38 | 39:00–42:00 | Hackathon, ideia do Maestro, jornada e arquitetura |
-| 39–44 | 42:00–47:00 | QR, barreira remota, seis labels/rotas locais e JSON real |
-| 45–46 | 47:00–49:00 | Resultado, erro crítico e decisão `HOLD` |
-| 47–49 | 49:00–52:00 | Demo, reserva e conclusão |
-| 50–51 | 52:00–57:00 | Debate e “Obrigado” |
+| 1–6 | 0:00–5:00 | Definição de Jev, System One, bot de WhatsApp, `if` e contrato |
+| 7–12 | 5:00–11:00 | `Choice`, `Noul`, `Score`, tokens e LLM × Jev |
+| 13–16 | 11:00–15:00 | Documentação, Playground e requisição JSON |
+| 17–25 | 15:00–29:00 | RL, RLHF, RLVR, RLCD, calibração e comparação |
+| 26–30 | 29:00–34:00 | Cinco demonstrações de Jev |
+| 31–41 | 34:00–43:00 | Laya, Julia-1, CLM, Span-01 e Jev em agentes |
+| 42–44 | 43:00–46:00 | Hackathon e arquitetura do Maestro |
+| 45–52 | 46:00–54:00 | Privacidade, seis classes, código real e fixture |
+| 52–54 | 54:00–56:00 | Validação, benchmark e decisão `HOLD` |
+| 55–57 | 56:00–58:00 | Demo, reserva e conclusão |
+| 58–59 | 58:00–63:00 | Debate e “Obrigado” |
 
-Se atrasar, encurtar xadrez e JevPilot. Preservar tokens de saída, RLCD, erro `CANCEL → CONFIRM`, distinção das seis classes e barreiras antes do robô.
+Os tempos são referência para ensaio. Se atrasar, encurtar xadrez e JevPilot. Preservar RLCD, as três saídas do Jev, tokens de saída, erro `CANCEL → CONFIRM` e as barreiras antes do robô.
 
-## Slides 1–12 — Jev antes do Maestro
+## Slides 1–16 — Jev antes de RL
 
-1. **Capa.** Título exato: “Jev, Reinforcement Learning e decisões calibradas em um sistema robótico”. Fundo branco, acentos azul claro TypeSafe, amarelo e verde Maestro.
-2. **Bot de WhatsApp.** Mensagem sintética chega. O bot conversa como humano, mas precisa decidir um encaminhamento específico: técnico, financeiro, comercial ou humano. O exemplo esclarece a diferença entre comportamento conversacional e decisão de roteamento. Não apresentar como produto existente.
-3. **`if` versus Jev.** Código determinístico `if (idade >= 18) "sim" else "não"`. Ao lado, uma pergunta `Noul` sobre uma frase em linguagem natural e um resultado probabilístico de sim/não. Não usar Jev para calcular uma idade numérica já disponível: a comparação serve para mostrar quando a entrada é ambígua ou textual. Se a idade estruturada existe, preferir `if`.
-4. **System One.** Nome dado pela TypeSafe à classe de modelos de decisões rápidas e tipadas. Inspiração no Sistema 1 de Kahneman, sem equivalência científica com cognição humana. Jev é o primeiro modelo público da empresa. Diogo Almeida trabalhou na OpenAI; currículo não substitui avaliação.
-5. **Contrato.** `state`, `questions` e `answers`; `Choice`, `Noul`, `Score`. `Choice` devolve `choice`, `probabilities` e `confidence`; `Noul` devolve probabilidade de sim e não o mesmo `confidence`.
-6. **Tokens.** Jev não gera prosa token a token. A documentação mostra `output_tokens`; nossa fixture registra 69–71 por chamada. A TypeSafe anuncia **preço zero para tokens de saída**, não zero tokens ou chamada gratuita.
-7. **Velocidade/custo.** Alegações do fornecedor em workflows próprios; comparar mesma tarefa, qualidade, p95, rede e custo do erro. Não transferir multiplicadores promocionais ao Maestro.
-8. **Tabela LLM x Jev.** Entrada, saída, flexibilidade, validação, custo/latência e melhor caso de uso. JSON mode em LLM reduz o problema de formato, mas a política e os testes continuam necessários.
-9. **Documentação oficial.** Usar a página [Choice](https://docs.typesafe.ai/primitives/choice) como referência visual principal: definição e campos de request/response. [Quick start](https://docs.typesafe.ai/introduction/quickstart) fundamenta Playground e API. O slide traz print da página oficial capturado em 26/09/2026. Não copiar API key.
-10. **Playground.** `state` sintético sobre falha de integração de pagamentos; `Choice` de departamento com quatro opções e critérios. Perguntar a previsão da sala antes de executar. Ler a resposta real, sem número pré-fixado.
-11. **Área para tela ao vivo.** Playground da TypeSafe autenticado. Se indisponível, usar o request/response publicados no quick start e nomeá-los como exemplo da documentação.
-12. **API.** Mostrar `POST /v1/systemone` ou `client.system_one` com `state`, `model`, `questions`. O código da aplicação lê `answers["departamento"]`, valida e roteia. Em benchmark, fixar e registrar a versão.
+1. **Capa.** Título: “Jev, Reinforcement Learning e decisões calibradas em um sistema robótico”.
+2. **O que é Jev?** Modelo de decisão da TypeSafe; `state` e perguntas tipadas entram, resultados probabilísticos saem. A aplicação define o catálogo e a consequência.
+3. **System One.** Nome da família de decisões rápidas da TypeSafe, inspirado em Kahneman sem equivalência literal à cognição humana. Jev é seu primeiro modelo público; Diogo Almeida trabalhou na OpenAI.
+4. **Bot de WhatsApp.** Mensagem sintética de cobrança; a escolha de encaminhamento é distinta da conversa natural.
+5. **`if` versus Jev.** Idade estruturada pede `if`; uma frase ambígua pode ser analisada por `Noul`. O exemplo não propõe verificação legal de idade com IA.
+6. **Contrato.** `state`, `model`, `questions`, `answers`; código valida e age.
+7. **Choice.** Uma entre opções fechadas, com `choice`, distribuição `probabilities` e `confidence`; usar saída de revisão quando o catálogo não for exaustivo.
+8. **Noul.** Uma pergunta sim/não retorna `noul=P(sim)` entre 0 e 1, sem `confidence` separado; limiares pertencem ao código.
+9. **Score.** Níveis ordenados descritos em `criteria`; `score` pode ficar entre níveis, com probabilidades por nível e `confidence`. Não confundir posição na escala com probabilidade binária.
+10. **Tokens.** A TypeSafe anuncia preço zero para `output_tokens`, não inexistência de tokens. Nosso harness contabilizou 69–71 por chamada.
+11. **Velocidade e custo.** Comparar qualidade, latência ponta a ponta, rede e custo do erro na mesma tarefa.
+12. **LLM × Jev.** Comparar formatos e usos sem sugerir que LLM não possa gerar JSON.
+13. **Documentação oficial.** Print de `Choice` com request e resposta.
+14. **Playground.** Caso sintético de cobrança e falha de integração; perguntar a previsão da sala.
+15. **Área de tela.** Ler resposta real do Playground ou exemplo da documentação se o site falhar.
+16. **API.** `POST /v1/systemone`; mostrar JSON completo e a leitura da resposta em código. O exemplo é didático, não arquivo do repo.
 
-## Slides 13–19 — Mesmo esquema para quatro famílias
+## Slides 17–25 — Quatro fontes de sinal e o foco em RLCD
 
-Usar a mesma matriz em RL, RLHF, RLVR e RLCD: **entrada → sinal de qualidade → ajuste da política → saída esperada → limite da inferência**. Siglas descrevem famílias/objetivos, não uma receita única.
+Mesmo esquema nos quatro primeiros: **entrada → sinal de qualidade → ajuste → exemplo → limite**. As siglas não especificam sozinhas um algoritmo inteiro.
 
-13. **RL básico.** Estado `s`, ação `a`, recompensa `r`, próximo estado `s'`. Política `π(a|s)` otimiza retorno esperado. O sinal é a recompensa do ambiente.
-14. **RLHF.** Comparações humanas alimentam sinal de preferência/reward model em uma variante clássica; política favorece respostas preferidas. Preferência não mede, por si, calibração.
-15. **RLVR.** Verificador relativamente objetivo, como teste executável ou resposta matemática; política favorece respostas verificadas. Acerto verificável não garante probabilidades calibradas.
-16. **RLCD.** Objetivo público anunciado pela TypeSafe: decisões tipadas com probabilidades calibradas. A TypeSafe descreve o objetivo, mas não mostra detalhes suficientes do treino para que possamos reproduzi-lo ou separar o efeito do RLCD do efeito da arquitetura e da forma de gerar as respostas. Não inventar a função de recompensa.
-17. **Calibração do zero.** Juntar previsões em que a probabilidade da escolha é próxima de 80%. Se aproximadamente 80 de 100 estiverem corretas, essa faixa parece calibrada. Se só 50 estiverem, há excesso de confiança. Exemplo didático, não dado do Maestro.
-18. **O que medir.** Accuracy/macro-F1 para escolha; Brier/ECE/reliability para probabilidades; falsos aceites para risco. Mostrar visual simples, com eixos e bins `n`, e ressalva de amostra pequena.
-19. **Tabela de comparação.** RL, RLHF, RLVR e RLCD por fonte do sinal, comportamento buscado, como avaliar e limite. RLCD é uma alegação específica do fornecedor, não uma prova de superioridade.
+17. **RL.** Estado, ação, recompensa do ambiente e política; exemplo de agente em jogo.
+18. **RLHF.** Comparações humanas favorecem respostas preferidas; exemplo clássico: pós-treino de modelos de chat, especialmente ChatGPT/InstructGPT. Claude, Grok e DeepSeek são exemplos de *chat models*, mas o slide não afirma que todos usam a mesma receita pública de RLHF.
+19. **RLVR.** Verificador dá sinal sobre tarefas com gabarito, como testes de código e matemática; exemplos: modelos de raciocínio nessas tarefas, sem inferir receita exata de um produto específico.
+20. **RLCD.** A TypeSafe apresenta Reinforcement Learning for Calibrated Decisions como objetivo de Jev: decisões tipadas e probabilidades que correspondam às frequências. Publicamente não há receita completa do sinal, otimização e ablações para atribuir causalmente o resultado ao treino.
+21. **Significado da calibração.** Em muitos casos comparáveis de 80%, esperar perto de 80% de acerto; uma decisão individual ainda pode errar.
+22. **Como testar.** Separar acerto da escolha, qualidade da distribuição e erro crítico; congelar corpus, versão e prompt, avaliar por classe e contexto.
+23. **Exemplo didático.** Cem previsões a 80%; 80 acertos parecem calibrados nessa faixa, 50 indicam excesso de confiança. Não são dados do Maestro.
+24. **Métricas.** Accuracy/macro-F1 para escolha; Brier/ECE/reliability para probabilidade; falsos aceites para risco. N pequeno limita inferência.
+25. **Tabela.** RL, RLHF, RLVR e RLCD por fonte do sinal, objetivo e limite.
 
-## Slides 20–26 — Cinco demos e Laya
+## Slides 26–57 — Demos, cenário e Maestro
 
-Cada demo tem a mesma pergunta oral: **o que entra, qual é o catálogo e o que o código faz depois?** O vídeo ocupa a área principal do slide; legenda curta identifica resultado de terceiro e limite. Os links ficam nas notas. Vídeos não verificados ou indisponíveis permanecem como área de inserção, sem simulação falsa.
+Os slides 26–47 preservam os exemplos e comparações da versão anterior. A ordem agora é: cinco demos (26–30), Laya (31–32), outros modelos e Jev em agentes (33–41), Maestro (42–47).
 
-20. **Emojis primeiro.** [Stefan](https://x.com/heystefan_/status/2101369117496521042): texto digitado altera quais emojis de um conjunto existente ficam em evidência. Exemplo visual de seleção rápida; UI/física dos emojis é código, não saída livre do Jev. O post tem vídeo; não atribuir arquitetura interna não publicada.
-21. **Skills.** [Daniel Avila](https://x.com/dani_avila7/status/2101885477158547753): Jev escolhe skill para carregar antes de contexto maior. Incluir `NONE`, medir falso descarte e custo da chamada.
-22. **PR/tokens.** [PR Judge](https://jevtypesafeai.com/tools/pr-judge): diff limitado vira encaminhamento `SAFE/REVIEW/BLOCK`; não lê repo inteiro nem executa testes. Economia de tokens é hipótese do fluxo: medir o total e a qualidade da revisão. Este exemplo vem da demo estudada, não de um dos tweets originais.
-23. **Xadrez.** [thread republicada](https://threadnavigator.com/thread/2100372930282573876/): Jev venceu Fable 5.1 **no tempo** em blitz 5+0, uma chamada por lance e sem busca; Astra deu mate em 18. Não fazer ranking de força.
-24. **JevPilot.** [Justin Schroeder](https://x.com/jpschroeder/status/2100347770867458384): HighwayEnv, estado simbólico, ações fechadas e freio em código. Simulação, não Tesla real, câmera real ou direção validada.
-25. **Surgimento de Laya.** Jev foi anunciado em 15/09/2026. Laya apareceu poucos dias depois como implementação com pesos abertos da mesma ideia de perguntas tipadas. `laya-mlx` é um runtime comunitário para Apple Silicon, não o lançamento original de Laya.
-26. **Jev × Laya.** Ambos respondem `Choice`, `Score` e `Noul`. Jev é API remota; Laya pode rodar localmente. O runtime MLX reporta p50 de 7,39–13,42 ms no M3 Max para uma pergunta curta, com modelo carregado. Nós medimos Jev no corpus do Maestro; não medimos Laya nele. Portanto, não declarar vencedor.
-
-## Slides 27–35 — A onda de modelos de decisão
-
-27. **Por que a onda apareceu?** Jev popularizou uma interface clara, mas os projetos têm bases, tamanhos, tarefas e modos de execução diferentes. O anúncio próximo no calendário não prova que todos foram treinados do zero em poucos dias. Modelos prévios e benchmarks públicos encurtam o caminho; a conclusão é inferência baseada nos materiais publicados.
-28. **Julia-1, do Brasil.** Supersonic Labs se identifica como brasileira. Julia-1 adapta mmBERT-small para decisões entre 2 e 20 opções, com 144,3 milhões de parâmetros e execução em CPU. O grupo reporta 73,15% contra referência Jev de 72,70% em typed decisions, mas 64% contra 87% em Banking77. A referência Jev foi herdada do protocolo, não reexecutada pela equipe; falta pt-BR e corpus Maestro.
-29. **CLM (Stanford/NVIDIA).** Encoders de estado e ação treinados por objetivo contrastivo; embeddings de ações podem ser guardados e reutilizados. O repositório relata até 9× menor latência em tarefas escolhidas. O post no X fala em 13×; usar a descrição do repositório e explicar hardware, cache e tarefa. Há autores afiliados a Stanford e NVIDIA; isso não significa anúncio de produto NVIDIA.
-30. **Span-01.** Respan criou um modelo de 4B especializado em detectar comportamentos em traces de agentes. A empresa publica F1 0,843 para Span-01 e 0,715 para Jev no seu benchmark. É avaliação conduzida pelo fornecedor em tarefa específica. A provocação sobre multiplicação no post não é comparação válida de classificação.
-31. **Documento original e autoria.** O post chama de “PDF do Diogo” uma síntese de 11 páginas. Encontramos [notas públicas sobre um agente TypeSafe](https://docs.google.com/document/d/1G61uUB0FifUnmmrPzFQojZ3KpczYKmXGpgEXDJ2l_Zg/edit), cuja exportação gera 12 páginas. Diogo compartilhou as notas [neste post](https://x.com/CompleteSkeptic/status/2101894250401271876); a identidade e autoria do PDF de 11 páginas divulgado por terceiros não foram comprovadas. Mostrar imagem da página 2 do documento público com legenda correta. O texto é uma proposta, sem implementação ou benchmark do agente.
-32. **O custo de trocar de modelo.** O documento pergunta como desenhar um agente sem depender de KV cache. Em uma sessão longa, ir de modelo forte para barato e voltar pode obrigar o forte a reprocessar muito contexto. A conta das notas é ilustrativa; não usá-la como medição.
-33. **Contexto dinâmico.** O autor propõe pontuar a relevância de blocos para a pergunta atual: ocultar, resumir ou apresentar o trecho completo. Também sugere carregar schema de ferramentas e instruções da pasta sob demanda. Jev poderia avaliar relevância; o harness monta a janela e aplica limites. Ainda é proposta.
-34. **Pontos de decisão no loop.** Preparar estado e opções; Jev escolhe contexto, ferramenta, rota ou avalia permissão; código valida catálogo, estado, política e autorização; LLM/ferramenta executa; testes e observações alimentam a próxima volta. Em decisões irreversíveis, a autorização não pode depender só do modelo.
-35. **Tabela de adequação.** Jev, Laya, Julia-1, CLM e Span-01 têm vantagens publicadas para usos distintos. No Maestro, repetir o mesmo corpus de seis classes com ASR real, medir erros críticos, p95, memória, privacidade e custo total antes de escolher.
-
-## Slides 36–49 — Maestro: produto, fronteiras e experimento
-
-36. **Contexto do hackathon.** Programa AI Glasses Brasil 2026, equipe AgroTurtles, MVP pré-hardware. Adaptar a abertura do pitch: máquina autônoma, interface de operador ainda dependente de tela. Não mostrar imagem ilustrativa como evidência física.
-37. **Ideia.** “Olhar, falar, confirmar”: alvo por QR/marcador ou talhão mapeado, fala da ação, confirmação por áudio. Adaptar o slide de jornada do pitch.
-38. **Arquitetura.** DAT/MockDeviceKit → Android/Kotlin → decisão de intenção + TargetResolver → regras/estado → confirmação → `Command` JSON → WebSocket/ROS 2/Nav2/Gazebo. Adaptar o slide de arquitetura do pitch. No evento, câmera/áudio dos óculos reais seguem gate físico.
-39. **QR e minimização.** Foto sob demanda, frame em memória, decoder local, `target_id`; não persistir foto, áudio ou transcrição por padrão. Classificação de fala é fluxo separado.
-40. **Gate remoto.** No `mockDebug`, consentimento de sessão revogável; app e proxy bloqueiam antes da rede padrões evidentes de CPF/CNPJ, e-mail, telefone, URL, texto longo e fala fora do escopo. Teste no SM-X510 com CPF sintético. Não chamar isso de anonimização ou conformidade LGPD integral. `LocalIntentClassifier` não é detector geral de CPF.
-41. **Seis labels e outras rotas.** Jev compara só `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL`, `UNKNOWN`. `PLOT_STATUS_QUERY`, `STATUS_QUERY`, `INSPECT_TARGET` e `MISSION_PREVIEW` são rotas locais separadas. Missão composta foi executada no Gazebo por parser/executor determinísticos, com confirmação individual por ação física. Não é sétima classe Jev.
-42. **JSON de entrada.** Android envia `{"transcript":"<fala>"}` ao proxy local. O proxy monta `state`, `model: jev-1.13.0` e `questions.operational_intent` de tipo `choice`, com critérios para as seis classes. O slide abrevia os textos dos critérios para caber; a estrutura está em `tools/jev_local_proxy.py`.
-43. **JSON de resposta.** Mostrar `recovery-045`, retirado da fixture sanitizada: rótulo esperado `CANCEL`, escolha `CONFIRM`, `probabilities["CONFIRM"]=0,75`, `confidence=0,70` e 70 `output_tokens`. É uma resposta real de teste, não uma chamada nova.
-44. **Validação.** `JevIntentClassifier` verifica as seis chaves, probabilidades finitas que somam aproximadamente 1, escolha vencedora e limiar 0,40; falha retorna `UNKNOWN`. O guard de cancelamento explícito fica desligado por padrão no benchmark bruto.
-45. **Comparação.** n=60 sintético, uma rodada: Jev 54/60, macro-F1 0,9010; local 48/60, macro-F1 0,8026. p95 remoto 2.100,575 ms vs local 0,293 ms no host; US$0,001472394 para 60 chamadas. ECE 0,0787 vs 0,0810 não demonstra calibração geral.
-46. **Erro crítico/HOLD.** `CANCEL → CONFIRM` com probabilidade da escolha 0,75 no Jev. A decisão de adoção operacional permanece `HOLD`, apesar da média melhor.
-47. **Demo ao vivo/vídeo.** Área grande para Android + Jev + confirmação + Gazebo. Identificar se é ao vivo ou gravação; sem alegar uso em campo.
-48. **Reserva.** Área para vídeo offline ou três capturas `results/offline-demo`; se usar estas, legenda obrigatória “fixture mock local — não executa o robô”.
-49. **Conclusão.** Jev é uma hipótese útil de classificação tipada. A alegação de calibração pede avaliação reproduzível. O Maestro exige alvo, estado, confirmação, contrato e testes fora do modelo.
-50. **Debate.** Perguntar como o modelo foi treinado, que comparação isolaria o efeito desse treino e que amostra com ASR real seria necessária; discutir custo do erro e evidência para reabrir `HOLD`.
-51. **Obrigado.** Fecho simples, sem informação nova.
+48–49. **`tools/jev_local_proxy.py` · Python.** Mostrar os seis textos reais de `CRITERIA`, divididos em dois slides por legibilidade. A divisão visual não altera o dicionário do arquivo.
+50. **`tools/jev_local_proxy.py` · Python.** Mostrar a função `request_payload` completa, com `state`, versão fixa, pergunta `choice`, instrução e `CRITERIA`. O Android envia antes somente `{"transcript":"..."}` ao proxy.
+51. **`results/jev-final-recovery-fixture.json` · JSON.** Resposta sanitizada `recovery-045`: `CANCEL` esperado, `CONFIRM` escolhido, probabilidade 0,75, `confidence` 0,70 e 70 tokens de saída.
+52. **`JevIntentClassifier.kt` · Kotlin.** Validação das seis classes, distribuição e limiar; falha retorna `UNKNOWN`.
+53. **Comparação.** n=60 sintético, uma rodada: Jev 54/60 e local 48/60; macro-F1 0,9010 vs 0,8026. p95 remoto 2.100,575 ms vs local 0,293 ms no host. ECE próximo não prova calibração geral.
+54. **Erro crítico.** `CANCEL → CONFIRM` com 0,75 leva à decisão `HOLD`.
+55–56. **Demo e reserva.** Execução no Gazebo ou fixture local explicitamente identificada.
+57. **Conclusão.** Interface útil; RLCD pede avaliação reproduzível; Maestro exige barreiras fora do modelo.
+58. **Debate.** Perguntas sobre treino, efeito causal, ASR real e risco.
+59. **Obrigado.** Fecho simples.
 
 ## Claims que devem continuar exatos
 
@@ -115,8 +92,8 @@ Cada demo tem a mesma pergunta oral: **o que entra, qual é o catálogo e o que 
 
 ## Fontes
 
-- [TypeSafe Quick start](https://docs.typesafe.ai/introduction/quickstart), [Choice](https://docs.typesafe.ai/primitives/choice), [Noul](https://docs.typesafe.ai/primitives/noul), [AI primer](https://docs.typesafe.ai/introduction/machine-learning-primer), [anúncio Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), [equipe](https://typesafe.ai/team).
-- [Avaliação dos casos externos](external-case-assessment.md) e links individuais nos slides 20–35; [Laya](https://github.com/NandhaKishorM/laya) e [Laya-MLX](https://github.com/mizorewww/laya-mlx).
+- [TypeSafe Quick start](https://docs.typesafe.ai/introduction/quickstart), [Choice](https://docs.typesafe.ai/primitives/choice), [Noul](https://docs.typesafe.ai/primitives/noul), [Score](https://docs.typesafe.ai/primitives/score), [AI primer](https://docs.typesafe.ai/introduction/machine-learning-primer), [anúncio Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), [equipe](https://typesafe.ai/team).
+- [Avaliação dos casos externos](external-case-assessment.md) e links individuais nos slides 26–41; [Laya](https://github.com/NandhaKishorM/laya) e [Laya-MLX](https://github.com/mizorewww/laya-mlx).
 - [Notas públicas compartilhadas por Diogo](https://docs.google.com/document/d/1G61uUB0FifUnmmrPzFQojZ3KpczYKmXGpgEXDJ2l_Zg/edit), [post original](https://x.com/CompleteSkeptic/status/2101894250401271876), [síntese de terceiro](https://x.com/N01ennn/status/2103818303642689696).
 - [Julia-1 oficial](https://supersoniclabs.ia.br/julia-1/), [modelo e protocolo](https://huggingface.co/SupersonicLabs/Julia-1), [CLM](https://github.com/Contrastive-LM/CLM), [Span-01](https://www.respan.ai/blog/introducing-span-1).
 - [Contrato de seis labels](choice-contract.md), [comparação JEV-41R](results/jev-final-recovery-presentation.md), [decisão HOLD](../../tasks/jev-experimental-decision.md).

@@ -7,12 +7,13 @@ Data: 08/10/2026
 Status: planejamento ativo. Este material pertence ao grupo de estudos e nao
 ao pitch do Maestro Agricola.
 
-O roteiro falavel de 50 minutos esta em
-[`presentation-script.md`](presentation-script.md). Ele separa evidencia
-medida, resultados de terceiros e roadmap antes da criacao dos slides.
-O deck tecnico correspondente esta em
-[`slides/jev-rl-study.html`](slides/jev-rl-study.html); ele nao faz parte de
-`docs/pitch/` e preserva a decisao experimental `HOLD`.
+O roteiro atual de 58 minutos mais debate está em
+[`presentation-script.md`](presentation-script.md), com as falas em
+[`presentation-speech.md`](presentation-speech.md). O deck correspondente é
+[`jev-rl-maestro-v6-2026-10-01.pptx`](jev-rl-maestro-v6-2026-10-01.pptx)
+e há uma [prévia PDF](jev-rl-maestro-v6-preview.pdf). O
+[`mapa slide–fala`](slide-speech-map.md) ajuda no ensaio. Este material
+preserva a decisão experimental `HOLD`.
 
 ## Como o estudo sera executado
 
