@@ -76,7 +76,7 @@ Os slides 26–47 preservam os exemplos e comparações da versão anterior. A o
 54. **Erro crítico.** `CANCEL → CONFIRM` com 0,75 leva à decisão `HOLD`.
 55–56. **Demo e reserva.** Execução no Gazebo ou fixture local explicitamente identificada.
 57. **Conclusão.** Interface útil; RLCD pede avaliação reproduzível; Maestro exige barreiras fora do modelo.
-58. **Debate.** Perguntas sobre treino, efeito causal, ASR real e risco.
+58. **O que ainda precisamos testar?** Três perguntas concretas: classificação de transcrições de fala real, calibração de probabilidades e distinção segura entre cancelar e confirmar. Se surgir interesse, discutir que estudo isolaria o efeito do treino RLCD.
 59. **Obrigado.** Fecho simples.
 
 ## Claims que devem continuar exatos

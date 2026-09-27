@@ -203,3 +203,5 @@ roadmap; uma task so vira evidencia de produto apos seus testes.
 - 26/09/2026: bloco de Jev em agentes ampliado com leitura das notas públicas, distinção de autoria do PDF divulgado, contexto dinâmico e custos de roteamento; versão v5 do PPTX.
 
 - 27/09/2026: versão v6 do PPTX reorganizada para começar por Jev e System One; três tipos de resposta, RLCD e código real do proxy foram detalhados. Roteiro, fala e mapa atualizados para 59 slides; nenhum novo benchmark ou chamado remoto foi feito.
+
+- 27/09/2026: versão v7 simplifica o slide 58 de discussão em três perguntas concretas sobre fala real, calibração e `CANCEL` versus `CONFIRM`; fala e mapa alinhados.

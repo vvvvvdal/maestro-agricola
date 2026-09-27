@@ -10,8 +10,8 @@ ao pitch do Maestro Agricola.
 O roteiro atual de 58 minutos mais debate está em
 [`presentation-script.md`](presentation-script.md), com as falas em
 [`presentation-speech.md`](presentation-speech.md). O deck correspondente é
-[`jev-rl-maestro-v6-2026-10-01.pptx`](jev-rl-maestro-v6-2026-10-01.pptx)
-e há uma [prévia PDF](jev-rl-maestro-v6-preview.pdf). O
+[`jev-rl-maestro-v7-2026-10-01.pptx`](jev-rl-maestro-v7-2026-10-01.pptx)
+e há uma [prévia PDF](jev-rl-maestro-v7-preview.pdf). O
 [`mapa slide–fala`](slide-speech-map.md) ajuda no ensaio. Este material
 preserva a decisão experimental `HOLD`.
 

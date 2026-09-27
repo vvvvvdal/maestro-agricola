@@ -1,6 +1,6 @@
 # Mapa slide → fala
 
-Este mapa acompanha [o PPTX](jev-rl-maestro-v6-2026-10-01.pptx), o [roteiro](presentation-script.md) e o [texto falado](presentation-speech.md). Os exemplos externos continuam com áreas para vídeo. Os slides 48–50 mostram código do proxy com nomes de arquivo; o 51 mostra fixture JSON.
+Este mapa acompanha [o PPTX](jev-rl-maestro-v7-2026-10-01.pptx), o [roteiro](presentation-script.md) e o [texto falado](presentation-speech.md). Os exemplos externos continuam com áreas para vídeo. Os slides 48–50 mostram código do proxy com nomes de arquivo; o 51 mostra fixture JSON.
 
 | Nº | Slide | Como a fala constrói o slide |
 | --- | --- | --- |
@@ -61,5 +61,5 @@ Este mapa acompanha [o PPTX](jev-rl-maestro-v6-2026-10-01.pptx), o [roteiro](pre
 | 55 | Demo | Espaço para Android, Jev, confirmação e Gazebo ao vivo ou em vídeo. |
 | 56 | Reserva | Espaço para gravação offline ou capturas da fixture mock. |
 | 57 | Conclusão | Retoma Jev como hipótese útil, RLCD como objetivo a testar e segurança fora do modelo. |
-| 58 | Debate | Abre questões sobre treino, ASR real e custo do erro. |
+| 58 | O que falta testar? | Traduz as pendências em fala real, calibração e distinção entre cancelar e confirmar. |
 | 59 | Obrigado | Encerra sem informação nova. |

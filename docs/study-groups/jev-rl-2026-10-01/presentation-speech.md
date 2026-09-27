@@ -266,11 +266,11 @@ A fala, no caminho padrão, fica em memória e vai para `LocalIntentClassifier`.
 
 **Se sobrar tempo, acrescentar em uma frase:** “O Maestro também executou no Gazebo uma missão de várias etapas, com parser local e confirmação por ação física; Jev não criou nem executou esse plano.”
 
-## 58:00–63:00 — Abrir a discussão
+## 58:00–63:00 — O que falta testar
 
-“Queria deixar quatro perguntas para o grupo, e vocês podem escolher por qual começamos. Primeira: que descrição do sinal de treino e que testes isolariam o efeito do RLCD vocês exigiriam para avaliar a alegação específica de RLCD? Segunda: como montar um holdout com ASR real, medindo falso aceite e calibração sem expor transcrições pessoais? Terceira: numa decisão frequente, que custo total conta mais: tokens cobrados, rede, p95, energia ou custo do erro? Quarta: qual evidência faria vocês manterem `HOLD`, mesmo se o macro-F1 continuasse subindo?
+[Slide 58.] “Para fechar, há três perguntas simples que nosso teste ainda não respondeu. Primeiro: Jev classifica bem transcrições de falas reais? Jev recebe texto do reconhecimento de voz, não áudio. As sessenta frases do nosso resultado principal eram sintéticas. Segundo: quando ele dá 80% de probabilidade, acerta perto de 80% dos casos parecidos? É isso que queremos dizer com calibração. Terceiro: consegue distinguir ‘cancelar’ de ‘confirmar’ com segurança? Em um caso do nosso teste, a resposta foi `CONFIRM` quando a pessoa queria cancelar. Esse erro manteve a decisão de não usar Jev como autoridade operacional.
 
-Eu trouxe um caso em que a média melhorou e a decisão de adoção continuou negativa. Acho que é exatamente essa tensão que vale discutir num grupo de RL.”
+Se alguém quiser aprofundar o RLCD, a pergunta de pesquisa vem depois: que detalhes do treinamento e que comparação permitiriam dizer que a melhora foi causada especificamente por esse método? O material público ainda não permite responder isso. Podemos discutir qualquer uma dessas perguntas.”
 
 [Depois das perguntas, slide 59.] “Obrigado. Se quiserem, abro o contrato da `Choice`, o código do classificador ou a matriz de erros para discutir uma decisão específica.”
 
