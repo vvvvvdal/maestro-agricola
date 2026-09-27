@@ -10,8 +10,8 @@ ao pitch do Maestro Agricola.
 O roteiro atual de 58 minutos mais debate está em
 [`presentation-script.md`](presentation-script.md), com as falas em
 [`presentation-speech.md`](presentation-speech.md). O deck correspondente é
-[`jev-rl-maestro-v8-2026-10-01.pptx`](jev-rl-maestro-v8-2026-10-01.pptx)
-e há uma [prévia PDF](jev-rl-maestro-v8-preview.pdf). O
+[`jev-rl-maestro-v9-2026-10-01.pptx`](jev-rl-maestro-v9-2026-10-01.pptx)
+e há uma [prévia PDF](jev-rl-maestro-v9-preview.pdf). O
 [`mapa slide–fala`](slide-speech-map.md) e o
 [`guia de estudo com 9 perguntas por slide`](slide-study-guide.md) ajudam no ensaio. Este material
 preserva a decisão experimental `HOLD`.
@@ -32,48 +32,18 @@ responsavel em software e, em especial, por que ela nao e uma autorizacao
 suficiente para controlar um robo.
 
 Para uma pergunta `Choice`, a saida e estruturada (`choice`, probabilidades e
-confianca), e nao texto gerado token a token. O contrato registra
-`output_tokens: 0`; isso reduz uma diferenca importante em relacao a um LLM
-generativo, mas nao elimina tokens de entrada, custo remoto ou latencia.
+confianca), e nao texto gerado token a token. A TypeSafe anuncia preço zero para `output_tokens`, mas respostas e o harness contabilizam tokens de saída. A comparação com LLMs também precisa incluir entrada, rede, custo total, latência e qualidade da decisão.
 
 O termo RLCD e uma descricao da TypeSafe para o treino do Jev. A empresa nao
 publicou arquitetura, dados ou receita de treino. A apresentacao usa o caso
 para discutir calibracao, risco seletivo e avaliacao, sem tratar essas
 alegacoes como resultado academico estabelecido.
 
-## Estrutura da apresentacao
+## Estrutura da apresentação
 
-| Tempo | Assunto | Pergunta que o bloco responde |
-| --- | --- | --- |
-| 0:00-4:00 | Decisoes pequenas em software | Quando um `if` precisa de julgamento sem virar um agente? |
-| 4:00-10:00 | Jev e LLM | Qual contrato devolve texto aberto e qual devolve escolha tipada? |
-| 10:00-19:00 | RL, RLHF, RLVR, RLCD e calibracao | Quando a probabilidade de 0,90 da classe escolhida corresponde a cerca de 90% de acertos? |
-| 19:00-24:00 | Xadrez | O que Jev vs Fable vs Astra realmente mediu? |
-| 24:00-29:00 | Casos publicos e Laya | Onde uma decisao pequena parece boa e quando local/remoto importa? |
-| 29:00-35:00 | Maestro e privacidade | Quais barreiras separam linguagem, dados e movimento? |
-| 35:00-40:00 | Jev no intent e no app | Como trocar somente o classificador e mostrar a decisao sem liberar acoes? |
-| 40:00-44:00 | App e reserva local | Como mostrar a decisao sem alegar chamada remota ou comando? |
-| 44:00-46:00 | Missao composta | Como o Maestro executa um plano tipado sem usar Jev como planejador? |
-| 46:00-50:00 | Debate | Qual evidencia escolheria o proximo caminho? |
+A sequência atual está detalhada no [roteiro](presentation-script.md): definição de Jev e suas saídas, RL/RLCD, três demonstrações (emojis, triagem de PR e JevPilot), notas do Diogo sobre Jev dentro de agentes, modelos semelhantes e, por fim, Maestro. O xadrez e a demo isolada de seleção de skills saíram do deck; a seleção de contexto e ferramentas é explicada com o documento do Diogo.
 
-O encerramento reserva quatro minutos para debate. O roteiro falavel e a fonte
-canonica de tempo, transicoes e limites; nao e uma defesa do Jev como
-substituto automatico do classificador local.
-
-## Xadrez como caso de leitura de benchmark
-
-Uma partida de blitz 5+0, com uma chamada de API por lance, reportou estes
-resultados:
-
-| Partida | Resultado reportado | Interpretacao permitida |
-| --- | --- | --- |
-| Jev vs Fable 5.1 | Jev venceu no tempo; Fable tinha +16 de material e uma segunda dama no lance 29 | Jev teve menor tempo por decisao naquele formato; isto nao mede forca de xadrez |
-| Jev vs Astra | Astra deu mate em 18 lances, com 2:27 restantes | Uma tarefa de calculo e busca favoreceu o modelo de raciocinio nesta partida |
-
-O valor pedagogico do exemplo esta no detalhe do harness. Relogio, uma unica
-chamada por lance e ausencia de busca sao restricoes que definem o que venceu.
-O resultado nao deve aparecer como "Jev ganhou de Fable no xadrez" sem a
-explicacao do relogio.
+A apresentação integral foi planejada para 58 minutos mais debate. Para uma sessão de 50 minutos, o [guia de estudo](slide-study-guide.md) oferece um percurso de 45 + 5 minutos que ainda precisa de ensaio cronometrado.
 
 ## Casos de teste para mostrar
 
@@ -298,7 +268,6 @@ sem nova decisao humana e subteto registrado.
 - [TypeSafe: Confidence](https://docs.typesafe.ai/confidence)
 - [TypeSafe: AI primer e RLCD](https://docs.typesafe.ai/introduction/machine-learning-primer)
 - [Flavio Copes: deep dive sobre Jev](https://flaviocopes.com/jev/)
-- [AI/ML API: thread de xadrez republicada](https://threadnavigator.com/thread/2100372930282573876/)
 - [Jev Benchmark & Playground](https://github.com/wondertwins/jev-benchmark)
 - [Jev em BANKING77](https://github.com/simonmesmith/jev-banking77-experiment)
 - [jev-benchmarks](https://github.com/AbdelStark/jev-benchmarks)

@@ -207,3 +207,5 @@ roadmap; uma task so vira evidencia de produto apos seus testes.
 - 27/09/2026: versão v7 simplifica o slide 58 de discussão em três perguntas concretas sobre fala real, calibração e `CANCEL` versus `CONFIRM`; fala e mapa alinhados.
 
 - 27/09/2026: versão v8 abre o bloco de modelos com a razão da onda, apresenta Laya, Julia-1 e CLM separadamente, compara os quatro com Jev e só então passa às notas do Diogo. Span-01 saiu. Guia de estudo novo cobre os 58 slides com 9 perguntas por slide e um percurso de 45 + 5 minutos; o speech integral continua material de estudo mais longo.
+
+- 27/09/2026: versão v9 do PPTX move as notas do Diogo para logo após emojis, PR e JevPilot; a onda Jev/Laya/Julia-1/CLM vem em seguida. Saíram os slides de xadrez e da demo isolada de seleção de skills. Roteiro, fala, mapa e guia de estudo renumerados para 56 slides e 9 perguntas por slide.

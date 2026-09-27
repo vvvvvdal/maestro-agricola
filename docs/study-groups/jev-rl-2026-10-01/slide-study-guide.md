@@ -1,26 +1,26 @@
 # Guia de estudo, slide por slide — Jev e Maestro
 
-Este guia acompanha a [versão v8 do deck](jev-rl-maestro-v8-2026-10-01.pptx), o [roteiro](presentation-script.md) e as [falas integrais](presentation-speech.md). **Estudar não significa ler tudo no palco.** As respostas abaixo são cartões de treino oral. Responda com suas palavras antes de conferir.
+Este guia acompanha a [versão v8 do deck](jev-rl-maestro-v9-2026-10-01.pptx), o [roteiro](presentation-script.md) e as [falas integrais](presentation-speech.md). **Estudar não significa ler tudo no palco.** As respostas abaixo são cartões de treino oral. Responda com suas palavras antes de conferir.
 
 ## Diagnóstico honesto e percurso de 50 minutos
 
-O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, alegações dos autores e medições do Maestro. O ponto forte da apresentação é não confundir uma interface probabilística com prova de calibração: ela chega ao erro `CANCEL → CONFIRM` e explica a decisão `HOLD`. O ponto em que o grupo mais pode apertar é RLCD: a receita de treino do Jev não está publicada em detalhe suficiente para reprodução ou atribuição causal. Diga isso sem hesitar. A nova sequência é mais clara: conceito → contrato → RL/RLCD → demos → por que apareceu a onda → modelos individuais → comparação → notas do Diogo → Maestro → resultado.
+O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, alegações dos autores e medições do Maestro. O ponto forte da apresentação é não confundir uma interface probabilística com prova de calibração: ela chega ao erro `CANCEL → CONFIRM` e explica a decisão `HOLD`. O ponto em que o grupo mais pode apertar é RLCD: a receita de treino do Jev não está publicada em detalhe suficiente para reprodução ou atribuição causal. Diga isso sem hesitar. A nova sequência é mais clara: conceito → contrato → RL/RLCD → demos → notas do Diogo → por que apareceu a onda → modelos individuais → comparação → Maestro → resultado.
 
-**O speech integral não cabe em 50 minutos.** Antes das fontes, tem cerca de 8,5 mil palavras; só lê-lo a 130 palavras/minuto levaria cerca de 65 minutos, sem vídeos ou demo. Use-o para estudar. Para o palco, mire **45 minutos de exposição + 5 de perguntas**, com esta trilha. Ela é um plano de cortes, ainda não um tempo validado em ensaio:
+**O speech integral não cabe em 50 minutos.** Antes das fontes, tem mais de 8 mil palavras; só lê-lo a 130 palavras/minuto levaria mais de 60 minutos, sem vídeos ou demo. Use-o para estudar. Para o palco, mire **45 minutos de exposição + 5 de perguntas**, com esta trilha. Ela é um plano de cortes, ainda não um tempo validado em ensaio:
 
 | Minutos | Slides | O que preservar | Como caber |
 | --- | --- | --- | --- |
 | 0–7 | 1–9 | definição, System One, bot, três tipos | 1 frase principal por slide; `if` em 20 s |
 | 7–11 | 10–16 | tokens, LLM × Jev, Playground | 1 execução ou exemplo salvo; até 90 s de site |
 | 11–24 | 17–25 | RL → RLHF → RLVR → RLCD; calibração | maior bloco; gastar 4–5 min só em RLCD |
-| 24–27 | 26–30 | cinco casos, especialmente emojis | vídeo de 10–15 s por caso, sem reproduzir inteiro |
-| 27–33 | 31–36 | onda, Laya, Julia-1, CLM, tabela | comparação após os três projetos; números só com contexto |
-| 33–36 | 37–40 | notas do Diogo e loop | explicar ideia em 3 min; detalhes de KV cache ficam para perguntas |
-| 36–43 | 41–53 | Maestro, código, corpus e `HOLD` | mostrar `CRITERIA` sem ler as seis descrições em inglês |
-| 43–45 | 54–58 | demo, conclusão, perguntas | 1 vídeo curto ou gravação; slide 55 como reserva; 57 abre Q&A |
-| 45–50 | perguntas | erro crítico e evidência necessária | slide 58 é o encerramento visual |
+| 24–27 | 26–28 | três demos: emojis, PR e JevPilot | vídeo de 10–15 s por caso, sem reproduzir inteiro |
+| 27–30 | 29–32 | notas do Diogo e loop | explicar a ideia em 3 min; KV cache pode ficar para perguntas |
+| 30–36 | 33–38 | onda, Laya, Julia-1, CLM, tabela | comparação após os três projetos; números só com contexto |
+| 36–43 | 39–51 | Maestro, código, corpus e `HOLD` | mostrar `CRITERIA` sem ler as seis descrições em inglês |
+| 43–45 | 52–56 | demo, conclusão, perguntas | 1 vídeo curto ou gravação; slide 53 como reserva; 55 abre Q&A |
+| 45–50 | perguntas | erro crítico e evidência necessária | slide 56 é o encerramento visual |
 
-**Regra de ensaio:** grave uma passada cronometrada. Se chegar ao slide 31 depois de 29 minutos, use só uma frase em cada slide de agentes (37–40). Se chegar ao slide 41 depois de 37 minutos, passe pelos slides 47–49 apontando o papel de `CRITERIA` e `request_payload`, sem ler linha por linha. Não corte os slides 20–25 nem 52–53: eles sustentam a tese de RL e o limite do experimento. Vídeos completos, números secundários e perguntas difíceis ficam para a discussão.
+**Regra de ensaio:** grave uma passada cronometrada. Se chegar ao slide 33 depois de 30 minutos, use só uma frase em cada slide de agentes (37–40). Se chegar ao slide 39 depois de 37 minutos, passe pelos slides 45–47 apontando o papel de `CRITERIA` e `request_payload`, sem ler linha por linha. Não corte os slides 20–25 nem 50–51: eles sustentam a tese de RL e o limite do experimento. Vídeos completos, números secundários e perguntas difíceis ficam para a discussão.
 
 ## Slide 1 — Título
 
@@ -516,26 +516,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Que falha importaria pouco aqui?** Escolher emoji irrelevante, por ser uma ação reversível.
 9. **O que a demo ensina sobre sistemas?** Modelo decide uma variável; código faz renderização e interação.
 
-## Slide 27 — Seleção de skills
-
-**Entenda:** Jev pode escolher qual skill carregar antes de uma chamada maior. A hipótese é reduzir contexto sem perder instruções necessárias. **Dica:** diga que a opção `NONE` é essencial.
-
-**Fácil**
-1. **O que é escolhido?** Uma skill ou nenhuma.
-2. **Jev executa a skill?** Não; o harness carrega o arquivo escolhido.
-3. **Por que selecionar?** Para evitar carregar todas as instruções sempre.
-
-**Médio**
-4. **O que pode ser economizado?** Tokens de contexto no agente principal.
-5. **Qual erro perigoso?** Descartar uma skill necessária.
-6. **Por que incluir `NONE`?** Muitos pedidos não exigem skill.
-
-**Difícil**
-7. **Como medir ganho?** Custo total do loop e sucesso da tarefa com e sem roteador.
-8. **O roteador pode aumentar custo?** Sim, se a chamada extra não evitar trabalho suficiente.
-9. **Qual política manter no harness?** Regras obrigatórias não devem depender de escolha probabilística.
-
-## Slide 28 — Triagem de PR
+## Slide 27 — Triagem de PR
 
 **Entenda:** A demo PR Judge classifica um diff limitado em rotas como `SAFE`, `REVIEW` e `BLOCK`. Economia de tokens só é válida se o fluxo completo ficar mais barato sem perder erros importantes. **Dica:** avise que é pesquisa complementar, não um dos tweets originais.
 
@@ -554,26 +535,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Qual avaliação adequada?** Mesmo conjunto de PRs, custo total, recall de problemas e revisão humana.
 9. **Como evitar vazamento de código?** Minimizar o diff enviado e revisar a fronteira de dados do serviço.
 
-## Slide 29 — Xadrez, Fable e Astra
-
-**Entenda:** O relato é de blitz 5+0, uma chamada por lance e sem busca. Jev venceu Fable no relógio; Astra deu mate em 18. Não use isso como ranking de força enxadrística. **Dica:** explique a regra do harness antes de falar do resultado.
-
-**Fácil**
-1. **Qual modalidade?** Blitz de cinco minutos sem incremento.
-2. **Como Jev venceu Fable?** No tempo.
-3. **O que aconteceu contra Astra?** Astra deu mate em 18 lances.
-
-**Médio**
-4. **Por que rapidez importa no teste?** O relógio faz parte do resultado.
-5. **Por que xadrez desafia Jev?** Exige cálculo, busca e avaliação de sequências.
-6. **Uma vitória no tempo prova maior força?** Não.
-
-**Difícil**
-7. **Como comparar força de jogo?** Muitas partidas com relógio, cores e condições controladas.
-8. **Qual variável do harness influencia muito?** Uma chamada por lance sem busca adicional.
-9. **Qual lição geral?** Uma decisão rápida pode ganhar em latência e perder em qualidade da estratégia.
-
-## Slide 30 — JevPilot em simulação
+## Slide 28 — JevPilot em simulação
 
 **Entenda:** O vídeo envolve `HighwayEnv`, estado simbólico e ações fechadas. Há freios/regras fora do modelo. Não é um Tesla físico nem direção autônoma validada. **Dica:** pronuncie “simulação” antes de exibir o vídeo.
 
@@ -592,121 +554,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Que erro de inferência o vídeo pode induzir?** Confundir uma demo simbólica com percepção e controle de um carro real.
 9. **Qual conexão com Maestro?** O modelo só propõe decisão; estado, confirmação e comando ficam em software determinístico.
 
-## Slide 31 — Por que tantos modelos parecidos?
-
-**Entenda:** Jev popularizou uma interface clara, enquanto grupos podiam reutilizar encoders, pesos e benchmarks. A proximidade dos anúncios não prova cópia ou treinamento completo em poucos dias. **Dica:** enquadre como inferência sobre o ecossistema, não história comprovada de cada equipe.
-
-**Fácil**
-1. **Qual interface ficou visível?** Estado, perguntas fechadas e probabilidades.
-2. **O que outros projetos podiam reutilizar?** Modelos pré-treinados, código e benchmarks.
-3. **Todos rodam do mesmo jeito?** Não.
-
-**Médio**
-4. **Por que projetos rápidos podem surgir?** Adaptar um backbone existente é mais curto que treinar tudo do zero.
-5. **Qual objetivo muda entre eles?** Localidade, latência, custo ou tarefa alvo.
-6. **Por que “mais rápido” é ambíguo?** Rede, GPU/CPU, cache, entrada e modelo carregado alteram a medida.
-
-**Difícil**
-7. **Anúncio próximo prova causalidade?** Não; não mostra quando o trabalho começou.
-8. **Como testar se dois modelos fazem a mesma função?** Mesmo contrato, corpus, classes, hardware e critérios de avaliação.
-9. **Por que essa abertura vem antes dos nomes?** Dá ao público uma pergunta para orientar Laya, Julia-1 e CLM.
-
-## Slide 32 — Laya: origem e interface
-
-**Entenda:** Laya publica pesos e oferece tipos `Choice`, `Score` e `Noul` semelhantes aos da interface de Jev. `laya-mlx` é uma adaptação para Apple Silicon. Não confunda interface semelhante com método de treino idêntico. **Dica:** diferencie modelo, pesos e runtime.
-
-**Fácil**
-1. **Qual é a diferença operacional básica para Jev?** Laya pode ser executado localmente com pesos abertos.
-2. **Quais perguntas oferece?** `Choice`, `Score` e `Noul`.
-3. **O que é `laya-mlx`?** Um runtime/adaptação para Apple Silicon.
-
-**Médio**
-4. **Peso aberto significa treino reproduzível?** Não necessariamente; dados e procedimento podem faltar.
-5. **O contrato semelhante prova qualidade semelhante?** Não; só facilita montar comparação.
-6. **Qual vantagem de execução local?** Pode reduzir dependência de rede e mudar a fronteira de dados.
-
-**Difícil**
-7. **Que risco novo o local traz?** Memória, energia, atualização e manutenção de runtime.
-8. **Pode substituir Jev sem teste?** Não; faltam nossas seis classes e medição no hardware alvo.
-9. **Qual pergunta de RL fazer ao repositório?** Que objetivo, dados e ablações sustentam a alegação de calibração?
-
-## Slide 33 — Laya: execução local
-
-**Entenda:** O valor p50 de 7,39–13,42 ms veio do README de `laya-mlx` no M3 Max, para pergunta curta e modelo já carregado. O Maestro precisa medir no Android real e no mesmo corpus. **Dica:** nunca compare esses milissegundos diretamente aos do Jev remoto.
-
-**Fácil**
-1. **O que significa p50?** Mediana da latência medida.
-2. **Em que hardware foi publicado?** M3 Max, no runtime MLX.
-3. **Laya já foi testado no Maestro?** Não neste corpus.
-
-**Médio**
-4. **Por que modelo carregado importa?** Cold start pode acrescentar tempo relevante.
-5. **O que medir no Android?** Acurácia, p95, memória e energia.
-6. **Por que usar as mesmas seis classes?** Para comparação pareada com Jev e o baseline local.
-
-**Difícil**
-7. **Latência local sempre vence remota?** Não; depende de hardware, tamanho de entrada e otimização.
-8. **Que risco de privacidade ainda existe localmente?** Dados podem aparecer em logs ou outros serviços do app/SDK.
-9. **Que resultado faria Laya interessante?** Erros críticos aceitáveis e qualidade comparável com menor custo/latência no dispositivo alvo.
-
-## Slide 34 — Julia-1, do Brasil
-
-**Entenda:** Supersonic Labs apresenta Julia-1 como modelo de decisão sobre 2–20 opções, baseado em mmBERT-small e com 144,3 milhões de parâmetros. Os resultados publicados incluem comparação com referência Jev de protocolo anterior, não uma nova rodada controlada no Maestro. **Dica:** dê destaque à contribuição brasileira sem declarar vencedor.
-
-**Fácil**
-1. **De onde vem Julia-1?** Da Supersonic Labs, equipe brasileira.
-2. **Qual backbone citado?** mmBERT-small.
-3. **Onde pode rodar?** CPU; há exportação ONNX.
-
-**Médio**
-4. **O que entra?** Estado/contexto, pergunta e 2–20 opções.
-5. **Por que o resultado typed decisions chama atenção?** Julia e referência Jev ficaram próximos naquele protocolo.
-6. **O que Banking77 alerta?** Julia foi pior em categorias bancárias semelhantes na comparação publicada.
-
-**Difícil**
-7. **Por que a referência Jev não é confronto novo?** Os números foram reaproveitados do protocolo anterior.
-8. **Que lacuna importa ao Maestro?** pt-BR, seis classes operacionais e custo dos erros críticos.
-9. **Como seria a comparação justa?** Executar Julia e Jev nas mesmas transcrições congeladas, com versões fixas e métricas iguais.
-
-## Slide 35 — CLM
-
-**Entenda:** CLM usa representação vetorial de estado e ações, com treino contrastivo para aproximar pares corretos. Ações repetidas podem ter embeddings em cache. O repositório relata até 9× menor latência em tarefas escolhidas com backbone de 8B/GPU. **Dica:** explique um par positivo e um negativo antes do multiplicador.
-
-**Fácil**
-1. **O que é um encoder?** Modelo que converte entrada em representação vetorial.
-2. **O que CLM compara?** Estado e ações candidatas.
-3. **O que pode ficar em cache?** Vetores de ações reutilizadas.
-
-**Médio**
-4. **O que é treino contrastivo aqui?** Aproximar estado/ação correta e afastar alternativas incorretas.
-5. **Por que cache pode acelerar?** Evita recalcular representação de ação conhecida.
-6. **O “até 9×” vale no Maestro?** Não foi medido no Maestro.
-
-**Difícil**
-7. **O que comparar sem cache?** Latência e qualidade quando as opções mudam frequentemente.
-8. **Por que 8B/GPU muda a conclusão?** Custo e hardware diferem muito de Julia em CPU ou Jev via rede.
-9. **Qual risco de similaridade vetorial?** A ação mais próxima pode estar semanticamente errada; precisa de avaliação e política externa.
-
-## Slide 36 — Jev, Laya, Julia-1 e CLM
-
-**Entenda:** A tabela fecha o bloco de modelos. Jev foi medido nas seis classes; Laya e Julia têm caminho local; CLM usa similaridade/cache. A última linha define comparação comum, sem eleger vencedor. **Dica:** explique primeiro “onde cada um roda”, depois “o que falta medir no Maestro”.
-
-**Fácil**
-1. **Qual é API remota?** Jev.
-2. **Quais oferecem pesos/execução local?** Laya e Julia-1.
-3. **Qual usa encoders e cache de ação?** CLM.
-
-**Médio**
-4. **O que já medimos no Maestro?** Jev versus classificador local em 60 frases sintéticas.
-5. **Que métricas faltam para os demais?** Macro-F1, Brier/ECE, p95, memória/custo e erros críticos.
-6. **Por que mesma entrada e catálogo?** Isolam parte da diferença de modelo e evitam tarefas incompatíveis.
-
-**Difícil**
-7. **Qual resultado agregado não decide adoção?** Macro-F1 alto com erro `CANCEL → CONFIRM`.
-8. **Como comparar serviço e modelos locais?** Medir ponta a ponta no fluxo real, incluindo rede, carregamento e hardware.
-9. **Qual é a conclusão intelectualmente honesta?** Os projetos têm trade-offs distintos; no Maestro ainda falta teste pareado de Laya, Julia e CLM.
-
-## Slide 37 — Documento compartilhado por Diogo
+## Slide 29 — Documento compartilhado por Diogo
 
 **Entenda:** As notas públicas discutem desenho de agente de código. O post de terceiro descreve um PDF de 11 páginas; a exportação encontrada gera 12. A identidade entre os arquivos não foi comprovada. **Dica:** este slide inicia outro assunto após a tabela.
 
@@ -725,7 +573,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Que natureza tem a proposta?** Hipótese arquitetural, não produto medido.
 9. **Que teste faltaria?** Comparar tarefas de agente com e sem as decisões sugeridas, medindo sucesso, custo e perdas de contexto.
 
-## Slide 38 — Custo de trocar de modelo
+## Slide 30 — Custo de trocar de modelo
 
 **Entenda:** Alternar modelo forte → barato → forte pode exigir que o forte reprocesse contexto; a economia intermediária pode desaparecer. A conta nas notas é ilustrativa. **Dica:** use uma história de “reler o caderno inteiro” e não tente ensinar KV cache profundamente no palco.
 
@@ -744,7 +592,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Que mitigação considerar?** Contexto menor, resumo testado, cache do provedor ou roteamento estável.
 9. **Que efeito adverso de resumir?** Perder instrução ou evidência essencial para a tarefa.
 
-## Slide 39 — Contexto para a próxima tarefa
+## Slide 31 — Contexto para a próxima tarefa
 
 **Entenda:** O harness pode escolher bloco completo, resumo ou omissão; também carregar instruções e schemas sob demanda. Jev poderia estimar relevância, mas código monta a janela e preserva regras obrigatórias. **Dica:** apresente um exemplo de saída longa de ferramenta.
 
@@ -763,7 +611,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Qual falso negativo é grave?** Omitir um bloco necessário para executar corretamente.
 9. **Como criar ground truth de relevância?** Anotar tarefas e verificar se remover cada bloco altera solução e segurança.
 
-## Slide 40 — Jev no loop de agente
+## Slide 32 — Jev no loop de agente
 
 **Entenda:** Jev pode decidir contexto, ferramenta ou rota em pontos definidos; o harness valida, e ferramenta/LLM executa. É uma proposta, não evidência de agente TypeSafe já medido. **Dica:** repita “modelo propõe; código confere; ferramenta executa”.
 
@@ -782,7 +630,121 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Permissão sensível pode depender só dele?** Não; autorização fica em regra e humano quando necessário.
 9. **Que experimento provaria utilidade?** Agente com/sem Jev nas mesmas tarefas, medindo sucesso, custo, p95 e falhas de segurança.
 
-## Slide 41 — Maestro e hackathon
+## Slide 33 — Por que tantos modelos parecidos?
+
+**Entenda:** Jev popularizou uma interface clara, enquanto grupos podiam reutilizar encoders, pesos e benchmarks. A proximidade dos anúncios não prova cópia ou treinamento completo em poucos dias. **Dica:** enquadre como inferência sobre o ecossistema, não história comprovada de cada equipe.
+
+**Fácil**
+1. **Qual interface ficou visível?** Estado, perguntas fechadas e probabilidades.
+2. **O que outros projetos podiam reutilizar?** Modelos pré-treinados, código e benchmarks.
+3. **Todos rodam do mesmo jeito?** Não.
+
+**Médio**
+4. **Por que projetos rápidos podem surgir?** Adaptar um backbone existente é mais curto que treinar tudo do zero.
+5. **Qual objetivo muda entre eles?** Localidade, latência, custo ou tarefa alvo.
+6. **Por que “mais rápido” é ambíguo?** Rede, GPU/CPU, cache, entrada e modelo carregado alteram a medida.
+
+**Difícil**
+7. **Anúncio próximo prova causalidade?** Não; não mostra quando o trabalho começou.
+8. **Como testar se dois modelos fazem a mesma função?** Mesmo contrato, corpus, classes, hardware e critérios de avaliação.
+9. **Por que essa abertura vem antes dos nomes?** Dá ao público uma pergunta para orientar Laya, Julia-1 e CLM.
+
+## Slide 34 — Laya: origem e interface
+
+**Entenda:** Laya publica pesos e oferece tipos `Choice`, `Score` e `Noul` semelhantes aos da interface de Jev. `laya-mlx` é uma adaptação para Apple Silicon. Não confunda interface semelhante com método de treino idêntico. **Dica:** diferencie modelo, pesos e runtime.
+
+**Fácil**
+1. **Qual é a diferença operacional básica para Jev?** Laya pode ser executado localmente com pesos abertos.
+2. **Quais perguntas oferece?** `Choice`, `Score` e `Noul`.
+3. **O que é `laya-mlx`?** Um runtime/adaptação para Apple Silicon.
+
+**Médio**
+4. **Peso aberto significa treino reproduzível?** Não necessariamente; dados e procedimento podem faltar.
+5. **O contrato semelhante prova qualidade semelhante?** Não; só facilita montar comparação.
+6. **Qual vantagem de execução local?** Pode reduzir dependência de rede e mudar a fronteira de dados.
+
+**Difícil**
+7. **Que risco novo o local traz?** Memória, energia, atualização e manutenção de runtime.
+8. **Pode substituir Jev sem teste?** Não; faltam nossas seis classes e medição no hardware alvo.
+9. **Qual pergunta de RL fazer ao repositório?** Que objetivo, dados e ablações sustentam a alegação de calibração?
+
+## Slide 35 — Laya: execução local
+
+**Entenda:** O valor p50 de 7,39–13,42 ms veio do README de `laya-mlx` no M3 Max, para pergunta curta e modelo já carregado. O Maestro precisa medir no Android real e no mesmo corpus. **Dica:** nunca compare esses milissegundos diretamente aos do Jev remoto.
+
+**Fácil**
+1. **O que significa p50?** Mediana da latência medida.
+2. **Em que hardware foi publicado?** M3 Max, no runtime MLX.
+3. **Laya já foi testado no Maestro?** Não neste corpus.
+
+**Médio**
+4. **Por que modelo carregado importa?** Cold start pode acrescentar tempo relevante.
+5. **O que medir no Android?** Acurácia, p95, memória e energia.
+6. **Por que usar as mesmas seis classes?** Para comparação pareada com Jev e o baseline local.
+
+**Difícil**
+7. **Latência local sempre vence remota?** Não; depende de hardware, tamanho de entrada e otimização.
+8. **Que risco de privacidade ainda existe localmente?** Dados podem aparecer em logs ou outros serviços do app/SDK.
+9. **Que resultado faria Laya interessante?** Erros críticos aceitáveis e qualidade comparável com menor custo/latência no dispositivo alvo.
+
+## Slide 36 — Julia-1, do Brasil
+
+**Entenda:** Supersonic Labs apresenta Julia-1 como modelo de decisão sobre 2–20 opções, baseado em mmBERT-small e com 144,3 milhões de parâmetros. Os resultados publicados incluem comparação com referência Jev de protocolo anterior, não uma nova rodada controlada no Maestro. **Dica:** dê destaque à contribuição brasileira sem declarar vencedor.
+
+**Fácil**
+1. **De onde vem Julia-1?** Da Supersonic Labs, equipe brasileira.
+2. **Qual backbone citado?** mmBERT-small.
+3. **Onde pode rodar?** CPU; há exportação ONNX.
+
+**Médio**
+4. **O que entra?** Estado/contexto, pergunta e 2–20 opções.
+5. **Por que o resultado typed decisions chama atenção?** Julia e referência Jev ficaram próximos naquele protocolo.
+6. **O que Banking77 alerta?** Julia foi pior em categorias bancárias semelhantes na comparação publicada.
+
+**Difícil**
+7. **Por que a referência Jev não é confronto novo?** Os números foram reaproveitados do protocolo anterior.
+8. **Que lacuna importa ao Maestro?** pt-BR, seis classes operacionais e custo dos erros críticos.
+9. **Como seria a comparação justa?** Executar Julia e Jev nas mesmas transcrições congeladas, com versões fixas e métricas iguais.
+
+## Slide 37 — CLM
+
+**Entenda:** CLM usa representação vetorial de estado e ações, com treino contrastivo para aproximar pares corretos. Ações repetidas podem ter embeddings em cache. O repositório relata até 9× menor latência em tarefas escolhidas com backbone de 8B/GPU. **Dica:** explique um par positivo e um negativo antes do multiplicador.
+
+**Fácil**
+1. **O que é um encoder?** Modelo que converte entrada em representação vetorial.
+2. **O que CLM compara?** Estado e ações candidatas.
+3. **O que pode ficar em cache?** Vetores de ações reutilizadas.
+
+**Médio**
+4. **O que é treino contrastivo aqui?** Aproximar estado/ação correta e afastar alternativas incorretas.
+5. **Por que cache pode acelerar?** Evita recalcular representação de ação conhecida.
+6. **O “até 9×” vale no Maestro?** Não foi medido no Maestro.
+
+**Difícil**
+7. **O que comparar sem cache?** Latência e qualidade quando as opções mudam frequentemente.
+8. **Por que 8B/GPU muda a conclusão?** Custo e hardware diferem muito de Julia em CPU ou Jev via rede.
+9. **Qual risco de similaridade vetorial?** A ação mais próxima pode estar semanticamente errada; precisa de avaliação e política externa.
+
+## Slide 38 — Jev, Laya, Julia-1 e CLM
+
+**Entenda:** A tabela fecha o bloco de modelos. Jev foi medido nas seis classes; Laya e Julia têm caminho local; CLM usa similaridade/cache. A última linha define comparação comum, sem eleger vencedor. **Dica:** explique primeiro “onde cada um roda”, depois “o que falta medir no Maestro”.
+
+**Fácil**
+1. **Qual é API remota?** Jev.
+2. **Quais oferecem pesos/execução local?** Laya e Julia-1.
+3. **Qual usa encoders e cache de ação?** CLM.
+
+**Médio**
+4. **O que já medimos no Maestro?** Jev versus classificador local em 60 frases sintéticas.
+5. **Que métricas faltam para os demais?** Macro-F1, Brier/ECE, p95, memória/custo e erros críticos.
+6. **Por que mesma entrada e catálogo?** Isolam parte da diferença de modelo e evitam tarefas incompatíveis.
+
+**Difícil**
+7. **Qual resultado agregado não decide adoção?** Macro-F1 alto com erro `CANCEL → CONFIRM`.
+8. **Como comparar serviço e modelos locais?** Medir ponta a ponta no fluxo real, incluindo rede, carregamento e hardware.
+9. **Qual é a conclusão intelectualmente honesta?** Os projetos têm trade-offs distintos; no Maestro ainda falta teste pareado de Laya, Julia e CLM.
+
+## Slide 39 — Maestro e hackathon
 
 **Entenda:** AgroTurtles desenvolveu Maestro no contexto do AI Glasses Brasil 2026: uma interface de operador para máquina agrícola usando voz e visão. O MVP demonstrado é pré-hardware, com simulação Gazebo e MockDeviceKit. **Dica:** marque aqui a mudança de tema: agora o público conhece Jev e vai ver uma aplicação.
 
@@ -801,7 +763,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Que gate físico falta?** Câmera/sessão DAT e áudio simultâneos nos óculos e aparelho exatos.
 9. **Qual valor do Maestro mesmo sem Jev?** Contrato tipado, resolução de alvo, confirmação e bridge robótico seguro.
 
-## Slide 42 — Olhar, falar, confirmar
+## Slide 40 — Olhar, falar, confirmar
 
 **Entenda:** A pessoa identifica um alvo por QR ou talhão mapeado, pede uma ação por voz e confirma por áudio antes de movimento. Uma classificação alta não substitui a confirmação. **Dica:** diga os três verbos pausadamente; é a frase mais fácil de memorizar do Maestro.
 
@@ -820,7 +782,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Como provar que `SPRAY` não moveu sozinho?** Inspecionar máquina de estados, `Command` emitido e testes de confirmação.
 9. **Qual caso de uso preserva hands-free sem perder controle?** O app narra operação e alvo e espera resposta explícita da pessoa.
 
-## Slide 43 — Do comando ao robô
+## Slide 41 — Do comando ao robô
 
 **Entenda:** Voz gera decisão tipada; regras e estado determinísticos verificam alvo/operação; confirmação habilita um `Command` JSON versionado; WebSocket/ROS 2 executam no Gazebo. Jev nunca gera comandos ROS livres. **Dica:** percorra as setas da esquerda para a direita sem saltar o bloco de confirmação.
 
@@ -839,7 +801,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Por que Jev não produz ROS livre?** Seria difícil validar segurança, estado e permissões de uma saída arbitrária.
 9. **Qual é a fronteira de autoridade?** Modelo interpreta texto; código determinístico autoriza e forma o comando.
 
-## Slide 44 — QR e minimização
+## Slide 42 — QR e minimização
 
 **Entenda:** A câmera fornece um frame sob demanda; o Android decodifica QR localmente, retém `target_id` e descarta imagem. Isso reduz exposição, mas não quer dizer que “a câmera só vê QR” nem conformidade LGPD completa. **Dica:** explique a diferença entre frame capturado e dado que o app conserva.
 
@@ -858,7 +820,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Que fronteiras extras existem?** Android, SDK de câmera e serviço de reconhecimento de fala.
 9. **Qual teste verificar?** Que erro, timeout e QR inválido não persistem mídia nem criam comando.
 
-## Slide 45 — Antes de enviar transcrição
+## Slide 43 — Antes de enviar transcrição
 
 **Entenda:** No `mockDebug`, um consentimento de sessão e gates no app/proxy bloqueiam padrões evidentes de CPF/CNPJ, e-mail, telefone, URL, tamanho excessivo e fala fora do escopo antes da chamada remota. Filtros de padrão reduzem risco, mas não identificam toda informação pessoal. **Dica:** nunca diga que o classificador local “detecta qualquer CPF”.
 
@@ -877,7 +839,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Como melhorar avaliação do gate?** Corpus adversarial sanitizado, falsos bloqueios e escapes, sem dados reais desnecessários.
 9. **Qual afirmação precisa ser precisa?** “Bloqueamos padrões evidentes antes da API”, não “nenhum dado sensível pode sair”.
 
-## Slide 46 — Seis classes Jev e outras rotas
+## Slide 44 — Seis classes Jev e outras rotas
 
 **Entenda:** O experimento pareado usa apenas `SPRAY`, `DOCK`, `UNDOCK`, `CONFIRM`, `CANCEL`, `UNKNOWN`. Consulta de estado, inspeção de alvo e `MISSION_PREVIEW` são rotas locais anteriores e separadas. Missão composta é analisada por parser determinístico, com confirmação por ação física. **Dica:** responda “seis no experimento Jev; o produto possui outras rotas locais”.
 
@@ -896,7 +858,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Jev planejou a missão demonstrada?** Não; parser e executor locais produziram e executaram etapas.
 9. **Qual erro de narrativa evitar?** Atribuir ao Jev capacidades novas do Maestro fora do seu `Choice` operacional.
 
-## Slide 47 — `CRITERIA`, parte 1
+## Slide 45 — `CRITERIA`, parte 1
 
 **Entenda:** Trecho real de `tools/jev_local_proxy.py` com `SPRAY`, `DOCK`, `UNDOCK`. Os critérios pedem comandos explícitos atuais e negam inferir dock/undock de outra ação. Este e o próximo slide formam um único dicionário Python. **Dica:** traduza o sentido; não leia o inglês inteiro.
 
@@ -915,7 +877,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Como testar fronteira DOCK/UNDOCK?** Frases negativas, históricas, condicionais e com estado da doca.
 9. **Quem ainda valida o estado físico?** Código determinístico, não a classificação textual.
 
-## Slide 48 — `CRITERIA`, parte 2
+## Slide 46 — `CRITERIA`, parte 2
 
 **Entenda:** `CONFIRM`, `CANCEL` e `UNKNOWN` completam o dicionário. `CONFIRM` só autoriza operação já pendente; o rótulo sozinho não cria uma. `UNKNOWN` cobre dúvidas, histórico, conversa, ruído e instrução injetada. **Dica:** concentre-se no par `CANCEL`/`CONFIRM`; ele explica o `HOLD`.
 
@@ -934,7 +896,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Como mitigar além do classificador?** Estado pendente, confirmação explícita e guard determinístico avaliado separadamente.
 9. **Qual pergunta de segurança fazer?** Quantos cancelamentos reais são aceitos incorretamente por contexto e ruído?
 
-## Slide 49 — `request_payload` completo
+## Slide 47 — `request_payload` completo
 
 **Entenda:** Função real do proxy: pega a transcrição, define `state`, modelo fixo, pergunta `operational_intent` do tipo `choice`, instrução e `CRITERIA`. O Android envia antes um JSON menor com `transcript`; a chave fica no proxy. **Dica:** separe claramente “Android → proxy” de “proxy → TypeSafe”.
 
@@ -953,7 +915,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **O proxy impede todo dado privado?** Não; padrões e escopo são mitigação limitada.
 9. **O que mudaria se `CRITERIA` fosse editado?** O contrato semântico; benchmark teria de ser refeito.
 
-## Slide 50 — Fixture JSON de resposta
+## Slide 48 — Fixture JSON de resposta
 
 **Entenda:** Recorte sanitizado real de `recovery-045`: esperado `CANCEL`, Jev escolheu `CONFIRM` com probabilidade 0,75 e `confidence` 0,70. `usage.output_tokens=70` reforça a distinção entre token contabilizado e preço de saída. **Dica:** pare neste slide; é a evidência mais importante.
 
@@ -972,7 +934,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Por que guardar fixture sanitizada?** Permite reproduzir análise sem nova chamada ou texto pessoal.
 9. **Que decisão experimental saiu desse caso?** Não promover Jev a autoridade operacional: `HOLD`.
 
-## Slide 51 — Validação em Kotlin
+## Slide 49 — Validação em Kotlin
 
 **Entenda:** `JevIntentClassifier.kt` confere rótulo e seis chaves, valores finitos, soma da distribuição, escolha vencedora e limiar. Resposta inválida/timeout cai em `UNKNOWN`. O trecho no slide é ilustrativo do gate; confira o arquivo para detalhes. **Dica:** explique o comportamento de falha, não a sintaxe linha por linha.
 
@@ -991,7 +953,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Por que validar escolha vencedora?** Uma escolha que perde para outra contradiz a própria distribuição.
 9. **O guard de cancelamento faz parte do benchmark bruto?** Não; fica desligado por padrão e deve ser avaliado separadamente.
 
-## Slide 52 — Comparação no corpus sintético
+## Slide 50 — Comparação no corpus sintético
 
 **Entenda:** Na rodada pareada de 60 falas sintéticas, Jev acertou 54 e o local 48; macro-F1 0,9010 contra 0,8026. Jev remoto teve p95 de cerca de 2,1 s, o local 0,293 ms no host. Esse desenho descreve aquele corpus, não campo ou hardware final. **Dica:** diga “uma rodada sintética” antes dos números.
 
@@ -1010,7 +972,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Qual próximo conjunto de dados?** Transcrições reais de ASR, congeladas e sanitizadas, com replicação independente.
 9. **Qual pergunta importa mais que “quem ganhou”?** Em que classes ocorreram os erros e qual custo eles têm?
 
-## Slide 53 — Erro crítico e `HOLD`
+## Slide 51 — Erro crítico e `HOLD`
 
 **Entenda:** Jev teve média melhor, mas aceitou um cancelamento como confirmação. O local teve três aceites inseguros naquele corpus; Jev, um. O critério de segurança impede promoção operacional. **Dica:** diga “a média melhorou, mas uma falha crítica bastou para manter `HOLD`”.
 
@@ -1029,7 +991,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Por que não ajustar no holdout observado?** Contaminaria a avaliação e inflaria o resultado.
 9. **Que decisão de arquitetura permanece?** Modelo sugere intenção; estado, alvo e confirmação continuam determinísticos.
 
-## Slide 54 — Demo Maestro + Jev + Gazebo
+## Slide 52 — Demo Maestro + Jev + Gazebo
 
 **Entenda:** Espaço para vídeo ou execução local: Android chama o caminho Jev experimental, mostra intenção e espera confirmação antes do robô simulado. Identifique o que foi executado ao vivo e o que é gravação. **Dica:** narre “fala → classe → confirmação → `Command` → Gazebo” enquanto o vídeo roda.
 
@@ -1048,7 +1010,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Por que o erro `CANCEL → CONFIRM` não invalida a barreira?** Classificador pode errar; confirmação e estado ainda precisam ser testados independentemente.
 9. **Qual limitação principal da demo?** Não valida câmera/áudio dos óculos físicos nem pulverização real.
 
-## Slide 55 — Reserva de demonstração
+## Slide 53 — Reserva de demonstração
 
 **Entenda:** Capturas locais com Wi-Fi desligado mostram estados visuais do app. São fixtures mock: não fazem chamada Jev remota nem executam robô. **Dica:** use apenas se precisar; leia a legenda para evitar confusão.
 
@@ -1067,7 +1029,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Como apresentar evidências múltiplas?** Separar fixture de UI, chamada remota e execução no bridge.
 9. **Qual utilidade científica da reserva?** Nenhuma medição de modelo; é redundância operacional da apresentação.
 
-## Slide 56 — Conclusão
+## Slide 54 — Conclusão
 
 **Entenda:** Jev é uma interface promissora para decisões tipadas; RLCD é objetivo público que pede avaliação reproduzível; o Maestro mostra utilidade potencial e um erro que mantém `HOLD`. A segurança não pertence ao classificador sozinho. **Dica:** feche em três frases, sem introduzir números novos.
 
@@ -1086,7 +1048,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Uma falha crítica prova que Jev nunca serve?** Não; limita adoção nesse papel sob esta evidência.
 9. **Qual conclusão seria forte demais?** “Jev é calibrado e seguro para robôs porque venceu em macro-F1.”
 
-## Slide 57 — O que ainda precisamos testar?
+## Slide 55 — O que ainda precisamos testar?
 
 **Entenda:** Três perguntas acessíveis encerram o raciocínio: classificação de transcrições reais, calibração e separação segura entre cancelar/confirmar. Jev recebe texto do ASR, não áudio bruto. **Dica:** deixe a sala escolher uma pergunta para a discussão.
 
@@ -1105,7 +1067,7 @@ O conteúdo é adequado a um grupo de RL **se** você separar fatos públicos, a
 8. **Como isolar efeito do RLCD?** Acesso a treino/ablação controlada além do benchmark do produto.
 9. **Qual pergunta fazer ao grupo?** “Que teste vocês exigiriam antes de confiar nessa classe de decisão?”
 
-## Slide 58 — Obrigado
+## Slide 56 — Obrigado
 
 **Entenda:** O slide encerra. Deixe o público escolher entre discussão de RLCD, código `Choice` ou matriz de confusão. **Dica:** não recapitule a palestra inteira.
 
