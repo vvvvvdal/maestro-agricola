@@ -1,6 +1,6 @@
 # Mapa slide → fala
 
-Este mapa acompanha [o PPTX](jev-rl-maestro-v4-2026-10-01.pptx), o [roteiro](presentation-script.md) e o [texto falado](presentation-speech.md). A coluna “fala” indica o argumento oral que motivou o slide; não substitui o texto integral. Os exemplos de terceiros ocupam áreas de vídeo para inserir as gravações originais. O slide 9 contém um print da documentação oficial de `Choice`. Os slides 39 e 40 mostram o JSON de entrada e uma resposta real sanitizada.
+Este mapa acompanha [o PPTX](jev-rl-maestro-v5-2026-10-01.pptx), o [roteiro](presentation-script.md) e o [texto falado](presentation-speech.md). A coluna “fala” indica o argumento oral que motivou o slide; não substitui o texto integral. Os exemplos de terceiros ocupam áreas de vídeo para inserir as gravações originais. O slide 9 contém um print da documentação oficial de `Choice`; o slide 31 mostra um recorte da página 2 das notas públicas sobre agente TypeSafe. Os slides 42 e 43 mostram o JSON de entrada e uma resposta real sanitizada.
 
 | Nº | Slide | Como a fala constrói o slide |
 | --- | --- | --- |
@@ -34,28 +34,31 @@ Este mapa acompanha [o PPTX](jev-rl-maestro-v4-2026-10-01.pptx), o [roteiro](pre
 | 28 | Julia-1 | Dá destaque à pesquisa brasileira, aos números favoráveis e à falha em Banking77. |
 | 29 | CLM | Explica encoders contrastivos, cache de ações e limites do speedup publicado. |
 | 30 | Span-01 | Distingue a tarefa de detecção em traces da classificação operacional do Maestro. |
-| 31 | Jev no agente | Mostra a decisão tipada dentro do loop e o papel do harness. |
-| 32 | Comparação | Converte anúncios em critérios para um teste pareado no Maestro. |
-| 33 | Hackathon | Apresenta AgroTurtles, problema e estágio pré-hardware do MVP. |
-| 34 | Ideia | Resume o pitch: olhar, falar e confirmar antes da ação física. |
-| 35 | Pipeline | Liga entrada, decisão tipada, regras e estado, confirmação e ROS. |
-| 36 | QR | Explica frame sob demanda, decoder local e `target_id`. |
-| 37 | Gate remoto | Explica consentimento no mock, bloqueios antes da rede e limite desses filtros. |
-| 38 | Seis classes | Esclarece que `MISSION_PREVIEW` e consultas são rotas locais, fora do `Choice` Jev. |
-| 39 | JSON enviado | Mostra o pequeno JSON Android → proxy e o `Choice` que o proxy monta para a TypeSafe. |
-| 40 | JSON recebido | Mostra a resposta real sanitizada `recovery-045`: `CANCEL` esperado, `CONFIRM` escolhido. |
-| 41 | Validação | Explica catálogo, distribuição, limiar e retorno `UNKNOWN` em falha. |
-| 42 | Corpus | Traz a rodada pareada de 60 frases e seus limites de inferência. |
-| 43 | Erro crítico | O caso `CANCEL → CONFIRM` explica a decisão operacional `HOLD`. |
-| 44 | Demo | Espaço para Android, Jev, confirmação e Gazebo ao vivo ou em vídeo. |
-| 45 | Reserva | Espaço para gravação offline ou capturas da fixture mock. |
-| 46 | Conclusão | Retoma Jev como hipótese útil, RLCD como objetivo a testar e segurança fora do modelo. |
-| 47 | Debate | Abre questões sobre treino, ASR real e custo do erro. |
-| 48 | Obrigado | Encerra sem informação nova. |
+| 31 | Documento público | Exibe a página 2 das notas e distingue as notas compartilhadas por Diogo da síntese de terceiro. |
+| 32 | Troca de modelo | Explica por que reler o contexto pode anular a economia de um turno barato. |
+| 33 | Contexto dinâmico | Mostra decisões sobre blocos, instruções e ferramentas; o harness monta a janela. |
+| 34 | Jev no loop | Localiza decisões tipadas entre observação, política, execução e verificação. |
+| 35 | Comparação | Converte anúncios em critérios para um teste pareado no Maestro. |
+| 36 | Hackathon | Apresenta AgroTurtles, problema e estágio pré-hardware do MVP. |
+| 37 | Ideia | Resume o pitch: olhar, falar e confirmar antes da ação física. |
+| 38 | Pipeline | Liga entrada, decisão tipada, regras e estado, confirmação e ROS. |
+| 39 | QR | Explica frame sob demanda, decoder local e `target_id`. |
+| 40 | Gate remoto | Explica consentimento no mock, bloqueios antes da rede e limite desses filtros. |
+| 41 | Seis classes | Esclarece que `MISSION_PREVIEW` e consultas são rotas locais, fora do `Choice` Jev. |
+| 42 | JSON enviado | Mostra o pequeno JSON Android → proxy e o `Choice` que o proxy monta para a TypeSafe. |
+| 43 | JSON recebido | Mostra a resposta real sanitizada `recovery-045`: `CANCEL` esperado, `CONFIRM` escolhido. |
+| 44 | Validação | Explica catálogo, distribuição, limiar e retorno `UNKNOWN` em falha. |
+| 45 | Corpus | Traz a rodada pareada de 60 frases e seus limites de inferência. |
+| 46 | Erro crítico | O caso `CANCEL → CONFIRM` explica a decisão operacional `HOLD`. |
+| 47 | Demo | Espaço para Android, Jev, confirmação e Gazebo ao vivo ou em vídeo. |
+| 48 | Reserva | Espaço para gravação offline ou capturas da fixture mock. |
+| 49 | Conclusão | Retoma Jev como hipótese útil, RLCD como objetivo a testar e segurança fora do modelo. |
+| 50 | Debate | Abre questões sobre treino, ASR real e custo do erro. |
+| 51 | Obrigado | Encerra sem informação nova. |
 
 ## Pontos de edição antes de apresentar
 
-- Inserir os vídeos originais nos slides 20–24 e a demo própria nos slides 44–45. Os links de origem estão nas notas e no [roteiro](presentation-script.md). Os vídeos originais dos posts continuam pendentes de inserção; o texto dos quatro posts novos foi conferido pelo oEmbed oficial do X.
+- Inserir os vídeos originais nos slides 20–24 e a demo própria nos slides 47–48. Os links de origem estão nas notas e no [roteiro](presentation-script.md). Os vídeos originais dos posts continuam pendentes de inserção; o texto dos quatro posts novos foi conferido pelo oEmbed oficial do X.
 - No slide 22, o PR Judge é uma demo adicional estudada, não um dos cinco tweets enviados inicialmente.
 - O print do slide 9 é da [documentação oficial de Choice](https://docs.typesafe.ai/primitives/choice), capturado em 26/09/2026.
 - Para a demo do Playground, usar `state` sintético e ler o resultado real. Nunca projetar credenciais.

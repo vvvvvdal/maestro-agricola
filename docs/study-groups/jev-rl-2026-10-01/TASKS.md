@@ -199,3 +199,5 @@ roadmap; uma task so vira evidencia de produto apos seus testes.
 - alegar calibracao antes de corpus final rotulado e medido.
 
 - 26/09/2026: revisão do deck PPTX e das falas para incluir Julia-1, CLM, Span-01, uso do Jev em agentes e critérios de comparação. Evidência e limites em [`external-case-assessment.md`](external-case-assessment.md); nenhum benchmark novo do Maestro foi executado.
+
+- 26/09/2026: bloco de Jev em agentes ampliado com leitura das notas públicas, distinção de autoria do PDF divulgado, contexto dinâmico e custos de roteamento; versão v5 do PPTX.
