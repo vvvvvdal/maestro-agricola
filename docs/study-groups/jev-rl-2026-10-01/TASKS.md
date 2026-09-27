@@ -205,3 +205,5 @@ roadmap; uma task so vira evidencia de produto apos seus testes.
 - 27/09/2026: versão v6 do PPTX reorganizada para começar por Jev e System One; três tipos de resposta, RLCD e código real do proxy foram detalhados. Roteiro, fala e mapa atualizados para 59 slides; nenhum novo benchmark ou chamado remoto foi feito.
 
 - 27/09/2026: versão v7 simplifica o slide 58 de discussão em três perguntas concretas sobre fala real, calibração e `CANCEL` versus `CONFIRM`; fala e mapa alinhados.
+
+- 27/09/2026: versão v8 abre o bloco de modelos com a razão da onda, apresenta Laya, Julia-1 e CLM separadamente, compara os quatro com Jev e só então passa às notas do Diogo. Span-01 saiu. Guia de estudo novo cobre os 58 slides com 9 perguntas por slide e um percurso de 45 + 5 minutos; o speech integral continua material de estudo mais longo.
