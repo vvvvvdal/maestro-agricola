@@ -35,3 +35,14 @@ dispositivo-alvo.
 Use "resultado de terceiros", "autor reporta" e "demo" para esses casos. Nunca
 use "prova", "SOTA", "melhor" ou "validado em producao" sem um benchmark
 reproduzivel e comparavel.
+
+## Onda de modelos de decisão (26/09/2026)
+
+| Link enviado | Fonte primária conferida | Leitura para a apresentação |
+| --- | --- | --- |
+| [Jev em agentes](https://x.com/N01ennn/status/2103818303642689696) | Post recuperado pelo oEmbed oficial do X; [TypeSafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev) documenta a interface | O post atribui um PDF de 11 páginas e um loop de nove etapas a Diogo Almeida. O PDF original não foi localizado nesta revisão. Mostrar apenas o padrão verificável de decisão tipada dentro de um harness; não narrar as nove etapas como verificadas. |
+| [CLM](https://x.com/NFT_Chen/status/2103702227332559077) | [Repositório dos autores](https://github.com/Contrastive-LM/CLM) | O post cita “13×”. O README reporta até 9× em tarefas selecionadas e descreve objetivo contrastivo, dois encoders e cache de ações. Autores incluem Stanford e NVIDIA; não chamar de produto NVIDIA. |
+| [Span-01](https://x.com/RespanAI/status/2103970381568921704) | [Anúncio](https://www.respan.ai/blog/introducing-span-1) e [documentação](https://www.respan.ai/docs/documentation/span-01/concept) | Modelo de 4B especializado em detecção de comportamento em traces. F1 geral publicado: 0,843 versus 0,715 de Jev no benchmark da própria empresa. A provocação de multiplicação no tweet não mede esse uso. |
+| [Julia-1](https://x.com/supersonicai/status/2103922653585162248) | [Site oficial](https://supersoniclabs.ia.br/julia-1/), [organização brasileira](https://supersoniclabs.ia.br/) e [model card](https://huggingface.co/SupersonicLabs/Julia-1) | 144,3M parâmetros, base mmBERT-small, CPU/ONNX. Em typed decisions: 73,15% vs referência Jev 72,70%; em Banking77: 64% vs 87%. Os valores Jev foram herdados do protocolo, não reexecutados. O site oficial declara a equipe “From Brazil”. |
+
+**Síntese inferida:** a proximidade dos anúncios não demonstra que cada modelo foi iniciado após Jev. As fontes mostram reuso de bases anteriores, interfaces tipadas e benchmarks públicos. As promessas de velocidade mudam com GPU/CPU, cache, opções, entrada e rede. A comparação útil ao Maestro exige o mesmo corpus, especialmente o estrato `CANCEL`/`CONFIRM`, o mesmo aparelho e métricas de latência, memória, calibração e erro crítico.
